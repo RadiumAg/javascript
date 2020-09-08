@@ -9,9 +9,6 @@
 
 <body>
     <script>
-        window.external.upload = function (state) {
-            console.log(state);
-        }
 
         let plugin = (function () {
             let plugin = document.createElement('embed');
@@ -77,32 +74,33 @@
             this.currState = this.signState;
         }
 
-
         Upload.prototype.uploading = function () {
             this.button1.innerHTML = '正在上传，点击暂停';
             this.plugin.uploading();
             this.currState = this.uploadingState;
-        }
+        };
 
         Upload.prototype.pause = function () {
             this.button1.innerHTML = '已暂停，点击继续上传';
             this.plugin.pause();
             this.currState = this.pauseState;
         };
+
         Upload.prototype.done = function () {
             this.button1.innerHTML = '上传完成';
             this.plugin.done();
             this.currState = this.doneState;
         };
+
         Upload.prototype.error = function () {
             this.button1.innerHTML = '上传失败';
             this.currState = this.errorState;
         };
+
         Upload.prototype.del = function () {
             this.plugin.del();
             this.dom.parentNode.removeChild(this.dom);
         };
-
 
         var StateFactory = (function () {
             let State = function () { };
@@ -126,6 +124,7 @@
                 return F;
             }
         })();
+        
         var SignState = StateFactory({
 
             clickHandler1: function () {
@@ -135,6 +134,7 @@
                 console.log('文件正在上传中，不能删除');
             }
         });
+
         var UploadingState = StateFactory({
             clickHandler1: function () {
                 this.uploadObj.pause();
@@ -143,6 +143,7 @@
                 console.log('文件正在上传中，不能删除');
             }
         });
+
         var PauseState = StateFactory({
             clickHandler1: function () {
                 this.uploadObj.uploading();
@@ -151,6 +152,7 @@
                 this.uploadObj.del();
             }
         });
+
         var DoneState = StateFactory({
             clickHandler1: function () {
                 console.log('文件已完成上传, 点击无效');
@@ -159,6 +161,7 @@
                 this.uploadObj.del();
             }
         });
+
         var ErrorState = StateFactory({
             clickHandler1: function () {
                 console.log('文件上传失败, 点击无效');
