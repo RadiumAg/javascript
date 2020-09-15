@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+ 
+<head>
+	<meta charset="UTF-8">
+	<title>蜗牛先生的聊天室</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+ 
+		html {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background-color: #d4f0fc;
+			background-image: url(http://tool.uixsj.cn/qchan/uploads/2018/08/traffic_a_lot_of_cars_driving_across_the_golden_gate_bridge_free_stock_photos_picjumbo_HNCK2899_2210x1474.jpg);
+			background-size: 100% 100%;
+		}
+ 
+		.chatroom {
+			display: flex;
+			width: 1000px;
+			height: 700px;
+			border-radius: 20px;
+			overflow: hidden;
+		}
+ 
+		.left {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			align-content: center;
+			width: 30%;
+			height: 100%;
+			background-color: #478291;
+		}
+ 
+		.icon-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: 40px;
+			height: 30%;
+		}
+ 
+		.icon-container img {
+			border: 10px solid #333;
+			width: 150px;
+			height: 150px;
+			object-fit: cover;
+			border-radius: 50%;
+		}
+ 
+		.icon-container img:hover {
+			animation: rotate 2s linear infinite forwards;
+		}
+ 
+		@keyframes rotate {
+			from {
+				transform: rotate(0);
+			}
+ 
+			to {
+				transform: rotate(360deg);
+			}
+		}
+ 
+		.self-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 15%;
+			line-height: 60px;
+			font-size: 25px;
+			font-weight: 700;
+			color: #cadeea;
+		}
+ 
+		.function-container {
+			display: flex;
+			justify-content: flex-start;
+			align-items: flex-start;
+			flex-wrap: wrap;
+			padding: 0 30px;
+			color: #617c8f;
+		}
+ 
+		.function-item {
+			margin: 5px;
+			border: 3px solid #333;
+			padding: 5px 10px;
+			background: #fff;
+			font-size: 14px;
+		}
+ 
+		.note-help {
+			position: absolute;
+			bottom: 20px;
+			padding: 0 30px;
+			font-size: 12px;
+			color: #9cadad;
+			text-align: center;
+		}
+ 
+		.right {
+			width: 70%;
+			height: 100%;
+			background-color: #eee;
+		}
+ 
+		.head {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 10%;
+			width: 100%;
+			background-color: white;
+			font-size: 22px;
+			font-weight: bold;
+		}
+ 
+		.chat-container {
+			height: 80%;
+			overflow-y: scroll;
+			box-sizing: border-box;
+		}
+ 
+		.speaker-name {
+			padding: 5px 0;
+			font-size: 12px;
+			color: #888888;
+		}
+ 
+		.message-self,
+		.message-other {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			padding: 10px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+ 
+		.message-self {
+			justify-content: flex-end;
+		}
+ 
+		.message-container {
+			display: flex;
+			flex-direction: row;
+			max-width: 80%;
+		}
+ 
+		.message-self .message-content {
+			padding-right: 10px;
+		}
+ 
+		.message-other .message-content {
+			padding-left: 10px;
+		}
+ 
+		.message-self .message {
+			background-color: blue;
+			color: white;
+		}
+ 
+		.message-other .message {
+			background-color: white;
+			color: black;
+		}
+ 
+		.message-self .speaker-name {
+			text-align: right;
+		}
+ 
+		.message-other .speaker-name {
+			text-align: left;
+		}
+ 
+		.message {
+			border-radius: 10px;
+			padding: 10px;
+		}
+ 
+		.message-container .icon img {
+			width: 40px;
+			height: 40px;
+			object-fit: cover;
+			border-radius: 50%;
+		}
+ 
+		.message-table {
+			border-collapse: collapse;
+			border: 2px dashed #aaa;
+		}
+ 
+		.message-table-th {
+			border-bottom: 2px dashed #aaa;
+			padding: 5px 10px;
+		}
+ 
+		.message-table-td {
+			padding: 5px 10px;
+		}
+ 
+		.notify-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 50px;
+		}
+ 
+		.notify {
+			border-radius: 10px;
+			padding: 5px 10px;
+			background-color: #ddd;
+			opacity: 0.9;
+			font-size: 12px;
+			color: white;
+		}
+ 
+		.notify-name {
+			color: blue;
+		}
+ 
+		.input-container {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			width: 100%;
+			height: 10%;
+			background-color: blue;
+			font-size: 18px;
+		}
+ 
+		.input-content {
+			position: relative;
+			width: 85%;
+			background-color: white;
+		}
+ 
+		.input-content input {
+			border: 0;
+			padding: 10px;
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			/* 去除input框外边框  */
+			outline: none;
+			font-size: 18px;
+		}
+ 
+		.input-content .num {
+			position: absolute;
+			right: 0;
+			top: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 70px;
+			height: 100%;
+			background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 1));
+			font-weight: bold;
+			color: #333333;
+		}
+ 
+		.input-content input::-webkit-input-placeholder {
+			font-size: 18px;
+		}
+ 
+		.input-container .send {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 15%;
+			background-color: orange;
+			font-weight: bold;
+		}
+	</style>
+</head>
+ 
+<body>
+ 
+	<div class="chatroom">
+ 
+		<!--左侧-->
+		<div class="left">
+			<!--头像-->
+			<div class="icon-container">
+				<img src="https://i.niupic.com/images/2018/08/10/5yxS.jpg" />
+			</div>
+ 
+			<!--个人简介-->
+			<div class="self-container">姓名</div>
+ 
+			<!--聊天室说明-->
+			<div class="function-container">
+				<div class="function-item">尬聊模式</div>
+				<div class="function-item">“讲个笑话”</div>
+				<div class="function-item">“歇后语”</div>
+				<div class="function-item">“顺口溜”</div>
+				<div class="function-item">“北京天气”</div>
+				<div class="function-item">“名人名言”</div>
+				<div class="function-item">“静夜思”</div>
+			</div>
+ 
+			<div class="note-help">
+				如果您有什么好的页面设计方案，请将您的设计稿发送至 tanabalu@qq.com ，非常感谢！
+			</div>
+		</div>
+ 
+		<!--右侧-->
+		<div class="right">
+			<!--顶部固定导航-->
+			<div class="head">聊天室(<span id="count">0</span>)</div>
+ 
+			<!--聊天记录-->
+			<div class="chat-container">
+				<div class="message-other">
+					<div class="message-container">
+						<div class="icon">
+							<img src="http://file06.16sucai.com/2016/0921/2b04bfeb965677fe8c2d5a4dbd292478.jpg" />
+						</div>
+						<div class="message-content">
+							<div class="speaker-name">机器人</div>
+							<div class="message">你好呀，小主人，欢迎来到TAchat。</div>
+						</div>
+					</div>
+				</div>
+				<div class="message-other">
+					<div class="message-container">
+						<div class="icon">
+							<img src="http://file06.16sucai.com/2016/0921/2b04bfeb965677fe8c2d5a4dbd292478.jpg" />
+						</div>
+						<div class="message-content">
+							<div class="speaker-name">机器人</div>
+							<div class="message">
+								<table class="message-table">
+									<tr>
+										<th class="message-table-th">您可尝试输入以下指令：</th>
+									</tr>
+									<tr>
+										<td class="message-table-td">1、讲个笑话</td>
+									</tr>
+									<tr>
+										<td class="message-table-td">2、歇后语</td>
+									</tr>
+									<tr>
+										<td class="message-table-td">3、顺口溜</td>
+									</tr>
+									<tr>
+										<td class="message-table-td">4、xx天气</td>
+									</tr>
+									<tr>
+										<td class="message-table-td">5、名人名言</td>
+									</tr>
+									<tr>
+										<td class="message-table-td">6、诗词</td>
+									</tr>
+									<tr>
+										<td class="message-table-td">……</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="message-other">
+					<div class="message-container">
+						<div class="icon">
+							<img src="http://file06.16sucai.com/2016/0921/2b04bfeb965677fe8c2d5a4dbd292478.jpg" />
+						</div>
+						<div class="message-content">
+							<div class="speaker-name">机器人</div>
+							<div class="message">还可以邀请小伙伴打开本网址与您一起聊天呢！</div>
+						</div>
+					</div>
+				</div>
+			</div>
+ 
+			<!--底部输入框-->
+			<div class="input-container">
+				<div class="input-content">
+					<input id="msg" autofocus="autofocus" value="" oninput="inputMessage()" placeholder="请输入聊天内容…" />
+					<div class="num">0/30</div>
+				</div>
+				<div class="send" onclick="send()">发送</div>
+			</div>
+		</div>
+ 
+	</div>
+ 
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/socket.io/2.3.0/socket.io.dev.js"></script>
+	<!-- <script src="jquery.particleground.min.js"></script> -->
+	<script>
+		// 建立连接
+		const socket = io.connect("/");
+ 
+		// 编号
+		let id = 0;
+ 
+		// 允许输入的最大字数
+		const maxInput = 30;
+ 
+		// 用户头像
+		const userIcon = 'https://i.niupic.com/images/2018/08/10/5yxS.jpg';
+ 
+		// 机器人头像
+		const robotIcon = 'http://file06.16sucai.com/2016/0921/2b04bfeb965677fe8c2d5a4dbd292478.jpg';
+ 
+		// 用户姓名
+		let name = '';
+ 
+		getName();
+ 
+		// 如果监听到socket消息，那么执行该回调函数，并得到广播消息
+		// 此处的message参数是后台广播的内容
+		socket.on("message", function (message) {
+			console.log(message)
+			let html = '';
+			if (name === message.name) {
+				html =
+					'<div class="message-self"><div class="message-container"><div class="message-content"><div class="speaker-name">' +
+					message.name + '</div><div class="message">' + message.msg +
+					'</div></div><div class="icon"><img src="' + userIcon + '" /></div></div></div>';
+			} else {
+				html = '<div class="message-other"><div class="message-container"><div class="icon"><img src="' +
+					userIcon + '" /></div><div class="message-content"><div class="speaker-name">' + message.name +
+					'</div><div class="message">' + message.msg + '</div></div></div></div>';
+			}
+			$(".chat-container").append(html);
+			scrollToBottom();
+		});
+ 
+		// 接收到系统通知
+		socket.on("joinNoticeSelf", function (message) {
+			$("#count").text(message.count);
+			id = message.id;
+			$(".id").text(message.id + '号');
+		});
+ 
+		// 接收到系统通知
+		socket.on("joinNoticeOther", function (message) {
+			console.log("joinNoticeOther：");
+			console.log(message);
+			$("#count").text(message.count);
+			const msg = {
+				name: message.name,
+				action: message.action
+			}
+			notify(msg);
+		});
+ 
+		// 断开连接回调事件
+		socket.on("disconnection", function (message) {
+			console.log(message);
+			$("#count").text(message.count);
+			const notifyMessage = {
+				name: message.name,
+				action: "退出了群聊"
+			};
+			notify(notifyMessage);
+		});
+ 
+		document.onkeydown = function (event) {
+			var e = event || window.event || arguments.callee.caller.arguments[0];
+			if (e && e.keyCode === 13) { // enter 键
+				send();
+			}
+		};
+ 
+		/**
+		 * 发送系统通知
+		 * 
+		 * @param {Object} message
+		 */
+		function notify(message) {
+			if (message.name && message.action) {
+				const notify = '<div class="notify-container"><div class="notify"><span class="notify-name">' + message.name +
+					'</span>' + message.action + '</div></div>';
+				$(".chat-container").append(notify);
+				scrollToBottom();
+			}
+		}
+ 
+		/**
+		 * 固定滚动条到底部
+		 */
+		function scrollToBottom() {
+			$(".chat-container").scrollTop($(".chat-container")[0].scrollHeight);
+		}
+ 
+		/**
+		 * 获取姓名
+		 */
+		function getName() {
+			const str = prompt("请输入你的聊天昵称", "");
+			if (str) {
+				name = str;
+				console.log(name)
+				$(".self-container").text(str);
+				const message = {
+					name: name
+				}
+				socket.emit("join", message);
+			} else {
+				getName();
+			}
+		}
+ 
+		/**
+		 * 输入消息
+		 */
+		function inputMessage() {
+			const msg = $("#msg").val();
+			const length = $("#msg").val().length;
+			if (length > maxInput) {
+				$("#msg").val(msg.substr(0, maxInput));
+				$(".num").text(maxInput + '/' + maxInput);
+			} else {
+				const text = length + '/' + maxInput;
+				$(".num").text(text);
+			}
+		}
+ 
+		/**
+		 * 获取回复
+		 */
+		function getReply(msg) {
+			$.ajax({
+				url: "http://api.tianapi.com/txapi/robot/",
+				data: {
+					key: '762be789103e1ae7b65573f8d4fc0df6',
+					question: msg,
+				},
+				success: function (res) {
+					if (res.code === 200) {
+						const newslist = res.newslist;
+						for (let i = 0; i < newslist.length; i++) {
+							const html =
+								'<div class="message-other"><div class="message-container"><div class="icon"><img src="' +
+								robotIcon +
+								'" /></div><div class="message-content"><div class="speaker-name">机器人</div><div class="message">' +
+								newslist[i].reply + '</div></div></div></div>';
+							$(".chat-container").append(html);
+						}
+						scrollToBottom();
+					}
+				}
+			});
+		}
+ 
+		/**
+		 * 发送消息
+		 */
+		function send() {
+			var msg = $("#msg").val();
+			if (!name) {
+				getName();
+			} else if (msg) {
+				const message = {
+					id,
+					name,
+					msg,
+				};
+				// 通过socket发送消息
+				socket.send(message);
+				getReply(msg);
+				$("#msg").val("");
+				$(".num").text('0/' + maxInput);
+			}
+		}
+	</script>
+ 
+</body>
+ 
+</html>
