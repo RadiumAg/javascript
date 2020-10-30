@@ -12,10 +12,10 @@ function addEdge(v, w) {
 
 function showGraph() {
   for (var i = 0; i < this.vertices; ++i) {
-    var a = i + "->";
+    var _a = i + "->";
 
     for (var j = 0; j < this.vertices; ++j) {
-      if (this.adj[i][j] != undefined) console.log(a, this.adj[i][j]);
+      if (this.adj[i][j] != undefined) console.log(_a, this.adj[i][j]);
     }
   }
 }
@@ -84,7 +84,10 @@ g.addEdge(1, 3);
 g.addEdge(2, 4);
 g.showGraph();
 g.dfs(0);
-g.bfs(0); // 程序的输出结果为0 -> 1 2 1 -> 0 3 2 -> 0 4 3 -> 1 4 -> 2 
+g.bfs(0);
+var a = {
+  a: "bbbb"
+}; // 程序的输出结果为0 -> 1 2 1 -> 0 3 2 -> 0 4 3 -> 1 4 -> 2 
 // 表示顶点0有到顶点1和顶点2的边
 // 顶点1有到顶带你0和顶点3的边
 // 顶点3有到顶点1的边
