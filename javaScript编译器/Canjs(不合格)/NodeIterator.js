@@ -1,6 +1,10 @@
 
 const nodeHandler = {
-    Program() { },
+    Program(nodeIterator) {
+        for (const node of nodeIterator.node.body) {
+            nodeIterator.traverse(node)
+        }
+    },
     VariableDeclaration(nodeIterator) {
         for (const declaration of nodeIterator.node.declarations) {
             const { name } = declaration.id;
@@ -145,14 +149,15 @@ const nodeHandler = {
 };
 
 class NodeIterator {
-    constructor(node,scope = {}) {
+    constructor(node, scope = {}) {
         this.node = node;
         this.scope = scope;
         this.nodeHandler = nodeHandler;
     }
 
     traverse(node, options = {}) {
-        const scop = options.scope || this.scope;
+        const scop = optiosns.scope || this.scope;
+        console.log(node.type);
         const _evel = this.nodeHandler[node.type];
         const nodeIterator = new NodeIterator(node, this.scope);
         if (!_evel) {
