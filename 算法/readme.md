@@ -1,5 +1,6 @@
 <img src="https://raw.githubusercontent.com/hustcc/JS-Sorting-Algorithm/master/res/sort.png"/>
 
+https://github.com/hustcc/JS-Sorting-Algorithm
 ##### 关于稳定性
 
 稳定的排序算法：冒泡排序、插入排序、归并排序和基数排序.(冒插归基)。

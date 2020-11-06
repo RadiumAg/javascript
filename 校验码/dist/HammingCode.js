@@ -55,3 +55,14 @@ function HammingCode(input) {
     console.log(hArray.join(""));
 }
 HammingCode("1010110");
+HammingCode("01101001");
+HammingCode("1101");
+HammingCode("1011");
+HammingCode("11000010");
+HammingCode("10011101");
+// 01110100110
+// 010111001001
+// 1010101
+// 0110011
+// 101110010010
+// 111000111101

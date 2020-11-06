@@ -6,10 +6,10 @@ function HammingCode(input: String) {
 
   hArray = input.split("");
   // 获得海明码长度
-  sethSize();
+  sethSize();  
   setbArray();
   sethCode();
-
+  
   /**
    * @description 计算海明码
    */
@@ -31,6 +31,7 @@ function HammingCode(input: String) {
             bIndexArray.push(_i);
           }
         });
+
 
         for (const i of bIndexArray) {
           result = flag ? hArray[i] : result ^ hArray[i];
@@ -69,3 +70,19 @@ function HammingCode(input: String) {
 }
 
 HammingCode("1010110");
+HammingCode("01101001");
+HammingCode("1101");
+HammingCode("1011");
+HammingCode("11000010");
+HammingCode("10011101");
+// 01110100110
+// 010111001001
+// 1010101
+// 0110011
+// 101110010010
+// 111000111101
+
+
+
+
+
