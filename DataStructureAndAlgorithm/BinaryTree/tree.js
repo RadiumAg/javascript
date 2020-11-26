@@ -44,7 +44,7 @@ function insert (data) {
   }
 }
 
-
+// 中序变量
 function inOrder (node) {
   if (node != null) {
     inOrder(node.left);
