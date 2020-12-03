@@ -1,28 +1,4 @@
-# makeJs
-
-For leaning how to do a interpreter. 
-
-So I make a sub Javascript interpreter for interpreting itself.
-(No dependence any third-party)
-
-
-# In developing
-
-Now support：
-
-* define variables
-* simple expression
-* compares
-* if statement
-* while loop
-* Function
-* Array
-
-
-![demo.jpg](/demo.gif)
-
-```js
-
+//Let's do something , like a array sort
 function quickSort(list,len) {
     let a = 0;
     let b = len-1;
@@ -53,13 +29,4 @@ function quickSort(list,len) {
 let arr = [9,3,2,1,5,-2,6];
 quickSort(arr,7);
 
-```
-
-See <a href="https://github.com/zuluoaaa/makeJs/tree/master/test">the test folder</a> for more examples
- 
- # Future support:
- * Object
- * ...
- 
- 
- 
+log(arr,666);
