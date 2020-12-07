@@ -11,6 +11,7 @@ function main(){
 
    init();
    scan();
+   // 自己造树了，有点牛逼
    let astNodeTree = statement();
    interpretAST(astNodeTree,null,gData.gScope);
 

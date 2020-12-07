@@ -7,7 +7,7 @@ function init() {
         throw new Error("must specify a input file")
     }
     let data = readFileToStr(arguments[1]);
-    gData.content = data;
+    gData.content = data;  // 获得文件内容
 }
 
 module.exports = {
