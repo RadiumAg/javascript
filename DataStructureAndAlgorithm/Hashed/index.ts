@@ -1,19 +1,33 @@
 "use strict";
 
-function simpleHash(data) {
+function simpleHash(data: string) {
   let total = 0;
-  for (var i = 0; i < data.length; ++i) {
+  for (let i = 0; i < data.length; ++i) {
     total += data.charCodeAt(i);
   }
   return total % this.table.length;
 }
 
-function put(data) {
-  var pos = this.simpleHash(data);
-  this.talbe[pos] = data;
+function betterHash(string: string, arr: []): number {
+  const H = 37;
+  let total = 0;
+  for (let i = 0; i < string.length; ++i) {
+    total += H * total + string.charCodeAt(i);
+  }
+  console.log(total ,arr);
+  total = total % arr.length;
+  
+  console.log(total);
+  return total;
 }
 
-function showDistro() {
+function put(data) {
+  // var pos = this.simpleHash(data);
+  var pos = this.betterHash(data,this.table);
+  this.table[pos] = data;
+}
+
+function showDistro(): void {
   let total = 0;
   for (var i = 0; i < this.table.length; ++i) {
     if (this.table[i] != undefined) {
@@ -26,14 +40,24 @@ function HashTable() {
   this.table = new Array(137);
   this.simpleHash = simpleHash;
   this.showDistro = showDistro;
+  this.betterHash = betterHash;
   this.put = put;
 }
 
-
-var someNames = ["David", "Jennifer", "Donnie", "Raymond", "Cynthia", "Mike", "Clayton", "Danny", "Jonathan"];
+var someNames = [
+  "David",
+  "Jennifer",
+  "Donnie",
+  "Raymond",
+  "Cynthia",
+  "Mike",
+  "Clayton",
+  "Danny",
+  "Jonathan",
+];
 
 var hTable = new HashTable();
-for(var i = 0; i<someNames.length; ++i){
-    hTable.put(someNames[i]);
+for (var i = 0; i < someNames.length; ++i) {
+  hTable.put(someNames[i]);
 }
 hTable.showDistro();

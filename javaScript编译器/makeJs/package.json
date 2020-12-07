@@ -1,0 +1,24 @@
+{
+  "name": "makejs",
+  "version": "1.0.0",
+  "description": "a sub Javascript interpreter for interpreting itself",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "all": "node test/run.js",
+    "test": "node src/index.js -i ./test/tests/test11.js",
+    "debuger": "node --inspect-brk src/index.js -i ./test/tests/test11.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zuluoaaa/makeJs.git"
+  },
+  "author": "zuiluo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zuluoaaa/makeJs/issues"
+  },
+  "homepage": "https://github.com/zuluoaaa/makeJs#readme"
+}
