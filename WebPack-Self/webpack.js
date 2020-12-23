@@ -3,7 +3,6 @@ const path = require('path');
 const parser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const babel = require('@babel/core');
-const { dirname } = require('path');
 
 // 转换代码，生成依赖
 function stepOne(filename) {
