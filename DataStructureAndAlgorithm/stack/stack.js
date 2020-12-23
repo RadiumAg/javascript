@@ -15,7 +15,7 @@ function pop () {
 }
 
 function peek () {
-  return this.dataStore[this.top--]
+  return this.dataStore[this.top--]; 
 }
 
 function pop () {
