@@ -24,19 +24,34 @@
 
 
 function quick_sort(array = [], low = 0, high = array.length - 1) {
-    let i = low, j = high;
+    if (high - low === 0 || high- low === -1) {
+        return;
+    }
+    let i = low, j = high, x = array[i];
+    // 从右往左
     while (i < j) {
-        // 从左往右
-        while (i < j && array[low] > array[i]) {
-            i++;
-        }
-        array[j] = array[i];
-        // 从右往左
-        while (i < j && array[low] < array[j]) {
+        while (i < j) {
+            if (x > array[j]) {
+                array[i] = array[j];
+                break;
+            }
             j--;
         }
-        array[]
+        // 从左往右
+        while (i < j) {
+            if (x < array[i]) {
+                array[j] = array[i];
+                break;
+            }
+            i++;
+        }
     }
+    array[i] = x;
+
+    quick_sort(array, low, i - 1);
+    quick_sort(array, i + 1, high);
 }
-// 我更改了
-// 我又更改了
+
+let a = [49, 38, 65, 97, 76, 13, 27, 49];
+quick_sort(a, 0);
+console.log(a);
