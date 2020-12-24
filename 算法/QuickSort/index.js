@@ -38,6 +38,7 @@ function quick_sort(array = [], low = 0, high = array.length - 1) {
             }
             j--;
         }
+        
         // 从左往右
         while (i < j) {
             if (x < array[i]) {
