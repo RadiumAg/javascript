@@ -24,7 +24,8 @@
 
 
 function quick_sort(array = [], low = 0, high = array.length - 1) {
-    if (high - low === 0 || high- low === -1) {
+    console.log(low, high);
+    if(low >= high){
         return;
     }
     let i = low, j = high, x = array[i];
@@ -47,11 +48,10 @@ function quick_sort(array = [], low = 0, high = array.length - 1) {
         }
     }
     array[i] = x;
-
     quick_sort(array, low, i - 1);
     quick_sort(array, i + 1, high);
 }
 
-let a = [49, 38, 65, 97, 76, 13, 27, 49];
+let a = [3123,2232,1222,232,23,231123,12];
 quick_sort(a, 0);
 console.log(a);
