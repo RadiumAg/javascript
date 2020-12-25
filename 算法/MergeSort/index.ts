@@ -6,6 +6,7 @@ function mergeSort(arr: Number[]) {
   let middle = Math.floor(len / 2),
     left = arr.slice(0, middle),
     right = arr.slice(middle);
+  return merge(mergeSort(left), mergeSort(right));
 }
 
 function merge(left: Number[], right: Number[]) {
@@ -28,3 +29,6 @@ function merge(left: Number[], right: Number[]) {
 
   return result;
 }
+let a = [2323, 232, 323, 213123, 23213];
+a = mergeSort(a);
+console.log(a);
