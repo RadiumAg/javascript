@@ -1,14 +1,16 @@
 function shellSort(array = []) {
-    let gap = array.length % 2 !== 0 ? (array.length - 1) / 2 : array.length / 2;
-    for (let i = 1; gap >= i; gap = gap / 2) {
-        for (let j = gap; j < array.length; j++) {
-            if (array[j] > array[j + gap]) {
-                let temp = array[j];
-                array[j] = array[j + gap];
-                array[j + gap] = temp;
+    let gap = array.length / 2;
+    for (let i = 1; gap >= i; gap /= 2) {
+        for (let j = 0; j < array.length; j++) {
+            let d = j;
+            // 步长数组插入排序
+            while (d > 0 && d-gap >= 0) {
+                if (array[d] < array[d - gap]) {
+                    swap(array, d, gap);
+                }
+                d -= gap;
             }
         }
-        console.log(array);
     };
 }
 
@@ -18,4 +20,10 @@ console.log(a);
 
 
 
+// 交换
+function swap(array, d, gap) {
+    let temp = array[d];
+    array[d] = array[d - gap];
+    array[d - gap] = temp;
+}
 
