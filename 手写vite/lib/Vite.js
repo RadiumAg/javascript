@@ -2,6 +2,7 @@ const koa = require('koa');
 const { moduleResolvePlugin } = require('./serverPluginModuleResolve');
 const { moduleRewritePlugin } = require('./serverPluginModuleRewrite');
 const { serveStaticPlugin } = require('./serveStaticPlugin');
+const { vuePlugin } = require('./vuePlugin');
 function createServer() {
     const app = new koa();
     const root = process.cwd();
@@ -17,7 +18,7 @@ function createServer() {
         return next();
     });
 
-    const resolvePlugins = [serveStaticPlugin, moduleRewritePlugin, moduleResolvePlugin];
+    const resolvePlugins = [serveStaticPlugin, moduleRewritePlugin, moduleResolvePlugin, vuePlugin];
     resolvePlugins.forEach(plugin => plugin(context));
     return app;
 }
