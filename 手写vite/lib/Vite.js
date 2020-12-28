@@ -1,8 +1,11 @@
 const koa = require('koa');
+const fs = require('fs');
+const path = require('path');
 const { moduleResolvePlugin } = require('./serverPluginModuleResolve');
 const { moduleRewritePlugin } = require('./serverPluginModuleRewrite');
 const { serveStaticPlugin } = require('./serveStaticPlugin');
 const { vuePlugin } = require('./vuePlugin');
+const { htmlRewritePlugin } = require('./htmlRewritePlugin');
 function createServer() {
     const app = new koa();
     const root = process.cwd();
@@ -13,14 +16,18 @@ function createServer() {
         root
     }
 
-    app.use((ctx, next) => {
-        Object.assign(ctx, context);
-        return next();
+    app.use(async (ctx, next) => {
+        if (ctx.url.includes('.html')) {
+            ctx.response.type = "text/html";
+            ctx.response.body =  fs.readFileSync(path.resolve(__dirname, '../'+ctx.url),'utf-8',()=>{});
+        }
+        await next();
     });
 
-    const resolvePlugins = [serveStaticPlugin, moduleRewritePlugin, moduleResolvePlugin, vuePlugin];
+    const resolvePlugins = [htmlRewritePlugin, serveStaticPlugin, moduleRewritePlugin, moduleResolvePlugin, vuePlugin,];
     resolvePlugins.forEach(plugin => plugin(context));
+
     return app;
 }
 
-createServer().listen(4000);
+createServer().listen(5500);

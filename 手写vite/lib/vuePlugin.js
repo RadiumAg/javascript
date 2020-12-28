@@ -3,13 +3,12 @@ const path = require('path');
 const { resolveVue } = require('./resolveVue');
 const defaultExportRE = /((?:^|\n|;)\s*)export default/;
 
-function vuePlugin({ app, root }) {
+async function vuePlugin({ app, root }) {
     app.use(async (ctx, next) => {
         if (!ctx.path.endsWith('.vue')) {
             return next();
         }
-    });
-
+        
     // vue文件处理
     const filePath = path.join(root, ctx.path);
     const content = await fs.readFile(filePath);
@@ -42,6 +41,7 @@ function vuePlugin({ app, root }) {
         const { code } = compileTemplate({ source: content });
         ctx.body = code;
     }
+    });
 }
 
 exports.vuePlugin = vuePlugin;

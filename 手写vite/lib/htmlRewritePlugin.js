@@ -1,4 +1,5 @@
 
+const { readBody} = require('./readBody');
 
 function htmlRewritePlugin({ root,app }){
     const devInjection = `
@@ -7,7 +8,7 @@ function htmlRewritePlugin({ root,app }){
     </script>
     `
     app.use(async(ctx,next)=>{
-        await next();
+        await next();       
         if(ctx.response.is('html')){
             const html = await readBody(ctx.body);
             ctx.body = html.replace(/<head>/,`$&${devInjection}`)
