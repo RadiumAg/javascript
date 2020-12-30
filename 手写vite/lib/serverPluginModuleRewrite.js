@@ -1,5 +1,6 @@
 
 const { parse } = require('es-module-lexer');
+const { readBody }  =  require('./readBody');
 const MagicString = require('magic-string');
 function rewriteImports(source = '') {
     let imports = parse(source)[0];

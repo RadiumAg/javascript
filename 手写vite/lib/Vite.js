@@ -21,7 +21,7 @@ function createServer() {
         await next();
     });
 
-    const resolvePlugins = [htmlRewritePlugin, serveStaticPlugin, moduleRewritePlugin, moduleResolvePlugin, vuePlugin,];
+    const resolvePlugins = [htmlRewritePlugin, moduleResolvePlugin, moduleRewritePlugin, vuePlugin, serveStaticPlugin,];
     resolvePlugins.forEach(plugin => plugin(context));
 
     return app;
