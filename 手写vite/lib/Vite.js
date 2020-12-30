@@ -17,10 +17,7 @@ function createServer() {
     }
 
     app.use(async (ctx, next) => {
-        if (ctx.url.includes('.html')) {
-            ctx.response.type = "text/html";
-            ctx.response.body =  fs.readFileSync(path.resolve(__dirname, '../'+ctx.url),'utf-8',()=>{});
-        }
+        console.log(ctx.url);
         await next();
     });
 

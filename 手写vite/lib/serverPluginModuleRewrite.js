@@ -17,11 +17,12 @@ function rewriteImports(source = '') {
     return magicString.toString();
 }
 
-function moduleRewritePlugin({ app ,root}) {
-    app.use(async (ctx,next) => {
+function moduleRewritePlugin({ root, app }) {
+    app.use(async (ctx, next) => {
         await next();
         // 对类型是js的文件进行拦截
-        if(ctx.body && ctx.response.is('js')){
+        if (ctx.body && ctx.response.is('js')) {
+            console.log('拦截js');
             // 读取文件内容
             const content = await readBody(ctx.body);
             // 重写Import中无法识别的路径
