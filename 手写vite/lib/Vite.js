@@ -18,9 +18,10 @@ function createServer() {
 
     app.use(async (ctx, next) => {
         await next();
-    });
-
-    const resolvePlugins = [htmlRewritePlugin,moduleRewritePlugin, moduleResolvePlugin,, vuePlugin, serveStaticPlugin,];
+    }); 
+    
+    // 中间件返回，注意顺序
+    const resolvePlugins = [htmlRewritePlugin, moduleRewritePlugin, vuePlugin, moduleResolvePlugin, serveStaticPlugin,];
     resolvePlugins.forEach(plugin => plugin(context));
 
     return app;
