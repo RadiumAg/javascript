@@ -10,7 +10,7 @@ function rewriteImports(source = '') {
             const { s, e } = imports[i];
             let id = source.substring(s, e);
             if (/^[^\/\.]/.test(id)) {
-                id = `/@modules/${id}`;
+                id = `/@modules/${id}.js`;
                 magicString.overwrite(s, e, id);
             }
         }
@@ -23,7 +23,7 @@ function moduleRewritePlugin({ root, app }) {
         await next();
         // 对类型是js的文件进行拦截
         if (ctx.body && ctx.response.is('js')) {
-            console.log('拦截js');
+            console.log(ctx.path);
             // 读取文件内容
             const content = await readBody(ctx.body);
             // 重写Import中无法识别的路径

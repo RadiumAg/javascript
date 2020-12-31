@@ -13,6 +13,7 @@ function moduleResolvePlugin({ app, root }) {
         // 去掉/@modules/路径
         const id = ctx.path.replace(moduleRE,'');
         ctx.type = 'js';
+        console.log(id);
         const content = fs.readFileSync(vueResolved[id],'utf-8',()=>{});
         ctx.body = content;
     });

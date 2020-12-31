@@ -14,11 +14,11 @@ function resolveVue(root) {
     // 共享模块
     const sharedPath = resovlePath('shared');
     return {
-        vue: runtimeDomPath,
-        '@vue/runtime-dom': runtimeDomPath,
-        '@vue/runtime-core': runtimeCorePath,
-        '@vue/reactivity': reactivityPath,
-        '@vue/shared': sharedPath,
+        'vue.js': runtimeDomPath,
+        '@vue/runtime-dom.js': runtimeDomPath,
+        '@vue/runtime-core.js': runtimeCorePath,
+        '@vue/reactivity.js': reactivityPath,
+        '@vue/shared.js': sharedPath,
         compiler: compilerPath,
     };
 }
