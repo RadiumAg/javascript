@@ -3,6 +3,7 @@ const services = [
    function B() { console.log("I'm B"); },
    function C() { }
 ]
+
 const funRegex = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
 function getDependices(fun = "") {
     const match = fun.toString().match(funRegex)[1];
