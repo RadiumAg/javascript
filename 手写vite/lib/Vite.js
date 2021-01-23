@@ -17,11 +17,11 @@ function createServer() {
     }
 
     app.use(async (ctx, next) => {
-        console.log(ctx.url);
         await next();
-    });
-
-    const resolvePlugins = [htmlRewritePlugin, moduleResolvePlugin, moduleRewritePlugin, vuePlugin, serveStaticPlugin,];
+    }); 
+    
+    // 中间件返回，注意顺序
+    const resolvePlugins = [htmlRewritePlugin, moduleRewritePlugin, vuePlugin, moduleResolvePlugin, serveStaticPlugin,];
     resolvePlugins.forEach(plugin => plugin(context));
 
     return app;

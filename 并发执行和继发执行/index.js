@@ -21,11 +21,11 @@ async function pTwo(){
 
 
 async function main(){
-    //并发
-    let a = pOne();
-    let b = pTwo();
+    // //并发
+    // let a = pOne();
+    // let b = pTwo();
    
-    console.log(await a);
+    // console.log(await a);
     //继发
     // let a = await pOne();
     // let b = await pTwo();
