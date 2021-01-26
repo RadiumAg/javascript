@@ -47,7 +47,8 @@
                 ws = new WebSocket("ws://localhost:8124"),
                 start = {
                     x: 0,
-                    y: 0
+                    y: 0,
+                    id : 0,
                 };
             canvasElement.addEventListener('mousedown', (e) => {
                 start.x = e.offsetX;
@@ -62,11 +63,15 @@
             ws.onopen = function () {
                 ws.send(JSON.stringify(start));
                 ws.onmessage = (event) => {
-                    console.log(data);
+                    console.log(event.data);
                 }
                 ws.onclose = (event) => {
-                    console.log(event);
+                    console.log(event.data);
                 }
+            }
+
+            window.onbeforeunload = function () {
+                ws.close();
             }
         })();
     </script>

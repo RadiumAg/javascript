@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    body,
+    html {
+        background-color: aqua;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    #canvas {
+        position: relative;
+        height: 600px;
+        width: 600px;
+        margin: 0 auto;
+        background-color: white;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script>
+        (() => {
+            const canvasElement = document.getElementById('canvas');
+            const canvasConext = canvasElement.getContext('2d'),
+                ws = new WebSocket("ws://localhost:8124");
+
+            ws.onopen = function () {
+                ws.onmessage = (event) => {
+                    let data = JSON.parse(event.data);
+                    if (data.x === 0) {
+                        canvasConext.beginPath();
+                        canvasConext.lineWidth = 1;
+                        canvasConext.strokeStyle = "black";
+                        canvasConext.moveTo(data.x, data.y);
+                    } else {
+                        canvasConext.lineTo(data.x, data.y);
+                        canvasConext.stroke();
+                    }
+
+                }
+                ws.onclose = (event) => {
+                    console.log(event);
+                }
+            }
+
+            window.onbeforeunload = function () {
+                ws.close();
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
