@@ -4,9 +4,6 @@ let set = new Set();
 function getArray(arr = []) {
     arr.reduce((total, current, currentIndex, arr) => {
         if (current instanceof Object) {
-            if (currentIndex === arr.length) {
-                reutrn;
-            }
             getArray(current);
         } else {
             set.add(current);
