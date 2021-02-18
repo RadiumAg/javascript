@@ -8,10 +8,11 @@ function getArray(arr = []) {
         } else {
             set.add(current);
         }
-    },0);
+    }, 0);
 }
 
 getArray(arr);
-let result =  Array.of(set).sort( (x,y)=> x - y ).map(x=>x);
+let result = Array.of(set).sort((x, y) => x - y).map(x => x);
 console.log(set);
-// arr.toString().split(",").sort((a,b)=>{ return a-b})
+arr.toString().split(",").sort((a,b)=>{ return a-b})
+
