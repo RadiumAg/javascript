@@ -69,10 +69,26 @@
 // });
 // console.log(4);
 
-let a = [1,2,4];
-a.forEach((x,i,b)=>{
-    console.log(b);
-    b.splice(x,1);
-});
+// let a = [1, 2, 4];
+// a.forEach((x, i, b) => {
+//     console.log(b);
+//     b.splice(x, 1);
+// });
 
-let net = require('net')
+// let net = require('net');
+let a = {
+    "s_103":
+    {
+        next() {
+            return { value: 0, done: false }
+        },
+        [Symbol.iterator]() {
+            return this;
+        },
+        "company_name": "山牛商城单用户分销版",
+        "id": "103", "money": "32000.00",
+        "product_name": "山牛商城单用户分销版"
+    }
+};
+
+
