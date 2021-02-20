@@ -1,20 +1,18 @@
-let net = require('net');
+const net = require('net');
 
-//连接服务器
-let client = net.connect({ port: 8080 }, () => {
-    console.log('connected to server');
-    client.write('World!\r\n');
+// 连接服务器
+const client = net.connect({ port: 8080 }, () => {
+  console.log('connected to server');
+  client.write('World!\r\n');
 });
 
-//接收服务端的数据
-client.on('data',(data)=>{
-    console.log('client got data from srver:',data.toString());
-    client.end();
+// 接收服务端的数据
+client.on('data', (data) => {
+  console.log('client got data from srver:', data.toString());
+  client.end();
 });
 
-
-//断开连接
-client.on('end',()=>{
-    console.log('disconnected from server');
+// 断开连接
+client.on('end', () => {
+  console.log('disconnected from server');
 });
-

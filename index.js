@@ -2,12 +2,12 @@
 //     i: 1,
 //     toString() {
 //       return a.i++;
-//     } 
+//     }
 //   }
 
 // if (a == 1 && a == 2 && a == 3) {
 //     console.log(1);
-// }    
+// }
 // async function b() {
 //     console.log(3);
 // }
@@ -20,7 +20,6 @@
 // a.call(this);
 // // a();
 // console.log(1);
-
 
 // const arr1 = [1];
 // const arr2 = [1];
@@ -63,7 +62,6 @@
 //     await a3();  // then后边的事情
 // }
 
-
 // Promise.all([a1,a4]).then(x=>{
 //     console.log(x)
 // });
@@ -76,19 +74,23 @@
 // });
 
 // let net = require('net');
-let a = {
-    "s_103":
+const a = {
+  s_103:
     {
-        next() {
-            return { value: 0, done: false }
-        },
-        [Symbol.iterator]() {
-            return this;
-        },
-        "company_name": "山牛商城单用户分销版",
-        "id": "103", "money": "32000.00",
-        "product_name": "山牛商城单用户分销版"
+      next () {
+        return { value: 0, done: false };
+      },
+      [Symbol.iterator] () {
+        return this;
+      },
+      company_name: '山牛商城单用户分销版',
+      id: '103',
+      money: '32000.00',
+      product_name: '山牛商城单用户分销版'
     }
 };
 
-
+const c = {
+  b: '',
+  c: ''
+};
