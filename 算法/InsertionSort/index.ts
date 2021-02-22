@@ -16,12 +16,12 @@
 // console.log(insertionSort([2, 23, 12, 323, 2323, 122, 123123, 23232323]));
 
 function insertionSort(arr: number[]) {
-  let len = arr.length;
+  const len = arr.length;
   for (let i = 0; i < len; i++) {
     // 慢慢排序
     for (let j = i; j >= 0; j--) {
       if (arr[j] < arr[j-1]) {
-        let temp = arr[j];
+        const temp = arr[j];
         arr[j-1] = arr[j];
         arr[j] = temp;
       }

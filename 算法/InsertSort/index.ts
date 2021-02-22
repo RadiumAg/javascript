@@ -1,5 +1,5 @@
 function insertionSort(arr: number[]) {
-  let len = arr.length;
+  const len = arr.length;
   let preIndex, current;
   for (let i = 1; i < len; i++) {
     preIndex = i - 1;
