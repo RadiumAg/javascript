@@ -1,15 +1,15 @@
-function HammingCode(input: String) {
-  let hArray = [],
-    hASize: number,
-    bArray: string[] = [],
-    hSize: number = 1;
+function HammingCode(input: string) {
+  let hArray = [];
+  let hASize: number;
+  const   bArray: string[] = [];
+  let  hSize: number = 1;
 
   hArray = input.split("");
   // 获得海明码长度
-  sethSize();  
+  sethSize();
   setbArray();
   sethCode();
-  
+
   /**
    * @description 计算海明码
    */
@@ -17,10 +17,10 @@ function HammingCode(input: String) {
     hArray.forEach((v, i, a) => {
       if (v === -1) {
         // 获得编码中1的位置
-        let result,
-          bIndexArray = [],
-          bIndex = bArray[i].indexOf("1"),
-          flag = false;
+        let result;
+        const bIndexArray = [];
+        const bIndex = bArray[i].indexOf("1");
+        let  flag = false;
 
         // 获得地址编码中1位置一样的地址数组
         bArray.forEach((v, _i, a) => {
@@ -34,9 +34,11 @@ function HammingCode(input: String) {
 
 
         for (const i of bIndexArray) {
+          // tslint:disable-next-line: no-bitwise
           result = flag ? hArray[i] : result ^ hArray[i];
           flag = false;
         }
+        // tslint:disable-next-line: no-bitwise
         hArray[i] = (result ^ 0) === 0 ? "0" : "1";
       }
     });
@@ -75,6 +77,7 @@ HammingCode("1101");
 HammingCode("1011");
 HammingCode("11000010");
 HammingCode("10011101");
+HammingCode("1100");
 // 01110100110
 // 010111001001
 // 1010101
