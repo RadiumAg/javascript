@@ -1,16 +1,17 @@
-function mergeSort(arr: Number[]) {
-  let len = arr.length;
+function mergeSort(arr: number[]) {
+  const len = arr.length;
   if (len < 2) {
     return arr;
   }
-  let middle = Math.floor(len / 2),
-    left = arr.slice(0, middle),
-    right = arr.slice(middle);
+  const middle = Math.floor(len / 2);
+  const  left = arr.slice(0, middle);
+  const  right = arr.slice(middle);
   return merge(mergeSort(left), mergeSort(right));
 }
 
-function merge(left: Number[], right: Number[]) {
-  let result = [];
+function merge(left: number[], right: number[]) {
+  const result = [];
+  // 合并
   while (left.length && right.length) {
     if (left[0] <= right[0]) {
       result.push(left.shift());
@@ -29,6 +30,5 @@ function merge(left: Number[], right: Number[]) {
 
   return result;
 }
-let a = [2323, 232, 323, 213123, 23213];
+let a = [2323, 232];
 a = mergeSort(a);
-console.log(a);
