@@ -1,6 +1,5 @@
 import { a } from './import';
 
-(()=>{
-    console.log(a);
-})()
-
+(() => {
+  console.log(a);
+})();

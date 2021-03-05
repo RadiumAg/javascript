@@ -89,8 +89,3 @@ const a = {
       product_name: '山牛商城单用户分销版'
     }
 };
-
-const c = {
-  b: '',
-  c: ''
-};
