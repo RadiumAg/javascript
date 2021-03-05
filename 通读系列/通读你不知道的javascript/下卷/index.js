@@ -56,50 +56,49 @@
 //     if (v > 50) break;
 // }
 
-var task = {
-    [Symbol.iterator]() {
-        var steps = this.actions.slice();
+const task = {
+  [Symbol.iterator] () {
+    const steps = this.actions.slice();
 
-        return {
-            // 使迭代器称为iterable
-            [Symbol.iterator]() {
-                return this;
-            },
-            next(...args) {
-                if (steps.length > 0) {
-                    let res = steps.shift()(...args);
-                    return { value: res, done: false };
-                } else {
-                    return { done: true };
-                }
-            },
-            return(v) {
-                steps.length = 0;
-                return { value: v, done: true };
-            }
-        };
-    },
-    actions: []
+    return {
+      // 使迭代器称为iterable
+      [Symbol.iterator] () {
+        return this;
+      },
+      next (...args) {
+        if (steps.length > 0) {
+          const res = steps.shift()(...args);
+          return { value: res, done: false };
+        } else {
+          return { done: true };
+        }
+      },
+      return (v) {
+        steps.length = 0;
+        return { value: v, done: true };
+      }
+    };
+  },
+  actions: []
 };
 
 task.actions.push(
-    function step1(x) {
-        console.log('step 1:', x);
-        return x * 2;
-    },
-    function step2(x, y) {
-        console.log('step 2:', x, y);
-        return x + y * 2;
-    },
-    function step3(x, y, z) {
-        console.log('step 3:', x, y, z);
-        return x * y + z;
-    }
+  function step1 (x) {
+    console.log('step 1:', x);
+    return x * 2;
+  },
+  function step2 (x, y) {
+    console.log('step 2:', x, y);
+    return x + y * 2;
+  },
+  function step3 (x, y, z) {
+    console.log('step 3:', x, y, z);
+    return x * y + z;
+  }
 );
 
-var it = task[Symbol.iterator]();
+const it = task[Symbol.iterator]();
 console.log(it.next(10));
 console.log(it.next(20, 50));
-console.log(it.next(20, 50 , 120));
+console.log(it.next(20, 50, 120));
 console.log(it.next());
-
