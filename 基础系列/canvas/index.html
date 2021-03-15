@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body,
+        html {
+            background-color: aqua;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #canvas {
+            position: relative;
+            height: 600px;
+            width: 600px;
+            margin: 0 auto;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script>
+        (() => {
+            const canvasElement = document.getElementById('canvas');
+            const canvasConext = canvasElement.getContext('2d'),
+                moveHandler = (e) => {
+                    start.x = e.offsetX;
+                    start.y = e.offsetY;
+                    canvasConext.lineTo(start.x, start.y);
+                    canvasConext.stroke();
+                    ws.send(JSON.stringify(start));
+
+                },
+                mouseUpHandler = (e) => {
+                    canvasElement.removeEventListener('mousemove', moveHandler);
+                    canvasElement.removeEventListener('mouseup', mouseUpHandler);
+                },
+                ws = new WebSocket("ws://localhost:8124"),
+                start = {
+                    x: 0,
+                    y: 0,
+                    id: 0,
+                };
+            canvasElement.addEventListener('mousedown', (e) => {
+                start.x = e.offsetX;
+                start.y = e.offsetY;
+                canvasConext.beginPath();
+                canvasConext.lineWidth = 1;
+                canvasConext.strokeStyle = "black";
+                canvasConext.moveTo(start.x, start.y);
+                canvasElement.addEventListener('mousemove', moveHandler);
+                canvasElement.addEventListener('mouseup', mouseUpHandler);
+            });
+            ws.onopen = function () {
+                ws.send(JSON.stringify(start));
+                ws.onmessage = (event) => {
+                    console.log(event.data);
+                }
+                ws.onclose = (event) => {
+                    console.log(event.data);
+                }
+            }
+
+            window.onbeforeunload = function () {
+                ws.close();
+            }
+        })();
+    </script>
+</body>
+
+</html>

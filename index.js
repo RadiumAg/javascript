@@ -2,12 +2,12 @@
 //     i: 1,
 //     toString() {
 //       return a.i++;
-//     } 
+//     }
 //   }
 
 // if (a == 1 && a == 2 && a == 3) {
 //     console.log(1);
-// }    
+// }
 // async function b() {
 //     console.log(3);
 // }
@@ -21,18 +21,17 @@
 // // a();
 // console.log(1);
 
-
 // const arr1 = [1];
 // const arr2 = [1];
-// const flagList = [],map = new Map(),map1 = new Map();
+// const flagList = [], map = new Map(), map1 = new Map();
 // let flag;
 
-// arr1.forEach((value,index)=>{
-//     map.set(value,value);
+// arr1.forEach((value, index) => {
+//     map.set(value, value);
 // });
 
-// arr2.forEach((value,index)=>{
-//     map1.set(value,value);
+// arr2.forEach((value, index) => {
+//     map1.set(value, value);
 // });
 
 // Array.from(map).forEach((_value, index) => {
@@ -49,14 +48,44 @@
 //     console.log(false);
 // }
 
-const string = `window.code=200;
-window.redirect_uri="https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=ATNeAXre24hUslCvD-g-65oH@qrticket_0&uuid=AeZNlHWrKA==&lang=zh_CN&scan=1615097837";`
-function getRediretUrl(value='') {
-    return value.slice(
-        value.indexOf('window.redirect_uri') + 'window.redirect_uri'.length + 2,
-        value.lastIndexOf(';') - 1,
-      );
-  }
-  
-console.log(getRediretUrl(string));
+// async function a2() {
+// }
 
+// async function a1() {
+//     await a2();  // then后边的事情
+// }
+
+// async function a3() {
+// }
+
+// async function a4() {
+//     await a3();  // then后边的事情
+// }
+
+// Promise.all([a1,a4]).then(x=>{
+//     console.log(x)
+// });
+// console.log(4);
+
+// let a = [1, 2, 4];
+// a.forEach((x, i, b) => {
+//     console.log(b);
+//     b.splice(x, 1);
+// });
+
+// let net = require('net');
+const a = {
+  s_103:
+    {
+      next () {
+        return { value: 0, done: false };
+      },
+      [Symbol.iterator] () {
+        return this;
+      },
+      company_name: '山牛商城单用户分销版',
+      id: '103',
+      money: '32000.00',
+      product_name: '山牛商城单用户分销版'
+    }
+};

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    async function sleep() {
+      new Promise((r, v) => {
+        new setTimeout(() => {
+          r(1);
+        }, 500);
+      })
+    }
+
+    function a() {
+      let a = 10000000000000000000000000000000000000000000000000000000000;
+      return function () {
+        let b = a + 1;
+      }
+    }
+
+    for (let index = 0; index < 10000; index++) {
+      window.b = a();
+    }
+  </script>
+</body>
