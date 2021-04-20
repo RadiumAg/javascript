@@ -164,6 +164,7 @@ export default class EZSwiper extends Component<{}> {
     | private api
     | -------------------------------------------------------
     */
+   // 动画率
     updateAnimated(currentPageFloat, scrollIndex) {
         const { scaleArray, translateArray } = this.state;
         for (let i = 0; i < this.ezswiper.count + 2; i++) {
@@ -282,13 +283,14 @@ export default class EZSwiper extends Component<{}> {
     | -------------------------------------------------------
     */
     getRenderRowViews() {
+        // scaleArray为缩小动画率 ， translateArray 为移动率
         const { scaleArray, translateArray } = this.state;
         const { width, height } = this.props;
 
         const count = this.ezswiper.count + (this.ezswiper.loop ? 2 : 0);
         const margin = (this.ezswiper.side - this.ezswiper.cardParams.cardSide) / 2;
         const views = [];
-        const maxIndex = this.ezswiper.count - 1
+        const maxIndex = this.ezswiper.count - 1   
 
         for (let i = 0; i < count; i++) {
             const dataSourceIndex = this.ezswiper.loop ? (i + maxIndex) % this.ezswiper.count : i
