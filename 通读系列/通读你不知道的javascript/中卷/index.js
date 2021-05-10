@@ -6,7 +6,6 @@ console.log(Object.prototype.toString.call(undefined));
 
 // 封装对象包装
 const a = 'abc';
-a.length; // 3
 a.toUpperCase(); // "ABC"
 
 function Jquery () {
@@ -16,5 +15,4 @@ Jquery.init.prototype = Jquery.prototype;
 Jquery();
 console.log(Jquery());
 
-console.log(new Jquery.prototype.constructor())
-;
+console.log(new Jquery.prototype.constructor());
