@@ -1,6 +1,6 @@
 
-const w = [1, 4, 3];
-const v = [1500, 3000, 2000];
+const w = [4, 3, 1];
+const v = [3000, 2000, 1500];
 const T = 4;// 背包重量
 const dp = [];
 
