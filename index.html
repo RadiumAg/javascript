@@ -9,23 +9,909 @@
 
 <body>
   <script>
-    async function sleep() {
-      new Promise((r, v) => {
-        new setTimeout(() => {
-          r(1);
-        }, 500);
-      })
-    }
-
-    function a() {
-      let a = 10000000000000000000000000000000000000000000000000000000000;
-      return function () {
-        let b = a + 1;
+    
+let test = {
+  "status": 0,
+  "success": true,
+  "msg": "ok",
+  "response": [
+      {
+          "id": 489741155,
+          "name": "总经办",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": []
+      },
+      {
+          "id": 468847103,
+          "name": "朴西事业部",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": [
+              {
+                  "id": 467814294,
+                  "name": "品牌部",
+                  "parentid": 468847103,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 469184127,
+                  "name": "产品部",
+                  "parentid": 468847103,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 469264150,
+                  "name": "研发部",
+                  "parentid": 468847103,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": [
+                      {
+                          "id": 488950428,
+                          "name": "研发设计二组",
+                          "parentid": 469264150,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 488968510,
+                          "name": "研发设计一组",
+                          "parentid": 469264150,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 489755178,
+                          "name": "开发组",
+                          "parentid": 469264150,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 469692127,
+                  "name": "设计部",
+                  "parentid": 468847103,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": [
+                      {
+                          "id": 477761635,
+                          "name": "设计二组",
+                          "parentid": 469692127,
+                          "createDeptGroup": false,
+                          "autoAddUser": false,
+                          "children": null
+                      },
+                      {
+                          "id": 478345555,
+                          "name": "设计一组",
+                          "parentid": 469692127,
+                          "createDeptGroup": false,
+                          "autoAddUser": false,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 488626843,
+                  "name": "采购部",
+                  "parentid": 468847103,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 468752115,
+          "name": "启物事业部",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": [
+              {
+                  "id": 469221967,
+                  "name": "品牌部",
+                  "parentid": 468752115,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 469484789,
+                  "name": "研发部",
+                  "parentid": 468752115,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 469577982,
+                  "name": "设计部",
+                  "parentid": 468752115,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 469790114,
+                  "name": "产品部",
+                  "parentid": 468752115,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 469695119,
+          "name": "樱禾事业部",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": []
+      },
+      {
+          "id": 469264149,
+          "name": "良橙事业部",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": []
+      },
+      {
+          "id": 423484074,
+          "name": "国内电商事业部",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": [
+              {
+                  "id": 424003859,
+                  "name": "HRBP",
+                  "parentid": 423484074,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 488860097,
+                  "name": "设计部",
+                  "parentid": 423484074,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 431498225,
+                  "name": "市场营销部",
+                  "parentid": 423484074,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": [
+                      {
+                          "id": 431418670,
+                          "name": "营销策划组",
+                          "parentid": 431498225,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 431522255,
+                          "name": "数据赋能组",
+                          "parentid": 431498225,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 488663782,
+                  "name": "客服服务部",
+                  "parentid": 423484074,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": [
+                      {
+                          "id": 489086005,
+                          "name": "售前组",
+                          "parentid": 488663782,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 488404967,
+                          "name": "售后组",
+                          "parentid": 488663782,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 488315974,
+                          "name": "抖音组",
+                          "parentid": 488663782,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 488477810,
+                          "name": "质培组",
+                          "parentid": 488663782,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 489928138,
+                          "name": "售中组",
+                          "parentid": 488663782,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 490007105,
+                          "name": "商务组",
+                          "parentid": 488663782,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 423559081,
+                  "name": "产品管理部",
+                  "parentid": 423484074,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 423504097,
+                  "name": "社群电商部",
+                  "parentid": 423484074,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": [
+                      {
+                          "id": 428124047,
+                          "name": "用户部",
+                          "parentid": 423504097,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 428127033,
+                          "name": "运营部",
+                          "parentid": 423504097,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 423646061,
+                  "name": "平台电商部",
+                  "parentid": 423484074,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": [
+                      {
+                          "id": 489498810,
+                          "name": "京东猫超组",
+                          "parentid": 423646061,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 489979609,
+                          "name": "拼多多组",
+                          "parentid": 423646061,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 490028591,
+                          "name": "天猫组",
+                          "parentid": 423646061,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 423846083,
+                  "name": "商务拓展部",
+                  "parentid": 423484074,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": [
+                      {
+                          "id": 427783813,
+                          "name": "BD部",
+                          "parentid": 423846083,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 427746957,
+                          "name": "分销运营部",
+                          "parentid": 423846083,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 427942776,
+                          "name": "三方运营部",
+                          "parentid": 423846083,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 423864099,
+                  "name": "新媒体电商部",
+                  "parentid": 423484074,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": [
+                      {
+                          "id": 429329846,
+                          "name": "直播部",
+                          "parentid": 423864099,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 468868167,
+                          "name": "短视频内容部",
+                          "parentid": 423864099,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 488428910,
+                          "name": "推广部",
+                          "parentid": 423864099,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 488584791,
+                          "name": "HRBP部",
+                          "parentid": 423864099,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 490339565,
+                          "name": "新媒体内容部",
+                          "parentid": 423864099,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              }
+          ]
+      },
+      {
+          "id": 488690710,
+          "name": "跨境电商事业部",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 488258958,
+                  "name": "亚马逊运营部",
+                  "parentid": 488690710,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488567751,
+                  "name": "速卖通运营部",
+                  "parentid": 488690710,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488646752,
+                  "name": "跨境市场部",
+                  "parentid": 488690710,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488713659,
+                  "name": "JUMIA运营部",
+                  "parentid": 488690710,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488955069,
+                  "name": "wish运营部",
+                  "parentid": 488690710,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 489059068,
+                  "name": "虾皮、lazada运营部",
+                  "parentid": 488690710,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 489040059,
+          "name": "国内贸易事业部",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 488548813,
+                  "name": "商超销售部",
+                  "parentid": 489040059,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488692795,
+                  "name": "1688运营部",
+                  "parentid": 489040059,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488722621,
+                  "name": "流通销售部",
+                  "parentid": 489040059,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 488345945,
+          "name": "运营管理中心",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 488305958,
+                  "name": "风控审计部",
+                  "parentid": 488345945,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 488504850,
+                  "name": "运营管理部",
+                  "parentid": 488345945,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 311978025,
+          "name": "行政服务中心",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 426115913,
+                  "name": "义乌办公区",
+                  "parentid": 311978025,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 426447144,
+                  "name": "杭州办公区",
+                  "parentid": 311978025,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 474918204,
+                  "name": "OA测试",
+                  "parentid": 311978025,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 480710132,
+                  "name": "IT信息部",
+                  "parentid": 311978025,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 407355766,
+          "name": "人力资源中心",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 428070398,
+                  "name": "招聘部",
+                  "parentid": 407355766,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 428081569,
+                  "name": "COE",
+                  "parentid": 407355766,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 448640655,
+                  "name": "HRBP",
+                  "parentid": 407355766,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 427720914,
+                  "name": "ssc",
+                  "parentid": 407355766,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 488232964,
+                  "name": "企业文化部",
+                  "parentid": 407355766,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 17706955,
+          "name": "财务管理中心",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 427753811,
+                  "name": "财务部",
+                  "parentid": 17706955,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": [
+                      {
+                          "id": 427730945,
+                          "name": "线上财务部",
+                          "parentid": 427753811,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 427933733,
+                          "name": "线下财务部",
+                          "parentid": 427753811,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 427817974,
+                  "name": "出纳部",
+                  "parentid": 17706955,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 427773911,
+                  "name": "往来会计部",
+                  "parentid": 17706955,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 92744472,
+          "name": "仓储物流中心",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": [
+              {
+                  "id": 92744473,
+                  "name": "仓储部",
+                  "parentid": 92744472,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": [
+                      {
+                          "id": 340594464,
+                          "name": "发货中心",
+                          "parentid": 92744473,
+                          "createDeptGroup": false,
+                          "autoAddUser": false,
+                          "children": null
+                      },
+                      {
+                          "id": 341124087,
+                          "name": "存储中心",
+                          "parentid": 92744473,
+                          "createDeptGroup": false,
+                          "autoAddUser": false,
+                          "children": null
+                      },
+                      {
+                          "id": 469127764,
+                          "name": "大客户部",
+                          "parentid": 92744473,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 469113820,
+                  "name": "综管部",
+                  "parentid": 92744472,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              },
+              {
+                  "id": 469383779,
+                  "name": "数据中心",
+                  "parentid": 92744472,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 92744475,
+          "name": "供应链管理中心",
+          "parentid": 1,
+          "createDeptGroup": true,
+          "autoAddUser": true,
+          "children": [
+              {
+                  "id": 131480192,
+                  "name": "采购部",
+                  "parentid": 92744475,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": [
+                      {
+                          "id": 450251453,
+                          "name": "二组",
+                          "parentid": 131480192,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 450777223,
+                          "name": "一组",
+                          "parentid": 131480192,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 476269382,
+                          "name": "三组",
+                          "parentid": 131480192,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 151577166,
+                  "name": "质检部",
+                  "parentid": 92744475,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": [
+                      {
+                          "id": 472823389,
+                          "name": "QC",
+                          "parentid": 151577166,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      },
+                      {
+                          "id": 474232004,
+                          "name": "QA",
+                          "parentid": 151577166,
+                          "createDeptGroup": true,
+                          "autoAddUser": true,
+                          "children": null
+                      }
+                  ]
+              },
+              {
+                  "id": 479020952,
+                  "name": "数据部",
+                  "parentid": 92744475,
+                  "createDeptGroup": true,
+                  "autoAddUser": true,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 489508185,
+          "name": "杭州朴天品牌视觉策划有限公司",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": [
+              {
+                  "id": 488903443,
+                  "name": "总经办",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489494205,
+                  "name": "精修部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489025437,
+                  "name": "摄像部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489853027,
+                  "name": "财务部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489561186,
+                  "name": "人事部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489369239,
+                  "name": "设计部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489472188,
+                  "name": "摄影部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              },
+              {
+                  "id": 489468156,
+                  "name": "行政部",
+                  "parentid": 489508185,
+                  "createDeptGroup": false,
+                  "autoAddUser": false,
+                  "children": []
+              }
+          ]
+      },
+      {
+          "id": 453185662,
+          "name": "朴家商学院",
+          "parentid": 1,
+          "createDeptGroup": false,
+          "autoAddUser": false,
+          "children": []
       }
-    }
+  ]
+};
 
-    for (let index = 0; index < 10000; index++) {
-      window.b = a();
-    }
+
+
+function mTrim(target) {
+  target.reduce((pre,current,currentIndex,arry)=>{
+    if( current['children'] ===null || current['children'].length === 0)
+       delete current['children'];
+    else if(current['children'].length >0)
+       mTrim(current['children']); 
+    return current;
+  },[])
+}
+
+mTrim(test.response);
+debugger
+console.log(test.response);
   </script>
 </body>

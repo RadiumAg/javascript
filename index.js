@@ -74,77 +74,17 @@
 // });
 
 // let net = require('net');
-const a = {
-  s_103:
-    {
-      next () {
-        return { value: 0, done: false };
-      },
-      [Symbol.iterator] () {
-        return this;
-      },
-      company_name: '山牛商城单用户分销版',
-      id: '103',
-      money: '32000.00',
-      product_name: '山牛商城单用户分销版'
-    }
-};
 
-const menus = [
-  {
-    modelshow: '1',
-    categorys: [{ name: 'PBJG', icon: null, label: '\u4E2D\u6807\u5019\u9009\u4EBA\u516C\u793A' }],
-    mcode: 'JYGCJS',
-    rmenuid: '59504971-0015-11e9-a06c-005056b31df8',
-    utime: '2018-12-15 10:58:50.0',
-    modelname: '\u5DE5\u7A0B\u5EFA\u8BBE',
-    name: '\u5DE5\u7A0B\u5EFA\u8BBE',
-    navshow: '1',
-    index: '2001',
-    id: 'a21fd0f9-5a92-11e9-82f2-005056b31df8',
-    type: '1',
-    isleaf: '1'
-  },
-  {
-    modelshow: '1',
-    categorys: [{ name: 'CGGG', icon: null, label: '\u91C7\u8D2D\u516C\u544A' },
-      { name: 'GZGG', icon: null, label: '\u66F4\u6B63\u516C\u544A' }, { name: 'JGGG', icon: null, label: '\u7ED3\u679C\u516C\u544A' }, { name: 'QYLX', icon: null, label: '\u5408\u540C\u516C\u544A' }, { name: 'ZZGG', icon: null, label: '\u6D41\u6807\u6216\u7EC8\u6B62\u516C\u544A' }, { name: 'CGYXGG', icon: null, label: '\u91C7\u8D2D\u610F\u5411\u516C\u544A' }],
-    mcode: 'JYZFCG',
-    rmenuid: '59504971-0015-11e9-a06c-005056b31df8',
-    utime: '2018-12-15 10:58:50.0',
-    modelname: '\u653F\u5E9C\u91C7\u8D2D',
-    name: '\u653F\u5E9C\u91C7\u8D2D',
-    navshow: '1',
-    index: '2002',
-    id: 'a2201cfc-5a92-11e9-82f2-005056b31df8',
-    type: '1',
-    isleaf: '1'
-  },
-  {
-    modelshow: '1',
-    categorys: [{ name: 'CRGG', icon: null, label: '\u51FA\u8BA9\u516C\u544A' }, { name: 'GGBG', icon: null, label: '\u516C\u544A\u53D8\u66F4' }, { name: 'CJZD', icon: null, label: '\u6210\u4EA4\u5B97\u5730' }, { name: 'ZZGG', icon: null, label: '\u6D41\u6807\u6216\u7EC8\u6B62\u516C\u544A' }],
-    mcode: 'JYTD',
-    rmenuid: '59504971-0015-11e9-a06c-005056b31df8',
-    utime: '2020-06-22 17:25:47.0',
-    modelname: '\u571F\u5730\u62DB\u62CD\u6302',
-    name: '\u571F\u5730\u62DB\u62CD\u6302',
-    navshow: '1',
-    index: '2003',
-    id: 'a2207ecc-5a92-11e9-82f2-005056b31df8',
-    type: '1',
-    isleaf: '1'
-  }];
-changeMenu();
 
-function changeMenu () {
-  const mcode = $('#menu').val();
-  let categorys = [];
-  for (let i = 0; i < menus.length; i++) {
-    const menu = menus[i];
-    if (menu.mcode === mcode) {
-      categorys = menu.categorys;
-      break;
-    }
-  }
-  $('#category').html('');
-}
+// async function a(){
+//   for (let index = 0; index <3; index++) {
+//     console.log("执行");
+//    let a =   await new Promise((resolve ,reject)=>{ 
+//      setTimeout(()=>{
+//       resolve(index);
+//      },Math.random()*2000) });
+//     console.log(a);
+//     }
+//   }
+
+//   a();
