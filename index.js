@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 
 function run (fn) {
   const gen = fn();
@@ -23,4 +21,3 @@ function * b () {
 }
 
 console.log(run(b));
->>>>>>> a5a9515e1536afa06d0a4584ebf5ff26bb152e77
