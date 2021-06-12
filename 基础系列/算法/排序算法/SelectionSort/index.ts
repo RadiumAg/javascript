@@ -1,9 +1,9 @@
 function selectionSort(arr: number[]) {
-    let len = arr.length;
+    const len = arr.length;
     let minIndex, temp;
     for (let i = 0; i < len - 1; i++) {
         minIndex = i;
-        //从i+1开始排序
+        // 从i+1开始排序
         for (let j = i + 1; j < len - 1; j++) {
             if (arr[j] < arr[minIndex]) {
                 minIndex = j;

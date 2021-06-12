@@ -1,4 +1,4 @@
-import { a } from './import';
+import { a } from './import.js';
 
 (() => {
   console.log(a);
