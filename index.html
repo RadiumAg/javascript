@@ -8,17 +8,8 @@
 </head>
 
 <body>
-  <script>
-   function c(){
-          console.log(this);
-   }
-   let a = {
-       b(){
-         c();
-       },
-       d:c
-   }
-   a.b();
-   a.d();
+  <div id="test" style="height:200px;display:none"></div>
+  <script defer>
+    console.log(document.getElementById('test').offsetHeight);
   </script>
 </body>
