@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- dom2 -->
+    <a id="anchor" href="https://www.baidu.com">跳转2</a>
+    <!-- dom0 -->
+    <a href="javascript:void 0;">跳转</a>
+    <a id="anchor" onclick="return false;" href="https://www.baidu.com">跳转3</a>
+    <a id="anchor" onclick="return rejectPre();" href="https://www.baidu.com">跳转4</a>
+
+    <script>
+        document.querySelector('#anchor').onclick = (e) => {
+            return false;
+        }
+
+        document.querySelector('#anchor').addEventListener('click',(e) => {
+            debugger
+            e.preventDefault();
+        })
+
+        function rejectPre() {
+            return false;
+        }
+
+    </script>
+</body>
+
+</html>
