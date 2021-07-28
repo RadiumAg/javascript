@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const createDOMFromString = (domString) => {
+            const div = document.createElement('div');
+            div.innerHTML = domString;
+            return div;
+        };
+
+        const mount = (component, wrapper) => {
+            wrapper.appendChild(component._renderDOM());
+            component.onStateChange = (oldEl, newEl) => {
+                wrapper.insertBefore(newEl, oldEl);
+                wrapper.removeChild(oldEl);
+            }
+        }
+
+        class Component {
+            state = undefined;
+            el = undefined;
+            render = undefined;
+
+            setState(state) {
+                const oldEl = this.el;
+                this.state = state;
+
+            }
+
+            _renderDOM() {
+                this.el = createDOMFromString(this.render());
+                if (this.onClick) {
+                    this.el.addEventListener('click', this.onClick.bind(this), false);
+                }
+                return this.el;
+            }
+        }
+
+        class LikeButton extends Component {
+            constructor() {
+                super();
+                this.state = {
+                    isLiked: false
+                };
+            }
+
+            onClick() {
+                this.setState({
+                    isLiked: !this.state.isLiked;
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
