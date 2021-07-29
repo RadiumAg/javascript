@@ -16,10 +16,10 @@
             return div;
         };
 
-        const mount = (component, wrapper) => {
+        const mount = (component,wrapper) => {
             wrapper.appendChild(component._renderDOM());
-            component.onStateChange = (oldEl, newEl) => {
-                wrapper.insertBefore(newEl, oldEl);
+            component.onStateChange = (oldEl,newEl) => {
+                wrapper.insertBefore(newEl,oldEl);
                 wrapper.removeChild(oldEl);
             }
         }
@@ -38,7 +38,7 @@
             _renderDOM() {
                 this.el = createDOMFromString(this.render());
                 if (this.onClick) {
-                    this.el.addEventListener('click', this.onClick.bind(this), false);
+                    this.el.addEventListener('click',this.onClick.bind(this),false);
                 }
                 return this.el;
             }
