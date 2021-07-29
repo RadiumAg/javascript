@@ -1,19 +1,12 @@
 import { useState } from "react";
 import "./App.css";
-import {} from "";
+import Clock from "./pages/挂载阶段的组件生命周期/index_one";
 
 function App() {
   let [state, setState] = useState(1);
   return (
     <div className="App">
-      <LikeButton unlikedText={state.toString()} />
-      <button
-        onClick={() => {
-          setState(++state);
-        }}
-      >
-        点击
-      </button>
+      <Clock />
     </div>
   );
 }
