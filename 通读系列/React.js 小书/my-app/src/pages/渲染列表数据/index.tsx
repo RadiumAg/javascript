@@ -1,4 +1,4 @@
-import { Component, ReactElement } from "react";
+import { Component } from "react";
 
 const users = [
   {
@@ -23,24 +23,20 @@ const users = [
   },
 ];
 
-class List extends Component<{}> {
+export class List extends Component<{}> {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(props: {}) {
     super(props);
   }
 
   render() {
-    const usersElements: ReactElement[] = [];
-    for (const user of users) {
-      usersElements.push(
-        <div>
-          <div>姓名:{user.username}</div>
-          <div>年龄:{user.age}</div>
-          <div>性别:{user.gender}</div>
-          <hr />
-        </div>
-      );
-    }
-
-    return <div>{usersElements}</div>;
+     
+     return <div>{ users.map((user,index)=>(
+      <div key={user.age}>
+        <div>姓名:{user.username}</div>
+        <div>年龄:{user.age}</div>
+        <div>性别:{user.gender}</div>
+        <hr />
+      </div>))}</div>;
   }
 }
