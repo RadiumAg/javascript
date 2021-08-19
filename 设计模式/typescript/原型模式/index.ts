@@ -27,7 +27,7 @@ class ComponentWithBackReference {
 
 
 function clientCode() {
-    const p1 = new Prototype();
+    const p1 = new Prototype();      
     p1.primitive = 245;
     p1.compoennt = new Date();
     p1.circularReference = new ComponentWithBackReference(p1);
