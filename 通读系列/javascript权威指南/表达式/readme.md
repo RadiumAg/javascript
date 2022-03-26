@@ -15,15 +15,15 @@ JavaScript中的一个短语，JavaScript会将其计算出一个结果。
 ##### 定义
 
 1. 常量,直接量
-
+   
    1.23  "hello"
 
 2. 关键字
-
+   
    true,false,null
 
 3. 变量
-
+   
    i  sum undefined(undefined是全局变量，和null不同，它不是一个关键字)
 
 #### 对象和数组的初始化表达式
@@ -38,15 +38,11 @@ JavaScript中的一个短语，JavaScript会将其计算出一个结果。
 
 `let  a = { x:2,y:-1 }`
 
-
-
 #### 函数定义表达式
 
 ```javascript
 const a = function(x) {}
 ```
-
-
 
 #### 属性访问表达式
 
@@ -54,8 +50,6 @@ const a = function(x) {}
 expression.identifier
 expression [ expression ]
 ```
-
-
 
 #### 调用表达式
 
@@ -65,15 +59,11 @@ expression [ expression ]
 
 `f(0)`
 
-
-
 #### 对象创建表达式
 
 **定义**
 
 创建一个对象并调用一个函数
-
-
 
 #### 左值
 
@@ -85,19 +75,12 @@ expression [ expression ]
 
 +出现字符串，优先会转换成字符串。
 
-
-
 #### in运算符
 
 如果右侧的对象拥有一个名为做操作数值的属性名，那么表达式返回true。
-
-
 
 #### instanceof运算符
 
 如果左侧的对象是右侧类的实例，则表达式返回true。
 
 **注意**：包含对父级的检测
-
-
-
