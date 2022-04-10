@@ -15,14 +15,8 @@ let sayHi = function func(who) {
 }
 ```
 
-
-
-
-
 # 深入理解箭头函数
 
 箭头函数没有`this`,如果访问`this`, 则会从外部获取。
-
-
 
 
