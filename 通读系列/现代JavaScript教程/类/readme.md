@@ -23,3 +23,7 @@
 # 
 
 # 类检查"instanceof"
+
+`instanceof` 操作符用于检查一个对象是否属于某个特定的`class` 。
+
+
