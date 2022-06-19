@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let buffer = new ArrayBuffer(16); // 创建一个长度为 16 的 buffer
+
+        let view = new Uint32Array(buffer); // 将 buffer   视为一个 32 位整数的序列
+
+        console.log(Uint32Array.BYTES_PER_ELEMENT); // 每个整数 4 个字节
+
+        console.log(view.length); // 4，它存储了 4 个整数
+        console.log(view.byteLength); // 16，字节中的大小
+
+        // 让我们写入一个值
+        view[0] = 123456;
+
+        // 遍历值
+        for (let num of view) {
+            console.log(num); // 123456，然后 0，0，0（一共 4 个值）
+        }
+    </script>
+
+</body>
+
+</html>
