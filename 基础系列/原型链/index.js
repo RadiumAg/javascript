@@ -54,7 +54,6 @@
 })();
 
 // 组合继承
-
 (() => {
   function Supertype (name) {
     this.name = name;
@@ -77,9 +76,9 @@
 
   const instance1 = new SubType('Nicholas', 29);
   instance1.colors.push('black');
-  console.log(instance1.colors);
-  instance1.sayName();
-  instance1.sayAge();
+  // console.log(instance1.colors);
+  // instance1.sayName();
+  // instance1.sayAge();
 
   // const instance2 = new SubType('Greg', 27);
   // console.log(instance2.colors);
@@ -87,6 +86,7 @@
   // instance1.sayAge();
 })();
 
+// 寄生组合
 (() => {
   function object (o) {
     function F () {}
@@ -106,5 +106,50 @@
   const yetAnotherPerson = object(person);
   yetAnotherPerson.name = 'Linda';
   yetAnotherPerson.friends.push('Barbie');
-  console.log(person.friends);
+  // console.log(person.friends);
+})();
+
+// 寄生组合式继承
+(() => {
+  function inheritPrototype (subType = function () { }, superType = function () { }) {
+    const prototype = Object.create(superType.prototype);
+    prototype.constructor = subType;
+    subType.prototype = prototype;
+  }
+
+  function SuperType (name) {
+    this.name = name;
+    this.colors = ['red', 'blue', 'green'];
+  }
+
+  SuperType.prototype.sayName = function () {
+    console.log(this.name);
+  };
+
+  function SubType (name, age) {
+    SuperType.call(this);
+    this.age = age;
+  }
+
+  inheritPrototype(SubType, SuperType);
+  SubType.prototype.sayAge = function () {
+    console.log(this.age);
+  };
+
+  const instance1 = new SubType('Radium', 23232323);
+  instance1.sayAge();
+})();
+
+(() => {
+  class A {
+    a = 1;
+    static getB () {
+      console.log(this.a);
+    }
+    getB() { 
+      console.log(this.a)
+    }
+  }
+  A.getB();
+  new A().getB();
 })();
