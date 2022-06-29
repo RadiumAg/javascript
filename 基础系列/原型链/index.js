@@ -153,3 +153,17 @@
   A.getB();
   new A().getB();
 })();
+
+// 静态块
+
+(() => {
+  class A {
+    static a = 1;
+    static b = 2;
+    static {
+      this.a = 3;
+    }
+    
+  }
+
+})();
