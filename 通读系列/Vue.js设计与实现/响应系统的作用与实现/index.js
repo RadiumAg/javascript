@@ -1,10 +1,26 @@
 
 let activeEffect;
+// 是否正在刷新
+let isFlushing = false;
 
+// 调度队列
+const jobQueue = new Set();
+const p = Promise.resolve();
 const effectStack = [];
 const bucket = new WeakMap(); // { key: { key: Set(EffectFn) } }
 
-const data = { text: 'hello world' };
+const data = { text: 'hello world', foo: 1 };
+
+function flushJob () {
+  if (isFlushing) return;
+  isFlushing = true;
+
+  p.then(() => {
+    jobQueue.forEach(job => job());
+  }).finally(() => {
+    isFlushing = false;
+  });
+}
 
 const obj = new Proxy(data, {
   // get的时候触发
@@ -52,23 +68,32 @@ function trigger (target, key) {
         effectsToRun.add(effectFn);
       }
     });
-  effectsToRun.forEach(effectFn => effectFn());
+  effectsToRun.forEach(effectFn => {
+    if (effectFn.options.scheduler) {
+      effectFn.options.scheduler(effectFn);
+    } else { effectFn(); }
+  });
 }
 
-// 相当于watch
-function effect (fn) {
+// 相当于watch,options为调度配置
+function effect (fn, options) {
   const effectFn = () => {
     cleanup(effectFn);
     activeEffect = effectFn;
     effectStack.push(effectFn);
     // 假设是track，触发track
-    fn();
+    const res = fn();
     // 恢复到上一个
     effectStack.pop();
     activeEffect = effectStack[effectStack.length - 1];
+    return res;
   };
+  effectFn.options = options;
   effectFn.deps = [];
-  effectFn();
+  if (!options.lazy) {
+    effectFn();
+  }
+  return effectFn();
 }
 
 function cleanup (effectFn) {
@@ -80,22 +105,32 @@ function cleanup (effectFn) {
   effectFn.deps.length = 0;
 }
 
-let temp1, temp2;
+function computed (getter) {
+  const effectFn = effect(getter, { lazy: true });
 
-// 收集以来函数
-effect(function effectFn1 () {
-  console.log('effectFn1 执行');
+  const obj = {
+    get value () {
+      return effectFn();
+    }
+  };
 
-  effect(function effectFn2 () {
-    console.log('effectFn2 执行');
-    temp2 = obj.bar;
-  });
+  return obj;
+}
 
-  temp1 = obj.foo;
+// 收集依赖函数
+effect(() => {
+  console.log(obj.foo);
+}, {
+  scheduler (fn) {
+    jobQueue.add(fn);
+    flushJob();
+  }
 });
 
-console.log(bucket);
+// console.log(bucket);
 
-setTimeout(() => {
-  obj.foo = 'hello vue3';
-}, 1000);
+// setTimeout(() => {
+//   obj.foo = 'hello vue3';
+// }, 1000);
+obj.foo = obj.foo + 1;
+obj.foo = obj.foo + 1;
