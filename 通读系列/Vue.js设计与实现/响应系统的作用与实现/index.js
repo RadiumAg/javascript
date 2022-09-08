@@ -18,6 +18,7 @@ const obj = new Proxy(data, {
   }
 });
 
+// 取值get
 function track (target, key) {
   if (!activeEffect) return target[key];
   let depsMap = bucket.get(target);
@@ -38,7 +39,7 @@ function track (target, key) {
   return target[key];
 }
 
-// 触发函数
+// 赋值set
 function trigger (target, key) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
@@ -62,6 +63,7 @@ function effect (fn) {
     effectStack.push(effectFn);
     // 假设是track，触发track
     fn();
+    // 恢复到上一个
     effectStack.pop();
     activeEffect = effectStack[effectStack.length - 1];
   };
