@@ -106,11 +106,28 @@ function cleanup (effectFn) {
 }
 
 function computed (getter) {
-  const effectFn = effect(getter, { lazy: true });
+  let value;
+  let dirty = true;
+
+  const effectFn = effect(getter, {
+    lazy: true,
+    scheduler () {
+      if (!dirty) {
+        dirty = true;
+        trigger(obj, 'value');
+      }
+    }
+  });
 
   const obj = {
     get value () {
-      return effectFn();
+      value = effectFn();
+      if (dirty) {
+        value = effectFn();
+        dirty = false;
+        trigger(obj, 'value');
+      }
+      return value;
     }
   };
 
@@ -134,3 +151,5 @@ effect(() => {
 // }, 1000);
 obj.foo = obj.foo + 1;
 obj.foo = obj.foo + 1;
+
+computed(() => obj.foo);
