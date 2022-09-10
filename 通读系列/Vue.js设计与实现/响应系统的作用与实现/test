@@ -1,0 +1,14 @@
+import { baseHandle, computed, effect, useEffect } from ".";
+
+const data = { text: 'hello world', foo: 1 };
+
+useEffect(() => {
+    console.log(data.foo);
+})
+
+const obj = new Proxy(data, baseHandle)
+obj.foo = obj.foo + 1;
+obj.foo = obj.foo + 1;
+
+
+computed(() => obj.foo);

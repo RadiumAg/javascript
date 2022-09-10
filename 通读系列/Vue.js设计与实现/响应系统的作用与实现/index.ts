@@ -1,17 +1,21 @@
-
-let activeEffect;
+let activeEffect: EffectFn;
 // 是否正在刷新
 let isFlushing = false;
 
+type EffectFn = {
+  (): any;
+  deps: [];
+  options: any;
+}
+
+
 // 调度队列
-const jobQueue = new Set();
+const jobQueue = new Set<Function>();
 const p = Promise.resolve();
-const effectStack = [];
-const bucket = new WeakMap(); // { key: { key: Set(EffectFn) } }
+const effectStack: EffectFn[] = [];
+const bucket = new WeakMap<Object, Map<string, Set<EffectFn>>>(); // { key: { key: Set(EffectFn) } }
 
-const data = { text: 'hello world', foo: 1 };
-
-function flushJob () {
+function flushJob() {
   if (isFlushing) return;
   isFlushing = true;
 
@@ -22,20 +26,24 @@ function flushJob () {
   });
 }
 
-const obj = new Proxy(data, {
+
+export const baseHandle = {
   // get的时候触发
-  get (target, key) {
+  get(target, key) {
     track(target, key);
     return target[key];
   },
-  set (target, key, newVal) {
+  set(target, key, newVal) {
     target[key] = newVal;
     trigger(target, key);
+    return true;
   }
-});
+}
+
+
 
 // 取值get
-function track (target, key) {
+function track(target, key) {
   if (!activeEffect) return target[key];
   let depsMap = bucket.get(target);
 
@@ -50,13 +58,14 @@ function track (target, key) {
   }
 
   deps.add(activeEffect);
+  // 将依赖集合set放到副作用函数当中去
   activeEffect.deps.push(deps);
 
   return target[key];
 }
 
 // 赋值set
-function trigger (target, key) {
+function trigger(target, key) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const effects = depsMap.get(key);
@@ -76,8 +85,9 @@ function trigger (target, key) {
 }
 
 // 相当于watch,options为调度配置
-function effect (fn, options) {
-  const effectFn = () => {
+export function effect(fn, options) {
+  const effectFn: EffectFn = () => {
+    // 副作用执行时清除
     cleanup(effectFn);
     activeEffect = effectFn;
     effectStack.push(effectFn);
@@ -89,6 +99,7 @@ function effect (fn, options) {
     return res;
   };
   effectFn.options = options;
+  // 赋予初始值
   effectFn.deps = [];
   if (!options.lazy) {
     effectFn();
@@ -96,7 +107,7 @@ function effect (fn, options) {
   return effectFn();
 }
 
-function cleanup (effectFn) {
+function cleanup(effectFn) {
   for (let i = 0; i > effectFn.deps.length; i++) {
     const deps = effectFn.deps[i];
     deps.delete(effectFn);
@@ -105,13 +116,13 @@ function cleanup (effectFn) {
   effectFn.deps.length = 0;
 }
 
-function computed (getter) {
+export function computed(getter) {
   let value;
   let dirty = true;
 
   const effectFn = effect(getter, {
     lazy: true,
-    scheduler () {
+    scheduler() {
       if (!dirty) {
         dirty = true;
         trigger(obj, 'value');
@@ -120,7 +131,7 @@ function computed (getter) {
   });
 
   const obj = {
-    get value () {
+    get value() {
       value = effectFn();
       if (dirty) {
         value = effectFn();
@@ -135,21 +146,11 @@ function computed (getter) {
 }
 
 // 收集依赖函数
-effect(() => {
-  console.log(obj.foo);
-}, {
-  scheduler (fn) {
-    jobQueue.add(fn);
-    flushJob();
-  }
-});
-
-// console.log(bucket);
-
-// setTimeout(() => {
-//   obj.foo = 'hello vue3';
-// }, 1000);
-obj.foo = obj.foo + 1;
-obj.foo = obj.foo + 1;
-
-computed(() => obj.foo);
+export const useEffect = (fn) => {
+  effect(fn, {
+    scheduler(fn) {
+      jobQueue.add(fn);
+      flushJob();
+    }
+  });
+}
