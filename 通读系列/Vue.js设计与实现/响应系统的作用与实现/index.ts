@@ -4,13 +4,18 @@ let isFlushing = false;
 
 type EffectFn = {
   (): any;
-  deps: [];
-  options: any;
+  deps: Set<EffectFn>[];
+  options: Options;
+}
+
+type Options = {
+  lazy?: boolean
+  scheduler: (fn) => void
 }
 
 
 // 调度队列
-const jobQueue = new Set<Function>();
+const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
 const effectStack: EffectFn[] = [];
 const bucket = new WeakMap<Object, Map<string, Set<EffectFn>>>(); // { key: { key: Set(EffectFn) } }
@@ -64,8 +69,8 @@ function track(target, key) {
   return target[key];
 }
 
-// 赋值set
-function trigger(target, key) {
+// 触发
+function trigger(target, key: string) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const effects = depsMap.get(key);
@@ -85,13 +90,13 @@ function trigger(target, key) {
 }
 
 // 相当于watch,options为调度配置
-export function effect(fn, options) {
+export function effect(fn: Function, options: Options) {
   const effectFn: EffectFn = () => {
     // 副作用执行时清除
     cleanup(effectFn);
     activeEffect = effectFn;
     effectStack.push(effectFn);
-    // 假设是track，触发track
+    // 触发track
     const res = fn();
     // 恢复到上一个
     effectStack.pop();
@@ -104,7 +109,7 @@ export function effect(fn, options) {
   if (!options.lazy) {
     effectFn();
   }
-  return effectFn();
+  return effectFn;
 }
 
 function cleanup(effectFn) {
@@ -143,6 +148,43 @@ export function computed(getter) {
   };
 
   return obj;
+}
+
+// seen避免循环引用
+function traverse(value, seen = new Set()) {
+  if (typeof value !== 'object' || value === null || seen.has
+    (value)) return
+
+  seen
+    .add(value);
+  for (const k in value) {
+    traverse(value[k], seen)
+  }
+
+  return value
+}
+
+type WatchOptions = {
+  immediate: boolean
+}
+
+export function watch(source, cb, options: WatchOptions) {
+  let getter;
+  if (typeof source === 'function') {
+    getter = source
+  } else {
+    getter = () => traverse(source)
+  }
+
+  let oldValue, newValue
+
+  const effectFn = effect(() => getter(), {
+    scheduler() {
+      newValue = effectFn()
+      cb(newValue, oldValue)
+      oldValue = newValue
+    }
+  })
 }
 
 // 收集依赖函数
