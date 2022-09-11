@@ -13,7 +13,6 @@ type Options = {
   scheduler: (fn) => void
 }
 
-
 // 调度队列
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
@@ -31,21 +30,18 @@ function flushJob() {
   });
 }
 
-
 export const baseHandle = {
   // get的时候触发
-  get(target, key) {
+  get(target, key, receiver) {
     track(target, key);
-    return target[key];
+    return Reflect.get(target, key, receiver);
   },
-  set(target, key, newVal) {
-    target[key] = newVal;
+  set(target, key, newVal, receiver) {
     trigger(target, key);
-    return true;
+    return Reflect.set(target, key, receiver)
+      ;
   }
 }
-
-
 
 // 取值get
 function track(target, key) {
@@ -165,7 +161,8 @@ function traverse(value, seen = new Set()) {
 }
 
 type WatchOptions = {
-  immediate: boolean
+  immediate: boolean;
+  flush: 'post'
 }
 
 export function watch(source, cb, options: WatchOptions) {
@@ -177,14 +174,38 @@ export function watch(source, cb, options: WatchOptions) {
   }
 
   let oldValue, newValue
+  let cleanup
+
+  function onInvalidate(fn) {
+    cleanup = fn
+  }
+
+  const job = () => {
+    newValue = effectFn()
+    if (cleanup) {
+      cleanup()
+    }
+    cb(newValue, oldValue, onInvalidate)
+    oldValue = newValue
+  }
 
   const effectFn = effect(() => getter(), {
     scheduler() {
-      newValue = effectFn()
-      cb(newValue, oldValue)
-      oldValue = newValue
+      if (options.flush === 'post') {
+        const p = Promise.resolve()
+        p.then(job)
+      } else {
+        job();
+      }
     }
-  })
+  }
+  )
+
+  if (options.immediate) {
+    job()
+  } else {
+    oldValue = effectFn();
+  }
 }
 
 // 收集依赖函数
