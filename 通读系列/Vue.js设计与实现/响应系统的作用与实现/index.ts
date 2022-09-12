@@ -1,7 +1,3 @@
-let activeEffect: EffectFn;
-// 是否正在刷新
-let isFlushing = false;
-
 type EffectFn = {
   (): any;
   deps: Set<EffectFn>[];
@@ -13,11 +9,21 @@ type Options = {
   scheduler: (fn) => void
 }
 
+enum TriggerType {
+  SET,
+  ADD,
+  DELETE
+}
+
+let activeEffect: EffectFn;
+// 是否正在刷新
+let isFlushing = false;
 // 调度队列
+const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
 const effectStack: EffectFn[] = [];
-const bucket = new WeakMap<Object, Map<string, Set<EffectFn>>>(); // { key: { key: Set(EffectFn) } }
+const bucket = new WeakMap<Object, Map<string | symbol, Set<EffectFn>>>(); // { key: { key: Set(EffectFn) } }
 
 function flushJob() {
   if (isFlushing) return;
@@ -30,17 +36,52 @@ function flushJob() {
   });
 }
 
-export const baseHandle = {
-  // get的时候触发
-  get(target, key, receiver) {
-    track(target, key);
-    return Reflect.get(target, key, receiver);
-  },
-  set(target, key, newVal, receiver) {
-    trigger(target, key);
-    return Reflect.set(target, key, receiver)
-      ;
-  }
+export const getBaseHandle = (isShallow = false) => {
+  return {
+    // get的时候触发
+    get(target, key, receiver) {
+      if (key === 'raw') {
+        return target
+      }
+      const res = Reflect.get(target, key, receiver);
+      track(target, key);
+      if (isShallow) {
+        return res
+      }
+      if (typeof res === 'object' && res !== null) {
+        return reactive(res)
+      }
+
+      return res
+    },
+    set(target, key, newVal, receiver) {
+      const oldVal = target[key]
+      const type = Object.prototype.hasOwnProperty.call
+        (target, key) ? TriggerType.SET : TriggerType.ADD
+      if (target === receiver.raw) {
+        if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
+          trigger(target, key, type);
+        }
+      }
+      return Reflect.set(target, key, receiver);
+    },
+    has(target, key) {
+      track(target, key)
+      return Reflect.has(target, key)
+    },
+    ownKeys(target) {
+      track(target, ITERATE_KEY)
+      return Reflect.ownKeys(target)
+    },
+    deleteProperty(target, key) {
+      const hadKey = Object.prototype.hasOwnProperty.call(target, key)
+      const res = Reflect.deleteProperty(target, key)
+      if (res && hadKey) {
+        trigger(target, key, TriggerType.DELETE)
+      }
+      return res
+    }
+  } as ProxyHandler<any>
 }
 
 // 取值get
@@ -66,11 +107,11 @@ function track(target, key) {
 }
 
 // 触发
-function trigger(target, key: string) {
+function trigger(target, key: string | symbol, type?: TriggerType) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const effects = depsMap.get(key);
-
+  const iterateEffects = depsMap.get(ITERATE_KEY)
   const effectsToRun = new Set(effects);
   effects &&
     effects.forEach(effectFn => {
@@ -78,6 +119,15 @@ function trigger(target, key: string) {
         effectsToRun.add(effectFn);
       }
     });
+
+  // 当操作类型为ADD或DELETE时，需要触发与ITERATE_KEY相关的副作用函数执行
+  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
+    iterateEffects && iterateEffects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+  }
   effectsToRun.forEach(effectFn => {
     if (effectFn.options.scheduler) {
       effectFn.options.scheduler(effectFn);
@@ -106,6 +156,10 @@ export function effect(fn: Function, options: Options) {
     effectFn();
   }
   return effectFn;
+}
+
+function createReactive<T extends Object>(obj: T, isShallow = false) {
+  return new Proxy(obj, getBaseHandle(isShallow))
 }
 
 function cleanup(effectFn) {
@@ -144,6 +198,15 @@ export function computed(getter) {
   };
 
   return obj;
+}
+
+export function reactive<T extends Object>(obj: T) {
+  return createReactive<T>(obj,)
+}
+
+
+export function shallowReactive<T extends Object>(obj: T) {
+  return createReactive(obj, true)
 }
 
 // seen避免循环引用
