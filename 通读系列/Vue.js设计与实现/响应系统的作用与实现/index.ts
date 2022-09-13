@@ -19,6 +19,7 @@ let activeEffect: EffectFn;
 // 是否正在刷新
 let isFlushing = false;
 // 调度队列
+const reactiveMap = new Map();
 const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
@@ -27,6 +28,17 @@ const bucket = new WeakMap<
   Record<string, unknown>,
   Map<string | symbol, Set<EffectFn>>
 >(); // { key: { key: Set(EffectFn) } }
+const originMethod = Array.prototype.includes;
+const arrayIntrumentations = {
+  includes(...args) {
+    let res = originMethod.apply(this, args);
+    if (res === false) {
+      // res为false说明没找到，通过this.raw拿到原始数组，再去其中找到并更新res值
+      res = originMethod.apply(this.raw, args);
+    }
+    return res;
+  },
+};
 
 function flushJob() {
   if (isFlushing) return;
@@ -46,9 +58,19 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
       if (key === 'raw') {
         return target;
       }
-      if (!isReadonly) {
+
+      if (
+        Array.isArray(target) &&
+        Object.prototype.hasOwnProperty.call(arrayIntrumentations, key)
+      ) {
+        // 添加判断，如果key的类型是symbol，则不进行追踪
+        return Reflect.get(arrayIntrumentations, key, receiver);
+      }
+
+      if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
       }
+
       const res = Reflect.get(target, key, receiver);
       if (isShallow) {
         return res;
@@ -209,8 +231,8 @@ export function effect(fn: Function, options: Options) {
 
 function createReactive<T extends Record<string, unknown>>(
   obj: T,
-  isShallow,
-  isReadonly,
+  isShallow?: boolean,
+  isReadonly?: boolean,
 ) {
   return new Proxy(obj, getBaseHandle(isShallow, isReadonly));
 }
@@ -253,8 +275,12 @@ export function computed(getter) {
   return obj;
 }
 
-export function reactive<T extends Record<string, unknown>>(obj: T) {
-  return createReactive<T>(obj);
+export function reactive(obj: any) {
+  const existionProxy = reactiveMap.get(obj);
+  if (existionProxy) return existionProxy;
+  const proxy = createReactive<T>(obj);
+  reactiveMap.set(obj, proxy);
+  return proxy;
 }
 
 export function readonly<T extends Record<string, unknown>>(obj: T) {

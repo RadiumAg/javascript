@@ -49,3 +49,6 @@ useEffect(() => {
 test.foo.bar = 2;
 
 // shallowReactive 函数创建了一个浅响应的代理对象obj
+
+const arr = reactive([data]);
+console.log(arr.includes(obj)); // true
