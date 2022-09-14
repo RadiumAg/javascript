@@ -1,18 +1,20 @@
+import { readonly } from 'vue';
+
 type EffectFn = {
   (): any;
   deps: Set<EffectFn>[];
   options: Options;
-}
+};
 
 type Options = {
-  lazy?: boolean
-  scheduler: (fn) => void
-}
+  lazy?: boolean;
+  scheduler: (fn) => void;
+};
 
 enum TriggerType {
   SET,
   ADD,
-  DELETE
+  DELETE,
 }
 
 let activeEffect: EffectFn;
@@ -23,7 +25,10 @@ const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
 const effectStack: EffectFn[] = [];
-const bucket = new WeakMap<Object, Map<string | symbol, Set<EffectFn>>>(); // { key: { key: Set(EffectFn) } }
+const bucket = new WeakMap<
+  Record<string, unknown>,
+  Map<string | symbol, Set<EffectFn>>
+>(); // { key: { key: Set(EffectFn) } }
 
 function flushJob() {
   if (isFlushing) return;
@@ -36,53 +41,63 @@ function flushJob() {
   });
 }
 
-export const getBaseHandle = (isShallow = false) => {
+export const getBaseHandle = (isShallow = false, isReadonly = false) => {
   return {
     // get的时候触发
     get(target, key, receiver) {
       if (key === 'raw') {
-        return target
+        return target;
+      }
+      // 非只读的时候才需要建立响应联系
+      if (!isReadonly) {
+        track(target, key);
       }
       const res = Reflect.get(target, key, receiver);
-      track(target, key);
       if (isShallow) {
-        return res
+        return res;
       }
       if (typeof res === 'object' && res !== null) {
-        return reactive(res)
+        // 如果数据为只读，则调用readonly对值进行包装
+        return isReadonly ? readonly(res) : reactive(res);
       }
 
-      return res
+      return res;
     },
     set(target, key, newVal, receiver) {
-      const oldVal = target[key]
-      const type = Object.prototype.hasOwnProperty.call
-        (target, key) ? TriggerType.SET : TriggerType.ADD
-      if (target === receiver.raw) {
-        if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
-          trigger(target, key, type);
-        }
+      if (isReadonly) {
+        console.warn(`属性${key.toString()}是只读的`);
+      }
+      const oldVal = target[key];
+      const type = Object.prototype.hasOwnProperty.call(target, key)
+        ? TriggerType.SET
+        : TriggerType.ADD;
+      if (
+        target === receiver.raw &&
+        oldVal !== newVal &&
+        (oldVal === oldVal || newVal === newVal)
+      ) {
+        trigger(target, key, type);
       }
       return Reflect.set(target, key, receiver);
     },
     has(target, key) {
-      track(target, key)
-      return Reflect.has(target, key)
+      track(target, key);
+      return Reflect.has(target, key);
     },
     ownKeys(target) {
-      track(target, ITERATE_KEY)
-      return Reflect.ownKeys(target)
+      track(target, ITERATE_KEY);
+      return Reflect.ownKeys(target);
     },
     deleteProperty(target, key) {
-      const hadKey = Object.prototype.hasOwnProperty.call(target, key)
-      const res = Reflect.deleteProperty(target, key)
+      const hadKey = Object.prototype.hasOwnProperty.call(target, key);
+      const res = Reflect.deleteProperty(target, key);
       if (res && hadKey) {
-        trigger(target, key, TriggerType.DELETE)
+        trigger(target, key, TriggerType.DELETE);
       }
-      return res
-    }
-  } as ProxyHandler<any>
-}
+      return res;
+    },
+  } as ProxyHandler<any>;
+};
 
 // 取值get
 function track(target, key) {
@@ -111,7 +126,7 @@ function trigger(target, key: string | symbol, type?: TriggerType) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const effects = depsMap.get(key);
-  const iterateEffects = depsMap.get(ITERATE_KEY)
+  const iterateEffects = depsMap.get(ITERATE_KEY);
   const effectsToRun = new Set(effects);
   effects &&
     effects.forEach(effectFn => {
@@ -122,16 +137,19 @@ function trigger(target, key: string | symbol, type?: TriggerType) {
 
   // 当操作类型为ADD或DELETE时，需要触发与ITERATE_KEY相关的副作用函数执行
   if (type === TriggerType.ADD || type === TriggerType.DELETE) {
-    iterateEffects && iterateEffects.forEach(effectFn => {
-      if (effectFn !== activeEffect) {
-        effectsToRun.add(effectFn)
-      }
-    })
+    iterateEffects &&
+      iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
   }
   effectsToRun.forEach(effectFn => {
     if (effectFn.options.scheduler) {
       effectFn.options.scheduler(effectFn);
-    } else { effectFn(); }
+    } else {
+      effectFn();
+    }
   });
 }
 
@@ -158,11 +176,16 @@ export function effect(fn: Function, options: Options) {
   return effectFn;
 }
 
-function createReactive<T extends Object>(obj: T, isShallow = false) {
-  return new Proxy(obj, getBaseHandle(isShallow))
+function createReactive<T extends Record<string, unknown>>(
+  obj: T,
+  isShallow = false,
+  isReadonly = false,
+) {
+  return new Proxy(obj, getBaseHandle(isShallow, isReadonly));
 }
 
 function cleanup(effectFn) {
+  // eslint-disable-next-line for-direction
   for (let i = 0; i > effectFn.deps.length; i++) {
     const deps = effectFn.deps[i];
     deps.delete(effectFn);
@@ -182,7 +205,7 @@ export function computed(getter) {
         dirty = true;
         trigger(obj, 'value');
       }
-    }
+    },
   });
 
   const obj = {
@@ -194,89 +217,90 @@ export function computed(getter) {
         trigger(obj, 'value');
       }
       return value;
-    }
+    },
   };
 
   return obj;
 }
 
-export function reactive<T extends Object>(obj: T) {
-  return createReactive<T>(obj,)
+export function reactive<T extends Record<string, unknown>>(obj: T) {
+  return createReactive<T>(obj);
 }
 
+export function shallowReadonly<T extends Record<string, unknown>>(obj: T) {
+  return createReactive<T>(obj);
+}
 
-export function shallowReactive<T extends Object>(obj: T) {
-  return createReactive(obj, true)
+export function shallowReactive<T extends Record<string, unknown>>(obj: T) {
+  return createReactive(obj, true);
 }
 
 // seen避免循环引用
 function traverse(value, seen = new Set()) {
-  if (typeof value !== 'object' || value === null || seen.has
-    (value)) return
+  if (typeof value !== 'object' || value === null || seen.has(value)) return;
 
-  seen
-    .add(value);
+  seen.add(value);
+  // eslint-disable-next-line no-restricted-syntax
   for (const k in value) {
-    traverse(value[k], seen)
+    traverse(value[k], seen);
   }
 
-  return value
+  return value;
 }
 
 type WatchOptions = {
   immediate: boolean;
-  flush: 'post'
-}
+  flush: 'post';
+};
 
 export function watch(source, cb, options: WatchOptions) {
   let getter;
   if (typeof source === 'function') {
-    getter = source
+    getter = source;
   } else {
-    getter = () => traverse(source)
+    getter = () => traverse(source);
   }
 
-  let oldValue, newValue
-  let cleanup
+  let oldValue, newValue;
+  let cleanup;
 
   function onInvalidate(fn) {
-    cleanup = fn
+    cleanup = fn;
   }
 
   const job = () => {
-    newValue = effectFn()
+    newValue = effectFn();
     if (cleanup) {
-      cleanup()
+      cleanup();
     }
-    cb(newValue, oldValue, onInvalidate)
-    oldValue = newValue
-  }
+    cb(newValue, oldValue, onInvalidate);
+    oldValue = newValue;
+  };
 
   const effectFn = effect(() => getter(), {
     scheduler() {
       if (options.flush === 'post') {
-        const p = Promise.resolve()
-        p.then(job)
+        const p = Promise.resolve();
+        p.then(job);
       } else {
         job();
       }
-    }
-  }
-  )
+    },
+  });
 
   if (options.immediate) {
-    job()
+    job();
   } else {
     oldValue = effectFn();
   }
 }
 
 // 收集依赖函数
-export const useEffect = (fn) => {
+export const useEffect = fn => {
   effect(fn, {
     scheduler(fn) {
       jobQueue.add(fn);
       flushJob();
-    }
+    },
   });
-}
+};
