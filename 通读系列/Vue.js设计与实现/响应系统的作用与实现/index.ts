@@ -21,6 +21,7 @@ let activeEffect: EffectFn;
 // 是否正在刷新
 let isFlushing = false;
 // 调度队列
+const reactiveMap = new Map();
 const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
@@ -29,6 +30,17 @@ const bucket = new WeakMap<
   Record<string, unknown>,
   Map<string | symbol, Set<EffectFn>>
 >(); // { key: { key: Set(EffectFn) } }
+const originMethod = Array.prototype.includes;
+const arrayIntrumentations = {
+  includes(...args) {
+    let res = originMethod.apply(this, args);
+    if (res === false) {
+      // res为false说明没找到，通过this.raw拿到原始数组，再去其中找到并更新res值
+      res = originMethod.apply(this.raw, args);
+    }
+    return res;
+  },
+};
 
 function flushJob() {
   if (isFlushing) return;
@@ -52,40 +64,61 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
       if (!isReadonly) {
         track(target, key);
       }
+
+      if (
+        Array.isArray(target) &&
+        Object.prototype.hasOwnProperty.call(arrayIntrumentations, key)
+      ) {
+        // 添加判断，如果key的类型是symbol，则不进行追踪
+        return Reflect.get(arrayIntrumentations, key, receiver);
+      }
+
+      if (!isReadonly && typeof key !== 'symbol') {
+        track(target, key);
+      }
+
       const res = Reflect.get(target, key, receiver);
       if (isShallow) {
         return res;
       }
       if (typeof res === 'object' && res !== null) {
         // 如果数据为只读，则调用readonly对值进行包装
-        return isReadonly ? readonly(res) : reactive(res);
+        return isReadonly ? readonly(res) : isReadonly ? readonly(res) : reactive(res);;
       }
-
       return res;
     },
     set(target, key, newVal, receiver) {
       if (isReadonly) {
-        console.warn(`属性${key.toString()}是只读的`);
+        console.warn(`属性${key.toString()}是只读属性`);
+        return true;
       }
       const oldVal = target[key];
-      const type = Object.prototype.hasOwnProperty.call(target, key)
+      const type = Array.isArray(target)
+        ? Number(key) < target.length
+          ? TriggerType.SET
+          : TriggerType.ADD
+        : Object.prototype.hasOwnProperty.call(target, key)
         ? TriggerType.SET
         : TriggerType.ADD;
+
+      const res = Reflect.set(target, key, newVal, receiver);
+
       if (
         target === receiver.raw &&
         oldVal !== newVal &&
         (oldVal === oldVal || newVal === newVal)
       ) {
-        trigger(target, key, type);
+        trigger(target, key, type, newVal);
       }
-      return Reflect.set(target, key, receiver);
+      return res;
     },
     has(target, key) {
       track(target, key);
       return Reflect.has(target, key);
     },
     ownKeys(target) {
-      track(target, ITERATE_KEY);
+      track(target, Array.isArray(target) ? 'length' : ITERATE_KEY);
+
       return Reflect.ownKeys(target);
     },
     deleteProperty(target, key) {
@@ -122,7 +155,12 @@ function track(target, key) {
 }
 
 // 触发
-function trigger(target, key: string | symbol, type?: TriggerType) {
+function trigger(
+  target,
+  key: string | symbol,
+  type?: TriggerType,
+  newVal?: any,
+) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const effects = depsMap.get(key);
@@ -135,10 +173,32 @@ function trigger(target, key: string | symbol, type?: TriggerType) {
       }
     });
 
+  if (Array.isArray(target) && key === 'length') {
+    depsMap.forEach((effects, key) => {
+      if (Number(key) >= newVal) {
+        effects.forEach(effectFn => {
+          if (effectFn !== activeEffect) {
+            effectsToRun.add(effectFn);
+          }
+        });
+      }
+    });
+  }
+
   // 当操作类型为ADD或DELETE时，需要触发与ITERATE_KEY相关的副作用函数执行
   if (type === TriggerType.ADD || type === TriggerType.DELETE) {
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
+  if (type === TriggerType.ADD && Array.isArray(target)) {
+    const lengthEffects = depsMap.get('length');
+    lengthEffects &&
+      lengthEffects.forEach(effectFn => {
         if (effectFn !== activeEffect) {
           effectsToRun.add(effectFn);
         }
@@ -178,8 +238,8 @@ export function effect(fn: Function, options: Options) {
 
 function createReactive<T extends Record<string, unknown>>(
   obj: T,
-  isShallow = false,
-  isReadonly = false,
+  isShallow?: boolean,
+  isReadonly?: boolean,
 ) {
   return new Proxy(obj, getBaseHandle(isShallow, isReadonly));
 }
@@ -223,12 +283,20 @@ export function computed(getter) {
   return obj;
 }
 
-export function reactive<T extends Record<string, unknown>>(obj: T) {
-  return createReactive<T>(obj);
+export function reactive(obj: any) {
+  const existionProxy = reactiveMap.get(obj);
+  if (existionProxy) return existionProxy;
+  const proxy = createReactive<T>(obj);
+  reactiveMap.set(obj, proxy);
+  return proxy;
+}
+
+export function readonly<T extends Record<string, unknown>>(obj: T) {
+  return createReactive(obj, false, true);
 }
 
 export function shallowReadonly<T extends Record<string, unknown>>(obj: T) {
-  return createReactive<T>(obj);
+  return createReactive(obj, true, true);
 }
 
 export function shallowReactive<T extends Record<string, unknown>>(obj: T) {
@@ -240,7 +308,6 @@ function traverse(value, seen = new Set()) {
   if (typeof value !== 'object' || value === null || seen.has(value)) return;
 
   seen.add(value);
-  // eslint-disable-next-line no-restricted-syntax
   for (const k in value) {
     traverse(value[k], seen);
   }
