@@ -1,5 +1,3 @@
-import { readonly } from 'vue';
-
 type EffectFn = {
   (): any;
   deps: Set<EffectFn>[];
@@ -16,7 +14,7 @@ enum TriggerType {
   ADD,
   DELETE,
 }
-
+let shouldTrack = true;
 let activeEffect: EffectFn;
 // 是否正在刷新
 let isFlushing = false;
@@ -25,13 +23,16 @@ const reactiveMap = new Map();
 const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
+const mutableInstrumentations = {
+  add(key) {},
+};
 const effectStack: EffectFn[] = [];
 const bucket = new WeakMap<
   Record<string, unknown>,
   Map<string | symbol, Set<EffectFn>>
 >(); // { key: { key: Set(EffectFn) } }
 const originMethod = Array.prototype.includes;
-const arrayIntrumentations = {
+const arrayInstrumentations = {
   includes(...args) {
     let res = originMethod.apply(this, args);
     if (res === false) {
@@ -41,6 +42,28 @@ const arrayIntrumentations = {
     return res;
   },
 };
+
+['push', 'pop', 'shift', 'unshift', 'splice'].forEach(method => {
+  const originMethod = Array.prototype[method];
+  arrayInstrumentations[method] = function (...args) {
+    shouldTrack = false;
+    const res = originMethod.apply(this, args);
+    shouldTrack = true;
+    return res;
+  };
+});
+
+['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
+  const originMethod = Array.prototype[method];
+  arrayInstrumentations[method] = function (...args) {
+    let res = originMethod.apply(this, args);
+    if (res === false || res === -1) {
+      // res为false说明没找到，通过this.raw拿到原始数组，再去其中找到并更新res值
+      res = originMethod.apply(this.raw, args);
+    }
+    return res;
+  };
+});
 
 function flushJob() {
   if (isFlushing) return;
@@ -53,6 +76,17 @@ function flushJob() {
   });
 }
 
+export const getMapHandle = () => {
+  return {
+    get(target, key, receiver) {
+      // 如果读取的是size属性
+      // 通过指定第三个参数receiver为原始对象target从而修复问题
+      if (key === 'size') return Reflect.get(target, key, target);
+      return target[key].bind(target);
+    },
+  };
+};
+
 export const getBaseHandle = (isShallow = false, isReadonly = false) => {
   return {
     // get的时候触发
@@ -60,6 +94,7 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
       if (key === 'raw') {
         return target;
       }
+
       // 非只读的时候才需要建立响应联系
       if (!isReadonly) {
         track(target, key);
@@ -67,25 +102,35 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
 
       if (
         Array.isArray(target) &&
-        Object.prototype.hasOwnProperty.call(arrayIntrumentations, key)
+        Object.prototype.hasOwnProperty.call(arrayInstrumentations, key)
       ) {
         // 添加判断，如果key的类型是symbol，则不进行追踪
-        return Reflect.get(arrayIntrumentations, key, receiver);
+        return Reflect.get(arrayInstrumentations, key, receiver);
       }
 
       if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
       }
 
+      if (key === 'size') {
+        track(target, ITERATE_KEY);
+        return Reflect.get(target, key, target);
+      }
+
       const res = Reflect.get(target, key, receiver);
       if (isShallow) {
         return res;
       }
+
       if (typeof res === 'object' && res !== null) {
         // 如果数据为只读，则调用readonly对值进行包装
-        return isReadonly ? readonly(res) : isReadonly ? readonly(res) : reactive(res);;
+        return isReadonly
+          ? readonly(res)
+          : isReadonly
+          ? readonly(res)
+          : reactive(res);
       }
-      return res;
+      return target[key].bind(target);
     },
     set(target, key, newVal, receiver) {
       if (isReadonly) {
@@ -134,7 +179,7 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
 
 // 取值get
 function track(target, key) {
-  if (!activeEffect) return target[key];
+  if (!activeEffect || !shouldTrack) return target[key];
   let depsMap = bucket.get(target);
 
   if (!depsMap) {

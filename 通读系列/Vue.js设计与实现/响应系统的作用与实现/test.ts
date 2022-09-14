@@ -52,3 +52,12 @@ test.foo.bar = 2;
 
 const arr = reactive([data]);
 console.log(arr.includes(obj)); // true
+
+// 代理Set,Map
+const proxy = reactive(new Map([['key', 1]]));
+
+useEffect(() => {
+  console.log(proxy.get('key'));
+});
+
+proxy.set('key', 2);
