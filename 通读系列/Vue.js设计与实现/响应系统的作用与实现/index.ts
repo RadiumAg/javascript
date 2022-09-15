@@ -115,6 +115,8 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
       if (key === 'size') {
         track(target, ITERATE_KEY);
         return Reflect.get(target, key, target);
+      } else if (key === 'delete' || key === 'get') {
+        return target[key].bind(target);
       }
 
       const res = Reflect.get(target, key, receiver);
@@ -130,7 +132,8 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
           ? readonly(res)
           : reactive(res);
       }
-      return target[key].bind(target);
+
+      return res;
     },
     set(target, key, newVal, receiver) {
       if (isReadonly) {
@@ -281,11 +284,11 @@ export function effect(fn: Function, options: Options) {
   return effectFn;
 }
 
-function createReactive<T extends Record<string, unknown>>(
+function createReactive<T>(
   obj: T,
   isShallow?: boolean,
   isReadonly?: boolean,
-) {
+): T {
   return new Proxy(obj, getBaseHandle(isShallow, isReadonly));
 }
 
@@ -328,15 +331,15 @@ export function computed(getter) {
   return obj;
 }
 
-export function reactive(obj: any) {
+export function reactive<T>(obj: T): T {
   const existionProxy = reactiveMap.get(obj);
   if (existionProxy) return existionProxy;
-  const proxy = createReactive<T>(obj);
+  const proxy = createReactive(obj);
   reactiveMap.set(obj, proxy);
   return proxy;
 }
 
-export function readonly<T extends Record<string, unknown>>(obj: T) {
+export function readonly<T>(obj: T): T {
   return createReactive(obj, false, true);
 }
 
