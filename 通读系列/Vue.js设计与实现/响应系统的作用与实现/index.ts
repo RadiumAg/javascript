@@ -1,3 +1,5 @@
+import { isMap } from 'util/types';
+
 type EffectFn = {
   (): any;
   deps: Set<EffectFn>[];
@@ -10,36 +12,75 @@ type Options = {
 };
 
 enum TriggerType {
-  SET,
-  ADD,
-  DELETE,
+  SET = 'set',
+  ADD = 'add',
+  DELETE = 'delete',
 }
 let shouldTrack = true;
 let activeEffect: EffectFn;
 // 是否正在刷新
 let isFlushing = false;
 // 调度队列
+const RAW_KEY = 'raw';
 const reactiveMap = new Map();
 const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
-const mutableInstrumentations = {
-  add(key) {},
-};
 const effectStack: EffectFn[] = [];
 const bucket = new WeakMap<
   Record<string, unknown>,
   Map<string | symbol, Set<EffectFn>>
 >(); // { key: { key: Set(EffectFn) } }
-const originMethod = Array.prototype.includes;
-const arrayInstrumentations = {
-  includes(...args) {
-    let res = originMethod.apply(this, args);
-    if (res === false) {
-      // res为false说明没找到，通过this.raw拿到原始数组，再去其中找到并更新res值
-      res = originMethod.apply(this.raw, args);
+
+const arrayInstrumentations: Record<string, unknown> = {};
+const mutableInstrumentations: Record<string, unknown> = {
+  add(key: string) {
+    const target = this[RAW_KEY];
+    const hadKey = target.has(key);
+    // 通过原始数据对象执行add方法添加具体的值，
+    // 注意，这里不在需要.bind了，因为直接通过target调用并执行
+    const res = target.add(key);
+
+    if (!hadKey) {
+      trigger(target, key, TriggerType.ADD);
     }
     return res;
+  },
+  delete(key: string) {
+    const target = this[RAW_KEY];
+    const hadKey = target.has(key);
+    // 通过原始数据对象执行delete方法添加具体的值，
+    // 注意，这里不在需要.bind了，因为直接通过target调用并执行
+    const res = target.delete(key);
+    // delete方法只有在要删除的元素确实在集合中存在时
+    if (hadKey) {
+      trigger(target, key, TriggerType.DELETE);
+    }
+    return res;
+  },
+  get(this, key: string) {
+    const target = this[RAW_KEY];
+    const had = target.has(key);
+    track(target, key);
+    if (had) {
+      const res = target.get(key);
+      return typeof res === 'object' ? reactive(res) : res;
+    }
+  },
+  set(key: string, value: any) {
+    const target = this[RAW_KEY];
+    const had = target.has(key);
+    const oldValue = target.get(key);
+    const rawValue = value[RAW_KEY] || value;
+    target.set(key, rawValue);
+    if (!had) {
+      trigger(target, key, TriggerType.ADD);
+    } else if (
+      oldValue !== value ||
+      (oldValue === oldValue && value === value)
+    ) {
+      trigger(target, key, TriggerType.SET);
+    }
   },
 };
 
@@ -55,11 +96,11 @@ const arrayInstrumentations = {
 
 ['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
   const originMethod = Array.prototype[method];
-  arrayInstrumentations[method] = function (...args) {
-    let res = originMethod.apply(this, args);
+  arrayInstrumentations[method] = function (args) {
+    let res = Reflect.apply(originMethod, this, [args]);
     if (res === false || res === -1) {
       // res为false说明没找到，通过this.raw拿到原始数组，再去其中找到并更新res值
-      res = originMethod.apply(this.raw, args);
+      res = originMethod.apply(this[RAW_KEY], [args]);
     }
     return res;
   };
@@ -75,17 +116,6 @@ function flushJob() {
     isFlushing = false;
   });
 }
-
-export const getMapHandle = () => {
-  return {
-    get(target, key, receiver) {
-      // 如果读取的是size属性
-      // 通过指定第三个参数receiver为原始对象target从而修复问题
-      if (key === 'size') return Reflect.get(target, key, target);
-      return target[key].bind(target);
-    },
-  };
-};
 
 export const getBaseHandle = (isShallow = false, isReadonly = false) => {
   return {
@@ -115,8 +145,8 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
       if (key === 'size') {
         track(target, ITERATE_KEY);
         return Reflect.get(target, key, target);
-      } else if (key === 'delete' || key === 'get') {
-        return target[key].bind(target);
+      } else if (Object.keys(mutableInstrumentations).includes(key)) {
+        return Reflect.get(mutableInstrumentations, key, receiver);
       }
 
       const res = Reflect.get(target, key, receiver);
@@ -354,7 +384,6 @@ export function shallowReactive<T extends Record<string, unknown>>(obj: T) {
 // seen避免循环引用
 function traverse(value, seen = new Set()) {
   if (typeof value !== 'object' || value === null || seen.has(value)) return;
-
   seen.add(value);
   for (const k in value) {
     traverse(value[k], seen);
@@ -364,11 +393,11 @@ function traverse(value, seen = new Set()) {
 }
 
 type WatchOptions = {
-  immediate: boolean;
-  flush: 'post';
+  immediate?: boolean;
+  flush?: 'post';
 };
 
-export function watch(source, cb, options: WatchOptions) {
+export function watch(source, cb: Function, options?: WatchOptions) {
   let getter;
   if (typeof source === 'function') {
     getter = source;
