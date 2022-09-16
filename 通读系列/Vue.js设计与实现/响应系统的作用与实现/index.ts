@@ -1,5 +1,3 @@
-import { isMap } from 'util/types';
-
 type EffectFn = {
   (): any;
   deps: Set<EffectFn>[];
@@ -12,9 +10,9 @@ type Options = {
 };
 
 enum TriggerType {
-  SET = 'set',
-  ADD = 'add',
-  DELETE = 'delete',
+  SET = 'SET',
+  ADD = 'ADD',
+  DELETE = 'DELETE',
 }
 let shouldTrack = true;
 let activeEffect: EffectFn;
@@ -27,10 +25,12 @@ const ITERATE_KEY = Symbol();
 const jobQueue = new Set<EffectFn>();
 const p = Promise.resolve();
 const effectStack: EffectFn[] = [];
+const MAP_KEY_ITERATE_KEY = Symbol();
 const bucket = new WeakMap<
   Record<string, unknown>,
   Map<string | symbol, Set<EffectFn>>
 >(); // { key: { key: Set(EffectFn) } }
+const wrap = val => (typeof val === 'object' ? reactive(val) : val);
 
 const arrayInstrumentations: Record<string, unknown> = {};
 const mutableInstrumentations: Record<string, unknown> = {
@@ -82,7 +82,78 @@ const mutableInstrumentations: Record<string, unknown> = {
       trigger(target, key, TriggerType.SET);
     }
   },
+  forEach(callback: typeof Array.prototype.forEach, thisArg) {
+    const target = this[RAW_KEY];
+    track(target, ITERATE_KEY);
+    target.forEach((v, k) => {
+      callback.call(thisArg, wrap(v), wrap(k), this);
+    });
+  },
+  entries: iterationMethod,
+  keys: keysIterationMethod,
+  values: valuesIterationMethod,
+  [Symbol.iterator]: iterationMethod,
 };
+
+function iterationMethod() {
+  {
+    const target = this[RAW_KEY];
+    const itr = target[Symbol.iterator]();
+
+    track(target, ITERATE_KEY);
+
+    return {
+      next() {
+        const { value, done } = itr.next();
+        return {
+          value: value ? [wrap(value[0]), wrap(value[1])] : value,
+          done,
+        };
+      },
+      [Symbol.iterator]() {
+        return this;
+      },
+    };
+  }
+}
+
+function valuesIterationMethod() {
+  const target = this[RAW_KEY];
+  const itr = target.values();
+  track(target, ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
+function keysIterationMethod() {
+  const target = this[RAW_KEY];
+  const itr = target.keys();
+  track(target, MAP_KEY_ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
 
 ['push', 'pop', 'shift', 'unshift', 'splice'].forEach(method => {
   const originMethod = Array.prototype[method];
@@ -145,7 +216,10 @@ export const getBaseHandle = (isShallow = false, isReadonly = false) => {
       if (key === 'size') {
         track(target, ITERATE_KEY);
         return Reflect.get(target, key, target);
-      } else if (Object.keys(mutableInstrumentations).includes(key)) {
+      } else if (
+        Object.keys(mutableInstrumentations).includes(key) ||
+        key === Symbol.iterator
+      ) {
         return Reflect.get(mutableInstrumentations, key, receiver);
       }
 
@@ -242,7 +316,6 @@ function trigger(
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const effects = depsMap.get(key);
-  const iterateEffects = depsMap.get(ITERATE_KEY);
   const effectsToRun = new Set(effects);
   effects &&
     effects.forEach(effectFn => {
@@ -264,7 +337,27 @@ function trigger(
   }
 
   // 当操作类型为ADD或DELETE时，需要触发与ITERATE_KEY相关的副作用函数执行
-  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
+  if (
+    type === TriggerType.ADD ||
+    type === TriggerType.DELETE ||
+    (type === TriggerType.SET &&
+      Object.prototype.toString.call(target) === '[object Map]')
+  ) {
+    const iterateEffects = depsMap.get(ITERATE_KEY);
+    iterateEffects &&
+      iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
+  if (
+    type === TriggerType.ADD ||
+    (type === TriggerType.DELETE &&
+      Object.prototype.toString.call(target) === '[object Map]')
+  ) {
+    const iterateEffects = depsMap.get(MAP_KEY_ITERATE_KEY);
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
         if (effectFn !== activeEffect) {
@@ -367,6 +460,57 @@ export function reactive<T>(obj: T): T {
   const proxy = createReactive(obj);
   reactiveMap.set(obj, proxy);
   return proxy;
+}
+
+export function proxyRefs(target) {
+  return new Proxy(target, {
+    get(target, key, receiver) {
+      const value = Reflect.get(target, key, receiver);
+      return value.__v_isRef ? value.value : value;
+    },
+    set(target, key, newValue, receiver) {
+      const value = target[key];
+      if (value.__v_isRef) {
+        value.value = newValue;
+        return true;
+      }
+
+      return Reflect.set(target, key, newValue, receiver);
+    },
+  });
+}
+
+export function toRef(obj, key: string) {
+  const wrapper = {
+    get value() {
+      return obj[key];
+    },
+    set value(val) {
+      obj[key] = val;
+    },
+  };
+
+  Object.defineProperty(wrapper, '__v_isRef', { value: true });
+
+  return wrapper;
+}
+
+export function toRef(obj) {
+  const ret = {};
+
+  for (const key in obj) {
+    ret[key] = toRef(obj, key);
+  }
+
+  return ret;
+}
+
+export function ref<T>(val: T) {
+  const wrapper = {
+    value: val,
+  };
+  Object.defineProperty(wrapper, '__v_isRef', { value: true });
+  return reactive(wrapper);
 }
 
 export function readonly<T>(obj: T): T {
