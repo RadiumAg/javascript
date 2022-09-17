@@ -15,12 +15,18 @@ const renderer = createRenderer({
     },
     patchProps(el, key, preValue, nextValue) {
         if (key.startsWith('on')) {
-            const invoker = el._vei;
+            const invokers = el._vei || (el._vei = {});
+            let invoker = invokers[key];
             const name = key.slice(2).toLowerCase();
             if (nextValue && !invoker) {
                 //如果没有 invoker, 则将一个伪造的invoker缓存到el._vei中
-                invoker = el._vei = e => {
-                    invoker.value(e);
+                invoker = el._vei[key] = e => {
+                    if (Array.isArray(invoker.value)) {
+                        invoker.value.forEach(fn => fn(e));
+                    }
+                    else {
+                        invoker.value(e);
+                    }
                 };
                 invoker.value = nextValue;
                 el.addEventListener(name, invoker);
