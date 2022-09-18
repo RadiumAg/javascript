@@ -1,8 +1,6 @@
-import { effect } from 'vue';
-
 export type VNode = {
-  type: string;
-  el: HTMLElement;
+  type: string | symbol;
+  el: el;
   props: {
     id?: string;
     disabled?: any;
@@ -11,17 +9,24 @@ export type VNode = {
   children: VNode[] | string;
 };
 
+type el = HTMLElement & {
+  _vei: Record<
+    string,
+    { attached: number; value: (e: Event) => void; (e: Event): void }
+  >;
+};
+
 type CreateRendererOptions = {
   createElement: (tag: string) => HTMLElement;
+  setText: (el: HTMLElement, text: string) => void;
   setElementText: (el: HTMLElement, tag: string) => void;
   insert: (el: HTMLElement, parent: HTMLElement, anchor?) => void;
-  patchProps: (
-    el: HTMLElement,
-    key: string,
-    preValue: any,
-    nextValue: any,
-  ) => void;
+  patchProps: (el: el, key: string, preValue: any, nextValue: any) => void;
 };
+
+export const Text = Symbol('Text');
+export const Comment = Symbol('Comment');
+export const Fragment = Symbol('Fragment');
 
 export function shouldSetAsProps(el: HTMLElement, key: string, value) {
   // 特殊处理
@@ -31,7 +36,8 @@ export function shouldSetAsProps(el: HTMLElement, key: string, value) {
 }
 
 export function createRenderer(options: CreateRendererOptions) {
-  const { createElement, insert, setElementText, patchProps } = options;
+  const { createElement, insert, setElementText, patchProps, setText } =
+    options;
 
   function patch(n1: VNode | null, n2: VNode, container: HTMLElement) {
     // 如果n1不存在，意味着挂载，则调用mountElement函数完成挂载
@@ -50,14 +56,69 @@ export function createRenderer(options: CreateRendererOptions) {
       } else {
         patchElement(n1, n2);
       }
-    } else if (typeof type === 'object') {
+    } else if (type === Text) {
+      if (!n1) {
+        const el = (n2.el = document.createTextNode(
+          n2.children as string,
+        ) as any);
+        insert(el, container);
+      }
+    } else if (type === Fragment) {
+      if (!n1) {
+        (n2.children as VNode[]).forEach(c => patch(null, c, container));
+      }
+    } else {
+      const el = (n2.el = n1.el);
+      if (n2.children !== n1.children) {
+        setText(el, n2.children as string);
+      }
     }
   }
 
-  function patchElement(n1: VNode, n2: VNode) {}
+  function patchElement(n1: VNode, n2: VNode) {
+    const el = (n2.el = n1.el);
+    const oldProps = n1.props;
+    const newProps = n2.props;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in newProps) {
+      if (newProps[key] !== oldProps[key]) {
+        patchProps(el, key, oldProps[key], newProps[key]);
+      }
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        patchProps(el, key, oldProps[key], null);
+      }
+    }
+
+    patchChildren(n1, n2, el);
+  }
+
+  function patchChildren(n1: VNode, n2: VNode, container: HTMLElement) {
+    if (typeof n2.children === 'string') {
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach(c => unmounted(c));
+      }
+      setElementText(container, n2.children);
+    } else if (Array.isArray(n2.children)) {
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach(c => unmounted(c));
+        n2.children.forEach(c => patch(null, c, container));
+      } else {
+        setElementText(container, '');
+        n2.children.forEach(c => patch(null, c, container));
+      }
+    } else if (Array.isArray(n1.children)) {
+      n1.children.forEach(c => unmounted(c));
+    } else if (typeof n1.children === 'string') {
+      setElementText(container, '');
+    }
+  }
 
   function mountElement(vnode: VNode, container: HTMLElement) {
-    const el = (vnode.el = createElement(vnode.type));
+    const el = (vnode.el = createElement(vnode.type) as el);
 
     // 处理子节点，如果子节点是字符串，代表元素具有文本节点
     if (typeof vnode.children === 'string') {
@@ -75,7 +136,7 @@ export function createRenderer(options: CreateRendererOptions) {
       // eslint-disable-next-line no-restricted-syntax
       for (const key in vnode.props) {
         // 调用 setAttribute 将属性设置到元素上
-        patchProps(el, key, null, vnode.props[key]);
+        patchProps(el as el, key, null, vnode.props[key]);
       }
     }
     // 将元素添加到容器中
@@ -83,6 +144,10 @@ export function createRenderer(options: CreateRendererOptions) {
   }
 
   function unmounted(vnode: VNode) {
+    if (vnode.type === Fragment) {
+      (vnode.children as VNode[]).forEach(c => unmounted(c));
+      return;
+    }
     const parent = vnode.el.parentNode;
     if (parent) vnode.el.remove();
   }

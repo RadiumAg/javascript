@@ -1,3 +1,4 @@
+import { effect, ref } from 'vue';
 import { VNode, createRenderer, shouldSetAsProps } from './render.js';
 
 const renderer = createRenderer({
@@ -10,9 +11,12 @@ const renderer = createRenderer({
     el.textContent = text;
   },
   insert(el: HTMLElement, parent: HTMLElement, anchor = null) {
-    console.log(`讲${JSON.stringify(el)}的添加到：${JSON.stringify(parent)}`);
+    console.log(`将${JSON.stringify(el)}的添加到：${JSON.stringify(parent)}`);
     // eslint-disable-next-line unicorn/prefer-modern-dom-apis
     parent.append(el);
+  },
+  setText(el, text) {
+    el.nodeValue = text;
   },
   patchProps(el, key, preValue, nextValue) {
     if (key.startsWith('on')) {
@@ -22,15 +26,18 @@ const renderer = createRenderer({
 
       if (nextValue && !invoker) {
         //如果没有 invoker, 则将一个伪造的invoker缓存到el._vei中
-        invoker = el._vei[key] = e => {
+        invoker = el._vei[key] = ((e: Event) => {
+          if (e.timeStamp < invoker.attached) return;
+
           if (Array.isArray(invoker.value)) {
             invoker.value.forEach(fn => fn(e));
           } else {
             invoker.value(e);
           }
-        };
-
+        }) as any;
         invoker.value = nextValue;
+        // 添加 invoker.attached 属性，存储事件处理函数被绑定的时间
+        invoker.attached = performance.now();
         el.addEventListener(name, invoker);
       } else if (invoker) {
         el.removeEventListener(name, invoker);
@@ -51,14 +58,32 @@ const renderer = createRenderer({
   },
 });
 
-const vnode: VNode = {
-  type: 'button',
-  children: 'hello',
-  props: {
-    id: '1',
-    disabled: '1',
-    class: ['foo  bar'],
-  },
-};
+const bol = ref(false);
 
-renderer.render(vnode, document.querySelector('#app'));
+effect(() => {
+  const vnode: VNode = {
+    type: 'div',
+    el: null,
+    props: bol.value
+      ? {
+          onClick: () => {
+            alert('父元素');
+          },
+        }
+      : {},
+    children: [
+      {
+        el: null,
+        type: 'p',
+        props: {
+          onClick: () => {
+            bol.value = true;
+          },
+        },
+        children: 'text',
+      },
+    ],
+  };
+
+  renderer.render(vnode, document.querySelector('#app'));
+});

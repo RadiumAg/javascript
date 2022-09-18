@@ -1,3 +1,4 @@
+import { effect, ref } from 'vue';
 import { createRenderer, shouldSetAsProps } from './render.js';
 const renderer = createRenderer({
     createElement(tag) {
@@ -9,9 +10,12 @@ const renderer = createRenderer({
         el.textContent = text;
     },
     insert(el, parent, anchor = null) {
-        console.log(`讲${JSON.stringify(el)}的添加到：${JSON.stringify(parent)}`);
+        console.log(`将${JSON.stringify(el)}的添加到：${JSON.stringify(parent)}`);
         // eslint-disable-next-line unicorn/prefer-modern-dom-apis
         parent.append(el);
+    },
+    setText(el, text) {
+        el.nodeValue = text;
     },
     patchProps(el, key, preValue, nextValue) {
         if (key.startsWith('on')) {
@@ -20,15 +24,19 @@ const renderer = createRenderer({
             const name = key.slice(2).toLowerCase();
             if (nextValue && !invoker) {
                 //如果没有 invoker, 则将一个伪造的invoker缓存到el._vei中
-                invoker = el._vei[key] = e => {
+                invoker = el._vei[key] = ((e) => {
+                    if (e.timeStamp < invoker.attached)
+                        return;
                     if (Array.isArray(invoker.value)) {
                         invoker.value.forEach(fn => fn(e));
                     }
                     else {
                         invoker.value(e);
                     }
-                };
+                });
                 invoker.value = nextValue;
+                // 添加 invoker.attached 属性，存储事件处理函数被绑定的时间
+                invoker.attached = performance.now();
                 el.addEventListener(name, invoker);
             }
             else if (invoker) {
@@ -53,14 +61,31 @@ const renderer = createRenderer({
         }
     },
 });
-const vnode = {
-    type: 'button',
-    children: 'hello',
-    props: {
-        id: '1',
-        disabled: '1',
-        class: ['foo  bar'],
-    },
-};
-renderer.render(vnode, document.querySelector('#app'));
+const bol = ref(false);
+effect(() => {
+    const vnode = {
+        type: 'div',
+        el: null,
+        props: bol.value
+            ? {
+                onClick: () => {
+                    alert('父元素');
+                },
+            }
+            : {},
+        children: [
+            {
+                el: null,
+                type: 'p',
+                props: {
+                    onClick: () => {
+                        bol.value = true;
+                    },
+                },
+                children: 'text',
+            },
+        ],
+    };
+    renderer.render(vnode, document.querySelector('#app'));
+});
 //# sourceMappingURL=index.js.map

@@ -1,3 +1,6 @@
+export const Text = Symbol('Text');
+export const Comment = Symbol('Comment');
+export const Fragment = Symbol('Fragment');
 export function shouldSetAsProps(el, key, value) {
     // 特殊处理
     if (key === 'form' && el.tagName === 'INPUT')
@@ -6,7 +9,7 @@ export function shouldSetAsProps(el, key, value) {
     return key in el;
 }
 export function createRenderer(options) {
-    const { createElement, insert, setElementText, patchProps } = options;
+    const { createElement, insert, setElementText, patchProps, setText } = options;
     function patch(n1, n2, container) {
         // 如果n1不存在，意味着挂载，则调用mountElement函数完成挂载
         if (n1 && n1.type !== n2.type) {
@@ -23,10 +26,66 @@ export function createRenderer(options) {
                 patchElement(n1, n2);
             }
         }
-        else if (typeof type === 'object') {
+        else if (type === Text) {
+            if (!n1) {
+                const el = (n2.el = document.createTextNode(n2.children));
+                insert(el, container);
+            }
+        }
+        else if (type === Fragment) {
+            if (!n1) {
+                n2.children.forEach(c => patch(null, c, container));
+            }
+        }
+        else {
+            const el = (n2.el = n1.el);
+            if (n2.children !== n1.children) {
+                setText(el, n2.children);
+            }
         }
     }
-    function patchElement(n1, n2) { }
+    function patchElement(n1, n2) {
+        const el = (n2.el = n1.el);
+        const oldProps = n1.props;
+        const newProps = n2.props;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key in newProps) {
+            if (newProps[key] !== oldProps[key]) {
+                patchProps(el, key, oldProps[key], newProps[key]);
+            }
+        }
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key in oldProps) {
+            if (!(key in newProps)) {
+                patchProps(el, key, oldProps[key], null);
+            }
+        }
+        patchChildren(n1, n2, el);
+    }
+    function patchChildren(n1, n2, container) {
+        if (typeof n2.children === 'string') {
+            if (Array.isArray(n1.children)) {
+                n1.children.forEach(c => unmounted(c));
+            }
+            setElementText(container, n2.children);
+        }
+        else if (Array.isArray(n2.children)) {
+            if (Array.isArray(n1.children)) {
+                n1.children.forEach(c => unmounted(c));
+                n2.children.forEach(c => patch(null, c, container));
+            }
+            else {
+                setElementText(container, '');
+                n2.children.forEach(c => patch(null, c, container));
+            }
+        }
+        else if (Array.isArray(n1.children)) {
+            n1.children.forEach(c => unmounted(c));
+        }
+        else if (typeof n1.children === 'string') {
+            setElementText(container, '');
+        }
+    }
     function mountElement(vnode, container) {
         const el = (vnode.el = createElement(vnode.type));
         // 处理子节点，如果子节点是字符串，代表元素具有文本节点
@@ -52,6 +111,10 @@ export function createRenderer(options) {
         insert(el, container);
     }
     function unmounted(vnode) {
+        if (vnode.type === Fragment) {
+            vnode.children.forEach(c => unmounted(c));
+            return;
+        }
         const parent = vnode.el.parentNode;
         if (parent)
             vnode.el.remove();
