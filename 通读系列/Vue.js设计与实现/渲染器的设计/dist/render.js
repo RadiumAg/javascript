@@ -10,6 +10,13 @@ export function shouldSetAsProps(el, key, value) {
 }
 export function createRenderer(options) {
     const { createElement, insert, setElementText, patchProps, setText } = options;
+    /**
+     * 更新虚拟Dom
+     *
+     * @param {(VNode | null)} n1
+     * @param {VNode} n2
+     * @param {HTMLElement} container
+     */
     function patch(n1, n2, container) {
         // 如果n1不存在，意味着挂载，则调用mountElement函数完成挂载
         if (n1 && n1.type !== n2.type) {
@@ -44,6 +51,12 @@ export function createRenderer(options) {
             }
         }
     }
+    /**
+     * 更新元素
+     *
+     * @param {VNode} n1
+     * @param {VNode} n2
+     */
     function patchElement(n1, n2) {
         const el = (n2.el = n1.el);
         const oldProps = n1.props;
@@ -62,6 +75,13 @@ export function createRenderer(options) {
         }
         patchChildren(n1, n2, el);
     }
+    /**
+     * 更新子节点
+     *
+     * @param {VNode} n1
+     * @param {VNode} n2
+     * @param {HTMLElement} container
+     */
     function patchChildren(n1, n2, container) {
         if (typeof n2.children === 'string') {
             if (Array.isArray(n1.children)) {
@@ -71,8 +91,26 @@ export function createRenderer(options) {
         }
         else if (Array.isArray(n2.children)) {
             if (Array.isArray(n1.children)) {
-                n1.children.forEach(c => unmounted(c));
-                n2.children.forEach(c => patch(null, c, container));
+                const oldChildren = n1.children;
+                const newChildren = n2.children;
+                let lastIndex = 0;
+                for (const [i, newVNode] of newChildren.entries()) {
+                    for (const [j, oldVNode] of oldChildren.entries()) {
+                        if (newVNode.key === oldVNode.key) {
+                            patch(oldVNode, newVNode, container);
+                            if (j < lastIndex) {
+                                // 如果当前找到的节点在旧children中的索引小于最大索引值lastIndex
+                                // 说明该节点对应的真实DOM需要移动
+                            }
+                            else {
+                                // 如果当前找到的节点在旧 children中的索引不小于最大索引值
+                                // 则更新lastIndex的值
+                                lastIndex = j;
+                            }
+                            break;
+                        }
+                    }
+                }
             }
             else {
                 setElementText(container, '');
