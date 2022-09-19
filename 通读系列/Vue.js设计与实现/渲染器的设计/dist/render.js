@@ -17,7 +17,7 @@ export function createRenderer(options) {
      * @param {VNode} n2
      * @param {HTMLElement} container
      */
-    function patch(n1, n2, container) {
+    function patch(n1, n2, container, anchor = '') {
         // 如果n1不存在，意味着挂载，则调用mountElement函数完成挂载
         if (n1 && n1.type !== n2.type) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -27,7 +27,7 @@ export function createRenderer(options) {
         const { type } = n2;
         if (typeof type === 'string') {
             if (!n1) {
-                mountElement(n2, container);
+                mountElement(n2, container, anchor);
             }
             else {
                 patchElement(n1, n2);
@@ -90,17 +90,29 @@ export function createRenderer(options) {
             setElementText(container, n2.children);
         }
         else if (Array.isArray(n2.children)) {
+            patchKeyedChildren(n1, n2, container);
             if (Array.isArray(n1.children)) {
                 const oldChildren = n1.children;
                 const newChildren = n2.children;
                 let lastIndex = 0;
                 for (const [i, newVNode] of newChildren.entries()) {
+                    let find = false;
                     for (const [j, oldVNode] of oldChildren.entries()) {
                         if (newVNode.key === oldVNode.key) {
+                            find = true;
                             patch(oldVNode, newVNode, container);
                             if (j < lastIndex) {
                                 // 如果当前找到的节点在旧children中的索引小于最大索引值lastIndex
                                 // 说明该节点对应的真实DOM需要移动
+                                const prevVNode = newChildren[i - 1];
+                                if (prevVNode) {
+                                    // 由于我们要将newVNode对应的真实DOM移动到prevVNode所对应的真实DOM后面，
+                                    // 所以我们需要获取prevVnode所对应真实DOM的下一个兄弟节点，滚吧作为其锚点
+                                    const anchor = prevVNode.el.nextSibling;
+                                    // 调用insert方法将newVNode对应的真实DOM插入到锚点元素前
+                                    // 也就是prevVNOde对应的真实DOM的后面
+                                    insert(newVNode.el, container, anchor);
+                                }
                             }
                             else {
                                 // 如果当前找到的节点在旧 children中的索引不小于最大索引值
@@ -109,6 +121,23 @@ export function createRenderer(options) {
                             }
                             break;
                         }
+                    }
+                    if (!find) {
+                        const prevNode = newChildren[i - 1];
+                        let anchor = null;
+                        if (prevNode) {
+                            anchor = prevNode.el.nextSibling;
+                        }
+                        else {
+                            anchor = container.firstChild;
+                        }
+                        patch(null, newVNode, container, anchor);
+                    }
+                }
+                for (const [, oldVNode] of oldChildren.entries()) {
+                    const has = newChildren.find(vnode => vnode.key === oldVNode.key);
+                    if (!has) {
+                        unmounted(oldVNode);
                     }
                 }
             }
@@ -124,7 +153,19 @@ export function createRenderer(options) {
             setElementText(container, '');
         }
     }
-    function mountElement(vnode, container) {
+    function patchKeyedChildren(n1, n2, container) {
+        const oldChildren = n1.children;
+        const newChildren = n2.children;
+        const oldStartIdx = 0;
+        const oldEndIdx = oldChildren.length - 1;
+        const newStartIdx = 0;
+        const newEndIdx = newChildren.length - 1;
+        const oldStartVnode = oldChildren[oldStartIdx];
+        const oldEndVNode = oldChildren[oldEndIdx];
+        const newStartVNode = newChildren[newStartIdx];
+        const newEndVNode = newChildren[newEndIdx];
+    }
+    function mountElement(vnode, container, anchor = '') {
         const el = (vnode.el = createElement(vnode.type));
         // 处理子节点，如果子节点是字符串，代表元素具有文本节点
         if (typeof vnode.children === 'string') {
@@ -146,7 +187,7 @@ export function createRenderer(options) {
             }
         }
         // 将元素添加到容器中
-        insert(el, container);
+        insert(el, container, anchor);
     }
     function unmounted(vnode) {
         if (vnode.type === Fragment) {

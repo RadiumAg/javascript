@@ -9,10 +9,15 @@ const renderer = createRenderer({
         console.log(`设置${JSON.stringify(el)}的文本内容：${text}`);
         el.textContent = text;
     },
-    insert(el, parent, anchor = null) {
+    insert(el, parent, anchor = '') {
         console.log(`将${JSON.stringify(el)}的添加到：${JSON.stringify(parent)}`);
         // eslint-disable-next-line unicorn/prefer-modern-dom-apis
-        parent.append(el);
+        if (anchor) {
+            anchor.before(el);
+        }
+        else {
+            parent.append(el, anchor);
+        }
     },
     setText(el, text) {
         el.nodeValue = text;
