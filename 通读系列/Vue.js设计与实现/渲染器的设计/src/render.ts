@@ -1,8 +1,13 @@
-import { reactive } from 'vue';
+import { effect, reactive } from 'vue';
 
 export type VNode = {
   type: string | symbol | Component;
   el: el;
+  component?: {
+    state: any;
+    isMounted: boolean;
+    subTree: any;
+  };
   key?: string;
   props?: {
     id?: string;
@@ -14,6 +19,13 @@ export type VNode = {
 
 export type Component = {
   name: string;
+  props?: any;
+  beforeCreate?: () => void;
+  created?: () => void;
+  beforeMount?: () => void;
+  mounted?: () => void;
+  beforeUpdate?: () => void;
+  updated?: () => void;
   data?: () => any;
   render?: (state: any) => VNode;
 };
@@ -44,6 +56,19 @@ export function shouldSetAsProps(el: HTMLElement, key: string, value) {
   return key in el;
 }
 
+function resolveProps(
+  options: Record<string, any>,
+  propsData: Record<string, any>,
+) {
+  const props = {};
+  const attrs = {};
+
+  for (const key in propsData) {
+    if (key in options) {
+    }
+  }
+}
+
 export function createRenderer(options: CreateRendererOptions) {
   const { createElement, insert, setElementText, patchProps, setText } =
     options;
@@ -61,10 +86,69 @@ export function createRenderer(options: CreateRendererOptions) {
     anchor: HTMLElement,
   ) {
     const componentOptions = vnode.type;
-    const { render, data } = componentOptions as Component;
+    const {
+      render,
+      data,
+      created,
+      beforeMount,
+      mounted,
+      beforeUpdate,
+      updated,
+      props: propsOption,
+    } = componentOptions as Component;
     const state = reactive(data());
-    const subTree = render.call(state, state);
-    patch(null, subTree, container, anchor);
+
+    const instance = {
+      state,
+      isMounted: false,
+      subTree: null,
+    };
+    vnode.component = instance;
+
+    created && created();
+
+    effect(
+      () => {
+        const subTree = render.call(state, state);
+
+        if (!instance.isMounted) {
+          beforeMount && beforeMount.call(state);
+          patch(null, subTree, container, anchor);
+          instance.isMounted = true;
+          mounted && mounted.call(state);
+        } else {
+          beforeUpdate && beforeUpdate.call(state);
+          patch(instance.subTree, subTree, container, anchor);
+          updated && updated.call(state);
+        }
+        instance.subTree = subTree;
+      },
+      { scheduler: queueJob },
+    );
+  }
+
+  let isFlushing = false;
+  const queue = new Set<Function>();
+  const p = Promise.resolve();
+
+  /**
+   * 调度器
+   *
+   * @param {*} job
+   */
+  function queueJob(job: Function) {
+    queue.add(job);
+    if (!isFlushing) {
+      isFlushing = true;
+      p.then(() => {
+        try {
+          queue.forEach(job => job());
+        } finally {
+          isFlushing = false;
+          queue.clear();
+        }
+      });
+    }
   }
 
   /**

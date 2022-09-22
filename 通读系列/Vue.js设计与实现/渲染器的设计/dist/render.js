@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { effect, reactive } from 'vue';
 export const Text = Symbol('Text');
 export const Comment = Symbol('Comment');
 export const Fragment = Symbol('Fragment');
@@ -8,6 +8,14 @@ export function shouldSetAsProps(el, key, value) {
         return false;
     // 兜底
     return key in el;
+}
+function resolveProps(options, propsData) {
+    const props = {};
+    const attrs = {};
+    for (const key in propsData) {
+        if (key in options) {
+        }
+    }
 }
 export function createRenderer(options) {
     const { createElement, insert, setElementText, patchProps, setText } = options;
@@ -20,10 +28,53 @@ export function createRenderer(options) {
      */
     function mountComponent(vnode, container, anchor) {
         const componentOptions = vnode.type;
-        const { render, data } = componentOptions;
+        const { render, data, created, beforeMount, mounted, beforeUpdate, updated, props: propsOption, } = componentOptions;
         const state = reactive(data());
-        const subTree = render.call(state, state);
-        patch(null, subTree, container, anchor);
+        const instance = {
+            state,
+            isMounted: false,
+            subTree: null,
+        };
+        vnode.component = instance;
+        created && created();
+        effect(() => {
+            const subTree = render.call(state, state);
+            if (!instance.isMounted) {
+                beforeMount && beforeMount.call(state);
+                patch(null, subTree, container, anchor);
+                instance.isMounted = true;
+                mounted && mounted.call(state);
+            }
+            else {
+                beforeUpdate && beforeUpdate.call(state);
+                patch(instance.subTree, subTree, container, anchor);
+                updated && updated.call(state);
+            }
+            instance.subTree = subTree;
+        }, { scheduler: queueJob });
+    }
+    let isFlushing = false;
+    const queue = new Set();
+    const p = Promise.resolve();
+    /**
+     * 调度器
+     *
+     * @param {*} job
+     */
+    function queueJob(job) {
+        queue.add(job);
+        if (!isFlushing) {
+            isFlushing = true;
+            p.then(() => {
+                try {
+                    queue.forEach(job => job());
+                }
+                finally {
+                    isFlushing = false;
+                    queue.clear();
+                }
+            });
+        }
     }
     /**
      * 更新虚拟Dom
