@@ -1,5 +1,5 @@
 import { effect, ref } from 'vue';
-import { createRenderer, shouldSetAsProps } from './render.js';
+import { createRenderer, shouldSetAsProps, } from './render.js';
 const renderer = createRenderer({
     createElement(tag) {
         console.log(`创建${tag}元素`);
@@ -90,6 +90,24 @@ effect(() => {
                 children: 'text',
             },
         ],
+    };
+    renderer.render(vnode, document.querySelector('#app'));
+});
+effect(() => {
+    const vnode = {
+        name: 'MyComponent',
+        data() {
+            return {
+                foo: 'hello world',
+            };
+        },
+        render() {
+            return {
+                el: null,
+                type: 'div',
+                children: `foo的值是:${this['foo']}`,
+            };
+        },
     };
     renderer.render(vnode, document.querySelector('#app'));
 });

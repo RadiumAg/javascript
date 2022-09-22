@@ -1,13 +1,21 @@
+import { reactive } from 'vue';
+
 export type VNode = {
-  type: string | symbol;
+  type: string | symbol | Component;
   el: el;
   key?: string;
-  props: {
+  props?: {
     id?: string;
     disabled?: any;
     class?: string | Record<string, any>;
   } & Record<string, any>;
-  children: VNode[] | string;
+  children?: VNode[] | string;
+};
+
+export type Component = {
+  name: string;
+  data?: () => any;
+  render?: (state: any) => VNode;
 };
 
 type el = HTMLElement & {
@@ -39,6 +47,25 @@ export function shouldSetAsProps(el: HTMLElement, key: string, value) {
 export function createRenderer(options: CreateRendererOptions) {
   const { createElement, insert, setElementText, patchProps, setText } =
     options;
+
+  /**
+   * 渲染组件
+   *
+   * @param {VNode} vnode
+   * @param {HTMLElement} container
+   * @param {HTMLElement} anchor
+   */
+  function mountComponent(
+    vnode: VNode,
+    container: HTMLElement,
+    anchor: HTMLElement,
+  ) {
+    const componentOptions = vnode.type;
+    const { render, data } = componentOptions as Component;
+    const state = reactive(data());
+    const subTree = render.call(state, state);
+    patch(null, subTree, container, anchor);
+  }
 
   /**
    * 更新虚拟Dom
@@ -80,6 +107,8 @@ export function createRenderer(options: CreateRendererOptions) {
       if (!n1) {
         (n2.children as VNode[]).forEach(c => patch(null, c, container));
       }
+    } else if (typeof type === 'object') {
+      mountComponent(n2, container, anchor);
     } else {
       const el = (n2.el = n1.el);
       if (n2.children !== n1.children) {

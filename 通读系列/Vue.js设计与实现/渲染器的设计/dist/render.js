@@ -1,3 +1,4 @@
+import { reactive } from 'vue';
 export const Text = Symbol('Text');
 export const Comment = Symbol('Comment');
 export const Fragment = Symbol('Fragment');
@@ -10,6 +11,20 @@ export function shouldSetAsProps(el, key, value) {
 }
 export function createRenderer(options) {
     const { createElement, insert, setElementText, patchProps, setText } = options;
+    /**
+     * 渲染组件
+     *
+     * @param {VNode} vnode
+     * @param {HTMLElement} container
+     * @param {HTMLElement} anchor
+     */
+    function mountComponent(vnode, container, anchor) {
+        const componentOptions = vnode.type;
+        const { render, data } = componentOptions;
+        const state = reactive(data());
+        const subTree = render.call(state, state);
+        patch(null, subTree, container, anchor);
+    }
     /**
      * 更新虚拟Dom
      *
@@ -43,6 +58,9 @@ export function createRenderer(options) {
             if (!n1) {
                 n2.children.forEach(c => patch(null, c, container));
             }
+        }
+        else if (typeof type === 'object') {
+            mountComponent(n2, container, anchor);
         }
         else {
             const el = (n2.el = n1.el);

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id ="div"></div>
+    <button id="button">set promise</button>
+    <div id="img"></div>
+    <script>
+        let i = 0;
+        setInterval(() => {
+          document.querySelector('#div').innerHTML = i;
+          i++;
+        }, 1000);
+
+        document.querySelector('#button').addEventListener('click', () => {
+          const img = document.createElement('img');
+          img.src =
+    'https://gratisography.com/wp-content/uploads/2022/07/gratisography-street-walker-05-free-stock-photo-1170x780.jpg';
+          document.querySelector('#img').append(img);
+        });
+//           for (const [index, key] of Array.from({
+//     length: 10000,
+//   })
+//     .fill(1000000000000000000000000000000000000000000000)
+//     .entries()) {
+//             console.log((index * key) ^ 3);
+//           }
+
+setInterval(() => {
+  new Promise(resolve => {
+    resolve();
+  }).then(() => {
+    for (const [index, key] of Array.from({
+      length: 1000000,
+    })
+      .fill(1000000000000000000000000000000000000000000000)
+      .entries()) {
+      console.log(index * key);
+            }
+  });
+});
+    </script>
+</body>
+</html>
