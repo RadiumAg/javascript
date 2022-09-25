@@ -1,4 +1,11 @@
-import { effect, reactive } from 'vue';
+import {
+  effect,
+  onUnmounted,
+  reactive,
+  ref,
+  shallowReactive,
+  shallowReadonly,
+} from 'vue';
 
 export type VNode = {
   type: string | symbol | Component;
@@ -7,6 +14,7 @@ export type VNode = {
     state: any;
     isMounted: boolean;
     subTree: any;
+    props: any;
   };
   key?: string;
   props?: {
@@ -20,8 +28,9 @@ export type VNode = {
 export type Component = {
   name: string;
   props?: any;
+  setup?: (props, context) => any;
   beforeCreate?: () => void;
-  created?: () => void;
+  created?: (context) => void;
   beforeMount?: () => void;
   mounted?: () => void;
   beforeUpdate?: () => void;
@@ -45,6 +54,7 @@ type CreateRendererOptions = {
   patchProps: (el: el, key: string, preValue: any, nextValue: any) => void;
 };
 
+let currentInstance = null;
 export const Text = Symbol('Text');
 export const Comment = Symbol('Comment');
 export const Fragment = Symbol('Fragment');
@@ -56,6 +66,60 @@ export function shouldSetAsProps(el: HTMLElement, key: string, value) {
   return key in el;
 }
 
+function setCurrentInstance(instance) {
+  currentInstance = instance;
+}
+
+type defineAsyncComponentOptions = {
+  loader: () => Promise<any>;
+  timeout?: number;
+  errorComponent?: object;
+};
+
+export function defineAsyncComponent(
+  data: defineAsyncComponentOptions | (() => Promise<any>),
+) {
+  let options: defineAsyncComponentOptions;
+  if (typeof data === 'function') {
+    options = { loader: data };
+  }
+  const { loader } = options;
+  let InnerComp = null;
+  return {
+    name: 'AsyncComponentWrapper',
+    setup() {
+      const loaded = ref(false);
+      const timeout = ref(false);
+
+      loader().then(c => {
+        InnerComp = c;
+        loaded.value = true;
+      });
+
+      let timer = null;
+      if (options.timeout) {
+        timer = setTimeout(() => {
+          timeout.value = true;
+        }, options.timeout);
+      }
+
+      onUnmounted(() => clearTimeout(timer));
+      const placeholder = { type: Text, children: '' };
+
+      return () => {
+        if (loaded.value) {
+          return { type: InnerComp };
+        } else if (timeout.value) {
+          return options.errorComponent
+            ? { type: options.errorComponent }
+            : placeholder;
+        }
+        return placeholder;
+      };
+    },
+  };
+}
+
 function resolveProps(
   options: Record<string, any>,
   propsData: Record<string, any>,
@@ -63,9 +127,23 @@ function resolveProps(
   const props = {};
   const attrs = {};
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const key in propsData) {
-    if (key in options) {
+    if (key in options || key.startsWith('on')) {
+      props[key] = propsData[key];
+    } else {
+      attrs[key] = propsData[key];
     }
+  }
+
+  return [props, attrs];
+}
+
+export function onMounted(fn) {
+  if (currentInstance) {
+    currentInstance.mounted.push(fn);
+  } else {
+    console.error('onMounted 函数只能在 setup 中调用');
   }
 }
 
@@ -86,7 +164,7 @@ export function createRenderer(options: CreateRendererOptions) {
     anchor: HTMLElement,
   ) {
     const componentOptions = vnode.type;
-    const {
+    let {
       render,
       data,
       created,
@@ -94,18 +172,77 @@ export function createRenderer(options: CreateRendererOptions) {
       mounted,
       beforeUpdate,
       updated,
+      setup,
       props: propsOption,
     } = componentOptions as Component;
     const state = reactive(data());
-
+    const [props, attrs] = resolveProps(propsOption, vnode.props);
+    const slots = vnode.children || {};
     const instance = {
       state,
+      slots,
+      props: shallowReactive(props),
       isMounted: false,
       subTree: null,
+      mounted: [],
     };
     vnode.component = instance;
+    const setupContext = { attrs, emit, slots };
+    let setupState = null;
 
-    created && created();
+    setCurrentInstance(instance);
+    const setupResult = setup(shallowReadonly(instance.props), setupContext);
+    setCurrentInstance(null);
+
+    function emit(event, ...playload) {
+      const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
+      const handler = instance.props[eventName];
+      if (handler) {
+        handler(...playload);
+      } else {
+        console.error('事件不存在');
+      }
+    }
+
+    if (typeof setupResult === 'function') {
+      if (render) console.error('setup 函数返回渲染函数，render 选项将被忽略');
+      render = setupResult;
+    } else {
+      setupState = setupResult;
+    }
+
+    vnode.component = instance;
+
+    const renderContext = new Proxy(instance, {
+      get(t, k, r) {
+        const { state, props, slots } = t;
+        if (k === '$slots') return slots;
+        if (state && k in state) {
+          return state[k];
+        } else if (k in props) {
+          return props[k];
+        } else {
+          console.error('不存在');
+        }
+      },
+      set(t, k, v, r) {
+        const { state, props } = t;
+        if (state && k in state) {
+          state[k] = v;
+        } else if (k in props) {
+          console.warn(
+            `Attempting to mutate prop "${k as string}".Props are readonly`,
+          );
+        } else if (setupState && k in setupState) {
+          setupState[k] = v;
+        } else {
+          console.error('不存在');
+        }
+        return true;
+      },
+    });
+
+    created && created.call(renderContext, null);
 
     effect(
       () => {
@@ -115,6 +252,8 @@ export function createRenderer(options: CreateRendererOptions) {
           beforeMount && beforeMount.call(state);
           patch(null, subTree, container, anchor);
           instance.isMounted = true;
+          instance.mounted &&
+            instance.mounted.forEach(hook => hook.call(renderContext));
           mounted && mounted.call(state);
         } else {
           beforeUpdate && beforeUpdate.call(state);
@@ -194,10 +333,7 @@ export function createRenderer(options: CreateRendererOptions) {
     } else if (typeof type === 'object') {
       mountComponent(n2, container, anchor);
     } else {
-      const el = (n2.el = n1.el);
-      if (n2.children !== n1.children) {
-        setText(el, n2.children as string);
-      }
+      patchComponent(n1, n2, anchor);
     }
   }
 
@@ -226,6 +362,36 @@ export function createRenderer(options: CreateRendererOptions) {
     }
 
     patchChildren(n1, n2, el);
+  }
+
+  function patchComponent(n1: VNode, n2: VNode, anchor) {
+    const instance = (n2.component = n1.component);
+    const { props } = instance;
+
+    if (hasPropsChanged(n1.props, n2.props)) {
+      const [nextProps] = resolveProps((n2.type as Component).props, n2.props);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const k in nextProps) {
+        props[k] = nextProps[k];
+      }
+      // eslint-disable-next-line no-restricted-syntax
+      for (const k in props) {
+        if (!(k in nextProps)) delete props[k];
+      }
+    }
+  }
+
+  function hasPropsChanged(preProps, nextProps) {
+    const nextKeys = Object.keys(nextProps);
+    if (nextKeys.length !== Object.keys(preProps).length) {
+      return true;
+    }
+
+    for (const key of nextKeys) {
+      if (nextProps[key] !== preProps[key]) return true;
+    }
+
+    return false;
   }
 
   /**
