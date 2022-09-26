@@ -8,7 +8,17 @@ import {
   shallowRef,
 } from 'vue';
 
+type defineAsyncComponentOptions = {
+  loader: () => Promise<any>;
+  delay?: number;
+  timeout?: number;
+  onError?: any;
+  loadingComponent?: object;
+  errorComponent?: object;
+};
+
 export type VNode = {
+  shouldKeepAlive: boolean;
   type: string | symbol | Component;
   el: el;
   component?: {
@@ -27,7 +37,7 @@ export type VNode = {
 };
 
 export type Component = {
-  name: string;
+  name?: string;
   props?: any;
   setup?: (props, context) => any;
   beforeCreate?: () => void;
@@ -71,12 +81,41 @@ function setCurrentInstance(instance) {
   currentInstance = instance;
 }
 
-type defineAsyncComponentOptions = {
-  loader: () => Promise<any>;
-  delay?: number;
-  timeout?: number;
-  loadingComponent?: object;
-  errorComponent?: object;
+export const KeepAlive = {
+  __isKeepAlive: true,
+  setup(props, { slots }) {
+    const cache = new Map();
+    const instance = currentInstance;
+    const { move, createElement } = instance.keepAliveCtx;
+    const storageContainer = createElement('div');
+    instance._deActive = vnode => {
+      move(vnode, storageContainer);
+    };
+    instance._activate = (vnode, container, anchor) => {
+      move(vnode, container, anchor);
+    };
+
+    return () => {
+      const rawVnode = slots.default();
+      if (typeof rawVnode.type !== 'object') {
+        return rawVnode;
+      }
+
+      const cachedVNode = cache.get(rawVnode.type);
+
+      if (cachedVNode) {
+        rawVnode.component = cachedVNode.component;
+        rawVnode.keptAlive = true;
+      } else {
+        cache.set(rawVnode.type, rawVnode);
+      }
+
+      rawVnode.shouldKeepAlive = true;
+      rawVnode.keepAliveInstance = instance;
+
+      return rawVnode;
+    };
+  },
 };
 
 export function defineAsyncComponent(
@@ -88,6 +127,26 @@ export function defineAsyncComponent(
   }
   const { loader } = options;
   let InnerComp = null;
+  let retries = 0;
+
+  function load() {
+    return loader().catch(err => {
+      if (options.onError) {
+        return new Promise((resolve, reject) => {
+          const retry = () => {
+            resolve(load());
+            retries++;
+          };
+
+          const fail = () => reject(err);
+          options.onError(retry, fail, retries);
+        });
+      } else {
+        throw err;
+      }
+    });
+  }
+
   return {
     name: 'AsyncComponentWrapper',
     setup() {
@@ -190,7 +249,7 @@ export function createRenderer(options: CreateRendererOptions) {
     container: HTMLElement,
     anchor: HTMLElement,
   ) {
-    const componentOptions = vnode.type;
+    let componentOptions = vnode.type;
     let {
       render,
       data,
@@ -203,6 +262,7 @@ export function createRenderer(options: CreateRendererOptions) {
       props: propsOption,
     } = componentOptions as Component;
     const state = reactive(data());
+    const isFunctional = typeof vnode.type === 'function';
     const [props, attrs] = resolveProps(propsOption, vnode.props);
     const slots = vnode.children || {};
     const instance = {
@@ -220,6 +280,13 @@ export function createRenderer(options: CreateRendererOptions) {
     setCurrentInstance(instance);
     const setupResult = setup(shallowReadonly(instance.props), setupContext);
     setCurrentInstance(null);
+
+    if (isFunctional) {
+      componentOptions = {
+        render: vnode.type as () => VNode,
+        props: (vnode.type as Component).props,
+      };
+    }
 
     function emit(event, ...playload) {
       const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
@@ -359,8 +426,12 @@ export function createRenderer(options: CreateRendererOptions) {
       }
     } else if (typeof type === 'object') {
       mountComponent(n2, container, anchor);
-    } else {
-      patchComponent(n1, n2, anchor);
+    } else if (typeof type === 'object' || typeof type === 'function') {
+      if (!n1) {
+        mountComponent(n2, container, anchor);
+      } else {
+        patchComponent(n1, n2, anchor);
+      }
     }
   }
 
@@ -706,6 +777,10 @@ export function createRenderer(options: CreateRendererOptions) {
     } else if (typeof vnode.type === 'boolean') {
       unmounted(vnode.component.subTree);
       return;
+    } else if (typeof vnode.type === 'object' && vnode.shouldKeepAlive) {
+      vnode.keepAliveInstance._deActivate(vnode);
+    } else {
+      unmounted(vnode.component.subTree);
     }
     const parent = vnode.el.parentNode;
     if (parent) vnode.el.remove();

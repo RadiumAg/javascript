@@ -1,4 +1,4 @@
-import { effect, onUnmounted, reactive, ref, shallowReactive, shallowReadonly, } from 'vue';
+import { effect, onUnmounted, reactive, ref, shallowReactive, shallowReadonly, shallowRef, } from 'vue';
 let currentInstance = null;
 export const Text = Symbol('Text');
 export const Comment = Symbol('Comment');
@@ -13,6 +13,38 @@ export function shouldSetAsProps(el, key, value) {
 function setCurrentInstance(instance) {
     currentInstance = instance;
 }
+export const KeepAlive = {
+    __isKeepAlive: true,
+    setup(props, { slots }) {
+        const cache = new Map();
+        const instance = currentInstance;
+        const { move, createElement } = instance.keepAliveCtx;
+        const storageContainer = createElement('div');
+        instance._deActive = vnode => {
+            move(vnode, storageContainer);
+        };
+        instance._activate = (vnode, container, anchor) => {
+            move(vnode, container, anchor);
+        };
+        return () => {
+            const rawVnode = slots.default();
+            if (typeof rawVnode.type !== 'object') {
+                return rawVnode;
+            }
+            const cachedVNode = cache.get(rawVnode.type);
+            if (cachedVNode) {
+                rawVnode.component = cachedVNode.component;
+                rawVnode.keptAlive = true;
+            }
+            else {
+                cache.set(rawVnode.type, rawVnode);
+            }
+            rawVnode.shouldKeepAlive = true;
+            rawVnode.keepAliveInstance = instance;
+            return rawVnode;
+        };
+    },
+};
 export function defineAsyncComponent(data) {
     let options;
     if (typeof data === 'function') {
@@ -20,18 +52,55 @@ export function defineAsyncComponent(data) {
     }
     const { loader } = options;
     let InnerComp = null;
+    let retries = 0;
+    function load() {
+        return loader().catch(err => {
+            if (options.onError) {
+                return new Promise((resolve, reject) => {
+                    const retry = () => {
+                        resolve(load());
+                        retries++;
+                    };
+                    const fail = () => reject(err);
+                    options.onError(retry, fail, retries);
+                });
+            }
+            else {
+                throw err;
+            }
+        });
+    }
     return {
         name: 'AsyncComponentWrapper',
         setup() {
+            let timer = null;
+            let loadingTimer = null;
             const loaded = ref(false);
+            const loading = ref(false);
             const timeout = ref(false);
-            loader().then(c => {
+            const error = shallowRef(null);
+            loader()
+                .then(c => {
                 InnerComp = c;
                 loaded.value = true;
+            })
+                .catch(err => (error.value = err))
+                .finally(() => {
+                loading.value = false;
+                clearTimeout(loadingTimer);
             });
-            let timer = null;
+            if (options.delay) {
+                loadingTimer = setTimeout(() => {
+                    loading.value = true;
+                }, options.delay);
+            }
+            else {
+                loading.value = true;
+            }
             if (options.timeout) {
                 timer = setTimeout(() => {
+                    const err = new Error(`Async component timed out after ${options.timeout}ms`);
+                    error.value = err;
                     timeout.value = true;
                 }, options.timeout);
             }
@@ -41,12 +110,18 @@ export function defineAsyncComponent(data) {
                 if (loaded.value) {
                     return { type: InnerComp };
                 }
-                else if (timeout.value) {
-                    return options.errorComponent
-                        ? { type: options.errorComponent }
-                        : placeholder;
+                else if (timeout.value && options.errorComponent) {
+                    return {
+                        type: options.errorComponent,
+                        props: { error: error.value },
+                    };
                 }
-                return placeholder;
+                else if (loading.value && options.loadingComponent) {
+                    return { type: options.loadingComponent };
+                }
+                else {
+                    return placeholder;
+                }
             };
         },
     };
@@ -83,9 +158,10 @@ export function createRenderer(options) {
      * @param {HTMLElement} anchor
      */
     function mountComponent(vnode, container, anchor) {
-        const componentOptions = vnode.type;
+        let componentOptions = vnode.type;
         let { render, data, created, beforeMount, mounted, beforeUpdate, updated, setup, props: propsOption, } = componentOptions;
         const state = reactive(data());
+        const isFunctional = typeof vnode.type === 'function';
         const [props, attrs] = resolveProps(propsOption, vnode.props);
         const slots = vnode.children || {};
         const instance = {
@@ -102,6 +178,12 @@ export function createRenderer(options) {
         setCurrentInstance(instance);
         const setupResult = setup(shallowReadonly(instance.props), setupContext);
         setCurrentInstance(null);
+        if (isFunctional) {
+            componentOptions = {
+                render: vnode.type,
+                props: vnode.type.props,
+            };
+        }
         function emit(event, ...playload) {
             const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
             const handler = instance.props[eventName];
@@ -232,8 +314,13 @@ export function createRenderer(options) {
         else if (typeof type === 'object') {
             mountComponent(n2, container, anchor);
         }
-        else {
-            patchComponent(n1, n2, anchor);
+        else if (typeof type === 'object' || typeof type === 'function') {
+            if (!n1) {
+                mountComponent(n2, container, anchor);
+            }
+            else {
+                patchComponent(n1, n2, anchor);
+            }
         }
     }
     /**
@@ -551,6 +638,16 @@ export function createRenderer(options) {
         if (vnode.type === Fragment) {
             vnode.children.forEach(c => unmounted(c));
             return;
+        }
+        else if (typeof vnode.type === 'boolean') {
+            unmounted(vnode.component.subTree);
+            return;
+        }
+        else if (typeof vnode.type === 'object' && vnode.shouldKeepAlive) {
+            vnode.keepAliveInstance._deActivate(vnode);
+        }
+        else {
+            unmounted(vnode.component.subTree);
         }
         const parent = vnode.el.parentNode;
         if (parent)
