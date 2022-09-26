@@ -5,6 +5,7 @@ import {
   ref,
   shallowReactive,
   shallowReadonly,
+  shallowRef,
 } from 'vue';
 
 export type VNode = {
@@ -72,7 +73,9 @@ function setCurrentInstance(instance) {
 
 type defineAsyncComponentOptions = {
   loader: () => Promise<any>;
+  delay?: number;
   timeout?: number;
+  loadingComponent?: object;
   errorComponent?: object;
 };
 
@@ -88,17 +91,37 @@ export function defineAsyncComponent(
   return {
     name: 'AsyncComponentWrapper',
     setup() {
-      const loaded = ref(false);
-      const timeout = ref(false);
-
-      loader().then(c => {
-        InnerComp = c;
-        loaded.value = true;
-      });
-
       let timer = null;
+      let loadingTimer = null;
+      const loaded = ref(false);
+      const loading = ref(false);
+      const timeout = ref(false);
+      const error = shallowRef(null);
+
+      loader()
+        .then(c => {
+          InnerComp = c;
+          loaded.value = true;
+        })
+        .catch(err => (error.value = err))
+        .finally(() => {
+          loading.value = false;
+          clearTimeout(loadingTimer);
+        });
+
+      if (options.delay) {
+        loadingTimer = setTimeout(() => {
+          loading.value = true;
+        }, options.delay);
+      } else {
+        loading.value = true;
+      }
       if (options.timeout) {
         timer = setTimeout(() => {
+          const err = new Error(
+            `Async component timed out after ${options.timeout}ms`,
+          );
+          error.value = err;
           timeout.value = true;
         }, options.timeout);
       }
@@ -109,12 +132,16 @@ export function defineAsyncComponent(
       return () => {
         if (loaded.value) {
           return { type: InnerComp };
-        } else if (timeout.value) {
-          return options.errorComponent
-            ? { type: options.errorComponent }
-            : placeholder;
+        } else if (timeout.value && options.errorComponent) {
+          return {
+            type: options.errorComponent,
+            props: { error: error.value },
+          };
+        } else if (loading.value && options.loadingComponent) {
+          return { type: options.loadingComponent };
+        } else {
+          return placeholder;
         }
-        return placeholder;
       };
     },
   };
@@ -675,6 +702,9 @@ export function createRenderer(options: CreateRendererOptions) {
   function unmounted(vnode: VNode) {
     if (vnode.type === Fragment) {
       (vnode.children as VNode[]).forEach(c => unmounted(c));
+      return;
+    } else if (typeof vnode.type === 'boolean') {
+      unmounted(vnode.component.subTree);
       return;
     }
     const parent = vnode.el.parentNode;
