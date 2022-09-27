@@ -18,7 +18,7 @@ type defineAsyncComponentOptions = {
 };
 
 export type VNode = {
-  shouldKeepAlive: boolean;
+  shouldKeepAlive?: boolean;
   type: string | symbol | Component;
   el: el;
   component?: {
@@ -34,11 +34,14 @@ export type VNode = {
     class?: string | Record<string, any>;
   } & Record<string, any>;
   children?: VNode[] | string;
+  keepAliveInstance?: any;
 };
 
 export type Component = {
   name?: string;
   props?: any;
+  __isTelport?: boolean;
+  __isKeepAlive?: boolean;
   setup?: (props, context) => any;
   beforeCreate?: () => void;
   created?: (context) => void;
@@ -83,6 +86,10 @@ function setCurrentInstance(instance) {
 
 export const KeepAlive = {
   __isKeepAlive: true,
+  props: {
+    include: RegExp,
+    exclude: RegExp,
+  },
   setup(props, { slots }) {
     const cache = new Map();
     const instance = currentInstance;
@@ -100,6 +107,14 @@ export const KeepAlive = {
       if (typeof rawVnode.type !== 'object') {
         return rawVnode;
       }
+      const name = rawVnode.type.name;
+      if (
+        name &&
+        ((props.include && !props.include.test(name)) ||
+          (props.exclude && props.exclude.test(name)))
+      ) {
+        return rawVnode;
+      }
 
       const cachedVNode = cache.get(rawVnode.type);
 
@@ -115,6 +130,23 @@ export const KeepAlive = {
 
       return rawVnode;
     };
+  },
+};
+
+export const Teleport = {
+  __isTeleport: true,
+  process(n1, n2, container, anchor, internals) {
+    const { patch } = internals;
+    if (!n1) {
+      const target =
+        typeof n2.props.to === 'string'
+          ? document.querySelector(n2.props.t)
+          : n2.props.to;
+
+      n2.children.forEach(c => patch(null, c, target, anchor));
+    } else {
+      patchChildren();
+    }
   },
 };
 
@@ -234,8 +266,7 @@ export function onMounted(fn) {
 }
 
 export function createRenderer(options: CreateRendererOptions) {
-  const { createElement, insert, setElementText, patchProps, setText } =
-    options;
+  const { createElement, insert, setElementText, patchProps } = options;
 
   /**
    * 渲染组件
@@ -272,10 +303,21 @@ export function createRenderer(options: CreateRendererOptions) {
       isMounted: false,
       subTree: null,
       mounted: [],
+      keepAliveCtx: null,
     };
     vnode.component = instance;
     const setupContext = { attrs, emit, slots };
     let setupState = null;
+    const isKeepAlive = (vnode.type as Component).__isKeepAlive;
+
+    if (isKeepAlive) {
+      instance.keepAliveCtx = {
+        move(vnode, container, anchor) {
+          insert(vnode.component.subTree.el, container, anchor);
+        },
+        createElement,
+      };
+    }
 
     setCurrentInstance(instance);
     const setupResult = setup(shallowReadonly(instance.props), setupContext);
@@ -432,6 +474,19 @@ export function createRenderer(options: CreateRendererOptions) {
       } else {
         patchComponent(n1, n2, anchor);
       }
+    } else if (typeof type === 'object' && type.__isTelport) {
+      type.process(n1, n2, container, anchor, {
+        patch,
+        patchChildren,
+        unmounted,
+        move(vnode, container, anchor) {
+          insert(
+            vnode.component ? vnode.component.subTree.el : vnode.el,
+            container,
+            anchor,
+          );
+        },
+      });
     }
   }
 
