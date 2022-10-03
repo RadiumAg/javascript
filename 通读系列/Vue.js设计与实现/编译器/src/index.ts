@@ -163,14 +163,58 @@ function dump(node, indent = 0) {
   }
 }
 
-function transform(ast) {}
+function transformElement(node) {
+  if (node.type === 'Element' && node.tag === 'p') {
+    node.tag = 'h1';
+  }
+}
 
-function traverseNode(ast) {
+function transformText(node) {
+  if (node.type === 'Text') {
+    node.content = node.content.repeat(2);
+  }
+}
+
+function transform(ast) {
+  const context = {
+    currentNode: null,
+    childIndex: 0,
+    parent: null,
+    replaceNode(node) {
+      context.parent.children[context.childIndex] = node;
+      context.currentNode = node;
+    },
+    removeNode() {
+      if (context.parent) {
+        context.parent.children.splice(context.childIndex, 1);
+        context.currentNode = null;
+      }
+    },
+    nodeTransforms: {
+      transformElement,
+      transformText,
+    },
+  };
+
+  traverseNode(ast, context);
+  console.log(dump(ast));
+}
+
+function traverseNode(ast, context) {
   const currentNode = ast;
+  const transforms = context.nodeTransforms;
+  for (const transform of transforms) {
+    transform(currentNode, context);
+    if (!context.currentNode) return;
+  }
+
   const children = currentNode.children;
+
   if (children) {
-    for (const child of children) {
-      traverseNode(child);
+    for (const [i, child] of children.entries()) {
+      context.parent = context.currentNode;
+      context.childIndex = i;
+      traverseNode(child, context);
     }
   }
 }
