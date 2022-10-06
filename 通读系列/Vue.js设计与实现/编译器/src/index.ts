@@ -201,14 +201,18 @@ function transform(ast) {
 }
 
 function traverseNode(ast, context) {
-  const currentNode = ast;
+  context.currentNode = ast;
+  const exitFns = [];
   const transforms = context.nodeTransforms;
   for (const transform of transforms) {
-    transform(currentNode, context);
+    const onExit = transform(context.currentNode, context);
+    if (onExit) {
+      exitFns.push(onExit);
+    }
     if (!context.currentNode) return;
   }
 
-  const children = currentNode.children;
+  const children = context.currentNode.children;
 
   if (children) {
     for (const [i, child] of children.entries()) {
@@ -216,5 +220,10 @@ function traverseNode(ast, context) {
       context.childIndex = i;
       traverseNode(child, context);
     }
+  }
+
+  let i = exitFns.length;
+  while (i--) {
+    exitFns[i]();
   }
 }
