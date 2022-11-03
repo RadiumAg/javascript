@@ -5,6 +5,8 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
+        "slen",
+        "tlen",
         "vnode"
     ],
     "ignoreWords": [],
