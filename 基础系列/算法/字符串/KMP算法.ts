@@ -18,6 +18,9 @@ function KMP(s: string, t: string, pos: number) {
   }
 
   get_next(t);
+
+  console.log(next);
+
   while (i < slen && j < tlen) {
     if (j === -1 || s[i] === t[j]) i++, j++;
     else j = next[j];
