@@ -5,9 +5,9 @@ function KMP(s: string, t: string, pos: number) {
   let tlen = 0;
   const next: number[] = [];
   slen = s.length;
-  tlen = s.length;
+  tlen = t.length;
 
-  function get_next(t: string) {
+  function get_next() {
     let j = 0,
       k = -1;
     next[0] = -1;
@@ -17,17 +17,15 @@ function KMP(s: string, t: string, pos: number) {
     }
   }
 
-  get_next(t);
-
-  console.log(next);
+  get_next();
 
   while (i < slen && j < tlen) {
     if (j === -1 || s[i] === t[j]) i++, j++;
     else j = next[j];
   }
 
-  if (j >= tlen) return i - tlen + 1;
+  if (j >= tlen) return i - tlen;
   else return -1;
 }
 
-console.log(KMP('abababa', 'a', 0));
+console.log(KMP('abcbaba', 'aba', 0));
