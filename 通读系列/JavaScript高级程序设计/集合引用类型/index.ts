@@ -41,3 +41,9 @@ console.log(people.toLocaleString()); //都以逗号分隔
 const colors = ['red', 'green', 'blue'];
 const colors2 = colors.concat('yellow', ['black', 'brown']);
 console.log(colors2);
+
+const buf = new ArrayBuffer(16);
+const vm = new DataView(buf);
+vm.setInt16(0, 16);
+console.log(buf);
+console.log(vm.getInt8(0));
