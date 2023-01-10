@@ -47,3 +47,17 @@ const vm = new DataView(buf);
 vm.setInt16(0, 16);
 console.log(buf);
 console.log(vm.getInt8(0));
+
+// 迭代器模式
+
+class Counter {
+  count:number;
+  constructor(limit) {
+    this.count = 1;
+    this.limit = limit;
+  }
+
+  next() {
+    if(this.count)
+  }
+}
