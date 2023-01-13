@@ -148,5 +148,21 @@
   const foo = {
     *generatorFn() {},
   };
-  console.log(generatorFn());
+  const g = generatorFn();
+  console.log(g[Symbol.iterator]());
+  console.log(g === g[Symbol.iterator]());
+})();
+
+// 产生可迭代对象
+(() => {
+  function* generatorFn() {
+    yield* [1, 2, 3];
+    yield* [3, 4];
+    yield* [5, 6];
+  }
+
+  const genatorObject = generatorFn();
+  for (const x of genatorObject) {
+    console.log(x);
+  }
 })();
