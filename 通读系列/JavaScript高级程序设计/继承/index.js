@@ -1,18 +1,33 @@
+//工厂模式
+(() => {
+  // 这种方式无法确定对象时什么类型
+  function createPerson(name, age, job) {
+    const o = new Object();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = function () {
+      console.log(this.name);
+    };
+    return 0;
+  }
+
+  const person1 = createPerson('Nicholas', 29, 'Software Engineer');
+})();
 
 // 继承
-
-function create (par = function () { }, ...args) {
-  const create = Object.create(par.prototype);// 创建新的对象，并将par.prototype成为新对象的prototype。
+function create(par = function () {}, ...args) {
+  const create = Object.create(par.prototype); // 创建新的对象，并将par.prototype成为新对象的prototype。
   const res = par.apply(create, args);
   return res instanceof Object ? res : create;
 }
 // 原型链继承
 (() => {
-  function SuperType () {
+  function SuperType() {
     this.property = true;
   }
 
-  function SubType () {
+  function SubType() {
     this.subpropterty = false;
   }
 
@@ -31,17 +46,18 @@ function create (par = function () { }, ...args) {
   console.log(instance1.getSuperValue);
 })();
 
-console.log('------------------------------------------------------------------------------------------------------');
+console.log(
+  '------------------------------------------------------------------------------------------------------',
+);
 // 不在原型对象中定义属性的原因
 // 使用手写create更加好理解为什么会出现原型引用的情况
 (() => {
-  function SuperType () {
+  function SuperType() {
     this.colors = ['red', 'blue', 'green'];
     this.name = 'test';
   }
 
-  function SubType () {
-  }
+  function SubType() {}
 
   // 继承了SuperType
   SubType.prototype = create(SuperType);
@@ -55,25 +71,27 @@ console.log('-------------------------------------------------------------------
 })();
 // object.create 不会对对象属性进行重建
 (() => {
-  function a () {};
+  function a() {}
   a.prototype.b = { c: 0 };
   const b = Object.create(a.prototype);
   b.c = 2;
   console.log(b.c);
 })();
 
-console.log('------------------------------------------------------------------------------------------------------');
+console.log(
+  '------------------------------------------------------------------------------------------------------',
+);
 /*
-* 构造函数继承
-* 惊喜点：可以向构造函数传参，类似super
-*/
+ * 构造函数继承
+ * 惊喜点：可以向构造函数传参，类似super
+ */
 (() => {
-  function SuperType (name) {
+  function SuperType(name) {
     this.colors = ['red', 'blue', 'green'];
     this.name = name;
   }
 
-  function SubType () {
+  function SubType() {
     SuperType.call(this, 'Nicholas');
   }
 

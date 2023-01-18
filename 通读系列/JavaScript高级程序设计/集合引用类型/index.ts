@@ -201,3 +201,59 @@
   book.year = 2018;
   console.log(book.edition);
 })();
+
+(() => {
+  let dest, src, result;
+  dest = {};
+  src = { id: 'src' };
+  result = Object.assign(dest, src);
+  console.log(dest === result);
+  console.log(dest !== src);
+  console.log(result);
+
+  dest = {
+    set a(val) {
+      console.log(`Invoked dest setter with param ${val}`);
+    },
+  };
+})();
+
+// Object.is 考虑边界情况
+(() => {
+  console.log(Object.is(+0, -0)); // false
+  console.log(Object.is(+0, 0)); // false
+  console.log(Object.is(-0, 0)); // false
+  console.log(Object.is(Number.NaN, Number.NaN));
+})();
+
+// 解构
+(() => {
+  // 内部调用 toObject
+  const { length } = 'foobar';
+  console.log(length);
+  const { constructor } = 4;
+})();
+
+// 嵌套结构
+(() => {
+  const person = {
+    name: 'Matt',
+    age: 27,
+    job: {
+      title: 'Softwrae enngineer',
+    },
+  };
+
+  const personCopy = {
+    name: '',
+    age: 1,
+    job: {
+      title: '`',
+    },
+  };
+  ({
+    name: personCopy.name,
+    age: personCopy.age,
+    job: personCopy.job,
+  } = person);
+})();
