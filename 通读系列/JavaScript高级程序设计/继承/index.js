@@ -97,7 +97,7 @@
 };
 
 // hasOwnProperty
-(() => {
+() => {
   function Person() {}
   Person.prototype.name = 'Nicholas';
   Person.prototype.age = 29;
@@ -113,7 +113,8 @@
   delete person1.name;
   console.log(person1.name);
   console.log(person1.hasOwnProperty('name'));
-})();
+};
+
 // 继承
 () => {
   function create(par = function () {}, ...args) {
@@ -134,7 +135,7 @@
   }
 
   SuperType.prototype.getSuperValue = function () {
-    return this.getSuperValue;
+    return this.property;
   };
   // 继承了SuperType
   SubType.prototype = new SuperType();
@@ -143,9 +144,7 @@
     return this.subpropterty;
   };
   const instance = new SubType();
-  const instance1 = new SubType();
-  instance.getSuperValue = 0;
-  console.log(instance1.getSuperValue);
+  console.log(instance.getSuperValue());
 };
 
 // 不在原型对象中定义属性的原因
@@ -195,3 +194,24 @@
   const instance1 = create(SubType);
   console.log(instance1);
 };
+
+// 类定义
+
+() => {
+  // 类声明
+  class Person {}
+  // 类表达式
+  const Animal = class {};
+};
+
+// 神操作
+(() => {
+  class Person {}
+  const p1 = new Person();
+  console.log(p1.constructor === Person);
+  console.log(p1 instanceof Person);
+  console.log(p1 instanceof Person.constructor);
+  const p2 = new Person.constructor();
+  console.log(p2 instanceof Person);
+  console.log(p2 instanceof Person.constructor);
+})();
