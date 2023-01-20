@@ -58,13 +58,35 @@
   console.log(Person.prototype.__proto__.constructor === Object);
   console.log(Person.prototype.__proto__.__proto__ === null);
   console.log(Person.prototype.__proto__);
+
+  const person1 = new Person(),
+    person2 = new Person();
+  console.log(person1 !== Person); //true
+  console.log(person1 !== Person.prototype); //true
+  console.log(Person.prototype !== Person);
+
+  // 实例与构造函数没有直接联系，与原型对象有直接联系
+  console.log(person1.__proto__ === Person.prototype); //true
+  console.log(person1.__proto__.constructor === Person); //true
+
+  // 同一个构造函数创建的两个实例，共享一个原型对象
+  console.log(person1._proto__ === person2.__proto__); //true
+
+  // instanceof 检查实例的原型链中，是否包含指定构造函数的原型
+  console.log(person1 instanceof Person); // true
+  console.log(person1 instanceof Object); // true
+  console.log(Person.prototype instanceof Object); // true
 })();
+
 // 继承
-function create(par = function () {}, ...args) {
-  const create = Object.create(par.prototype); // 创建新的对象，并将par.prototype成为新对象的prototype。
-  const res = par.apply(create, args);
-  return res instanceof Object ? res : create;
-}
+() => {
+  function create(par = function () {}, ...args) {
+    const create = Object.create(par.prototype); // 创建新的对象，并将par.prototype成为新对象的prototype。
+    const res = par.apply(create, args);
+    return res instanceof Object ? res : create;
+  }
+};
+
 // 原型链继承
 () => {
   function SuperType() {
