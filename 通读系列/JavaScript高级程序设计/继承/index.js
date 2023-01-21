@@ -215,3 +215,20 @@
   console.log(p2 instanceof Person);
   console.log(p2 instanceof Person.constructor);
 })();
+
+// 静态成员
+() => {
+  class Person {
+    constructor() {
+      this.locate = () => console.log('instance', this);
+    }
+
+    locate() {
+      console.log('prototype', this);
+    }
+
+    static locate() {
+      console.log('class', this);
+    }
+  }
+};
