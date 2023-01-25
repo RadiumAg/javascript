@@ -64,3 +64,64 @@
     };
   }
 };
+
+// 特权方法
+() => {
+  function MyObject() {
+    let privateVariable = 10;
+    function privateFunction() {
+      return false;
+    }
+
+    this.publicMethod = function () {
+      privateVariable++;
+      return privateFunction();
+    };
+  }
+};
+
+() => {
+  let privateVariable = 10;
+  function privateFunction() {
+    return false;
+  }
+
+  globalThis.MyObject = function () {};
+  globalThis.MyObject.prototype.publicMethod = () => {
+    privateVariable = privateFunction + 1;
+    return privateFunction();
+  };
+};
+
+(() => {
+  let name = '';
+
+  globalThis.Persion = function (value) {
+    name = value;
+  };
+
+  globalThis.prototype.getName = function () {
+    return name;
+  };
+
+  globalThis.prototype.setName = function () {
+    name = value;
+  };
+})();
+
+(() => {
+  const singleton = function () {
+    let privateVariable = 10;
+    function privateFunction() {
+      return false;
+    }
+
+    return {
+      publicProperty: true,
+      publicMethod() {
+        privateVariable++;
+        return privateFunction();
+      },
+    };
+  };
+})();
