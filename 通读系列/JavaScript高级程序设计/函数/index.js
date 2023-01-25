@@ -110,7 +110,7 @@
 })();
 
 (() => {
-  const singleton = function () {
+  const singleton = (function () {
     let privateVariable = 10;
     function privateFunction() {
       return false;
@@ -123,5 +123,28 @@
         return privateFunction();
       },
     };
-  };
+  })();
 })();
+
+// 模块增强模式
+() => {
+  class BaseComponent {}
+
+  const application = function () {
+    const components = [];
+    components.push(new BaseComponent());
+    const app = new BaseComponent();
+
+    app.getComponentCount = function () {
+      return components.length;
+    };
+
+    app.registerComponent = function (component) {
+      if (typeof component === 'object') {
+        component.push(component);
+      }
+    };
+
+    return app;
+  };
+};
