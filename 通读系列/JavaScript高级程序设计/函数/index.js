@@ -26,7 +26,7 @@
 };
 
 //caller 引用调用当前函数的函数
-(() => {
+() => {
   function outer() {
     inner();
   }
@@ -36,7 +36,7 @@
   }
 
   outer();
-})();
+};
 
 // 尾递归优化
 () => {
@@ -93,7 +93,7 @@
   };
 };
 
-(() => {
+() => {
   let name = '';
 
   globalThis.Persion = function (value) {
@@ -107,9 +107,9 @@
   globalThis.prototype.setName = function () {
     name = value;
   };
-})();
+};
 
-(() => {
+() => {
   const singleton = (function () {
     let privateVariable = 10;
     function privateFunction() {
@@ -124,7 +124,7 @@
       },
     };
   })();
-})();
+};
 
 // 模块增强模式
 () => {
@@ -163,3 +163,24 @@
     console.log(e);
   }
 };
+
+// 期约的实例方法
+
+// finally
+(() => {
+  const p1 = Promise.resolve('foo');
+  const p2 = p1.finally(() => undefined);
+  const p3 = p1.finally(() => {});
+  const p4 = p1.finally(() => Promise.resolve());
+  const p5 = p1.finally();
+  const p6 = p1.finally(() => 'bar');
+  const p7 = p1.finally(() => Promise.resolve('bar'));
+  const p8 = p1.finally(() => new Error('qux'));
+  setTimeout(console.log, 0, p2);
+  setTimeout(console.log, 0, p3);
+  setTimeout(console.log, 0, p4);
+  setTimeout(console.log, 0, p5);
+  setTimeout(console.log, 0, p6);
+  setTimeout(console.log, 0, p7);
+  setTimeout(console.log, 0, p8);
+})();
