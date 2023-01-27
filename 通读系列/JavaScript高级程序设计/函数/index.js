@@ -148,3 +148,18 @@
     return app;
   };
 };
+
+// 同步/异步执行的二元性
+() => {
+  try {
+    throw new Error('foo');
+  } catch (e) {
+    console.log(e);
+  }
+
+  try {
+    Promise.reject(new Error('bar'));
+  } catch {
+    console.log(e);
+  }
+};
