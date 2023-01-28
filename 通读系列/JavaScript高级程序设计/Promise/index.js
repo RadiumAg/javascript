@@ -73,7 +73,7 @@ const { readSync } = require('fs');
   p1.finally(() => setTimeout(console.log, 0, 8));
 };
 
-(() => {
+() => {
   class TrackablePromise extends Promise {
     constructor(executor) {
       const notifyHandlers = [];
@@ -106,4 +106,37 @@ const { readSync } = require('fs');
 
   p.notify(x => setTimeout(console.log, 0, 'progress:', x));
   p.then(() => setTimeout(console.log, 0, 'completed'));
+};
+
+(() => {
+  async function foo() {
+    return 'foo';
+  }
+
+  foo().then(console.log);
+  // foo
+
+  async function bar() {
+    return ['bar'];
+  }
+
+  bar().then(console.log);
+  // ['bar']
+  // 返回了一个实现了thenable接口的非期约对象
+  async function baz() {
+    const thenable = {
+      then(callback) {
+        throw 11;
+      },
+    };
+    return thenable;
+  }
+
+  baz().then(console.log);
+
+  async function qux() {
+    return Promise.resolve('qux');
+  }
+
+  qux().then(console.log);
 })();
