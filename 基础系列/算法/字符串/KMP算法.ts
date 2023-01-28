@@ -12,8 +12,10 @@ function KMP(s: string, t: string, pos: number) {
       k = -1;
     next[0] = -1;
     while (j < tlen) {
-      if (k === -1 || t[j] === t[k]) next[++j] = ++k;
-      else k = next[k];
+      console.log(j, k);
+      if (k === -1 || t[j] === t[k]) {
+        next[++j] = ++k;
+      } else k = next[k];
     }
   }
 
@@ -28,4 +30,4 @@ function KMP(s: string, t: string, pos: number) {
   else return -1;
 }
 
-console.log(KMP('abcbaba', 'aba', 0));
+console.log(KMP('abcbaba', 'abaabe', 0));
