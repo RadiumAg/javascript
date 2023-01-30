@@ -69,29 +69,28 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        Vue.createApp({
-            data() {
-                return {
-                    todayAmount: '0',
-                    platformSales1: 4090013,
-                }
-            },
-            computed: {
-                todayAmountComputed() {
-                    return this.todayAmount.split('');
-                },
-            },
-            mounted() {
-                setInterval(() => {
-                    if (this.todayAmount === '0') {
-                        this.todayAmount = '1000';
-                    }
-                    this.todayAmount = '' + Math.floor(Math.random() * 10000);
-                }, 2000);
-            },
-        }).mount('#app');
-    })
-
+      Vue.createApp({
+        data() {
+          return {
+            todayAmount: '0',
+            platformSales1: 4090013,
+          };
+        },
+        computed: {
+          todayAmountComputed() {
+            return this.todayAmount.split('');
+          },
+        },
+        mounted() {
+          setInterval(() => {
+            if (this.todayAmount === '0') {
+              this.todayAmount = '1000';
+            }
+            this.todayAmount = `${Math.floor(Math.random() * 10000)}`;
+          }, 2000);
+        },
+      }).mount('#app');
+    });
 </script>
 
 </html>
