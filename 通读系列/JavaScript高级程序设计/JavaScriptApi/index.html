@@ -10,41 +10,57 @@
 
 <body>
     <script>
-        const workerScript = `
+        (() => {
+          const workerScript = `
         self.onmessage = ({data})=>{ 
             console.log(data)
             const view = new Uint32Array(data);
             // 执行1000000 次加操作
             for (let i = 0; i < 1e6; ++i) {
-                view[0] += 1;
+                Atomics.add(view, 0 ,1);
             }
             console.log(view)
             self.postMessage(null)
         }
       `;
-        const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
-        const workers = [];
-        for (let i = 0; i < 4; ++i) {
-          workers.push(new Worker(workerScriptBlobUrl));
-        }
+          const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
+          const workers = [];
+          for (let i = 0; i < 4; ++i) {
+            workers.push(new Worker(workerScriptBlobUrl));
+          }
 
-        let responseCount = 0;
+          let responseCount = 0;
 
-        for (const worker of workers) {
-          worker.addEventListener('message', () => {
-            if (++responseCount === workers.length) {
-              console.log(`Final buffer value: ${view[0]}`);
-            }
-          });
-        }
+          for (const worker of workers) {
+            worker.addEventListener('message', () => {
+              if (++responseCount === workers.length) {
+                console.log(`Final buffer value: ${view[0]}`);
+              }
+            });
+          }
 
-        const sharedArrayBuffer = new SharedArrayBuffer(4);
-        const view = new Uint32Array(sharedArrayBuffer);
-        view[0] = 1;
+          const sharedArrayBuffer = new SharedArrayBuffer(4);
+          const view = new Uint32Array(sharedArrayBuffer);
+          view[0] = 1;
 
-        for (const worker of workers) {
-          worker.postMessage(sharedArrayBuffer);
-        }
+          for (const worker of workers) {
+            worker.postMessage(sharedArrayBuffer);
+          }
+        })();
+
+        (() => {
+          const sharedArrayBuffer = new SharedArrayBuffer(1);
+          const typedArray = new Uint8Array(sharedArrayBuffer);
+          console.log(typedArray);
+        
+          const index = 0;
+          const increment = 5;
+          Atomics.add(typedArray, index, increment);
+          console.log(typedArray);
+
+          Atomics.sub(typedArray, index, increment);
+          console.log(typedArray);
+        })();
     </script>
 </body>
 
