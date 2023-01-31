@@ -10,7 +10,6 @@
 
 <body>
     <script>
-        const SharedArrayBuffer = ArrayBuffer;
         const workerScript = `
         self.onmessage = ({data})=>{ 
             console.log(data)
@@ -19,6 +18,7 @@
             for (let i = 0; i < 1e6; ++i) {
                 view[0] += 1;
             }
+            console.log(view)
             self.postMessage(null)
         }
       `;
