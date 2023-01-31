@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const SharedArrayBuffer = ArrayBuffer;
+        const workerScript = `
+        self.onmessage = ({data})=>{ 
+            console.log(data)
+            const view = new Uint32Array(data);
+            // 执行1000000 次加操作
+            for (let i = 0; i < 1e6; ++i) {
+                view[0] += 1;
+            }
+            self.postMessage(null)
+        }
+      `;
+        const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
+        const workers = [];
+        for (let i = 0; i < 4; ++i) {
+          workers.push(new Worker(workerScriptBlobUrl));
+        }
+
+        let responseCount = 0;
+
+        for (const worker of workers) {
+          worker.addEventListener('message', () => {
+            if (++responseCount === workers.length) {
+              console.log(`Final buffer value: ${view[0]}`);
+            }
+          });
+        }
+
+        const sharedArrayBuffer = new SharedArrayBuffer(4);
+        const view = new Uint32Array(sharedArrayBuffer);
+        view[0] = 1;
+
+        for (const worker of workers) {
+          worker.postMessage(sharedArrayBuffer);
+        }
+    </script>
+</body>
+
+</html>
