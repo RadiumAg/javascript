@@ -173,6 +173,17 @@
       // 1000 毫秒后释放第一个锁
       setTimeout(() => Atomics.notify(view, 0, 1), 1000);
     };
+
+    () => {
+      const textEncoder = new TextEncoder();
+      const decodeText = 'foo';
+      const encodeText = textEncoder.encode(decodeText);
+
+      // f的UTF-8 编码是0x66 （即十进制102）
+      // o的UTF-8 编码是0x6F （即十进制111）
+    
+      console.log(encodeText); // Uint8Array(3) [102,111,111]
+    };
   </script>
 </body>
 
