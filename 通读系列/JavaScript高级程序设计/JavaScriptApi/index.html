@@ -2,16 +2,16 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 
 <body>
-    <script>
-        (() => {
-          const workerScript = `
+  <script>
+    () => {
+      const workerScript = `
         self.onmessage = ({data})=>{ 
             console.log(data)
             const view = new Uint32Array(data);
@@ -23,45 +23,157 @@
             self.postMessage(null)
         }
       `;
-          const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
-          const workers = [];
-          for (let i = 0; i < 4; ++i) {
-            workers.push(new Worker(workerScriptBlobUrl));
+      const workerScriptBlobUrl = URL.createObjectURL(new Blob([workerScript]));
+      const workers = [];
+      for (let i = 0; i < 4; ++i) {
+        workers.push(new Worker(workerScriptBlobUrl));
+      }
+
+      let responseCount = 0;
+
+      for (const worker of workers) {
+        worker.addEventListener('message', () => {
+          if (++responseCount === workers.length) {
+            console.log(`Final buffer value: ${view[0]}`);
           }
+        });
+      }
 
-          let responseCount = 0;
+      const sharedArrayBuffer = new SharedArrayBuffer(4);
+      const view = new Uint32Array(sharedArrayBuffer);
+      view[0] = 1;
 
-          for (const worker of workers) {
-            worker.addEventListener('message', () => {
-              if (++responseCount === workers.length) {
-                console.log(`Final buffer value: ${view[0]}`);
-              }
-            });
+      for (const worker of workers) {
+        worker.postMessage(sharedArrayBuffer);
+      }
+    };
+
+    () => {
+      const sharedArrayBuffer = new SharedArrayBuffer(1);
+      const typedArray = new Uint8Array(sharedArrayBuffer);
+      console.log(typedArray);
+
+      const index = 0;
+      const increment = 5;
+      Atomics.add(typedArray, index, increment);
+      console.log(typedArray);
+
+      Atomics.sub(typedArray, index, increment);
+      console.log(typedArray);
+    };
+
+    () => {
+      const sharedArrayBuffer = new SharedArrayBuffer(4);
+      const view = new Uint32Array(sharedArrayBuffer);
+      // 执行非原子写
+      view[0] = 1;
+      // 非原子写可以保证在这个读操作之前完成，因此这里一定会读到1
+      console.log(Atomics.load(view, 0)); //1
+      // 执行原子写
+      Atomics.store(view, 0, 2);
+      // 非原子读可以保证在原子写完成后发生，因此这里一定会读到2
+      console.log(view[0]);
+    };
+
+    () => {
+      const sharedArrayBuffer = new SharedArrayBuffer(4);
+      const view = new Uint32Array(sharedArrayBuffer);
+      // 在索引0 处引入3
+      Atomics.store(view, 0, 3);
+      // 从索引0 处读取值，然后在索引0 处写入4
+      console.log(Atomics.exchange(view, 0, 4));
+      // 3
+      // 从索引0 处索引值
+      console.log(Atomics.load(view, 0));
+    };
+
+    () => {
+      const sharedArrayBuffer = new SharedArrayBuffer(4);
+      const view = new Uint32Array(sharedArrayBuffer);
+      // 在索引0 处写入5
+      Atomics.store(view, 0, 5);
+      // 从缓冲区读取值
+      const initial = Atomics.load(view, 0);
+      // 对这个值执行非原子操作
+      const result = initial ** 2;
+      // 只在缓冲区未被修改的情况下才会向缓冲区写入新值
+      Atomics.compareExchange(view, 0, initial, result);
+      // 检查写入成功
+      console.log(Atomics.load(view, 0));
+    };
+
+    () => {
+      const sharedArrayBuffer = new SharedArrayBuffer(4);
+      const view = new Uint32Array(sharedArrayBuffer);
+      // 在索引0 处写入5
+      Atomics.store(view, 0, 5);
+      // 从缓冲区读取值
+      const initial = Atomics.load(view, 0);
+      // 对这个值执行非原子操作
+      const result = initial ** 2;
+      // 只在缓冲区未被修改的情况下才会向缓冲区写入新值
+      Atomics.compareExchange(view, 0, initial, result);
+      // 检查写入成功
+      console.log(Atomics.load(view, 0));
+    };
+
+    () => {
+      const sharedArrayBuffer = new SharedArrayBuffer(4);
+      const view = new Uint32Array(sharedArrayBuffer);
+      // 在索引0 处写入5
+      Atomics.store(view, 0, 5);
+      // 从缓冲区读取值
+      const initial = Atomics.load(view, 0);
+      // 对这个值执行非原子操作
+      const result = initial ** 2;
+      // 只有缓冲区未被修改的情况下才会向缓冲区写入新值
+      Atomics.compareExchange(view, 0, -1, result);
+      // 检查写入失败
+      console.log(Atomics.load(view, 0));
+    };
+
+    () => {
+      const workerScript = `
+       self.onmessage = ({data}) => {
+         const view = new Int32Array(data);
+         console.log("Waiting to obtain lock");
+         // 遇到初始值则停止，10000 毫秒超时
+         Atomics.wait(view, 0 ,0 ,1e5);
+         console.log("Obtained lock");
+         // 在索引0处加1
+         Atomics.add(view, 0 ,1);
+         console.log('Resleasing lock');
+         // 只允许1个工作线程继续执行
+         Atomics.notify(view, 0 ,1);
+         self.postMessage(null)
+       }
+      `;
+
+      const workerScriptBolobUrl = URL.createObjectURL(new Blob(workerScript));
+      const workers = [];
+      for (let i = 0; i < 4; i++) {
+        workers.push(new Worker(workerScriptBolobUrl));
+      }
+      // 在最后一个工作线程完成后打印最终值
+      const responseCount = 0;
+      for (const worker of workers) {
+        worker.addEventListener('onmessage', () => {
+          if (++responseCount === workers.length) {
+            console.log(`Final buffer value: ${view[0]}`);
           }
-
-          const sharedArrayBuffer = new SharedArrayBuffer(4);
-          const view = new Uint32Array(sharedArrayBuffer);
-          view[0] = 1;
-
-          for (const worker of workers) {
-            worker.postMessage(sharedArrayBuffer);
-          }
-        })();
-
-        (() => {
-          const sharedArrayBuffer = new SharedArrayBuffer(1);
-          const typedArray = new Uint8Array(sharedArrayBuffer);
-          console.log(typedArray);
-        
-          const index = 0;
-          const increment = 5;
-          Atomics.add(typedArray, index, increment);
-          console.log(typedArray);
-
-          Atomics.sub(typedArray, index, increment);
-          console.log(typedArray);
-        })();
-    </script>
+        });
+      }
+      // 初始化SharedArrayBuffer
+      const sharedArrayBuffer = new SharedArrayBuffer(8);
+      const view = new Int32Array(sharedArrayBuffer);
+      // 把sharedArrayBuffer发送给每个线程
+      for (const worker of workers) {
+        worker.postMessage(sharedArrayBuffer);
+      }
+      // 1000 毫秒后释放第一个锁
+      setTimeout(() => Atomics.notify(view, 0, 1), 1000);
+    };
+  </script>
 </body>
 
 </html>
