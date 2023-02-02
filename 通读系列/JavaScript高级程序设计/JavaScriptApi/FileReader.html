@@ -23,7 +23,7 @@
           const files = event.target.files;
           let type = 'default';
           const reader = new FileReader();
-
+          const bolb = Bolb();
           if (/image/.test(files[0].type)) {
             reader.readAsDataURL(files[0]);
             type = 'image';
