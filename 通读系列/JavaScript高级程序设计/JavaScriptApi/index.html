@@ -206,7 +206,7 @@
     };
 
     (() => {
-      async function* char() {
+      async function* chars() {
         const decodeText = 'foo';
         for (const char of decodeText) {
           yield await new Promise(resolve => setTimeout(resolve, 1000, char));
@@ -214,8 +214,31 @@
       }
 
       const decodeTextStream = new ReadableStream({
-        async start(controller) {},
+        async start(controller) {
+          for await (const chunk of chars()) {
+            controller.enqueue(chunk);
+          }
+          controller.close();
+        },
       });
+
+      const encodedTextStream = decodeTextStream.pipeThrough(
+        new TextEncoderStream(),
+      );
+
+      const readableStreamDefaultReader = encodedTextStream.getReader();
+
+      (async function () {
+        while (true) {
+          const { done, value } = await readableStreamDefaultReader.read();
+
+          if (done) {
+            break;
+          } else {
+            console.log(value);
+          }
+        }
+      })();
     })();
   </script>
 </body>

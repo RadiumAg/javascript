@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <input id="files-list" type="file"></input>
+    <div id="progress"></div>
+    <div id="output" style="height: max-count"></div>
+
+    <script>
+        const filesList = document.querySelector('#files-list');
+        filesList.addEventListener('change', event => {
+          const info = '';
+          const output = document.querySelector('#output');
+          const progress = document.querySelector('#progress');
+          const files = event.target.files;
+          let type = 'default';
+          const reader = new FileReader();
+
+          if (/image/.test(files[0].type)) {
+            reader.readAsDataURL(files[0]);
+            type = 'image';
+          } else {
+            reader.readAsText(files[0]);
+            type = 'text';
+          }
+
+          reader.addEventListener('error', () => {
+            output.innerHTML = `Could note read file, error code is${reader.error.code}`;
+          });
+
+          reader.addEventListener('progress', event => {
+            if (event.lengthComputable) {
+              progress.innerHTML = `${event.loaded}/${event.total}`;
+            }
+
+            reader.addEventListener('load', () => {
+              let html = '';
+              switch (type) {
+                case 'image':
+                  html = `<img src="${reader.result}">`;
+                  break;
+
+                case 'text':
+                  html = reader.result;
+                  break;
+              }
+
+              output.innerHTML = html;
+            });
+          });
+        });
+    </script>
+
+</body>
+
+</html>
