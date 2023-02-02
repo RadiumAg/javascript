@@ -205,7 +205,7 @@
       console.log(barResult);
     };
 
-    (() => {
+    () => {
       async function* chars() {
         const decodeText = 'foo';
         for (const char of decodeText) {
@@ -239,7 +239,7 @@
           }
         }
       })();
-    })();
+    };
   </script>
 </body>
 
