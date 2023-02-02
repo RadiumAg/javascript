@@ -21,41 +21,56 @@
           const output = document.querySelector('#output');
           const progress = document.querySelector('#progress');
           const files = event.target.files;
-          let type = 'default';
+          const type = 'default';
           const reader = new FileReader();
-          const bolb = Bolb();
-          if (/image/.test(files[0].type)) {
-            reader.readAsDataURL(files[0]);
-            type = 'image';
-          } else {
-            reader.readAsText(files[0]);
-            type = 'text';
-          }
+          console.log(files[0]);
+          const blob = files[0].slice(0, 32);
+          //   if (/image/.test(files[0].type)) {
+          //     reader.readAsDataURL(files[0]);
+          //     type = 'image';
+          //   } else {
+          //     reader.readAsText(files[0]);
+          //     type = 'text';
+          //   }
 
-          reader.addEventListener('error', () => {
-            output.innerHTML = `Could note read file, error code is${reader.error.code}`;
-          });
+          //   reader.addEventListener('error', () => {
+          //     output.innerHTML = `Could note read file, error code is${reader.error.code}`;
+          //   });
 
-          reader.addEventListener('progress', event => {
-            if (event.lengthComputable) {
-              progress.innerHTML = `${event.loaded}/${event.total}`;
-            }
+          //   reader.addEventListener('progress', event => {
+          //     if (event.lengthComputable) {
+          //       progress.innerHTML = `${event.loaded}/${event.total}`;
+          //     }
 
-            reader.addEventListener('load', () => {
-              let html = '';
-              switch (type) {
-                case 'image':
-                  html = `<img src="${reader.result}">`;
-                  break;
+          //     reader.addEventListener('load', () => {
+          //       let html = '';
+          //       switch (type) {
+          //         case 'image':
+          //           html = `<img src="${reader.result}">`;
+          //           break;
 
-                case 'text':
-                  html = reader.result;
-                  break;
-              }
+          //         case 'text':
+          //           html = reader.result;
+          //           break;
+          //       }
 
-              output.innerHTML = html;
+          //       output.innerHTML = html;
+          //     });
+          //   });
+
+          if (blob) {
+            console.log(blob);
+            reader.readAsText(blob);
+            reader.addEventListener('error', () => {
+              output.innerHTML = `could not read file, error code is ${reader.error.code}`;
             });
-          });
+            reader.addEventListener('load', () => {
+              console.log(reader.result);
+              output.innerHTML = reader.result;
+            });
+          } else {
+            console.log("Your browser doesn't support slice()");
+          }
         });
     </script>
 
