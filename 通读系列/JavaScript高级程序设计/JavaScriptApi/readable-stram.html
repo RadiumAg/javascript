@@ -41,6 +41,91 @@
         }
       })();
     };
+
+    () => {
+      const writableStream = new WritableStream({
+        write(value) {
+          console.log(value);
+        },
+      });
+
+      console.log(writableStream.locked);
+      const writableStreamDefaultWriter = writableStream.getWriter();
+      console.log(writableStream.locked);
+
+      (async () => {
+        for await (const chunk of ints()) {
+          await writableStreamDefaultWriter.ready;
+          writableStreamDefaultWriter.write(chunk);
+        }
+        writableStreamDefaultWriter.close();
+      })();
+    };
+
+    () => {
+      const { writable, readable } = new TransformStream({
+        transform(chunk, contoller) {
+          contoller.enqueue(chunk * 2);
+        },
+      });
+
+      const readableStreamDefaultReader = readable.getReader();
+      const writableStreamDefaultWriter = writable.getWriter();
+
+      // 消费者
+      (async () => {
+        while (true) {
+          const { done, value } = await readableStreamDefaultReader.read();
+
+          if (done) {
+            break;
+          } else {
+            console.log(value);
+          }
+        }
+      })();
+
+      // 生产者
+      (async () => {
+        for await (const chunk of ints()) {
+          await writableStreamDefaultWriter.ready;
+          writableStreamDefaultWriter.write(chunk);
+        }
+        writableStreamDefaultWriter.close();
+      })();
+    };
+
+    () => {
+      const integerStream = new ReadableStream({
+        async start(controller) {
+          for await (const chunk of ints()) {
+            controller.enqueue(chunk);
+          }
+          controller.close();
+        },
+      });
+
+      const doublingStream = new TransformStream({
+        transform(chunk, contoller) {
+          contoller.enqueue(chunk * 2);
+        },
+      });
+
+      const pipedStream = integerStream.pipeThrough(doublingStream);
+      const pipedStreamDefaultReader = pipedStream.getReader();
+
+      (async () => {
+        while (true) {
+          const { done, value } = await pipedStreamDefaultReader.read();
+
+          if (done) {
+            break;
+          } else {
+            console.log(value);
+          }
+        }
+      })();
+    };
   </script>
 </body>
 
