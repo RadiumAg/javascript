@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        () => {
+          const reativeTimestamp = performance.now();
+          const absoluteTimestamp = performance.timeOrigin + reativeTimestamp;
+          console.log(reativeTimestamp);
+          console.log(absoluteTimestamp);
+        };
+
+        () => {
+          const entry = performance.getEntries()[0];
+          console.log(entry.name);
+        };
+
+        () => {
+          performance.mark();
+
+          for (let i = 0; i < 1e6; ++i) {}
+          performance.mark('bar');
+          performance.measure('bar', 'foo', 'bar');
+          const [differenceMark] = performance.getEntriesByType('measure');
+          console.log(differenceMark);
+        };
+
+        (() => {
+          const [performanceNavigationTimingEntry] =
+            performance.getEntriesByType('navigation');
+          console.log(performanceNavigationTimingEntry);
+        })();
+    </script>
+</body>
+
+</html>
