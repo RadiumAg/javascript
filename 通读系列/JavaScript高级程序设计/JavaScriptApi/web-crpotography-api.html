@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        () => {
+          const array = new Uint8Array(1);
+          for (let i = 0; i < 5; ++i) {
+            console.log(crypto.getRandomValues(array));
+          }
+        };
+
+        () => {
+          const fooArray = new Uint8Array(2 ** 16);
+          console.log(crypto.getRandomValues(fooArray));
+          const barArray = new Uint8Array(2 ** 16 + 1);
+          console.log(crypto.getRandomValues(barArray));
+        };
+
+        async () => {
+          const textEncoder = new TextEncoder();
+          const message = textEncoder.encode('foo');
+          const messageDigest = await crypto.subtle.digest('SHA-256', message);
+          console.log(new Uint32Array(messageDigest));
+        };
+
+        (async () => {
+          const textEncoder = new TextEncoder();
+          const message = textEncoder.encode('foo');
+          const messageDigest = await crypto.subtle.digest('SHA-256', message);
+          const hexDigest = Array.from(new Uint8Array(messageDigest))
+            .map(x => x.toString(16).padStart(2, '0'))
+            .join('');
+
+          console.log(hexDigest);
+        })();
+    </script>
+</body>
+
+</html>
