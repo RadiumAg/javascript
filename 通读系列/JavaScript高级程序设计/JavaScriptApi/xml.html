@@ -1,12 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
+
 <body>
-    
+  <script>
+    () => {
+      const xmldom = document.implementation.createDocument('', 'root', null);
+      const child = xmldom.createElement('child');
+      xmldom.documentElement.append(child);
+    };
+
+    () => {
+      const parser = new DOMParser();
+      const xmldom = parser.parseFromString('<root><child/></root>', 'text/xml');
+      console.log(xmldom.documentElement.tagName);
+      const anotherChild = xmldom.createElement('child');
+      xmldom.documentElement.append(anotherChild);
+      const children = xmldom.querySelectorAll('child');
+      console.log(children.length);
+    };
+
+    () => {
+      let parser = new DOMParser(),
+        xmldom,
+        errors;
+
+      try {
+        xmldom = parser.parseFromString('<root>', 'text/xml');
+        errors = xmldom.querySelectorAll('parsererror');
+        const result = xmldom.evaluate(
+          'employee/name',
+          xmldom.documentElement,
+          null,
+          XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+          null,
+        );
+
+        if (result !== null) {
+          const element = result.iterateNext();
+
+          while (element) {
+            console.log(element.tagName);
+            result.iterateNext();
+          }
+        }
+      } catch {
+        console.log('Parsing error!');
+      }
+    };
+  </script>
 </body>
+
 </html>
