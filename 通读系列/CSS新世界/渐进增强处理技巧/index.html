@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        @supports(display: flex) {}
+
+        @supports not(display: flex) {}
+
+        @supports(display: flex) {}
+
+        @supports(display: flex) and (display: grid) {}
+
+        @supports(display: flex) or (display: grid) {}
+
+        @supports(display: flex) and (display: grid) and (gap: 0) {}
+
+
+        /* 不支持网格布局 */
+        @supports (display: flex) and (not (display: grid)) {}
+
+
+        @supports(display: flex) {
+            @media screen and (max-width: 9999px) {
+                .supports-match {
+                    color: #fff
+                }
+            }
+
+            @supports(animation: none) {
+                .supports-match {
+                    animation: colorful 1s linear alternate infinite;
+                }
+            }
+        }
+
+        @keyframes colorful {
+            from {
+                background-color: deepskyblue;
+            }
+
+            to {
+                background-color: deeppink;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="supports-match">34234234234234234234</div>
+</body>
+
+</html>
