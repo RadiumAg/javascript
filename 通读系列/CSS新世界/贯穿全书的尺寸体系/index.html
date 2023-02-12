@@ -32,7 +32,7 @@
     <div class="fw-content">werwerwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</div>
 
     <p style="width: max-content;">min-content</p>
-    
+
     <h1>min-content</h1>
     <section style="width: min-content">
         <p>感谢您的支持</p>
@@ -47,10 +47,70 @@
         <p style="width: max-content">可以让元素尽可能的大，保证图文内容在一行显示</p>
     </div>
 
-    <!-- border-image -->
+    <h1>border-image</h1>
     <div
         style="border: 54px solid transparent;border-image: url(https://res.weread.qq.com/wrepub/epub_40870013_59) 54; height: 100px; width:100px;border-image-slice: 33.33% ;">
     </div>
+
+    <h1>border-image-width</h1>
+    <h2>0.75</h2>
+    <div
+        style="border: 54px solid transparent;border-image: url(https://res.weread.qq.com/wrepub/epub_40870013_59) 54; height: 100px; width:100px;border-image-slice: 33.33%; border-image-width: 0.75;">
+    </div>
+
+    <h2>1</h2>
+    <div
+        style="border: 54px solid transparent;border-image: url(https://res.weread.qq.com/wrepub/epub_40870013_59) 54; height: 100px; width:100px;border-image-slice: 33.33%; border-image-width: 0.75;">
+    </div>
+
+    <h2>1.5</h2>
+    <div
+        style="border: 54px solid transparent;border-image: url(https://res.weread.qq.com/wrepub/epub_40870013_59) 54; height: 100px; width:100px;border-image-slice: 33.33%; border-image-width: 1.5;">
+    </div>
+
+    <h2>border-image-outset</h2>
+    <div style="border: 54px solid transparent;
+        border-image: url(https://res.weread.qq.com/wrepub/epub_40870013_59) 54;
+         height: 100px; 
+         width:100px;
+         border-image-slice: 33.33%;
+         border-image-width: 1.5;
+         border-image-outset: 1rem;">
+    </div>
+
+    <h2>border-image-repeat</h2>
+    <div style="
+        border: 54px solid transparent;
+        border-image: url(https://res.weread.qq.com/wrepub/epub_40870013_59) 54; 
+        height: 140px; 
+        width:200px;
+        border-image-slice: 33.33%; 
+        border-image-outset: 1rem;
+        border-image-repeat: round;
+        ">
+    </div>
+
+    <p style="
+      border: 54px solid transparent;
+      border-style: solid;
+      border-image: linear-gradient(deepskyblue, deeppink) 20  / 10px;
+    "></p>
+
+    <p style="
+      border: 54px solid transparent;
+      border-style: solid;
+      border-image: linear-gradient(deepskyblue, deeppink) 20  / 10px;
+    "></p>
+
+    <h2>红色条纹框表示警示</h2>
+    <div
+        style="
+        border: 12 solid; 
+        border: 12px solid transparent;
+        border-image: repeating-linear-gradient(-45deg,red,red 5px, transparent 5px,transparent 10px) 12;">
+    我们可以使用红色条纹边框表示警示
+    </div>
+
 </body>
 
 </html>
