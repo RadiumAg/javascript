@@ -27,7 +27,7 @@
     <p style="width: 150px; padding:10px; border:solid deepskyblue;word-break: break-all;">为日日日日日日日日日日日日日日日日日日</p>
 
     <style>
-        td {
+        tr {
             text-align: "." center;
         }
     </style>
@@ -35,30 +35,98 @@
         <col width="40">
         <tr>
             <th>长途电话费用</th>
-        </th>
         <tr>
-            <td> ¥1.30
+            <td>¥1.30</td>
+        </tr>
         <tr>
+            <td>¥2.50</td>
+        </tr>
+        <tr>
+            <td>¥10.80</td>
+        </tr>
+        <tr>
+            <td>¥111.01</td>
+        </tr>
+        <tr>
+            <td>¥85.</td>
+        </tr>
+        <tr>
+            <td>N/A.</td>
+        </tr>
+        <tr>
+            <td>¥0.05</td>
+        </tr>
 
         <tr>
-            <td> ¥2.50
-        <tr>
-
-        <tr>
-            <td> ¥10.80
-        <tr>
-
-        <tr>
-            <td> ¥111.01
-        <tr>
-            <td> ¥85.
-        <tr>
-            <td> N/A
-        <tr>
-            <td> ¥.05
-        <tr>
-            <td> ¥.06
+            <td>¥0.06</td>
+        </tr>
     </table>
+
+
+    <div style="width:10px;height:10px;background:linear-gradient(deepskyblue,deepskyblue) no-repeat center/1px 1px">
+    </div>
+
+    <style>
+        .btn-add,
+        .btn-sub {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-bottom: 10px;
+            border: 1px solid gray;
+            background: linear-gradient(currentColor, currentColor) no-repeat center / .875em 2px,
+                linear-gradient(currentColor, currentColor) no-repeat center / 2px .875em;
+            color: dimgray;
+        }
+
+        .btn-sub {
+            background-size: .875rem 2px, 0;
+        }
+    </style>
+    <div class="btn-add"></div>
+    <div class="btn-sub"></div>
+
+
+    <style>
+        .square {
+            width: 304px;
+            height: 160px;
+            background-color: #fff;
+            background-image: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%), linear-gradient(45deg, #eee 25%, transparent 25%, transparent 25%, #eee 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+        }
+    </style>
+
+
+    <div class="square"></div>
+
+
+    <style>
+        .checkbox {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid transparent;
+            box-shadow: inset 0 1px, inset -1px 0, inset 0 -1px, inset 1px 0;
+        }
+
+        .checkbox.checked {
+            color: deepskyblue;
+            background: currentColor;
+            background-clip: padding-box;
+        }
+
+        .checkbox.checkbox::before {}
+    </style>
+
+    <input type="checkbox" class="checkbox" />
+
+    <p
+        style="background:  linear-gradient(deepskyblue,deeppink); -webkit-background-clip: text; background-clip: text; color: transparent;">
+        我是渐变文字</p>
+
+
+    <div style="width: 180px;height:70px;border:20px dashed;background:linear-gradient(deepskyblue,deeppink);background-origin: border-box;"></div>
 
 </body>
 
