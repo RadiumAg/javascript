@@ -40,47 +40,33 @@
         <p class="son"></p>
     </div>
 
-    <div style="width:100px;
-    height:100px;
-    border-top: 40px solid deepskyblue;
-    border-left: 40px  solid deepskyblue;
-    border-radius: 40px 0 0;
-    "></div>
+    <div style="width: 150px; padding:10px; background-color: white; box-shadow: 0 7px 5px -5px rgba(0, 0, 0, .5);">
+    </div>
 
-    <div style="width:15px;
-   height:10px;
- border-top: 10px solid deepskyblue;
- border-top-left-radius:80%;
-   "></div>
-
-    <h1>box-shadow</h1>
-
-    <style>
-        button {
-            outline: none;
-        }
-
-        .normal {
-            background-color: #fff;
-            box-shadow: inset 1px 0 #a2a9b6, inset -1px 0 #a2a9b6, inset 0 1px #a1a9b6, inset 0 -1px #a2a9b6;
-        }
-
-        .primary {
-            color: #fff;
-            background-color: #2a90eb;
-        }
-
-        .warning {
-            color: #fff;
-            background-color: #eb4646;
-        }
-    </style>
+    <textarea></textarea>
 
 
-    <button class="normal">正常</button>
-    <button class="primary">主要</button>
-    <button class="warning">警示</button>
+    <script defer>
+        const resolve = Promise.resolve();
 
+        setTimeout(() => {
+          resolve.then(() => {
+            document.querySelector('textarea').value = '123123123a';
+            document.querySelector('textarea').value = '12312312342343a';
+            const input = document.createElement('input');
+            input.value = 1;
+            // for (let i = 0; i < 300000000000; i++) {
+            //   console.log(i);
+            // }
+            document.body.insertBefore(input, document.querySelector('textarea'));
+          });
+
+          resolve.then(() => {
+            console.log(document.querySelector('textarea').value);
+            console.log(document.querySelector('input').value);
+          });
+        }, 100);
+    </script>
 
 </body>
 
