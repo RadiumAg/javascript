@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h2>分栏布局</h2>
     <style>
         ul {
-         columns: 2;
+            columns: 2;
         }
     </style>
-    <ul> 
+    <ul>
         <li>重庆市</li>
         <li>哈尔滨市</li>
         <li>长春市</li>
@@ -28,9 +30,37 @@
         <li>西安市</li>
     </ul>
 
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+
+        }
+
+        .list {
+            width: 24%;
+            height: 100px;
+            background-color: skyblue;
+            margin-top: 5px;
+        }
+
+        .list:not(:nth-child(4n)) {
+            margin-right: calc(4% / 3);
+        }
+    </style>
+
 
     <div class="container">
-      <item></item>
+        <div class="list"></div>
+        <div class="list"></div>
+        <div class="list"></div>
+        <div class="list"></div>
+        <div class="list"></div>
+        <div class="list"></div>
+        <div class="list"></div>
     </div>
+
+
 </body>
+
 </html>
