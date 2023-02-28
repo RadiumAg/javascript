@@ -3,9 +3,16 @@ const bucket = new WeakMap();
 const data = { text: 'hellow world' };
 
 let activeEffect;
+
 function effect(fn) {
-  activeEffect = fn;
-  fn();
+  const effectFn = () => {
+    cleanup(effectFn);
+    activeEffect = fn;
+    fn();
+  };
+
+  effectFn.deps = [];
+  effectFn();
 }
 
 const obj = new Proxy(data, {
@@ -15,13 +22,12 @@ const obj = new Proxy(data, {
   set(target, key, newVal) {
     target[key] = newVal;
     trigger(target, key);
+
+    return true;
   },
 });
 
-effect(() => {
-  document.body.textContent = obj.text;
-});
-
+// 收集依赖
 function track(target, key) {
   if (!activeEffect) return target[key];
 
@@ -38,6 +44,7 @@ function track(target, key) {
   }
 
   deps.add(activeEffect);
+  activeEffect.deps.push(deps);
   return target[key];
 }
 
@@ -46,5 +53,23 @@ function trigger(target, key) {
   if (!depsMap) return;
 
   const effects = depsMap.get(key);
-  effects && effects.forEach(fn => fn());
+  const effectsToRun = new Set(effects);
+  effectsToRun.forEach(effectFn => effectFn());
 }
+
+function cleanup(effectFn) {
+  for (let i = 0; i < effectFn.deps.length; i++) {
+    const deps = effectFn.deps[i];
+    // 移除依赖中的副作用
+    deps.delete(effectFn);
+  }
+  // 重置 effectFn.deps 数组
+  effectFn.deps.length = 0;
+}
+
+effect(() => {
+  document.body.textContent = obj.ok ? obj.text : 'not';
+});
+
+obj.ok = false;
+obj.text = 12;
