@@ -43,6 +43,14 @@ function effect(fn, options = {}) {
   return effectFn;
 }
 
+function watch(source, cb) {
+  effect(() => source.foo, {
+    scheduler() {
+      cb();
+    },
+  });
+}
+
 function computed(getter) {
   let value;
   let dirty = true;
