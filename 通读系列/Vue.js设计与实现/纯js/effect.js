@@ -1,12 +1,13 @@
-const { dir } = require('console');
-
 const bucket = new WeakMap();
 
 let activeEffect;
 
 const effectStack = [];
+
 const jobQueue = new Set();
+
 const p = Promise.resolve();
+
 let isFlushing = false;
 
 function flushJob() {
@@ -40,15 +41,31 @@ function effect(fn, options = {}) {
   if (!options.lazy) {
     effectFn();
   }
+
   return effectFn;
 }
 
 function watch(source, cb) {
-  effect(() => source.foo, {
+  let getter;
+
+  if (typeof source === 'function') {
+    getter = source;
+  } else {
+    getter = () => traverse(source);
+  }
+
+  let oldValue, newValue;
+
+  const effectFn = effect(() => getter(), {
+    lazy: true,
     scheduler() {
-      cb();
+      newValue = effectFn();
+      cb(newValue, oldValue);
+      oldValue = newValue;
     },
   });
+
+  oldValue = effectFn();
 }
 
 function computed(getter) {
@@ -76,6 +93,23 @@ function computed(getter) {
   };
 
   return obj;
+}
+
+function traverse(value, seen = new Set()) {
+  // 如果要读取的数据是原始值，或者已经被读取过了，那么什么都不做
+  if (typeof value !== 'object' || value === null || seen.has(value)) return;
+
+  // 将数据添加到 seen 中，代表遍历地读取过了，避免循环引用引起的死循环
+  seen.add(value);
+
+  // 暂时不考虑数组等其它结构
+  // 假设 value 就是一个对象，使用for...in 都组对象的每一个值，并递归地调用 traverse 进行处理
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in value) {
+    traverse(value[key], seen);
+  }
+
+  return value;
 }
 
 // 收集依赖
