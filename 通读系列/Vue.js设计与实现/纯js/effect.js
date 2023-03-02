@@ -189,8 +189,9 @@ function cleanup(effectFn) {
 const data = { foo: 1 };
 
 const obj = new Proxy(data, {
-  get(target, key) {
-    return track(target, key);
+  get(target, key, receiver) {
+    track(target, key);
+    return Reflect.get(target, key, receiver);
   },
   set(target, key, newVal) {
     target[key] = newVal;
