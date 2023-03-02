@@ -45,7 +45,7 @@ function effect(fn, options = {}) {
   return effectFn;
 }
 
-function watch(source, cb) {
+function watch(source, cb, options = {}) {
   let getter;
 
   if (typeof source === 'function') {
@@ -56,16 +56,35 @@ function watch(source, cb) {
 
   let oldValue, newValue;
 
+  const job = () => {
+    newValue = effectFn();
+    cleanup && cleanup();
+    cb(newValue, oldValue, onInvalidate);
+    oldValue = newValue;
+  };
+
+  let cleanup;
+  function onInvalidate(fn) {
+    cleanup = fn;
+  }
+
   const effectFn = effect(() => getter(), {
     lazy: true,
-    scheduler() {
-      newValue = effectFn();
-      cb(newValue, oldValue);
-      oldValue = newValue;
+    scheduler: () => {
+      if (options.flush === 'post') {
+        const p = Promise.resolve();
+        p.then(job);
+      } else {
+        job();
+      }
     },
   });
 
-  oldValue = effectFn();
+  if (options.immediate) {
+    job();
+  } else {
+    oldValue = effectFn();
+  }
 }
 
 function computed(getter) {
@@ -74,7 +93,7 @@ function computed(getter) {
 
   const effectFn = effect(getter, {
     lazy: true,
-    scheduler() {
+    scheduler: () => {
       dirty = true;
       trigger(obj, 'value');
     },
@@ -181,18 +200,26 @@ const obj = new Proxy(data, {
   },
 });
 
-effect(
+// effect(
+//   () => {
+//     console.log(obj.foo);
+//   },
+//   {
+//     scheduler(fn) {
+//       jobQueue.add(fn);
+//       flushJob();
+//     },
+//   },
+// );
+
+watch(
+  () => obj.foo,
   () => {
     console.log(obj.foo);
-  },
-  {
-    scheduler(fn) {
-      jobQueue.add(fn);
-      flushJob();
-    },
   },
 );
 
 obj.foo++; // 2
 obj.foo++; // 3
 console.log('结束了');
+console.log(bucket);
