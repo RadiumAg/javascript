@@ -10,6 +10,14 @@ const p = Promise.resolve();
 
 let isFlushing = false;
 
+const ITERATE_KEY = Symbol();
+
+const TriggerType = {
+  SET: 'SET',
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+};
+
 function flushJob() {
   if (isFlushing) return;
   isFlushing = true;
@@ -152,11 +160,12 @@ function track(target, key) {
   return target[key];
 }
 
-function trigger(target, key) {
+function trigger(target, key, type) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
 
   const effects = depsMap.get(key);
+  // 取得与ITERATE_KEY 相关联的副作用函数
   const effectsToRun = new Set();
 
   effects &&
@@ -166,6 +175,16 @@ function trigger(target, key) {
       }
     });
 
+  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
+    const iterateEffects = depsMap.get(ITERATE_KEY);
+    // 将 与 key 相关的副作用函数添加到 effectsToRun
+    iterateEffects &&
+      iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
   effectsToRun.forEach(effectFn => {
     // 如果trigger触发执行的副作用函数与当前正在执行的副作用函数相同，则不触发执行
     if (effectFn.options.scheduler) {
@@ -188,18 +207,79 @@ function cleanup(effectFn) {
 
 const data = { foo: 1 };
 
-const obj = new Proxy(data, {
-  get(target, key, receiver) {
-    track(target, key);
-    return Reflect.get(target, key, receiver);
-  },
-  set(target, key, newVal) {
-    target[key] = newVal;
-    trigger(target, key);
+const obj = reactive(data);
 
-    return true;
-  },
-});
+function reactive(obj)  {
+  return createReactive(obj)
+}
+
+function shalldowReactive(obj){
+  return createReactive(obj,true)
+}
+
+function createReactive(obj, isShallow = false, isReadonly = false) {
+  return new Proxy(obj, {
+    get(target, key, receiver) {
+      if(key === 'raw') {
+        return target;
+      }
+      track(target, key);
+      const res = Reflect.get(target, key, receiver);
+   
+      if(isShallow) {
+        return res
+      }
+      
+      if(typeof res ==='object' && res !==null) {
+        return reactive(res)
+      }
+
+      return res
+    },
+    set(target, key, newVal, receiver) {
+      if(isReadonly) {
+        console.warn(`属性 ${key} 是只读的`)
+        return true
+      }
+      // 首先取旧值
+      const oldVal = target[key];
+      const type = Object.prototype.hasOwnProperty.call(target, key)
+        ? TriggerType.SET
+        : TriggerType.ADD;
+  
+      const res = Reflect.set(target, key, newVal, receiver);
+  
+      if(target === receiver.raw) {
+      // 比较新值与旧值，只要当不全等的时候才触发响应
+      if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
+        trigger(target, key, type);
+      }
+    }
+      return res;
+    },
+    has(target, key) {
+      track(target, key);
+      return Reflect.has(target, key);
+    },
+    ownKeys(target) {
+      track(target, ITERATE_KEY);
+      return Reflect.ownKeys(target);
+    },
+    deleteProperty(target, key) {
+      // 如果是只读的，则打印警告信息并返回
+      if(isReadonly) {
+        console.log(`属性 ${key} 是只读的`)
+        return true;
+      }
+      const hadKey = Object.prototype.hasOwnProperty.call(target, key);
+      const res = Reflect.deleteProperty(target, key);
+      if (res && hadKey) {
+        trigger(target, key, TriggerType.DELETE);
+      }
+  
+      return res;
+    },
+  });
 
 // effect(
 //   () => {
