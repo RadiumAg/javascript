@@ -1,6 +1,8 @@
-const bucket = new WeakMap();
-
 let activeEffect;
+
+let isFlushing = false;
+
+const bucket = new WeakMap();
 
 const effectStack = [];
 
@@ -8,9 +10,9 @@ const jobQueue = new Set();
 
 const p = Promise.resolve();
 
-let isFlushing = false;
-
 const ITERATE_KEY = Symbol();
+
+const reactiveMap = new Map();
 
 const TriggerType = {
   SET: 'SET',
@@ -51,75 +53,6 @@ function effect(fn, options = {}) {
   }
 
   return effectFn;
-}
-
-function watch(source, cb, options = {}) {
-  let getter;
-
-  if (typeof source === 'function') {
-    getter = source;
-  } else {
-    getter = () => traverse(source);
-  }
-
-  let oldValue, newValue;
-
-  const job = () => {
-    newValue = effectFn();
-    cleanup && cleanup();
-    cb(newValue, oldValue, onInvalidate);
-    oldValue = newValue;
-  };
-
-  let cleanup;
-  function onInvalidate(fn) {
-    cleanup = fn;
-  }
-
-  const effectFn = effect(() => getter(), {
-    lazy: true,
-    scheduler: () => {
-      if (options.flush === 'post') {
-        const p = Promise.resolve();
-        p.then(job);
-      } else {
-        job();
-      }
-    },
-  });
-
-  if (options.immediate) {
-    job();
-  } else {
-    oldValue = effectFn();
-  }
-}
-
-function computed(getter) {
-  let value;
-  let dirty = true;
-
-  const effectFn = effect(getter, {
-    lazy: true,
-    scheduler: () => {
-      dirty = true;
-      trigger(obj, 'value');
-    },
-  });
-
-  const obj = {
-    get value() {
-      if (dirty) {
-        value = effectFn();
-        dirty = false;
-      }
-
-      track(obj, 'value');
-      return value;
-    },
-  };
-
-  return obj;
 }
 
 function traverse(value, seen = new Set()) {
@@ -230,14 +163,6 @@ function cleanup(effectFn) {
   effectFn.deps.length = 0;
 }
 
-const data = { foo: 1 };
-
-const obj = reactive(data);
-
-function reactive(obj) {
-  return createReactive(obj);
-}
-
 function shalldowReactive(obj) {
   return createReactive(obj, true);
 }
@@ -245,22 +170,39 @@ function shalldowReactive(obj) {
 function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     get(target, key, receiver) {
+      console.log(key);
       if (key === 'raw') {
         return target;
       }
-      track(target, key);
+
       const res = Reflect.get(target, key, receiver);
+
+      if (!isReadonly && typeof key !== 'symbol') {
+        track(target, key);
+      }
 
       if (isShallow) {
         return res;
       }
 
       if (typeof res === 'object' && res !== null) {
-        return reactive(res);
+        return isReadonly ? readonly(res) : reactive(res);
       }
 
       return res;
     },
+
+    has(target, key) {
+      track(target, key);
+      return Reflect.has(target, key);
+    },
+
+    ownKeys(target) {
+      // 如果操作目标 target 是数组，则使用 length 属性作为 key 并建立响应式联系
+      track(target, Array.isArray(target) ? 'length' : ITERATE_KEY);
+      return Reflect.ownKeys(target);
+    },
+
     set(target, key, newVal, receiver) {
       if (isReadonly) {
         console.warn(`属性 ${key} 是只读的`);
@@ -287,14 +229,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       }
       return res;
     },
-    has(target, key) {
-      track(target, key);
-      return Reflect.has(target, key);
-    },
-    ownKeys(target) {
-      track(target, ITERATE_KEY);
-      return Reflect.ownKeys(target);
-    },
+
     deleteProperty(target, key) {
       // 如果是只读的，则打印警告信息并返回
       if (isReadonly) {
@@ -312,26 +247,90 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
   });
 }
 
-// effect(
-//   () => {
-//     console.log(obj.foo);
-//   },
-//   {
-//     scheduler(fn) {
-//       jobQueue.add(fn);
-//       flushJob();
-//     },
-//   },
-// );
+// ---------------------------------------------------------------- //
+function readonly(obj) {
+  return createReactive(obj, false, true);
+}
 
-watch(
-  () => obj.foo,
-  () => {
-    console.log(obj.foo);
-  },
-);
+function watch(source, cb, options = {}) {
+  let getter;
 
-obj.foo++; // 2
-obj.foo++; // 3
-console.log('结束了');
-console.log(bucket);
+  if (typeof source === 'function') {
+    getter = source;
+  } else {
+    getter = () => traverse(source);
+  }
+
+  let oldValue, newValue;
+
+  const job = () => {
+    newValue = effectFn();
+    cleanup && cleanup();
+    cb(newValue, oldValue, onInvalidate);
+    oldValue = newValue;
+  };
+
+  let cleanup;
+  function onInvalidate(fn) {
+    cleanup = fn;
+  }
+
+  const effectFn = effect(() => getter(), {
+    lazy: true,
+    scheduler: () => {
+      if (options.flush === 'post') {
+        const p = Promise.resolve();
+        p.then(job);
+      } else {
+        job();
+      }
+    },
+  });
+
+  if (options.immediate) {
+    job();
+  } else {
+    oldValue = effectFn();
+  }
+}
+
+function computed(getter) {
+  let value;
+  let dirty = true;
+
+  const effectFn = effect(getter, {
+    lazy: true,
+    scheduler: () => {
+      dirty = true;
+      trigger(obj, 'value');
+    },
+  });
+
+  const obj = {
+    get value() {
+      if (dirty) {
+        value = effectFn();
+        dirty = false;
+      }
+
+      track(obj, 'value');
+      return value;
+    },
+  };
+
+  return obj;
+}
+
+function reactive(obj) {
+  // 优先通过原始对象 obj 寻找之前创建过的对象，如果找到了，直接返回已有的对象代理
+
+  const existionProxy = reactiveMap.get(obj);
+  if (existionProxy) return existionProxy;
+
+  const proxy = createReactive(obj);
+  reactiveMap.set(obj, proxy);
+
+  return proxy;
+}
+
+export { reactive, computed, watch, readonly, shalldowReactive };
