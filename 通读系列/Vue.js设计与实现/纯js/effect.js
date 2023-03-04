@@ -51,6 +51,33 @@ const mutableInstrumentations = {
 
     return res;
   },
+  get(key) {
+    const target = this.raw;
+    const had = target.has(key);
+    track(target, key);
+
+    if (had) {
+      const res = target.get(key);
+      return typeof res === 'object' ? reactive(res) : res;
+    }
+  },
+  set(key, value) {
+    const target = this.raw;
+    const had = target.has(key);
+    // 获取旧值
+    const oldValue = target.get(key);
+    // 设置新值
+    target.set(key, value);
+
+    if (!had) {
+      trigger(target, key, TriggerType.ADD);
+    } else if (
+      oldValue !== value ||
+      (oldValue === oldValue && value === value)
+    ) {
+      trigger(target, key, TriggerType.SET);
+    }
+  },
 };
 
 ['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
@@ -240,7 +267,11 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return target;
       }
 
-      const res = target[key].bind(target);
+      const res = target[key];
+
+      if (typeof res === 'function') {
+        res.bind(target);
+      }
 
       // eslint-disable-next-line no-prototype-builtins
       if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
