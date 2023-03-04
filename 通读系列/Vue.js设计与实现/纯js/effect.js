@@ -24,6 +24,35 @@ let shouldTrack = true;
 
 const arrayInstrumentations = {};
 
+const mutableInstrumentations = {
+  add(key) {
+    const target = this.raw;
+
+    const hadKey = target.has(key);
+
+    const res = target.add(key);
+
+    if (!hadKey) {
+      trigger(target, key, TriggerType.ADD);
+    }
+
+    return res;
+  },
+  delete(key) {
+    const target = this.raw;
+
+    const hadKey = target.has(key);
+
+    const res = target.delete(key);
+
+    if (hadKey) {
+      trigger(target, key, TriggerType.DELETE);
+    }
+
+    return res;
+  },
+};
+
 ['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
   const originMethod = Array.prototype[method];
 
@@ -213,14 +242,18 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
 
       const res = target[key].bind(target);
 
-      if (key === 'size') {
-        track(target, ITERATE_KEY);
-        return Reflect.get(target, key, target);
-      }
-
       // eslint-disable-next-line no-prototype-builtins
       if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
         return Reflect.get(arrayInstrumentations, key, receiver);
+      }
+
+      if (target instanceof Set || target instanceof Map) {
+        if (key === 'size') {
+          track(target, ITERATE_KEY);
+          return Reflect.get(target, key, target);
+        }
+
+        return Reflect.get(mutableInstrumentations, key, receiver);
       }
 
       if (!isReadonly && typeof key !== 'symbol') {
