@@ -20,6 +20,41 @@ const TriggerType = {
   DELETE: 'DELETE',
 };
 
+let shouldTrack = true;
+
+const arrayInstrumentations = {};
+
+['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
+  const originMethod = Array.prototype[method];
+
+  arrayInstrumentations[method] = function (...args) {
+    // this是代理对象，现在代理对象中查找，将结果存储在 res 中
+    let res = originMethod.apply(this, args);
+
+    if (res === false || res === -1) {
+      res = originMethod.apply(this.raw, args);
+    }
+
+    // 返回最终结果
+    return res;
+  };
+});
+
+['push', 'pop', 'shift', 'unshift', 'splice'].forEach(method => {
+  const originMethod = Array.prototype[method];
+
+  arrayInstrumentations[method] = function (...args) {
+    shouldTrack = false;
+    // push 方法的默认行为
+    const res = originMethod.apply(this, args);
+
+    // 在调用原始方法之后，恢复原来的行为，即允许追踪
+    shouldTrack = true;
+
+    return res;
+  };
+});
+
 function flushJob() {
   if (isFlushing) return;
   isFlushing = true;
@@ -74,7 +109,7 @@ function traverse(value, seen = new Set()) {
 
 // 收集依赖
 function track(target, key) {
-  if (!activeEffect) return target[key];
+  if (!activeEffect || !shouldTrack) return target[key];
 
   let depsMap = bucket.get(target);
 
@@ -170,12 +205,23 @@ function shalldowReactive(obj) {
 function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     get(target, key, receiver) {
-      console.log(key);
+      console.log('receiver', receiver);
+      console.log('get', key);
       if (key === 'raw') {
         return target;
       }
 
-      const res = Reflect.get(target, key, receiver);
+      const res = target[key].bind(target);
+
+      if (key === 'size') {
+        track(target, ITERATE_KEY);
+        return Reflect.get(target, key, target);
+      }
+
+      // eslint-disable-next-line no-prototype-builtins
+      if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
+        return Reflect.get(arrayInstrumentations, key, receiver);
+      }
 
       if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
@@ -333,4 +379,12 @@ function reactive(obj) {
   return proxy;
 }
 
-export { reactive, computed, watch, readonly, shalldowReactive };
+export {
+  reactive,
+  computed,
+  watch,
+  readonly,
+  shalldowReactive,
+  effect,
+  bucket,
+};

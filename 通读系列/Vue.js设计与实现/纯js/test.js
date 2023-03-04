@@ -1,6 +1,9 @@
-import { reactive } from './effect.js';
+import { bucket, effect, reactive } from './effect.js';
 
-const obj = {};
-const testObj = reactive([obj]);
+const testObj = reactive(new Map([['key', 1]]));
 
-testObj.includes(1);
+effect(() => {
+  console.log(testObj.delete('key'));
+});
+
+console.log(bucket);
