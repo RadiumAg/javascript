@@ -408,7 +408,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return isReadonly ? readonly(res) : reactive(res);
       }
 
-      return res;
+      return res.__v_isRef ? res.value : res;
     },
 
     has(target, key) {
@@ -437,6 +437,10 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         ? TriggerType.SET
         : TriggerType.ADD;
 
+      if (res.__v_isRef) {
+        res.value = newVal;
+        return true;
+      }
       const res = Reflect.set(target, key, newVal, receiver);
 
       if (
@@ -552,6 +556,44 @@ function reactive(obj) {
   return proxy;
 }
 
+function ref(val) {
+  const wrapper = {
+    value: val,
+  };
+
+  Object.defineProperty(wrapper, '__value_isRef', { value: true });
+
+  return reactive(wrapper);
+}
+
+function toRef(obj, key) {
+  const wrapper = {
+    get value() {
+      return obj[key];
+    },
+    set value(val) {
+      obj[key] = val;
+    },
+  };
+
+  Object.defineProperties(wrapper, '__v_isRef', {
+    value: true,
+  });
+
+  return wrapper;
+}
+
+function toRefs(obj) {
+  const ret = {};
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in obj) {
+    ret[key] = toRef(obj, key);
+  }
+
+  return ret;
+}
+
 export {
   reactive,
   computed,
@@ -560,4 +602,7 @@ export {
   shalldowReactive,
   effect,
   bucket,
+  ref,
+  toRef,
+  toRefs,
 };
