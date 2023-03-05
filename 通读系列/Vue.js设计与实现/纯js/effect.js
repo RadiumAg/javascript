@@ -66,8 +66,9 @@ const mutableInstrumentations = {
     const had = target.has(key);
     // 获取旧值
     const oldValue = target.get(key);
+    const rawValue = value.raw || value;
     // 设置新值
-    target.set(key, value);
+    target.set(key, rawValue);
 
     if (!had) {
       trigger(target, key, TriggerType.ADD);
@@ -77,6 +78,17 @@ const mutableInstrumentations = {
     ) {
       trigger(target, key, TriggerType.SET);
     }
+  },
+  forEach(callback) {
+    // wrap 函数用来把可代理的值转换为响应式数据
+    const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+    const target = this.raw;
+    // 与 ITERATE_KEY 建立联系
+    track(target, ITERATE_KEY);
+    // 通过原始数据对象调用 forEach 方法， 并把 callback 传递出去
+    target.forEach((v, k) => {
+      callback(wrap(v), wrap(k), this);
+    });
   },
 };
 
@@ -199,7 +211,12 @@ function trigger(target, key, type, newVal) {
       }
     });
 
-  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
+  if (
+    type === TriggerType.ADD ||
+    type === TriggerType.DELETE ||
+    (type === TriggerType.SET &&
+      Object.prototype.toString.call(target) === '[Object Map]')
+  ) {
     const iterateEffects = depsMap.get(ITERATE_KEY);
     // 将 与 key 相关的副作用函数添加到 effectsToRun
     iterateEffects &&
