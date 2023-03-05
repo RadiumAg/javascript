@@ -90,25 +90,10 @@ const mutableInstrumentations = {
       callback(wrap(v), wrap(k), this);
     });
   },
-  [Symbol.iterator]() {
-    const target = this.raw;
-    const itr = target[Symbol.iterator]();
-    const wrap = val =>
-      typeof val === 'object' && val !== null ? reactive(val) : val;
-
-    // 调用 track 函数建立响应联系
-    track(target, ITERATE_KEY);
-    return {
-      next() {
-        const { value, done } = itr.next();
-
-        return {
-          value: value ? [wrap(value[0]), wrap(value[1])] : value,
-          done,
-        };
-      },
-    };
-  },
+  [Symbol.iterator]: iterationMethod,
+  entries: iterationMethod,
+  values: valuesIterationMethod,
+  keys: keysIterationMehtod,
 };
 
 ['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
@@ -141,6 +126,55 @@ const mutableInstrumentations = {
     return res;
   };
 });
+
+function valuesIterationMethod() {
+  const target = this.raw;
+
+  const itr = target.values();
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
+const MAP_KEY_ITERATE_KEY = Symbol();
+
+function keysIterationMehtod() {
+  // 获取原始数据对象 target
+  const target = this.raw;
+  const itr = target.keys();
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, MAP_KEY_ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
 
 function flushJob() {
   if (isFlushing) return;
@@ -194,6 +228,30 @@ function traverse(value, seen = new Set()) {
   return value;
 }
 
+function iterationMethod() {
+  const target = this.raw;
+  const itr = target[Symbol.iterator]();
+  const wrap = val =>
+    typeof val === 'object' && val !== null ? reactive(val) : val;
+
+  // 调用 track 函数建立响应联系
+  track(target, ITERATE_KEY);
+  return {
+    next() {
+      const { value, done } = itr.next();
+
+      return {
+        value: value ? [wrap(value[0]), wrap(value[1])] : value,
+        done,
+      };
+    },
+
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
 // 收集依赖
 function track(target, key) {
   if (!activeEffect || !shouldTrack) return target[key];
@@ -237,6 +295,21 @@ function trigger(target, key, type, newVal) {
       Object.prototype.toString.call(target) === '[Object Map]')
   ) {
     const iterateEffects = depsMap.get(ITERATE_KEY);
+    // 将 与 key 相关的副作用函数添加到 effectsToRun
+    iterateEffects &&
+      iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
+  if (
+    type === TriggerType.ADD ||
+    type === TriggerType.DELETE ||
+    Object.prototype.toString.call(target) === '[Object Map]'
+  ) {
+    const iterateEffects = depsMap.get(MAP_KEY_ITERATE_KEY);
     // 将 与 key 相关的副作用函数添加到 effectsToRun
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
