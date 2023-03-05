@@ -90,6 +90,25 @@ const mutableInstrumentations = {
       callback(wrap(v), wrap(k), this);
     });
   },
+  [Symbol.iterator]() {
+    const target = this.raw;
+    const itr = target[Symbol.iterator]();
+    const wrap = val =>
+      typeof val === 'object' && val !== null ? reactive(val) : val;
+
+    // 调用 track 函数建立响应联系
+    track(target, ITERATE_KEY);
+    return {
+      next() {
+        const { value, done } = itr.next();
+
+        return {
+          value: value ? [wrap(value[0]), wrap(value[1])] : value,
+          done,
+        };
+      },
+    };
+  },
 };
 
 ['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
