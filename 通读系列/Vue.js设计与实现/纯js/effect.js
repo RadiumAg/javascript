@@ -20,6 +20,162 @@ const TriggerType = {
   DELETE: 'DELETE',
 };
 
+let shouldTrack = true;
+
+const arrayInstrumentations = {};
+
+const mutableInstrumentations = {
+  add(key) {
+    const target = this.raw;
+
+    const hadKey = target.has(key);
+
+    const res = target.add(key);
+
+    if (!hadKey) {
+      trigger(target, key, TriggerType.ADD);
+    }
+
+    return res;
+  },
+  delete(key) {
+    const target = this.raw;
+
+    const hadKey = target.has(key);
+
+    const res = target.delete(key);
+
+    if (hadKey) {
+      trigger(target, key, TriggerType.DELETE);
+    }
+
+    return res;
+  },
+  get(key) {
+    const target = this.raw;
+    const had = target.has(key);
+    track(target, key);
+
+    if (had) {
+      const res = target.get(key);
+      return typeof res === 'object' ? reactive(res) : res;
+    }
+  },
+  set(key, value) {
+    const target = this.raw;
+    const had = target.has(key);
+    // 获取旧值
+    const oldValue = target.get(key);
+    const rawValue = value.raw || value;
+    // 设置新值
+    target.set(key, rawValue);
+
+    if (!had) {
+      trigger(target, key, TriggerType.ADD);
+    } else if (
+      oldValue !== value ||
+      (oldValue === oldValue && value === value)
+    ) {
+      trigger(target, key, TriggerType.SET);
+    }
+  },
+  forEach(callback) {
+    // wrap 函数用来把可代理的值转换为响应式数据
+    const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+    const target = this.raw;
+    // 与 ITERATE_KEY 建立联系
+    track(target, ITERATE_KEY);
+    // 通过原始数据对象调用 forEach 方法， 并把 callback 传递出去
+    target.forEach((v, k) => {
+      callback(wrap(v), wrap(k), this);
+    });
+  },
+  [Symbol.iterator]: iterationMethod,
+  entries: iterationMethod,
+  values: valuesIterationMethod,
+  keys: keysIterationMehtod,
+};
+
+['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
+  const originMethod = Array.prototype[method];
+
+  arrayInstrumentations[method] = function (...args) {
+    // this是代理对象，现在代理对象中查找，将结果存储在 res 中
+    let res = originMethod.apply(this, args);
+
+    if (res === false || res === -1) {
+      res = originMethod.apply(this.raw, args);
+    }
+
+    // 返回最终结果
+    return res;
+  };
+});
+
+['push', 'pop', 'shift', 'unshift', 'splice'].forEach(method => {
+  const originMethod = Array.prototype[method];
+
+  arrayInstrumentations[method] = function (...args) {
+    shouldTrack = false;
+    // push 方法的默认行为
+    const res = originMethod.apply(this, args);
+
+    // 在调用原始方法之后，恢复原来的行为，即允许追踪
+    shouldTrack = true;
+
+    return res;
+  };
+});
+
+function valuesIterationMethod() {
+  const target = this.raw;
+
+  const itr = target.values();
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
+const MAP_KEY_ITERATE_KEY = Symbol();
+
+function keysIterationMehtod() {
+  // 获取原始数据对象 target
+  const target = this.raw;
+  const itr = target.keys();
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, MAP_KEY_ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
 function flushJob() {
   if (isFlushing) return;
   isFlushing = true;
@@ -72,9 +228,33 @@ function traverse(value, seen = new Set()) {
   return value;
 }
 
+function iterationMethod() {
+  const target = this.raw;
+  const itr = target[Symbol.iterator]();
+  const wrap = val =>
+    typeof val === 'object' && val !== null ? reactive(val) : val;
+
+  // 调用 track 函数建立响应联系
+  track(target, ITERATE_KEY);
+  return {
+    next() {
+      const { value, done } = itr.next();
+
+      return {
+        value: value ? [wrap(value[0]), wrap(value[1])] : value,
+        done,
+      };
+    },
+
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
 // 收集依赖
 function track(target, key) {
-  if (!activeEffect) return target[key];
+  if (!activeEffect || !shouldTrack) return target[key];
 
   let depsMap = bucket.get(target);
 
@@ -108,8 +288,28 @@ function trigger(target, key, type, newVal) {
       }
     });
 
-  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
+  if (
+    type === TriggerType.ADD ||
+    type === TriggerType.DELETE ||
+    (type === TriggerType.SET &&
+      Object.prototype.toString.call(target) === '[Object Map]')
+  ) {
     const iterateEffects = depsMap.get(ITERATE_KEY);
+    // 将 与 key 相关的副作用函数添加到 effectsToRun
+    iterateEffects &&
+      iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
+  if (
+    type === TriggerType.ADD ||
+    type === TriggerType.DELETE ||
+    Object.prototype.toString.call(target) === '[Object Map]'
+  ) {
+    const iterateEffects = depsMap.get(MAP_KEY_ITERATE_KEY);
     // 将 与 key 相关的副作用函数添加到 effectsToRun
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
@@ -170,12 +370,31 @@ function shalldowReactive(obj) {
 function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     get(target, key, receiver) {
-      console.log(key);
+      console.log('receiver', receiver);
+      console.log('get', key);
       if (key === 'raw') {
         return target;
       }
 
-      const res = Reflect.get(target, key, receiver);
+      const res = target[key];
+
+      if (typeof res === 'function') {
+        res.bind(target);
+      }
+
+      // eslint-disable-next-line no-prototype-builtins
+      if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
+        return Reflect.get(arrayInstrumentations, key, receiver);
+      }
+
+      if (target instanceof Set || target instanceof Map) {
+        if (key === 'size') {
+          track(target, ITERATE_KEY);
+          return Reflect.get(target, key, target);
+        }
+
+        return Reflect.get(mutableInstrumentations, key, receiver);
+      }
 
       if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
@@ -189,7 +408,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return isReadonly ? readonly(res) : reactive(res);
       }
 
-      return res;
+      return res.__v_isRef ? res.value : res;
     },
 
     has(target, key) {
@@ -218,6 +437,10 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         ? TriggerType.SET
         : TriggerType.ADD;
 
+      if (res.__v_isRef) {
+        res.value = newVal;
+        return true;
+      }
       const res = Reflect.set(target, key, newVal, receiver);
 
       if (
@@ -333,4 +556,53 @@ function reactive(obj) {
   return proxy;
 }
 
-export { reactive, computed, watch, readonly, shalldowReactive };
+function ref(val) {
+  const wrapper = {
+    value: val,
+  };
+
+  Object.defineProperty(wrapper, '__value_isRef', { value: true });
+
+  return reactive(wrapper);
+}
+
+function toRef(obj, key) {
+  const wrapper = {
+    get value() {
+      return obj[key];
+    },
+    set value(val) {
+      obj[key] = val;
+    },
+  };
+
+  Object.defineProperties(wrapper, '__v_isRef', {
+    value: true,
+  });
+
+  return wrapper;
+}
+
+function toRefs(obj) {
+  const ret = {};
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in obj) {
+    ret[key] = toRef(obj, key);
+  }
+
+  return ret;
+}
+
+export {
+  reactive,
+  computed,
+  watch,
+  readonly,
+  shalldowReactive,
+  effect,
+  bucket,
+  ref,
+  toRef,
+  toRefs,
+};
