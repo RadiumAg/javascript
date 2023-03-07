@@ -19,10 +19,13 @@ const button = {
   type: 'button',
   props: {
     disabled: false,
+    onClick: () => {
+      console.log(1);
+    },
   },
   children: 'test',
 };
-// renderer.render(vnode, container);
+renderer.render(button, container);
 
 // const CLS = {
 //   type: 'p',
@@ -32,5 +35,3 @@ const button = {
 // };
 
 // renderer.render(CLS, container);
-
-console.log(normalizeClass([{ foo: true, bar: false }, 'FOO BAR']));
