@@ -51,6 +51,14 @@ const renderer = createRenderer({
 function normalizeClass(cls) {
   let result = '';
 
+  const normalizeObj = cls => {
+    for (const [className, sign] of Object.entries(cls)) {
+      if (sign) {
+        result += ` ${className}`;
+      }
+    }
+  };
+
   if (typeof cls === 'string') {
     result = cls;
   } else if (Array.isArray(cls)) {
@@ -58,19 +66,11 @@ function normalizeClass(cls) {
       if (typeof clsObj === 'string') {
         result += ` ${clsObj}`;
       } else if (typeof clsObj === 'object' && clsObj !== null) {
-        for (const [className, sign] of Object.entries(clsObj)) {
-          if (sign) {
-            result += ` ${className}`;
-          }
-        }
+        normalizeObj(cls);
       }
     }
   } else {
-    for (const [className, sign] of Object.entries(cls)) {
-      if (sign) {
-        result += ` ${className}`;
-      }
-    }
+    normalizeObj(cls);
   }
 
   return result.trim();
