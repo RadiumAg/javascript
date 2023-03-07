@@ -50,7 +50,7 @@ const renderer = createRenderer({
 
 function normalizeClass(cls) {
   let result = '';
-  s;
+
   if (typeof cls === 'string') {
     result = cls;
   } else if (Array.isArray(cls)) {
