@@ -1,4 +1,4 @@
-import { renderer } from './render.js';
+import { normalizeClass, renderer } from './render.js';
 
 const vnode = {
   type: 'h1',
@@ -24,11 +24,13 @@ const button = {
 };
 // renderer.render(vnode, container);
 
-const CLS = {
-  type: 'p',
-  props: {
-    class: [{ foo: true, bar: false }, 'FOO BAR'],
-  },
-};
+// const CLS = {
+//   type: 'p',
+//   props: {
+//     class: normalizeClass([{ foo: true, bar: false }, 'FOO BAR']),
+//   },
+// };
 
-renderer.render(CLS, container);
+// renderer.render(CLS, container);
+
+console.log(normalizeClass([{ foo: true, bar: false }, 'FOO BAR']));

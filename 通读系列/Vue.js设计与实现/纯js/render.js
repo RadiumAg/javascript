@@ -47,3 +47,33 @@ const renderer = createRenderer({
     anchor.before(el);
   },
 });
+
+function normalizeClass(cls) {
+  let result = '';
+  s;
+  if (typeof cls === 'string') {
+    result = cls;
+  } else if (Array.isArray(cls)) {
+    for (const clsObj of cls) {
+      if (typeof clsObj === 'string') {
+        result += ` ${clsObj}`;
+      } else if (typeof clsObj === 'object' && clsObj !== null) {
+        for (const [className, sign] of Object.entries(clsObj)) {
+          if (sign) {
+            result += ` ${className}`;
+          }
+        }
+      }
+    }
+  } else {
+    for (const [className, sign] of Object.entries(cls)) {
+      if (sign) {
+        result += ` ${className}`;
+      }
+    }
+  }
+
+  return result.trim();
+}
+
+export { renderer, normalizeClass };
