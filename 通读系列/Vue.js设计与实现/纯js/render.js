@@ -21,6 +21,10 @@ function createRenderer(options) {
     const el = createElement(vnode.type);
     if (typeof vnode.children === 'string') {
       setElementText(el, vnode.children);
+    } else if (Array.isArray(vnode.children)) {
+      vnode.children.forEach(child => {
+        patch(null, child, el);
+      });
     }
 
     insert(el, container);
@@ -46,6 +50,8 @@ const renderer = createRenderer({
   insert(el, parent, anchor = null) {
     anchor.before(el);
   },
+
+  patchProps(el, key, preValue, nextValue) {},
 });
 
 function normalizeClass(cls) {
