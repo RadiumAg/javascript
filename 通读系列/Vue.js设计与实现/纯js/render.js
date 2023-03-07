@@ -88,13 +88,17 @@ const renderer = createRenderer({
     if (key.startsWith('on')) {
       let invoker = el.vei;
       const name = key.slice(2).toLowerCase();
-      if (nextValue && !invoker) {
-        invoker = el._vei = e => {
-          invoker.value(e);
-        };
+      if (nextValue) {
+        if (!invoker) {
+          invoker = el._vei = e => {
+            invoker.value(e);
+          };
 
-        invoker.value = nextValue;
-        el.addEventListener(name, invoker);
+          invoker.value = nextValue;
+          el.addEventListener(name, invoker);
+        } else {
+          invoker.value = nextValue;
+        }
       } else if (invoker) {
         el.removeEventListener(name, invoker);
       }
