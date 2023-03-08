@@ -47,7 +47,20 @@ effect(() => {
 });
 
 const fragment = {
-  type: Fragment,
+  type: {
+    name: 'MyComponent',
+    data() {
+      return {
+        foo: 'hello world',
+      };
+    },
+    render() {
+      return {
+        type: 'div',
+        children: `foo 的值是：${this.foo}`,
+      };
+    },
+  },
   children: [
     { type: 'li', children: 'text 1' },
     { type: 'li', children: 'text 2' },

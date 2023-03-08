@@ -1,6 +1,29 @@
+import { effect, reactive } from 'vue';
+
+let isFlushing = false;
+
 const Text = Symbol();
 const Comment = Symbol();
 const Fragment = Symbol();
+const queue = new Set();
+const p = Promise.resolve();
+
+function queueJob(job) {
+  queue.add(job);
+
+  if (!isFlushing) {
+    isFlushing = true;
+  }
+
+  p.then(() => {
+    try {
+      queue.forEach(job());
+    } finally {
+      isFlushing = false;
+      queue.clear();
+    }
+  });
+}
 
 function createRenderer(options) {
   const {
@@ -41,7 +64,7 @@ function createRenderer(options) {
    * @param {*} n2 新vnode
    * @param {*} container
    */
-  function patch(n1, n2, container) {
+  function patch(n1, n2, container, anchor) {
     if (n1 && n1.type !== n2.type) {
       unmount(n1);
       n1 = null;
@@ -65,6 +88,12 @@ function createRenderer(options) {
         n2.children.forEach(c => patch(null, c, container));
       } else {
         patchChildren(n1, n2, container);
+      }
+    } else if (typeof type === 'object') {
+      if (!n1) {
+        mountComponent(n2, container, anchor);
+      } else {
+        patchComponent(n1, n2, anchor);
       }
     } else {
       const el = (n2.el = n1.el);
@@ -132,6 +161,23 @@ function createRenderer(options) {
     } else if (typeof n1.children === 'string') {
       setElementText(container, '');
     }
+  }
+
+  function mountComponent(vnode, container, anchor) {
+    const componentOptions = vnode.type;
+    const { render, data } = componentOptions;
+
+    const state = reactive(data());
+
+    effect(
+      () => {
+        const subTee = render.call(state, state);
+        patch(null, subTee, container, anchor);
+      },
+      {
+        scheduler: queueJob,
+      },
+    );
   }
 
   return {
