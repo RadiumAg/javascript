@@ -37,7 +37,7 @@ function createRenderer(options) {
       if (!n1) {
         mountElement(n2, container);
       } else {
-        // patchElement(n1, n2);
+        patchElement(n1, n2);
       }
     } else if (typeof type === 'object') {
     }
@@ -61,6 +61,36 @@ function createRenderer(options) {
     }
 
     insert(el, container);
+  }
+
+  function patchElement(n1, n2) {
+    const el = (n2.el = n1.el);
+    const oldProps = n1.props;
+    const newProps = n2.props;
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in newProps) {
+      if (newProps[key] !== oldProps[key]) {
+        patchProps(el, key, oldProps[key], newProps[key]);
+      }
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in oldProps) {
+      if (!(key in oldProps)) {
+        patchProps(el, key, oldProps[key], null);
+      }
+    }
+
+    patchChildren(n1, n2, el);
+  }
+
+  function patchChildren(n1, n2, container) {
+    if (typeof n2.children === 'string' && Array.isArray(n1.children)) {
+      n1.children.forEach(c => unmount(c));
+    }
+
+    setElementText(container, n2.children);
   }
 
   return {
@@ -88,6 +118,7 @@ const renderer = createRenderer({
     if (key.startsWith('on')) {
       let invoker = el.vei;
       const name = key.slice(2).toLowerCase();
+
       if (nextValue) {
         if (!invoker) {
           invoker = el._vei = e => {

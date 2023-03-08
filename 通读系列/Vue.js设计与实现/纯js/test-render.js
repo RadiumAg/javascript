@@ -1,4 +1,5 @@
-import { normalizeClass, renderer } from './render.js';
+import { effect, ref } from 'vue';
+import { renderer } from './render.js';
 
 const vnode = {
   type: 'h1',
@@ -15,18 +16,35 @@ const vnode = {
 
 const container = document.querySelector('#root');
 
-const button = {
-  type: 'button',
-  props: {
-    disabled: false,
-    onClick: () => {
-      console.log(1);
-    },
-  },
-  children: 'test',
-};
-renderer.render(button, container);
+const bol = ref(false);
 
+effect(() => {
+  console.log(bol.value);
+
+  const button = {
+    type: 'div',
+    props: bol.value
+      ? {
+          onClick: () => {
+            console.log('父元素 clicked');
+          },
+        }
+      : {},
+    children: [
+      {
+        type: 'p',
+        props: {
+          onClick: () => {
+            bol.value = true;
+          },
+        },
+        children: 'text',
+      },
+    ],
+  };
+
+  renderer.render(button, container);
+});
 // const CLS = {
 //   type: 'p',
 //   props: {
