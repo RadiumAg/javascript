@@ -1,5 +1,5 @@
 import { effect, ref } from 'vue';
-import { renderer } from './render.js';
+import { Fragment, renderer } from './render.js';
 
 const vnode = {
   type: 'h1',
@@ -45,11 +45,13 @@ effect(() => {
 
   renderer.render(button, container);
 });
-// const CLS = {
-//   type: 'p',
-//   props: {
-//     class: normalizeClass([{ foo: true, bar: false }, 'FOO BAR']),
-//   },
-// };
 
-// renderer.render(CLS, container);
+const fragment = {
+  type: Fragment,
+  children: [
+    { type: 'li', children: 'text 1' },
+    { type: 'li', children: 'text 2' },
+    { type: 'li', children: 'text 3' },
+  ],
+};
+renderer.render(fragment, container);

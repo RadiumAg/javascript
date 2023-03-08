@@ -1,5 +1,16 @@
+const Text = Symbol();
+const Comment = Symbol();
+const Fragment = Symbol();
+
 function createRenderer(options) {
-  const { createElement, insert, setElementText, patchProps } = options;
+  const {
+    createElement,
+    insert,
+    setElementText,
+    patchProps,
+    createText,
+    setText,
+  } = options;
 
   function render(vnode, container) {
     if (vnode) {
@@ -13,6 +24,11 @@ function createRenderer(options) {
 
   function unmount(vnode) {
     const parent = vnode.el.parentNode;
+
+    if (vnode.type === Fragment) {
+      vnode.children.forEach(c => unmount(c));
+      return;
+    }
 
     if (parent) {
       vnode.el.remove();
@@ -39,7 +55,22 @@ function createRenderer(options) {
       } else {
         patchElement(n1, n2);
       }
-    } else if (typeof type === 'object') {
+    } else if (type === Text) {
+      if (!n1) {
+        const el = (n2.el = createText(n2.children));
+        insert(el, container);
+      }
+    } else if (type === Fragment) {
+      if (!n1) {
+        n2.children.forEach(c => patch(null, c, container));
+      } else {
+        patchChildren(n1, n2, container);
+      }
+    } else {
+      const el = (n2.el = n1.el);
+      if (n2.children !== n1.children) {
+        setText(el, n2.children);
+      }
     }
   }
 
@@ -86,11 +117,21 @@ function createRenderer(options) {
   }
 
   function patchChildren(n1, n2, container) {
-    if (typeof n2.children === 'string' && Array.isArray(n1.children)) {
+    if (typeof n2.children === 'string') {
+      setElementText(container, n2.children);
+    } else if (Array.isArray(n2.children)) {
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach(c => unmount(c));
+        n2.children.forEach(c => patch(null, c, container));
+      } else {
+        setElementText(container, '');
+        n1.children.forEach(c => patch(null, c, container));
+      }
+    } else if (Array.isArray(n1.children)) {
       n1.children.forEach(c => unmount(c));
+    } else if (typeof n1.children === 'string') {
+      setElementText(container, '');
     }
-
-    setElementText(container, n2.children);
   }
 
   return {
@@ -122,9 +163,15 @@ const renderer = createRenderer({
       if (nextValue) {
         if (!invoker) {
           invoker = el._vei = e => {
-            invoker.value(e);
+            if (e.timeStamp < invoker.attached) return;
+            if (Array.isArray(invoker.value)) {
+              invoker.value.forEach(fn => fn(e));
+            } else {
+              invoker.value(e);
+            }
           };
 
+          invoker.attached = performance.now();
           invoker.value = nextValue;
           el.addEventListener(name, invoker);
         } else {
@@ -146,6 +193,14 @@ const renderer = createRenderer({
     } else {
       el.setAttribute(key, nextValue);
     }
+  },
+
+  createText(text) {
+    return document.createTextNode(text);
+  },
+
+  setText(el, text) {
+    el.nodeValue = text;
   },
 });
 
@@ -183,4 +238,4 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
-export { renderer, normalizeClass };
+export { renderer, normalizeClass, Text, Comment, Fragment };
