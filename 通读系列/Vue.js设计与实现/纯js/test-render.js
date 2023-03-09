@@ -43,10 +43,13 @@ effect(() => {
     ],
   };
 
-  renderer.render(button, container);
+  // renderer.render(button, container);
 });
 
 const fragment = {
+  props: {
+    a: '2',
+  },
   type: {
     name: 'MyComponent',
     data() {
@@ -54,25 +57,16 @@ const fragment = {
         foo: 'hello world',
       };
     },
+    props: {
+      a: String,
+    },
     beforeMount() {
       console.log('beforeMount');
     },
     render() {
       return {
-        type: {
-          name: 'MyComponent',
-          data() {
-            return {
-              foo: 'hello world',
-            };
-          },
-          render() {
-            return {
-              type: 'div',
-              children: `foo 的值是：${this.foo}`,
-            };
-          },
-        },
+        type: 'div',
+        children: `foo 的值是：${this.foo}`,
       };
     },
   },

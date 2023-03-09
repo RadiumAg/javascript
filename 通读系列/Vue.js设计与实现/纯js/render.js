@@ -1,4 +1,4 @@
-import { effect, reactive } from 'vue';
+import { effect, reactive, shallowReactive } from 'vue';
 
 let isFlushing = false;
 
@@ -145,6 +145,40 @@ function createRenderer(options) {
     patchChildren(n1, n2, el);
   }
 
+  function patchComponent(n1, n2, anchor) {
+    const instance = (n2.component = n1.component);
+
+    const { props } = instance;
+
+    if (hasPropsChanged(n1.props, n2.props)) {
+      const [nextProps] = resolveProps(n2.type.props, n2.props);
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in nextProps) {
+        props[key] = nextProps[key];
+      }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const k in props) {
+        if (!(k in nextProps)) delete props[k];
+      }
+    }
+  }
+
+  function hasPropsChanged(prevProps, nextProps) {
+    const nextKeys = Object.keys(nextProps);
+
+    if (nextKeys.length !== Object.keys(prevProps).length) {
+      return true;
+    }
+
+    for (const key of nextKeys) {
+      if (nextProps[key] !== prevProps[key]) return true;
+    }
+
+    return false;
+  }
+
   function patchChildren(n1, n2, container) {
     if (typeof n2.children === 'string') {
       setElementText(container, n2.children);
@@ -174,33 +208,62 @@ function createRenderer(options) {
       mounted,
       beforeUpdate,
       updated,
+      props: propsOption,
     } = componentOptions;
 
+    beforeCreate && beforeCreate();
     const state = reactive(data());
+    const { props, attrs } = resolveProps(propsOption, vnode.props);
 
     const instance = {
       state,
       isMounted: false,
       subTree: null,
+      props: shallowReactive(props),
     };
 
     vnode.component = instance;
 
-    created && created.call(state);
+    const renderContext = new Proxy(instance, {
+      get(t, k, r) {
+        const { state, props } = t;
+
+        if (state && k in state) {
+          return state[k];
+        } else if (k in props) {
+          return props[k];
+        } else {
+          console.error('不存在');
+        }
+      },
+      set(t, k, v, r) {
+        const { state, props } = t;
+
+        if (state && k in state) {
+          state[k] = v;
+        } else if (k in props) {
+          console.warn(`Attempting to mutate prop "${k}. Props are readonly"`);
+        } else {
+          console.error('不存在');
+        }
+      },
+    });
+
+    created && created.call(renderContext);
 
     effect(
       () => {
-        const subTree = render.call(state, state);
-        patch(null, subTree, container, anchor);
+        const subTree = render.call(renderContext, renderContext);
 
         if (!instance.isMounted) {
-          beforeMount && beforeMount.call(state);
+          beforeMount && beforeMount.call(renderContext);
           patch(null, subTree, container, anchor);
+          mounted && mounted.call(renderContext);
           instance.isMounted = true;
         } else {
-          beforeUpdate && beforeUpdate.call(state);
+          beforeUpdate && beforeUpdate.call(renderContext);
           patch(instance.subTree, subTree, container, anchor);
-          updated && updated.call(state);
+          updated && updated.call(renderContext);
         }
 
         instance.subTree = subTree;
@@ -214,6 +277,22 @@ function createRenderer(options) {
   return {
     render,
   };
+}
+
+function resolveProps(options, propsData) {
+  const props = {};
+  const attrs = {};
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in propsData) {
+    if (key in options) {
+      props[key] = propsData[key];
+    } else {
+      attrs[key] = propsData[key];
+    }
+  }
+
+  return { props, attrs };
 }
 
 const renderer = createRenderer({
