@@ -1,4 +1,4 @@
-import { bucket, effect, reactive } from './effect.js';
+import { bucket, computed, reactive } from './effect.js';
 
 // const p = reactive(new Map([[{ key: 1 }, { value: 1 }]]));
 
@@ -12,19 +12,17 @@ import { bucket, effect, reactive } from './effect.js';
 // // 能够触发响应
 // p.set({ key: 2 }, { value: 2 });
 
-const p = reactive(
-  new Map([
-    ['key1', 'value1'],
-    ['key2', 'value2'],
-  ]),
-);
+const a = reactive({ a: 1 });
 
-effect(() => {
-  // TypeError: p is not iterable
-  for (const [key, value] of p) {
-    console.log(key, value);
-  }
-});
+const p = computed(() => a.a);
 
-p.set('key3', 'value3');
+// effect(() => {
+//   // TypeError: p is not iterable
+//   for (const [key, value] of p) {
+//     console.log(key, value);
+//   }
+// });
+
+console.log(p.value);
+a.a = 1;
 console.log(bucket);

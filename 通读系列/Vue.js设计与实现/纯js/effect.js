@@ -254,7 +254,7 @@ function iterationMethod() {
 
 // 收集依赖
 function track(target, key) {
-  if (!activeEffect || !shouldTrack) return target[key];
+  if (!activeEffect) return;
 
   let depsMap = bucket.get(target);
 
@@ -520,7 +520,6 @@ function watch(source, cb, options = {}) {
 function computed(getter) {
   let value;
   let dirty = true;
-
   const effectFn = effect(getter, {
     lazy: true,
     scheduler: () => {
