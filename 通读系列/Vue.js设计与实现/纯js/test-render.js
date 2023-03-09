@@ -54,17 +54,27 @@ const fragment = {
         foo: 'hello world',
       };
     },
+    beforeMount() {
+      console.log('beforeMount');
+    },
     render() {
       return {
-        type: 'div',
-        children: `foo 的值是：${this.foo}`,
+        type: {
+          name: 'MyComponent',
+          data() {
+            return {
+              foo: 'hello world',
+            };
+          },
+          render() {
+            return {
+              type: 'div',
+              children: `foo 的值是：${this.foo}`,
+            };
+          },
+        },
       };
     },
   },
-  children: [
-    { type: 'li', children: 'text 1' },
-    { type: 'li', children: 'text 2' },
-    { type: 'li', children: 'text 3' },
-  ],
 };
 renderer.render(fragment, container);

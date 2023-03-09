@@ -165,14 +165,45 @@ function createRenderer(options) {
 
   function mountComponent(vnode, container, anchor) {
     const componentOptions = vnode.type;
-    const { render, data } = componentOptions;
+    const {
+      render,
+      data,
+      beforeCreate,
+      created,
+      beforeMount,
+      mounted,
+      beforeUpdate,
+      updated,
+    } = componentOptions;
 
     const state = reactive(data());
 
+    const instance = {
+      state,
+      isMounted: false,
+      subTree: null,
+    };
+
+    vnode.component = instance;
+
+    created && created.call(state);
+
     effect(
       () => {
-        const subTee = render.call(state, state);
-        patch(null, subTee, container, anchor);
+        const subTree = render.call(state, state);
+        patch(null, subTree, container, anchor);
+
+        if (!instance.isMounted) {
+          beforeMount && beforeMount.call(state);
+          patch(null, subTree, container, anchor);
+          instance.isMounted = true;
+        } else {
+          beforeUpdate && beforeUpdate.call(state);
+          patch(instance.subTree, subTree, container, anchor);
+          updated && updated.call(state);
+        }
+
+        instance.subTree = subTree;
       },
       {
         scheduler: queueJob,
