@@ -1,4 +1,4 @@
-import { effect, reactive, shallowReactive } from 'vue';
+import { effect, reactive, shallowReactive, shallowReadonly } from 'vue';
 
 let isFlushing = false;
 
@@ -202,6 +202,7 @@ function createRenderer(options) {
     const {
       render,
       data,
+      setup,
       beforeCreate,
       created,
       beforeMount,
@@ -224,6 +225,13 @@ function createRenderer(options) {
 
     vnode.component = instance;
 
+    const setupContent = { attrs };
+    const setupResult = setup(shallowReadonly(instance.props), setupContent);
+
+    const setupState = null;
+
+    if (typeof setupResult === 'function' && render)
+      console.error('setup 函数返回渲染函数，render 选项将被忽略');
     const renderContext = new Proxy(instance, {
       get(t, k, r) {
         const { state, props } = t;
