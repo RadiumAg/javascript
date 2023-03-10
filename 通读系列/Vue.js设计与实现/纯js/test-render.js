@@ -19,8 +19,6 @@ const container = document.querySelector('#root');
 const bol = ref(false);
 
 effect(() => {
-  console.log(bol.value);
-
   const button = {
     type: 'div',
     props: bol.value
@@ -61,13 +59,23 @@ const fragment = {
       },
     },
     data() {},
-    setup(props, { emit }) {
-      emit('change', 1, 2);
-      return () => {
-        return {
-          type: 'div',
-        };
-      };
+    render() {
+      return [
+        { type: 'header', children: [this.$slots.header()] },
+        { type: 'body', children: [this.$slots.body()] },
+        { type: 'footer', children: [this.$slots.footer()] },
+      ];
+    },
+  },
+  children: {
+    header() {
+      return { type: 'n1', children: '我是标题' };
+    },
+    body() {
+      return { type: 'n1', children: '我是内容' };
+    },
+    footer() {
+      return { type: 'n1', children: '我是注脚' };
     },
   },
 };

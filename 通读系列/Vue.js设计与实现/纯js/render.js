@@ -212,6 +212,7 @@ function createRenderer(options) {
       props: propsOption,
     } = componentOptions;
 
+    const slots = vnode.children || {};
     beforeCreate && beforeCreate();
     const state = reactive(data());
     const { props, attrs } = resolveProps(propsOption, vnode.props);
@@ -220,13 +221,15 @@ function createRenderer(options) {
       state,
       isMounted: false,
       subTree: null,
+      slots,
       props: shallowReactive(props),
     };
 
     vnode.component = instance;
 
-    const setupContent = { attrs, emit };
-    const setupResult = setup(shallowReadonly(instance.props), setupContent);
+    const setupContent = { attrs, emit, slots };
+    const setupResult =
+      setup && setup(shallowReadonly(instance.props), setupContent);
 
     let setupState = null;
 
@@ -253,8 +256,8 @@ function createRenderer(options) {
 
     const renderContext = new Proxy(instance, {
       get(t, k, r) {
-        const { state, props } = t;
-
+        const { state, props, slots } = t;
+        if (k === '$slots') return slots;
         if (state && k in state) {
           return state[k];
         } else if (k in props) {
