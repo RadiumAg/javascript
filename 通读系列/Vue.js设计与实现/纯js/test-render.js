@@ -49,24 +49,24 @@ effect(() => {
 const fragment = {
   props: {
     a: '2',
+    onChange: () => {
+      console.log(1);
+    },
   },
   type: {
     name: 'MyComponent',
-    data() {
-      return {
-        foo: 'hello world',
-      };
-    },
     props: {
-      a: String,
+      onChange() {
+        console.log(1);
+      },
     },
-    beforeMount() {
-      console.log('beforeMount');
-    },
-    render() {
-      return {
-        type: 'div',
-        children: `foo 的值是：${this.foo}`,
+    data() {},
+    setup(props, { emit }) {
+      emit('change', 1, 2);
+      return () => {
+        return {
+          type: 'div',
+        };
       };
     },
   },

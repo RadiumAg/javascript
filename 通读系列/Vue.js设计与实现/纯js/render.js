@@ -199,7 +199,7 @@ function createRenderer(options) {
 
   function mountComponent(vnode, container, anchor) {
     const componentOptions = vnode.type;
-    const {
+    let {
       render,
       data,
       setup,
@@ -225,13 +225,32 @@ function createRenderer(options) {
 
     vnode.component = instance;
 
-    const setupContent = { attrs };
+    const setupContent = { attrs, emit };
     const setupResult = setup(shallowReadonly(instance.props), setupContent);
 
-    const setupState = null;
+    let setupState = null;
 
-    if (typeof setupResult === 'function' && render)
-      console.error('setup 函数返回渲染函数，render 选项将被忽略');
+    if (typeof setupResult === 'function') {
+      if (render) {
+        console.error('setup 函数返回渲染函数，render 选项将被忽略');
+      }
+      render = setupResult;
+    } else {
+      setupState = setupResult;
+    }
+
+    function emit(event, ...playload) {
+      const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
+
+      const handler = instance.props[eventName];
+
+      if (handler) {
+        handler(...playload);
+      } else {
+        console.error('事件不存在');
+      }
+    }
+
     const renderContext = new Proxy(instance, {
       get(t, k, r) {
         const { state, props } = t;
@@ -240,6 +259,8 @@ function createRenderer(options) {
           return state[k];
         } else if (k in props) {
           return props[k];
+        } else if (setupState && k in setupState) {
+          return setupState[k];
         } else {
           console.error('不存在');
         }
@@ -251,6 +272,8 @@ function createRenderer(options) {
           state[k] = v;
         } else if (k in props) {
           console.warn(`Attempting to mutate prop "${k}. Props are readonly"`);
+        } else if (setupState && k in setupState) {
+          setupState[k] = v;
         } else {
           console.error('不存在');
         }
@@ -293,7 +316,7 @@ function resolveProps(options, propsData) {
 
   // eslint-disable-next-line no-restricted-syntax
   for (const key in propsData) {
-    if (key in options) {
+    if (key in options || key.startsWith('on')) {
       props[key] = propsData[key];
     } else {
       attrs[key] = propsData[key];
