@@ -45,12 +45,6 @@ effect(() => {
 });
 
 const fragment = {
-  props: {
-    a: '2',
-    onChange: () => {
-      console.log(1);
-    },
-  },
   type: {
     name: 'MyComponent',
     props: {
@@ -60,11 +54,21 @@ const fragment = {
     },
     data() {},
     render() {
-      return [
-        { type: 'header', children: [this.$slots.header()] },
-        { type: 'body', children: [this.$slots.body()] },
-        { type: 'footer', children: [this.$slots.footer()] },
-      ];
+      return {
+        type: Fragment,
+        children: [
+          { type: 'header', children: [this.$slots.header()] },
+          { type: 'body', children: [this.$slots.body()] },
+          { type: 'footer', children: [this.$slots.footer()] },
+        ],
+      };
+    },
+  },
+
+  props: {
+    a: '2',
+    onChange: () => {
+      console.log(1);
     },
   },
   children: {
@@ -79,4 +83,5 @@ const fragment = {
     },
   },
 };
+
 renderer.render(fragment, container);

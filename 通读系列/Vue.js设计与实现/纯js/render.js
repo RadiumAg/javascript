@@ -291,6 +291,7 @@ function createRenderer(options) {
 
         if (!instance.isMounted) {
           beforeMount && beforeMount.call(renderContext);
+          debugger;
           patch(null, subTree, container, anchor);
           mounted && mounted.call(renderContext);
           instance.isMounted = true;
