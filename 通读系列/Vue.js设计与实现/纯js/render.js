@@ -1,6 +1,7 @@
 import { effect, reactive, shallowReactive, shallowReadonly } from 'vue';
 
 let isFlushing = false;
+let currentInstance = null;
 
 const Text = Symbol();
 const Comment = Symbol();
@@ -23,6 +24,10 @@ function queueJob(job) {
       queue.clear();
     }
   });
+}
+
+function setCurrentInstance(instance) {
+  currentInstance = instance;
 }
 
 function createRenderer(options) {
@@ -222,15 +227,17 @@ function createRenderer(options) {
       isMounted: false,
       subTree: null,
       slots,
+      mounted: [],
       props: shallowReactive(props),
     };
 
     vnode.component = instance;
 
     const setupContent = { attrs, emit, slots };
+    setCurrentInstance(instance);
     const setupResult =
       setup && setup(shallowReadonly(instance.props), setupContent);
-
+    setCurrentInstance(null);
     let setupState = null;
 
     if (typeof setupResult === 'function') {
@@ -290,8 +297,9 @@ function createRenderer(options) {
         const subTree = render.call(renderContext, renderContext);
 
         if (!instance.isMounted) {
+          instance.mounted &&
+            instance.mounted.forEach(hook => hook.call(renderContext));
           beforeMount && beforeMount.call(renderContext);
-          debugger;
           patch(null, subTree, container, anchor);
           mounted && mounted.call(renderContext);
           instance.isMounted = true;
@@ -429,4 +437,13 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
-export { renderer, normalizeClass, Text, Comment, Fragment };
+// lifecycle
+function onMounted(fn) {
+  if (currentInstance) {
+    currentInstance.mounted.push(fn);
+  } else {
+    console.error('onMounted 函数只能在 setup 中使用');
+  }
+}
+
+export { renderer, normalizeClass, Text, Comment, Fragment, onMounted };
