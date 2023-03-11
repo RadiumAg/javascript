@@ -1,4 +1,11 @@
-import { effect, reactive, shallowReactive, shallowReadonly } from 'vue';
+import {
+  effect,
+  reactive,
+  ref,
+  shallowReactive,
+  shallowReadonly,
+  shallowRef,
+} from 'vue';
 
 let isFlushing = false;
 let currentInstance = null;
@@ -51,12 +58,15 @@ function createRenderer(options) {
   }
 
   function unmount(vnode) {
-    const parent = vnode.el.parentNode;
-
     if (vnode.type === Fragment) {
       vnode.children.forEach(c => unmount(c));
       return;
+    } else if (typeof vnode.type === 'object') {
+      unmount(vnode.component.subTree);
+      return;
     }
+
+    const parent = vnode.el.parentNode;
 
     if (parent) {
       vnode.el.remove();
@@ -228,6 +238,7 @@ function createRenderer(options) {
       subTree: null,
       slots,
       mounted: [],
+      unMounted: [],
       props: shallowReactive(props),
     };
 
@@ -446,4 +457,90 @@ function onMounted(fn) {
   }
 }
 
-export { renderer, normalizeClass, Text, Comment, Fragment, onMounted };
+function onUmounted(fn) {
+  if (currentInstance) {
+    currentInstance.unMounted.push(fn);
+  } else {
+    console.error('onUounted 函数只能在 setup 中使用');
+  }
+}
+
+// 异步组件
+function defineAsyncComponent(options) {
+  if (typeof options === 'function') {
+    options = { loader: options };
+  }
+
+  const { loader } = options;
+
+  let InnerComp = null;
+
+  return {
+    name: 'AsyncComponentWrapper',
+    setup() {
+      const loaded = ref(false);
+      const error = shallowRef(null);
+      const loading = ref(false);
+      let loadingTimer = null;
+
+      if (options.delay) {
+        loadingTimer = setTimeout(() => {
+          loading.value = true;
+        }, options.delay);
+      } else {
+        loading.value = true;
+      }
+
+      loader()
+        .then(c => {
+          InnerComp = c;
+          loaded.value = true;
+        })
+        .catch(err => (error.value = err))
+        .finally(() => {
+          loading.value = false;
+          clearTimeout(loadingTimer);
+        });
+
+      let timer = null;
+
+      if (options.timeout) {
+        timer = setTimeout(() => {
+          const err = new Error(
+            `Async component time out after ${options.timeout}ms.`,
+          );
+          error.value = err;
+        }, options.timeout);
+      }
+
+      onUmounted(() => clearTimeout(timer));
+
+      const placeholder = { type: Text, children: '' };
+
+      return () => {
+        if (loaded.value) {
+          return { type: InnerComp };
+        } else if (error.value && options.errorComponent) {
+          return {
+            type: options.errorComponent,
+            props: { error: error.value },
+          };
+        } else if (loading.value && options.loadingComponent) {
+          return { type: options.loadingComponent };
+        } else {
+          return placeholder;
+        }
+      };
+    },
+  };
+}
+
+export {
+  renderer,
+  normalizeClass,
+  Text,
+  Comment,
+  Fragment,
+  onMounted,
+  defineAsyncComponent,
+};
