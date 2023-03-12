@@ -62,7 +62,11 @@ function createRenderer(options) {
       vnode.children.forEach(c => unmount(c));
       return;
     } else if (typeof vnode.type === 'object') {
-      unmount(vnode.component.subTree);
+      if (vnode.shouldKeepAlive) {
+        vnode.keepAliveInstance._deActivate(vnode);
+      } else {
+        unmount(vnode.component.subTree);
+      }
       return;
     }
 
@@ -104,9 +108,13 @@ function createRenderer(options) {
       } else {
         patchChildren(n1, n2, container);
       }
-    } else if (typeof type === 'object') {
+    } else if (typeof type === 'object' || typeof type === 'function') {
       if (!n1) {
-        mountComponent(n2, container, anchor);
+        if (n2.keptAlive) {
+          n2.keepAliveInstance._activate(n2, container, anchor);
+        } else {
+          mountComponent(n2, container, anchor);
+        }
       } else {
         patchComponent(n1, n2, anchor);
       }
@@ -213,7 +221,14 @@ function createRenderer(options) {
   }
 
   function mountComponent(vnode, container, anchor) {
-    const componentOptions = vnode.type;
+    const isFunctional = typeof vnode.type === 'function';
+    let componentOptions = vnode.type;
+    if (isFunctional) {
+      componentOptions = {
+        render: vnode.type,
+        props: vnode.type.props,
+      };
+    }
     let {
       render,
       data,
@@ -240,8 +255,18 @@ function createRenderer(options) {
       mounted: [],
       unMounted: [],
       props: shallowReactive(props),
+      keepAliveCtx: null,
     };
 
+    const isKeepAlive = vnode.type.__isKeepAlive;
+    if (isKeepAlive) {
+      instance.keepAliveCtx = {
+        move(vnode, container, anchor) {
+          insert(vnode.component.subTree.el, container, anchor);
+        },
+        createElement,
+      };
+    }
     vnode.component = instance;
 
     const setupContent = { attrs, emit, slots };
@@ -472,9 +497,26 @@ function defineAsyncComponent(options) {
   }
 
   const { loader } = options;
-
+  let retires = 0;
   let InnerComp = null;
 
+  function load() {
+    return loader().catch(err => {
+      if (options.onError) {
+        return new Promise((resolve, reject) => {
+          const retry = () => {
+            resolve(load());
+            retires++;
+          };
+
+          const fail = () => reject(err);
+          options.onError(retry, fail, retires);
+        });
+      } else {
+        throw err;
+      }
+    });
+  }
   return {
     name: 'AsyncComponentWrapper',
     setup() {
@@ -490,6 +532,19 @@ function defineAsyncComponent(options) {
       } else {
         loading.value = true;
       }
+
+      load()
+        .then(c => {
+          InnerComp = c;
+          loaded.value = true;
+        })
+        .catch(err => {
+          error.value = err;
+        })
+        .finally(() => {
+          loading.value = false;
+          clearTimeout(loadingTimer);
+        });
 
       loader()
         .then(c => {
@@ -535,12 +590,68 @@ function defineAsyncComponent(options) {
   };
 }
 
+const KeepAlive = {
+  __isKeepAlive: true,
+  props: {
+    include: RegExp,
+    exclude: RegExp,
+  },
+  setup(props, { slots }) {
+    const cache = new Map();
+    const instance = currentInstance;
+
+    const { move, createElement } = instance.keepAliveCtx;
+
+    const storageContainer = createElement('div');
+
+    instance._deActivate = vnode => {
+      move(vnode, storageContainer);
+    };
+
+    instance._activate = (vnode, container, anchor) => {
+      move(vnode, container, anchor);
+    };
+
+    return () => {
+      const rawVNode = slots.default();
+
+      if (typeof rawVNode.type !== 'object') {
+        return rawVNode;
+      }
+      const name = rawVNode.type.name;
+
+      // 如果 name 无法被 include 匹配
+      if (
+        name &&
+        (props.include && !props.include.test(name)) |
+          (props.exclude && props.exclude.test(name))
+      ) {
+        return rawVNode;
+      }
+
+      const cacheVNode = cache.get(rawVNode.type);
+      if (cacheVNode) {
+        rawVNode.component = cacheVNode.component;
+        rawVNode.keptAlive = true;
+      } else {
+        cache.set(rawVNode.type, rawVNode);
+      }
+
+      rawVNode.keepAliveInstance = instance;
+
+      return rawVNode;
+    };
+  },
+};
+
 export {
-  renderer,
-  normalizeClass,
   Text,
   Comment,
+  renderer,
   Fragment,
+  KeepAlive,
   onMounted,
+  onUmounted,
+  normalizeClass,
   defineAsyncComponent,
 };
