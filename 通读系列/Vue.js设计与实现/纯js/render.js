@@ -108,6 +108,19 @@ function createRenderer(options) {
       } else {
         patchChildren(n1, n2, container);
       }
+    } else if (typeof type === 'object' && type.isTeleport) {
+      type.process(n1, n2, container, anchor, {
+        patch,
+        patchChildren,
+        unmount,
+        move(vnode, container, anchor) {
+          insert(
+            vnode.component ? vnode.component.subTree.el : vnode.el,
+            container,
+            anchor,
+          );
+        },
+      });
     } else if (typeof type === 'object' || typeof type === 'function') {
       if (!n1) {
         if (n2.keptAlive) {
@@ -644,11 +657,38 @@ const KeepAlive = {
   },
 };
 
+const Teleport = {
+  __isTeleport: true,
+  process(n1, n2, container, anchor, internals) {
+    const { move, patch, patchChildren } = internals;
+
+    if (!n1) {
+      const target =
+        typeof n2.props.to === 'string'
+          ? document.querySelector(n2.props.to)
+          : n2.props.to;
+      n2.children.forEach(c => patch(null, c, target, anchor));
+    } else {
+      patchChildren(n1, n2, container);
+
+      if (n2.props.to !== n1.props.to) {
+        const newTarget =
+          typeof n2.props.to === 'string'
+            ? document.querySelector(n2.props.to)
+            : n2.props.to;
+
+        n2.children.forEach(c => move(c, newTarget));
+      }
+    }
+  },
+};
+
 export {
   Text,
   Comment,
   renderer,
   Fragment,
+  Teleport,
   KeepAlive,
   onMounted,
   onUmounted,
