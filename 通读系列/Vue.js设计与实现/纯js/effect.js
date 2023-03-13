@@ -593,6 +593,19 @@ function toRefs(obj) {
   return ret;
 }
 
+const Transition = {
+  name: 'Transition',
+  setup(props, { slots }) {
+    const innerVNode = slots.default();
+
+    innerVNode.transition = {
+      beforeEnter(el) {},
+      enter(el) {},
+      leave(el, performRemove) {},
+    };
+  },
+};
+
 export {
   reactive,
   computed,

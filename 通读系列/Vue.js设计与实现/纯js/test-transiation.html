@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+
+        .enter-from {
+            transform: translateX(200px);
+        }
+
+        .enter-to {
+            transform: translateX(0);
+        }
+
+        .enter-active {
+            transition: transform 1s ease-in-out;
+        }
+
+        .leave-from {
+            transform: translateX(0);
+        }
+
+        .leave-to {
+            transform: translateX(200px);
+        }
+
+        .leave-active {
+            transition: transform 2s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        const el = document.createElement('div');
+        const performRemove = () => el.remove();
+        el.classList.add('box');
+
+        el.classList.add('enter-from');
+        el.classList.add('enter-active');
+
+        document.body.append(el);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            el.classList.remove('enter-from');
+            el.classList.add('enter-to');
+
+            el.addEventListener('transitionend', () => {
+              el.classList.remove('enter-to');
+              el.classList.remove('enter-active');
+
+              performRemove();
+            });
+          });
+        });
+    </script>
+</body>
+
+</html>
