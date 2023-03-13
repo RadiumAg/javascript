@@ -58,6 +58,7 @@ function createRenderer(options) {
   }
 
   function unmount(vnode) {
+    const needTransition = vnode.transition;
     if (vnode.type === Fragment) {
       vnode.children.forEach(c => unmount(c));
       return;
@@ -74,6 +75,13 @@ function createRenderer(options) {
 
     if (parent) {
       vnode.el.remove();
+      const performRemove = () => vnode.el.remove();
+
+      if (needTransition) {
+        vnode.transition.leave(vnode.el, performance);
+      } else {
+        performRemove();
+      }
     }
   }
 
@@ -139,7 +147,7 @@ function createRenderer(options) {
     }
   }
 
-  function mountElement(vnode, container) {
+  function mountElement(vnode, container, anchor) {
     const el = (vnode.el = createElement(vnode.type));
     if (typeof vnode.children === 'string') {
       setElementText(el, vnode.children);
@@ -149,6 +157,8 @@ function createRenderer(options) {
       });
     }
 
+    const needTransition = vnode.transition;
+
     if (vnode.props) {
       // eslint-disable-next-line no-restricted-syntax
       for (const key in vnode.props) {
@@ -156,7 +166,15 @@ function createRenderer(options) {
       }
     }
 
-    insert(el, container);
+    if (needTransition) {
+      vnode.transition.beforeEnter(el);
+    }
+
+    insert(el, container, anchor);
+
+    if (needTransition) {
+      vnode.transition.enter(el);
+    }
   }
 
   function patchElement(n1, n2) {
@@ -683,6 +701,51 @@ const Teleport = {
   },
 };
 
+const Transition = {
+  name: 'Transition',
+  setup(props, { slots }) {
+    const innerVNode = slots.default();
+
+    innerVNode.transition = {
+      beforeEnter(el) {
+        el.classList.add('enter-from');
+        el.classList.add('enter-active');
+      },
+      enter(el) {
+        requestAnimationFrame(() => {
+          el.classList.remove('enter-from');
+          el.classList.add('enter-to');
+
+          el.addEventListener('transitionend', () => {
+            el.classList.remove('enter-to');
+            el.classList.remove('remove-active');
+          });
+        });
+      },
+      leave(el, performRemove) {
+        el.classList.add('leave-from');
+        el.classList.add('leave-active');
+
+        document.body.offsetHeight;
+
+        requestAnimationFrame(() => {
+          el.classList.remove('leave-from');
+          el.classList.remove('leave-to');
+
+          el.addEventListener('transitionend', () => {
+            el.classList.remove('leave-to');
+            el.classList.remove('leave-active');
+
+            performRemove();
+          });
+        });
+      },
+    };
+
+    return innerVNode;
+  },
+};
+
 export {
   Text,
   Comment,
@@ -692,6 +755,7 @@ export {
   KeepAlive,
   onMounted,
   onUmounted,
+  Transition,
   normalizeClass,
   defineAsyncComponent,
 };
