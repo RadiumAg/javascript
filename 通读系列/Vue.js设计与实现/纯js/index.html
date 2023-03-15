@@ -2,20 +2,20 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 
-    <style>
-      .box {
-        width: 100px;
-        height:100px;
-        background-color: red;
-      }
-    </style>
+  <style>
+    .box {
+      width: 100px;
+      height: 100px;
+      background-color: red;
+    }
+  </style>
 
-    <script type="importmap">
+  <script type="importmap">
         {
           "imports": {
             "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
@@ -25,13 +25,9 @@
 </head>
 
 <body>
+  <div id="root"></div>
+  
+  <script src="./test/test-translate.js" type="module"></script>
+</body>
 
-    <script type="module" src="./test-render.js"></script>
-
-    <div id="root"></div>
-
-
-    <div class="box"></div>
-
-</body >
-</html >
+</html>

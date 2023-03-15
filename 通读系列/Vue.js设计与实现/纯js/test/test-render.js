@@ -1,5 +1,5 @@
 import { effect, ref } from 'vue';
-import { Fragment, renderer } from './render.js';
+import { Fragment, renderer } from '../render.js';
 
 const vnode = {
   type: 'h1',

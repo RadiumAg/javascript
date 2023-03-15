@@ -1,14 +1,6 @@
-import {
-  effect,
-  reactive,
-  ref,
-  shallowReactive,
-  shallowReadonly,
-  shallowRef,
-} from 'vue';
+import { effect, reactive, shallowReactive, shallowReadonly } from 'vue';
 
 let isFlushing = false;
-let currentInstance = null;
 
 const Text = Symbol();
 const Comment = Symbol();
@@ -33,10 +25,6 @@ function queueJob(job) {
   });
 }
 
-function setCurrentInstance(instance) {
-  currentInstance = instance;
-}
-
 function createRenderer(options) {
   const {
     createElement,
@@ -58,30 +46,15 @@ function createRenderer(options) {
   }
 
   function unmount(vnode) {
-    const needTransition = vnode.transition;
+    const parent = vnode.el.parentNode;
+
     if (vnode.type === Fragment) {
       vnode.children.forEach(c => unmount(c));
       return;
-    } else if (typeof vnode.type === 'object') {
-      if (vnode.shouldKeepAlive) {
-        vnode.keepAliveInstance._deActivate(vnode);
-      } else {
-        unmount(vnode.component.subTree);
-      }
-      return;
     }
-
-    const parent = vnode.el.parentNode;
 
     if (parent) {
       vnode.el.remove();
-      const performRemove = () => vnode.el.remove();
-
-      if (needTransition) {
-        vnode.transition.leave(vnode.el, performance);
-      } else {
-        performRemove();
-      }
     }
   }
 
@@ -116,26 +89,9 @@ function createRenderer(options) {
       } else {
         patchChildren(n1, n2, container);
       }
-    } else if (typeof type === 'object' && type.isTeleport) {
-      type.process(n1, n2, container, anchor, {
-        patch,
-        patchChildren,
-        unmount,
-        move(vnode, container, anchor) {
-          insert(
-            vnode.component ? vnode.component.subTree.el : vnode.el,
-            container,
-            anchor,
-          );
-        },
-      });
-    } else if (typeof type === 'object' || typeof type === 'function') {
+    } else if (typeof type === 'object') {
       if (!n1) {
-        if (n2.keptAlive) {
-          n2.keepAliveInstance._activate(n2, container, anchor);
-        } else {
-          mountComponent(n2, container, anchor);
-        }
+        mountComponent(n2, container, anchor);
       } else {
         patchComponent(n1, n2, anchor);
       }
@@ -147,7 +103,7 @@ function createRenderer(options) {
     }
   }
 
-  function mountElement(vnode, container, anchor) {
+  function mountElement(vnode, container) {
     const el = (vnode.el = createElement(vnode.type));
     if (typeof vnode.children === 'string') {
       setElementText(el, vnode.children);
@@ -157,8 +113,6 @@ function createRenderer(options) {
       });
     }
 
-    const needTransition = vnode.transition;
-
     if (vnode.props) {
       // eslint-disable-next-line no-restricted-syntax
       for (const key in vnode.props) {
@@ -166,15 +120,7 @@ function createRenderer(options) {
       }
     }
 
-    if (needTransition) {
-      vnode.transition.beforeEnter(el);
-    }
-
-    insert(el, container, anchor);
-
-    if (needTransition) {
-      vnode.transition.enter(el);
-    }
+    insert(el, container);
   }
 
   function patchElement(n1, n2) {
@@ -252,14 +198,7 @@ function createRenderer(options) {
   }
 
   function mountComponent(vnode, container, anchor) {
-    const isFunctional = typeof vnode.type === 'function';
-    let componentOptions = vnode.type;
-    if (isFunctional) {
-      componentOptions = {
-        render: vnode.type,
-        props: vnode.type.props,
-      };
-    }
+    const componentOptions = vnode.type;
     let {
       render,
       data,
@@ -283,28 +222,15 @@ function createRenderer(options) {
       isMounted: false,
       subTree: null,
       slots,
-      mounted: [],
-      unMounted: [],
       props: shallowReactive(props),
-      keepAliveCtx: null,
     };
 
-    const isKeepAlive = vnode.type.__isKeepAlive;
-    if (isKeepAlive) {
-      instance.keepAliveCtx = {
-        move(vnode, container, anchor) {
-          insert(vnode.component.subTree.el, container, anchor);
-        },
-        createElement,
-      };
-    }
     vnode.component = instance;
 
     const setupContent = { attrs, emit, slots };
-    setCurrentInstance(instance);
     const setupResult =
       setup && setup(shallowReadonly(instance.props), setupContent);
-    setCurrentInstance(null);
+
     let setupState = null;
 
     if (typeof setupResult === 'function') {
@@ -364,9 +290,8 @@ function createRenderer(options) {
         const subTree = render.call(renderContext, renderContext);
 
         if (!instance.isMounted) {
-          instance.mounted &&
-            instance.mounted.forEach(hook => hook.call(renderContext));
           beforeMount && beforeMount.call(renderContext);
+          debugger;
           patch(null, subTree, container, anchor);
           mounted && mounted.call(renderContext);
           instance.isMounted = true;
@@ -504,258 +429,4 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
-// lifecycle
-function onMounted(fn) {
-  if (currentInstance) {
-    currentInstance.mounted.push(fn);
-  } else {
-    console.error('onMounted 函数只能在 setup 中使用');
-  }
-}
-
-function onUmounted(fn) {
-  if (currentInstance) {
-    currentInstance.unMounted.push(fn);
-  } else {
-    console.error('onUounted 函数只能在 setup 中使用');
-  }
-}
-
-// 异步组件
-function defineAsyncComponent(options) {
-  if (typeof options === 'function') {
-    options = { loader: options };
-  }
-
-  const { loader } = options;
-  let retires = 0;
-  let InnerComp = null;
-
-  function load() {
-    return loader().catch(err => {
-      if (options.onError) {
-        return new Promise((resolve, reject) => {
-          const retry = () => {
-            resolve(load());
-            retires++;
-          };
-
-          const fail = () => reject(err);
-          options.onError(retry, fail, retires);
-        });
-      } else {
-        throw err;
-      }
-    });
-  }
-  return {
-    name: 'AsyncComponentWrapper',
-    setup() {
-      const loaded = ref(false);
-      const error = shallowRef(null);
-      const loading = ref(false);
-      let loadingTimer = null;
-
-      if (options.delay) {
-        loadingTimer = setTimeout(() => {
-          loading.value = true;
-        }, options.delay);
-      } else {
-        loading.value = true;
-      }
-
-      load()
-        .then(c => {
-          InnerComp = c;
-          loaded.value = true;
-        })
-        .catch(err => {
-          error.value = err;
-        })
-        .finally(() => {
-          loading.value = false;
-          clearTimeout(loadingTimer);
-        });
-
-      loader()
-        .then(c => {
-          InnerComp = c;
-          loaded.value = true;
-        })
-        .catch(err => (error.value = err))
-        .finally(() => {
-          loading.value = false;
-          clearTimeout(loadingTimer);
-        });
-
-      let timer = null;
-
-      if (options.timeout) {
-        timer = setTimeout(() => {
-          const err = new Error(
-            `Async component time out after ${options.timeout}ms.`,
-          );
-          error.value = err;
-        }, options.timeout);
-      }
-
-      onUmounted(() => clearTimeout(timer));
-
-      const placeholder = { type: Text, children: '' };
-
-      return () => {
-        if (loaded.value) {
-          return { type: InnerComp };
-        } else if (error.value && options.errorComponent) {
-          return {
-            type: options.errorComponent,
-            props: { error: error.value },
-          };
-        } else if (loading.value && options.loadingComponent) {
-          return { type: options.loadingComponent };
-        } else {
-          return placeholder;
-        }
-      };
-    },
-  };
-}
-
-const KeepAlive = {
-  __isKeepAlive: true,
-  props: {
-    include: RegExp,
-    exclude: RegExp,
-  },
-  setup(props, { slots }) {
-    const cache = new Map();
-    const instance = currentInstance;
-
-    const { move, createElement } = instance.keepAliveCtx;
-
-    const storageContainer = createElement('div');
-
-    instance._deActivate = vnode => {
-      move(vnode, storageContainer);
-    };
-
-    instance._activate = (vnode, container, anchor) => {
-      move(vnode, container, anchor);
-    };
-
-    return () => {
-      const rawVNode = slots.default();
-
-      if (typeof rawVNode.type !== 'object') {
-        return rawVNode;
-      }
-      const name = rawVNode.type.name;
-
-      // 如果 name 无法被 include 匹配
-      if (
-        name &&
-        (props.include && !props.include.test(name)) |
-          (props.exclude && props.exclude.test(name))
-      ) {
-        return rawVNode;
-      }
-
-      const cacheVNode = cache.get(rawVNode.type);
-      if (cacheVNode) {
-        rawVNode.component = cacheVNode.component;
-        rawVNode.keptAlive = true;
-      } else {
-        cache.set(rawVNode.type, rawVNode);
-      }
-
-      rawVNode.keepAliveInstance = instance;
-
-      return rawVNode;
-    };
-  },
-};
-
-const Teleport = {
-  __isTeleport: true,
-  process(n1, n2, container, anchor, internals) {
-    const { move, patch, patchChildren } = internals;
-
-    if (!n1) {
-      const target =
-        typeof n2.props.to === 'string'
-          ? document.querySelector(n2.props.to)
-          : n2.props.to;
-      n2.children.forEach(c => patch(null, c, target, anchor));
-    } else {
-      patchChildren(n1, n2, container);
-
-      if (n2.props.to !== n1.props.to) {
-        const newTarget =
-          typeof n2.props.to === 'string'
-            ? document.querySelector(n2.props.to)
-            : n2.props.to;
-
-        n2.children.forEach(c => move(c, newTarget));
-      }
-    }
-  },
-};
-
-const Transition = {
-  name: 'Transition',
-  setup(props, { slots }) {
-    const innerVNode = slots.default();
-
-    innerVNode.transition = {
-      beforeEnter(el) {
-        el.classList.add('enter-from');
-        el.classList.add('enter-active');
-      },
-      enter(el) {
-        requestAnimationFrame(() => {
-          el.classList.remove('enter-from');
-          el.classList.add('enter-to');
-
-          el.addEventListener('transitionend', () => {
-            el.classList.remove('enter-to');
-            el.classList.remove('remove-active');
-          });
-        });
-      },
-      leave(el, performRemove) {
-        el.classList.add('leave-from');
-        el.classList.add('leave-active');
-
-        document.body.offsetHeight;
-
-        requestAnimationFrame(() => {
-          el.classList.remove('leave-from');
-          el.classList.remove('leave-to');
-
-          el.addEventListener('transitionend', () => {
-            el.classList.remove('leave-to');
-            el.classList.remove('leave-active');
-
-            performRemove();
-          });
-        });
-      },
-    };
-
-    return innerVNode;
-  },
-};
-
-export {
-  Text,
-  Comment,
-  renderer,
-  Fragment,
-  Teleport,
-  KeepAlive,
-  onMounted,
-  onUmounted,
-  Transition,
-  normalizeClass,
-  defineAsyncComponent,
-};
+export { renderer, normalizeClass, Text, Comment, Fragment };

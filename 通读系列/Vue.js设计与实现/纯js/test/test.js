@@ -1,4 +1,4 @@
-import { bucket, computed, reactive } from './effect.js';
+import { bucket, computed, reactive } from '../effect.js';
 
 // const p = reactive(new Map([[{ key: 1 }, { value: 1 }]]));
 
