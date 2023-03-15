@@ -1,3 +1,3 @@
 import { tokenize } from '../translate.js';
 
-console.log(tokenize('<p>Vue</p>'));
+// console.log(tokenize('<div><p>Vue</p>Template</div>'));

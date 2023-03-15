@@ -6,6 +6,7 @@ const State = {
   tagEnd: 5, // 结束标签状态
   tagEndName: 6, // 结束标签名称状态
 };
+const elementStack = [];
 
 function isAlpha(char) {
   return (char > 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
@@ -17,6 +18,8 @@ function tokenize(str) {
   const tokens = [];
 
   while (str) {
+    debugger;
+    console.log(str);
     const char = str[0];
     switch (currentState) {
       case State.initial:
