@@ -6,10 +6,9 @@ const State = {
   tagEnd: 5, // 结束标签状态
   tagEndName: 6, // 结束标签名称状态
 };
-const elementStack = [];
 
 function isAlpha(char) {
-  return (char > 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
+  return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
 }
 
 function tokenize(str) {
@@ -18,8 +17,6 @@ function tokenize(str) {
   const tokens = [];
 
   while (str) {
-    debugger;
-    console.log(str);
     const char = str[0];
     switch (currentState) {
       case State.initial:
@@ -104,4 +101,55 @@ function tokenize(str) {
   return tokens;
 }
 
-export { tokenize };
+function parse(str) {
+  const tokens = tokenize(str);
+  console.log([...tokens]);
+
+  const root = {
+    type: 'Root',
+    children: [],
+  };
+
+  const elementStack = [root];
+
+  while (tokens.length > 0) {
+    const parent = elementStack.at(-1);
+
+    const t = tokens[0];
+
+    switch (t.type) {
+      case 'tag': {
+        const elementNode = {
+          type: 'Element',
+          tag: t.name,
+          children: [],
+        };
+
+        parent.children.push(elementNode);
+        elementStack.push(elementNode);
+        break;
+      }
+
+      case 'text': {
+        const textNode = {
+          text: 'Text',
+          content: t.content,
+        };
+
+        parent.children.push(textNode);
+        break;
+      }
+
+      case 'tagEnd': {
+        elementStack.pop();
+        break;
+      }
+    }
+
+    tokens.shift();
+  }
+
+  return root;
+}
+
+export { tokenize, parse };
