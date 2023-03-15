@@ -103,7 +103,6 @@ function tokenize(str) {
 
 function parse(str) {
   const tokens = tokenize(str);
-  console.log([...tokens]);
 
   const root = {
     type: 'Root',
@@ -132,7 +131,7 @@ function parse(str) {
 
       case 'text': {
         const textNode = {
-          text: 'Text',
+          type: 'Text',
           content: t.content,
         };
 
@@ -145,11 +144,38 @@ function parse(str) {
         break;
       }
     }
-
     tokens.shift();
   }
 
   return root;
 }
 
-export { tokenize, parse };
+function dump(node, ident = 0) {
+  const type = node.type;
+  const desc =
+    node.type === 'Root'
+      ? ''
+      : node.type === 'Element'
+      ? node.tag
+      : node.content;
+
+  console.log(`${'-'.repeat(ident)}${type}：${desc}`);
+
+  // 递归地打印子节点
+  if (node.children) {
+    node.children.forEach(n => dump(n, ident + 2));
+  }
+}
+
+function traverseNode(ast, context) {
+  const currentNode = ast;
+  const children = currentNode.children;
+
+  if (children) {
+    for (const child of children) {
+      traverseNode(child);
+    }
+  }
+}
+
+export { tokenize, parse, dump };

@@ -1,3 +1,7 @@
-import { parse } from '../translate.js';
+import { dump, parse } from '../translate.js';
 
-console.log(parse('<div><p>Vue</p>Template</div>'));
+const ast = parse('<div><p>Vue</p><p>Template</p></div>');
+
+console.log(ast);
+
+console.log(dump(ast));
