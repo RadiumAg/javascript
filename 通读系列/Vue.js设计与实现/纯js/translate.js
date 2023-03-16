@@ -217,18 +217,80 @@ function transform(ast) {
 }
 
 function transformElement(node, context) {
-  if (node.type === 'Element' && node.tag === 'p') {
-    node.tag = 'n1';
-  }
+  return () => {
+    if (node.type !== 'Element') {
+      return;
+    }
 
-  return () => {};
+    const callExp = createArrayExpression('h', [createSpringLiteral(node.tag)]);
+
+    node.children.length === 1
+      ? callExp.arguments.push(node.children[0].jsNode)
+      : callExp.arguments.push(
+          createArrayExpression(node.children.map(c => c.jsNode)),
+        );
+
+    node.jsNode = callExp;
+  };
 }
 
 function transformText(node, context) {
   if (node.type === 'Text') {
-    context.replaceNode({ type: 'Element', tag: 'span' });
-    context.removeNode();
+    return;
   }
+
+  node.jsNode = createSpringLiteral(node.content);
+}
+
+function createSpringLiteral(value) {
+  return {
+    type: 'StringLiteral',
+    value,
+  };
+}
+
+function createIdentifier(name) {
+  return {
+    type: 'Identifier',
+    name,
+  };
+}
+
+function createArrayExpression(elements) {
+  return {
+    type: 'ArrayExpression',
+    elements,
+  };
+}
+
+function createCallExpression(callee, arguments) {
+  return {
+    type: 'CallExpression',
+    callee: createIdentifier(callee),
+    arguments,
+  };
+}
+
+function transformRoot(node) {
+  return () => {
+    if (node.type !== 'Root') {
+      return;
+    }
+
+    const vnodeJSAST = node.children[0].jsNode;
+
+    node.jsNode = {
+      type: 'FunctionDeol',
+      id: { type: 'Identifier', name: 'render' },
+      params: [],
+      body: [
+        {
+          type: 'ReturnStatement',
+          return: vnodeJSAST,
+        },
+      ],
+    };
+  };
 }
 
 export { tokenize, parse, dump, transform };
