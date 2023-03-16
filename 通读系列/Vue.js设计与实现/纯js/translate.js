@@ -168,14 +168,17 @@ function dump(node, ident = 0) {
 }
 
 function traverseNode(ast, context) {
-  const currentNode = ast;
+  context.currentNode = ast;
 
+  const exitFns = [];
   const transforms = context.nodeTransforms;
 
   for (const transform of transforms) {
-    transform(currentNode, context);
+    const onExit = transform(context.currentNode, context);
+    onExit && exitFns.push(onExit);
+    if (!context.currentNode) return;
   }
-  const children = currentNode.children;
+  const children = context.currentNode.children;
 
   if (children) {
     for (const [i, child] of children.entries()) {
@@ -184,6 +187,11 @@ function traverseNode(ast, context) {
       traverseNode(child, context);
     }
   }
+
+  let i = exitFns.length;
+  while (i--) {
+    exitFns[i]();
+  }
 }
 
 function transform(ast) {
@@ -191,7 +199,16 @@ function transform(ast) {
     currentNode: null,
     childIndex: 0,
     parent: null,
-    replaceNode(node) {},
+    replaceNode(node) {
+      context.parent.children[context.childIndex] = node;
+    },
+    removeNode() {
+      if (context.parent) {
+        context.parent.children.splice(context.childIndex, 1);
+      }
+
+      context.currentNode = null;
+    },
     nodeTransforms: [transformElement, transformText],
   };
 
@@ -199,16 +216,19 @@ function transform(ast) {
   console.log(dump(ast));
 }
 
-function transformElement(node) {
+function transformElement(node, context) {
   if (node.type === 'Element' && node.tag === 'p') {
     node.tag = 'n1';
   }
+
+  return () => {};
 }
 
-function transformText(node) {
+function transformText(node, context) {
   if (node.type === 'Text') {
-    node.content = node.content.repeat(2);
+    context.replaceNode({ type: 'Element', tag: 'span' });
+    context.removeNode();
   }
 }
 
-export { tokenize, parse, dump };
+export { tokenize, parse, dump, transform };
