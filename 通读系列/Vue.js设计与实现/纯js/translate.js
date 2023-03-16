@@ -209,7 +209,7 @@ function transform(ast) {
 
       context.currentNode = null;
     },
-    nodeTransforms: [transformElement, transformText],
+    nodeTransforms: [transformElement, transformText, transformRoot],
   };
 
   traverseNode(ast, context);
@@ -225,8 +225,8 @@ function transformElement(node, context) {
     const callExp = createArrayExpression('h', [createSpringLiteral(node.tag)]);
 
     node.children.length === 1
-      ? callExp.arguments.push(node.children[0].jsNode)
-      : callExp.arguments.push(
+      ? callExp.argumentsList.push(node.children[0].jsNode)
+      : callExp.argumentsList.push(
           createArrayExpression(node.children.map(c => c.jsNode)),
         );
 
@@ -260,14 +260,15 @@ function createArrayExpression(elements) {
   return {
     type: 'ArrayExpression',
     elements,
+    argumentsList: [],
   };
 }
 
-function createCallExpression(callee, arguments) {
+function createCallExpression(callee, argumentList) {
   return {
     type: 'CallExpression',
     callee: createIdentifier(callee),
-    arguments,
+    argumentList,
   };
 }
 
@@ -291,6 +292,39 @@ function transformRoot(node) {
       ],
     };
   };
+}
+
+function generate(node) {
+  const context = {
+    code: '',
+    push(code) {
+      context.code += code;
+    },
+    currentIdent: 0,
+    newLine() {
+      context.code += `\n${`  `.repeat(context.currentIdent)}`;
+    },
+    ident() {
+      context.currentIdent++;
+      context.newLine();
+    },
+    deIdent() {
+      context.currentIdent--;
+      context.newLine();
+    },
+  };
+
+  genNode(node, context);
+
+  return context.code;
+}
+
+function compile(template) {
+  const ast = parse(template);
+  transform(ast);
+  const code = generate(ast.jsNode);
+
+  return code;
 }
 
 export { tokenize, parse, dump, transform };
