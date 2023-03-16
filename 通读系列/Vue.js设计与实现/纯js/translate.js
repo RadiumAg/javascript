@@ -169,12 +169,45 @@ function dump(node, ident = 0) {
 
 function traverseNode(ast, context) {
   const currentNode = ast;
+
+  const transforms = context.nodeTransforms;
+
+  for (const transform of transforms) {
+    transform(currentNode, context);
+  }
   const children = currentNode.children;
 
   if (children) {
-    for (const child of children) {
-      traverseNode(child);
+    for (const [i, child] of children.entries()) {
+      context.parent = context.currentNode;
+      context.childIndex = i;
+      traverseNode(child, context);
     }
+  }
+}
+
+function transform(ast) {
+  const context = {
+    currentNode: null,
+    childIndex: 0,
+    parent: null,
+    replaceNode(node) {},
+    nodeTransforms: [transformElement, transformText],
+  };
+
+  traverseNode(ast, context);
+  console.log(dump(ast));
+}
+
+function transformElement(node) {
+  if (node.type === 'Element' && node.tag === 'p') {
+    node.tag = 'n1';
+  }
+}
+
+function transformText(node) {
+  if (node.type === 'Text') {
+    node.content = node.content.repeat(2);
   }
 }
 
