@@ -209,11 +209,10 @@ function transform(ast) {
 
       context.currentNode = null;
     },
-    nodeTransforms: [transformElement, transformText, transformRoot],
+    nodeTransforms: [transformRoot, transformElement],
   };
 
   traverseNode(ast, context);
-  console.log(dump(ast));
 }
 
 function transformElement(node, context) {
@@ -222,7 +221,9 @@ function transformElement(node, context) {
       return;
     }
 
-    const callExp = createArrayExpression('h', [createSpringLiteral(node.tag)]);
+    const callExp = createArrayExpression('h', [
+      createCallExpression(node.tag),
+    ]);
 
     node.children.length === 1
       ? callExp.argumentsList.push(node.children[0].jsNode)
@@ -238,8 +239,6 @@ function transformText(node, context) {
   if (node.type === 'Text') {
     return;
   }
-
-  node.jsNode = createSpringLiteral(node.content);
 }
 
 function createSpringLiteral(value) {
@@ -281,13 +280,13 @@ function transformRoot(node) {
     const vnodeJSAST = node.children[0].jsNode;
 
     node.jsNode = {
-      type: 'FunctionDeol',
+      type: 'FunctionDecl',
       id: { type: 'Identifier', name: 'render' },
       params: [],
       body: [
         {
-          type: 'ReturnStatement',
           return: vnodeJSAST,
+          type: 'ReturnStatement',
         },
       ],
     };
@@ -297,10 +296,10 @@ function transformRoot(node) {
 function generate(node) {
   const context = {
     code: '',
+    currentIdent: 0,
     push(code) {
       context.code += code;
     },
-    currentIdent: 0,
     newLine() {
       context.code += `\n${`  `.repeat(context.currentIdent)}`;
     },
@@ -319,6 +318,43 @@ function generate(node) {
   return context.code;
 }
 
+function genNode(node, context) {
+  switch (node.type) {
+    case 'FunctionDecl':
+      genFunctionDecl(node, context);
+      break;
+
+    case 'ReturnStatement':
+      genReturnStatement(node, context);
+      break;
+
+    case 'CallExpression':
+      genCallExpression(node, context);
+      break;
+
+    case 'StringLiteral':
+      genStringLiteral(node, context);
+      break;
+
+    case 'ArrayExpression':
+      genArrayExpression(node, context);
+      break;
+  }
+}
+
+function genFunctionDecl(node, context) {
+  const { push, ident, deIdent } = context;
+  push(`function ${node.id.name}`);
+  push(`(`);
+  genNodeList(node.params, context);
+  push(`)`);
+  push(`{`);
+  ident();
+  node.body.forEach(n => genNode(n, context));
+  deIdent();
+  push(`}`);
+}
+
 function compile(template) {
   const ast = parse(template);
   transform(ast);
@@ -327,4 +363,43 @@ function compile(template) {
   return code;
 }
 
-export { tokenize, parse, dump, transform };
+function genNodeList(nodes, context) {
+  const { push } = context;
+  // eslint-disable-next-line unicorn/no-for-loop
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    genNode(node, context);
+    if (i < node.length - 1) {
+      push(',');
+    }
+  }
+}
+
+function genArrayExpression(node, context) {
+  const { push } = context;
+  push('[');
+  genNodeList(node.elements, context);
+  push(']');
+}
+
+function genReturnStatement(node, context) {
+  const { push } = context;
+  push(`return `);
+  genNode(node.return, context);
+}
+
+function genStringLiteral(node, context) {
+  const { push } = context;
+  push(`${node.value}`);
+}
+
+function genCallExpression(node, context) {
+  const { push } = context;
+  const { callee, arguments: args } = node;
+
+  push(`${callee.name}`);
+
+  genNodeList(args);
+}
+
+export { tokenize, parse, dump, compile, transform, genFunctionDecl };
