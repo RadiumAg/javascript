@@ -215,19 +215,16 @@ function transform(ast) {
   traverseNode(ast, context);
 }
 
-function transformElement(node, context) {
+function transformElement(node) {
   return () => {
     if (node.type !== 'Element') {
       return;
     }
 
-    const callExp = createArrayExpression('h', [
-      createCallExpression(node.tag),
-    ]);
-
+    const callExp = createCallExpression('h', [createStringLiteral(node.tag)]);
     node.children.length === 1
-      ? callExp.argumentsList.push(node.children[0].jsNode)
-      : callExp.argumentsList.push(
+      ? callExp.argumentArray.push(node.children[0].jsNode)
+      : callExp.argumentArray.push(
           createArrayExpression(node.children.map(c => c.jsNode)),
         );
 
@@ -241,7 +238,7 @@ function transformText(node, context) {
   }
 }
 
-function createSpringLiteral(value) {
+function createStringLiteral(value) {
   return {
     type: 'StringLiteral',
     value,
@@ -259,15 +256,15 @@ function createArrayExpression(elements) {
   return {
     type: 'ArrayExpression',
     elements,
-    argumentsList: [],
+    argumentArray: [],
   };
 }
 
-function createCallExpression(callee, argumentList) {
+function createCallExpression(callee, argumentArray) {
   return {
     type: 'CallExpression',
     callee: createIdentifier(callee),
-    argumentList,
+    argumentArray,
   };
 }
 
@@ -357,7 +354,9 @@ function genFunctionDecl(node, context) {
 
 function compile(template) {
   const ast = parse(template);
+  console.log(ast);
   transform(ast);
+
   const code = generate(ast.jsNode);
 
   return code;
@@ -368,10 +367,9 @@ function genNodeList(nodes, context) {
   // eslint-disable-next-line unicorn/no-for-loop
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
+    if (!node) return;
     genNode(node, context);
-    if (i < node.length - 1) {
-      push(',');
-    }
+    if (i < nodes.length - 1) push(',');
   }
 }
 
@@ -395,11 +393,13 @@ function genStringLiteral(node, context) {
 
 function genCallExpression(node, context) {
   const { push } = context;
-  const { callee, arguments: args } = node;
+  const { callee, argumentArray: args } = node;
 
-  push(`${callee.name}`);
+  push(`${callee.name}(`);
 
-  genNodeList(args);
+  genNodeList(args, context);
+
+  push(`)`);
 }
 
-export { tokenize, parse, dump, compile, transform };
+export { compile };
