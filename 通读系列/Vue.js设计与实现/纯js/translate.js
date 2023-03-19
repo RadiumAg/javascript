@@ -402,4 +402,4 @@ function genCallExpression(node, context) {
   genNodeList(args);
 }
 
-export { tokenize, parse, dump, compile, transform, genFunctionDecl };
+export { tokenize, parse, dump, compile, transform };
