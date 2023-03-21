@@ -75,13 +75,15 @@ function parseTag(context, type = 'start') {
   const { advanceBy, advanceSpaces } = context;
   const match =
     type === 'start'
-      ? /^<([a-z][^\t\n\f\r/>]*)/i.exec(context.source)
-      : /^<\/([a-z][^\t\n\f\r />]*)/i.exec(context.source);
+      ? /^<([a-z][^\t\n\f />]*)/i.exec(context.source)
+      : /^<\/([a-z][^\t\n\f />]*)/i.exec(context.source);
 
   const tag = match[1];
 
   advanceBy(match[0].length);
   advanceSpaces();
+
+  const props = parseAttributes(context);
 
   const isSelfClosing = context.source.startsWith('/>');
   advanceBy(isSelfClosing ? 2 : 1);
@@ -89,8 +91,16 @@ function parseTag(context, type = 'start') {
   return {
     type: 'Element',
     tag,
-    props: [],
+    props,
     children: [],
     isSelfClosing,
   };
+}
+
+function parseAttributes(context) {
+  const props = [];
+
+  while (!context.souce.startsWith('>') && !context.souce.startsWith('>')) {}
+
+  return props;
 }
