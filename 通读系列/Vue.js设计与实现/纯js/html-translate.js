@@ -19,14 +19,15 @@ function parse(str) {
   };
 }
 
-function parseChildren(context, ancetors) {
+function parseChildren(context, ancestors) {
   const nodes = [];
 
   const { mode, source } = context;
 
-  while (!isEnd(context, ancetors)) {
+  while (!isEnd(context, ancestors)) {
     let node;
 
+    // 只有 DATA 模式和 RCDATA 模式才支持插值节点的解析
     if (mode === TextModes.DATA || mode === TextModes.RCDATA) {
       if (mode === TextModes.DATA && source[0] === '<') {
         if (source[1] === '!') {
@@ -63,10 +64,10 @@ function parseElement() {
   return element;
 }
 
-function isEnd(context, ancetors) {
+function isEnd(context, ancestors) {
   if (!context.source) return true;
-  const parent = ancetors[ancetors.length - 1];
-  if (parent && context.source.startsWith(`<${parent.tag}`)) {
+  const parent = ancestors[ancestors.length - 1];
+  if (parent && context.source.startsWith(`</${parent.tag}`)) {
     return true;
   }
 }
@@ -104,3 +105,5 @@ function parseAttributes(context) {
 
   return props;
 }
+
+export { parse };
