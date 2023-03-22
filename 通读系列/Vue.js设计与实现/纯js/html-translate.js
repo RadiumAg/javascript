@@ -34,13 +34,13 @@ function parseChildren(context, ancestors) {
           if (source.startsWith('<!--')) {
             node = parseComment(context);
           } else if (source.startsWith('<![CDATA[')) {
-            node = parseCDATA(context, ancetors);
+            node = parseCDATA(context, ancestors);
           }
         } else if (source[1] === '/') {
           console.error('无效的结束标签');
           continue;
         } else if (/[a-z]/i.test(source[1])) {
-          node = parseElement(context, ancetors);
+          node = parseElement(context, ancestors);
         }
       } else if (source.startsWith('{{')) {
         node = parseInterpolation(context);
