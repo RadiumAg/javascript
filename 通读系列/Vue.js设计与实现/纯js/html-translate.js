@@ -71,6 +71,13 @@ function parseElement(context, ancestors) {
   const element = parseTag(context);
   if (element.isSelfClosing) return element;
 
+  if (element.tag === 'textarea' || element.tag === 'title') {
+    context.mode = TextModes.RCDATA;
+  } else if (/style|xmp|iframe|noembed|noframes|noscript/.test(element.tag)) {
+    // 如果由 parseTag 解析得到的标签是 style,xmp,iframe,noembed,noframes,noscript，则切换到 RAWTEXT 模式
+    context.mode = TextModes.RAWTEXT;
+  }
+
   ancestors.push(element);
   element.children = parseChildren(context, ancestors);
   ancestors.pop();
