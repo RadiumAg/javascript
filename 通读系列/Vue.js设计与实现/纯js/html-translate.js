@@ -9,6 +9,17 @@ function parse(str) {
   const context = {
     source: str,
     mode: TextModes.DATA,
+    // advanceBy 函数用来消费指定数量的字符，它接收一个数字作为参数
+    advanceBy(num) {
+      context.source = context.source.slice(num);
+    },
+    // 无论开始标签还是结束标签，都可能存在无用的空白字符，如<div >
+    advanceSpaces() {
+      const match = /^[\t\n\f ]+/.exec(context.source);
+      if (match) {
+        context.advanceBy(match[0].length);
+      }
+    },
   };
 
   const nodes = parseChildren(context, []);
@@ -56,11 +67,19 @@ function parseChildren(context, ancestors) {
   return nodes;
 }
 
-function parseElement() {
-  const element = parseTag();
-  element.children = parseChildren();
-  parseEndTag();
+function parseElement(context, ancestors) {
+  const element = parseTag(context);
+  if (element.isSelfClosing) return element;
 
+  ancestors.push(element);
+  element.children = parseChildren(context, ancestors);
+  ancestors.pop();
+
+  if (context.source.startsWith(`</${element.tag}`)) {
+    parseTag(context, 'end');
+  } else {
+    console.error(`${element.tag} 标签缺少闭合标签`);
+  }
   return element;
 }
 
@@ -74,6 +93,8 @@ function isEnd(context, ancestors) {
 
 function parseTag(context, type = 'start') {
   const { advanceBy, advanceSpaces } = context;
+
+  // 处理开始标签和结束标签的正则表达式不同
   const match =
     type === 'start'
       ? /^<([a-z][^\t\n\f />]*)/i.exec(context.source)
@@ -101,7 +122,7 @@ function parseTag(context, type = 'start') {
 function parseAttributes(context) {
   const props = [];
 
-  while (!context.souce.startsWith('>') && !context.souce.startsWith('>')) {}
+  while (!context.source.startsWith('>') && !context.source.startsWith('>')) {}
 
   return props;
 }
