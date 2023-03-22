@@ -76,6 +76,8 @@ function parseElement(context, ancestors) {
   } else if (/style|xmp|iframe|noembed|noframes|noscript/.test(element.tag)) {
     // 如果由 parseTag 解析得到的标签是 style,xmp,iframe,noembed,noframes,noscript，则切换到 RAWTEXT 模式
     context.mode = TextModes.RAWTEXT;
+  } else {
+    context.mode = TextModes.DATA;
   }
 
   ancestors.push(element);
