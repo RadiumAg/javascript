@@ -5,6 +5,14 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const namedCharacterReferences = {
+  gt: '>',
+  'gt;': '>',
+  lt: '<',
+  'lt;': '<',
+  'ltcc;': '⪦',
+};
+
 function parse(str) {
   const context = {
     source: str,
@@ -104,7 +112,7 @@ function parseTag(context, type = 'start') {
   const { advanceBy, advanceSpaces } = context;
 
   // 处理开始标签和结束标签的正则表达式不同
-  
+
   const match =
     type === 'start'
       ? /^<([a-z][^\t\n\f />]*)/i.exec(context.source)
@@ -150,6 +158,87 @@ function parseAttributes(context) {
   }
 
   return props;
+}
+
+function parseText(context) {
+  let endIndex = context.source.length;
+  const ltIndex = context.source.indexOf('<');
+  // 寻找定界符 {{ 的位置索引
+  const delimiterIndex = context.source.indexOf('{{');
+
+  // 取 ltIndex 和 当前 endIndex 中较小的一个作为新的结尾索引
+  if (ltIndex > -1 && ltIndex < endIndex) {
+    endIndex = ltIndex;
+  }
+
+  if (delimiterIndex > -1 && delimiterIndex < endIndex) {
+    endIndex = delimiterIndex;
+  }
+
+  const content = context.source.slice(0, endIndex);
+
+  context.advanceBy(content.length);
+
+  return {
+    type: 'Text',
+    content,
+  };
+}
+
+function decodeHtml(rawText, asAttr = false) {
+  let offset = 0;
+
+  const end = rawText.length;
+  // 经过解码后的文本将作为返回值被返回
+  let decodedText = '';
+  // 引用表中实体名称的最大长度
+  let maxCRNameLength = 0;
+
+  // 消费字符， 直到处理完毕为止
+  function advance(length) {
+    offset += length;
+    rawText = rawText.slice(length);
+  }
+
+  while (offset < end) {
+    const head = /&(?:#x?)?/.exec(rawText);
+
+    if (!head) {
+      // 计算剩余内容的长度
+      const remaining = end - offset;
+      // 将剩余内容加到 decodedText 上
+      decodedText += rawText.slice(0, remaining);
+      // 消费剩余内容
+      advance(remaining);
+      break;
+    }
+
+    // head.index 为匹配的字符 & 在 rawText 中的位置索引
+    decodedText += rawText.slice(0, head.index);
+    // 消费字符 & 之前的内容
+    advance(head.index);
+
+    // 如果满足条件，则说明是命名字符引用，否则为数字字符引用
+    if (head[0] === '&') {
+      const name = '';
+      let value;
+
+      if (
+        /0-9a-z/.test(rawText[1]) && // 根据引用表计算实体名称的最大长度
+        !maxCRNameLength
+      ) {
+        maxCRNameLength = Object.keys(namedCharacterReferences).reduce(
+          (max, name) => Math.max(max, name.length),
+          0,
+        );
+      }
+
+      for (let length = maxCRNameLength; !value && length > 0; --length) {
+        name = rawText.substr(1, length);
+        value = namedCharacterReferences[name];
+      }
+    }
+  }
 }
 
 export { parse };
