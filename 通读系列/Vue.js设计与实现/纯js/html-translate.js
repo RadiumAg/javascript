@@ -104,6 +104,7 @@ function parseTag(context, type = 'start') {
   const { advanceBy, advanceSpaces } = context;
 
   // 处理开始标签和结束标签的正则表达式不同
+  
   const match =
     type === 'start'
       ? /^<([a-z][^\t\n\f />]*)/i.exec(context.source)
