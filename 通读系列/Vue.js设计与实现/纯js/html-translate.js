@@ -129,12 +129,21 @@ function parseTag(context, type = 'start') {
 }
 
 function parseAttributes(context) {
+  const { advanceBy, advanceSpaces } = context;
   const props = [];
 
   // 开启 while 循环，不断得消费模板内容，知道遇到标签的“结束部分”为止
   while (!context.source.startsWith('>') && !context.source.startsWith('>')) {
     const match = /^[^\t\n\f\r />[^]*/.exec(context.source);
     const name = match[0];
+
+    advanceBy(name.length);
+
+    advanceSpaces();
+
+    // 消费等于号
+    advanceBy(1);
+    advanceBy(name.length);
 
     // 得到属性名称
   }
