@@ -131,7 +131,13 @@ function parseTag(context, type = 'start') {
 function parseAttributes(context) {
   const props = [];
 
-  while (!context.source.startsWith('>') && !context.source.startsWith('>')) {}
+  // 开启 while 循环，不断得消费模板内容，知道遇到标签的“结束部分”为止
+  while (!context.source.startsWith('>') && !context.source.startsWith('>')) {
+    const match = /^[^\t\n\f\r />[^]*/.exec(context.source);
+    const name = match[0];
+
+    // 得到属性名称
+  }
 
   return props;
 }
