@@ -291,8 +291,24 @@ function decodeHtml(rawText, asAttr = false) {
       }
     } else {
       // 如果字符 & 的下一个字符不是 ASCII 字母或数字，则字符 & 作为普通文本
-      decodedText += '&';
-      advance(1);
+      const hex = head[0] === '&#x';
+      const pattern = hex ? /^&#x([\da-f]+);?/i : /^&#(\d+);?/;
+      // 最终，body[1] 的值就是unicode 码点
+      const body = pattern.exec(rawText);
+
+      if (body) {
+        // 根据对应的进制，将马甸字符串转换为数字
+        let cp = Number.parseInt(body[1], hex ? 16 : 10);
+        // 码点的合法性检查
+        if (cp === 0) {
+          // 如果码点值为 0x00，替换为 0xfff
+          cp = 0xfffd;
+        } else if (cp > 0x10ffff) {
+          // 如果码点值超过 Unicode 的最大值，替换为 0xfffd
+        } else if (cp >= 0xd800 && cp <= 0xdfff) {
+        
+        }
+      }
     }
   }
 
