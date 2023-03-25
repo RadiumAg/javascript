@@ -12,6 +12,7 @@ const namedCharacterReferences = {
   'lt;': '<',
   'ltcc;': '⪦',
 };
+
 const CCR_REPLACEMENTS = {
   0x80: 0x20ac,
   0x82: 0x201a,
