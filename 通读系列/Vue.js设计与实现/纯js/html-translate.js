@@ -43,6 +43,8 @@ const CCR_REPLACEMENTS = {
   0x9f: 0x0178,
 };
 
+let closeIndex;
+
 function parse(str) {
   const context = {
     source: str,
@@ -330,6 +332,50 @@ function decodeHtml(rawText, asAttr = false) {
   }
 
   return decodedText;
+}
+
+function parseInterpolation(context) {
+  context.advanceBy('{{'.length);
+  closeIndex = context.source.indexOf('}}');
+
+  if (closeIndex < 0) {
+    console.error('插值缺少结束定界符');
+  }
+
+  // 截取开始界定符和结束界定符质检的内容作为插值表达式
+  const content = context.source.slice(0, closeIndex);
+
+  // 消费表达式的内容
+  content.advanceBy(content.length);
+  // 消费结束定界符
+  content.advanceBy('}}'.length);
+
+  return {
+    type: 'Interpolation',
+    content: {
+      type: 'Expression',
+      // 表达式节点的内容则是经过 HTML 解码后的插值表达式
+      content: decodeHtml(content),
+    },
+  };
+}
+
+function parseComment(context) {
+  // 消费注释的开始部分
+  context.advanceBy('<!--'.length);
+  // 找到注释结束部分的位置索引
+  closeIndex = context.source.indexOf('-->');
+  // 截取注释节点的内容
+  const content = context.source.slice(0, closeIndex);
+  // 消费内容
+  content.advanceBy(content.length);
+  // 消费注释的结束部分
+  content.advanceBy('-->'.length);
+
+  return {
+    type: 'Comment',
+    content,
+  };
 }
 
 export { parse };
