@@ -305,9 +305,26 @@ function decodeHtml(rawText, asAttr = false) {
           cp = 0xfffd;
         } else if (cp > 0x10ffff) {
           // 如果码点值超过 Unicode 的最大值，替换为 0xfffd
+          cp = 0xfffd;
         } else if (cp >= 0xd800 && cp <= 0xdfff) {
-        
+          cp = 0xfffd;
+        } else if ((cp > 0xfdd0 && cp <= 0xfdef) || (cp & 0xfffe) === 0xfffe) {
+        } else if (
+          // 控制字符集的范围是:[0x01, 0x1f] 加上 [0x7f, 0x9f]
+          (cp >= 0x01 && cp <= 0x08) ||
+          cp === 0x0b ||
+          (cp >= 0x0d && cp <= 0x1f) ||
+          (cp >= 0x7f && cp <= 0x9f)
+        ) {
+          cp = CCR_REPLACEMENTS[cp] || cp;
         }
+
+        decodedText += String.fromCodePoint(cp);
+
+        advance(body[0].length);
+      } else {
+        decodedText += head[0];
+        advance(head[0].length);
       }
     }
   }
