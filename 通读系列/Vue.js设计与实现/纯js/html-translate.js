@@ -5,6 +5,12 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const PatchFlags = {
+  TEXT: 1, // 代表节点有动态的 textContent
+  CLASS: 2, // 代表元素有动态的 class 绑定
+  STYLE: 3,
+};
+
 const dynamicChildrenStack = [];
 let currentDynamicChildren = null;
 
@@ -73,12 +79,40 @@ function parse(str) {
   };
 }
 
+// openBlock 用来创建一个新的动态节点集合，并将该集合压入栈中
 function openBlock() {
   dynamicChildrenStack.push((currentDynamicChildren = []));
 }
 
+// closeBlock 用来将通过 openBlock 创建的动态节点集合从栈中弹出
 function closeBlock() {
   currentDynamicChildren = dynamicChildrenStack.pop();
+}
+
+function createBlock(tag, props, children) {
+  const block = createVNode(tag, props, children);
+  block.dynamicChildrenChildren = currentDynamicChildren;
+
+  closeBlock();
+  return block;
+}
+
+function createVNode(tag, props, children, flags) {
+  const key = props && props.key;
+  props && delete props.key;
+
+  const vnode = {
+    tag,
+    props,
+    children,
+    key,
+    PatchFlags: flags,
+  };
+
+  if (typeof flags !== 'undefined' && currentDynamicChildren) {
+    // 动态节点，将其添加到当前动态节点集合中
+    currentDynamicChildren.push(vnode);
+  }
 }
 
 function parseChildren(context, ancestors) {
