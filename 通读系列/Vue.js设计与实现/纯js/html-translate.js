@@ -5,6 +5,9 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const dynamicChildrenStack = [];
+let currentDynamicChildren = null;
+
 const namedCharacterReferences = {
   gt: '>',
   'gt;': '>',
@@ -68,6 +71,14 @@ function parse(str) {
     type: 'Root',
     children: nodes,
   };
+}
+
+function openBlock() {
+  dynamicChildrenStack.push((currentDynamicChildren = []));
+}
+
+function closeBlock() {
+  currentDynamicChildren = dynamicChildrenStack.pop();
 }
 
 function parseChildren(context, ancestors) {
