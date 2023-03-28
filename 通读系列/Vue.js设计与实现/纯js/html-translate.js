@@ -79,6 +79,10 @@ function parse(str) {
   };
 }
 
+function renderElementVNode(vnode) {
+  // 返回选然后的结果，即 HTML 字符串
+}
+
 // openBlock 用来创建一个新的动态节点集合，并将该集合压入栈中
 function openBlock() {
   dynamicChildrenStack.push((currentDynamicChildren = []));
