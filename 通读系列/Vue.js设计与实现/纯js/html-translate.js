@@ -88,6 +88,7 @@ function renderElementVNode(vnode) {
   // 返回选然后的结果，即 HTML 字符串
   // 取出标签名称 tag 和 标签属性 props, 以及标签的子节点
   const { type: tag, props, children } = vnode;
+  const isVoidElement = VOID_TAGS.includes(tag);
   // 开始标签的头部
   let ret = `<${tag}`;
 
@@ -99,7 +100,8 @@ function renderElementVNode(vnode) {
   }
 
   // 开始标签的闭合
-  ret += '>';
+  ret += isVoidElement ? '/>' : '>';
+  if (isVoidElement) return ret;
 
   // 处理子节点
   // 如果子节点的类型是字符串，则是文本内容，直接拼接
