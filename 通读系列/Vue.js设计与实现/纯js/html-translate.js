@@ -5,6 +5,11 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const VOID_TAGS =
+  'area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr'.split(
+    ',',
+  );
+
 const PatchFlags = {
   TEXT: 1, // 代表节点有动态的 textContent
   CLASS: 2, // 代表元素有动态的 class 绑定
@@ -81,6 +86,34 @@ function parse(str) {
 
 function renderElementVNode(vnode) {
   // 返回选然后的结果，即 HTML 字符串
+  // 取出标签名称 tag 和 标签属性 props, 以及标签的子节点
+  const { type: tag, props, children } = vnode;
+  // 开始标签的头部
+  let ret = `<${tag}`;
+
+  if (props) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const k in props) {
+      ret += `${k}="${props[k]}"`;
+    }
+  }
+
+  // 开始标签的闭合
+  ret += '>';
+
+  // 处理子节点
+  // 如果子节点的类型是字符串，则是文本内容，直接拼接
+  if (typeof children === 'string') {
+    ret += children;
+  } else if (Array.isArray(children)) {
+    children.forEach(child => {
+      ret += renderElementVNode(child);
+    });
+  }
+
+  ret += `</${tag}>`;
+
+  return ret;
 }
 
 // openBlock 用来创建一个新的动态节点集合，并将该集合压入栈中
