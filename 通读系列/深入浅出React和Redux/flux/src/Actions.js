@@ -1,4 +1,18 @@
-import * as ActionTypes from './ActionTypes.js';
-import AppDispatcher from './AppDispatcher.js';
+import * as ActionTypes from './ActionTypes';
+import AppDispatcher from './AppDispatcher';
 
-const increment = () => {};
+const increment = counterCaption => {
+  AppDispatcher.dispatch({
+    type: ActionTypes.INCREMENT,
+    counterCaption,
+  });
+};
+
+const decrement = counterCaption => {
+  AppDispatcher.dispatch({
+    type: ActionTypes.DECREMENT,
+    counterCaption,
+  });
+};
+
+export { increment, decrement };
