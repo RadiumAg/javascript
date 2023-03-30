@@ -1,7 +1,7 @@
 import { EventEmitter } from 'stream';
-import * as ActionTypes from './ActionTypes';
-import { CHANGE_EVENT } from './Actions';
-import AppDispatcher from './AppDispatcher';
+import * as ActionTypes from './ActionTypes.mjs';
+import { CHANGE_EVENT } from './Actions.mjs';
+import AppDispatcher from './AppDispatcher.mjs';
 
 const counterValues = {
   First: 0,

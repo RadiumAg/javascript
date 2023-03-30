@@ -1,5 +1,5 @@
-import * as ActionTypes from './ActionTypes';
-import AppDispatcher from './AppDispatcher';
+import * as ActionTypes from './ActionTypes.mjs';
+import AppDispatcher from './AppDispatcher.mjs';
 
 const increment = counterCaption => {
   AppDispatcher.dispatch({
