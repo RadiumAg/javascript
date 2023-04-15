@@ -45,7 +45,7 @@
 })();
 
 (() => {
-  const regex = /#([0-9a-fA-F]{6}|[0-9z-fA-F]{3})/g;
+  const regex = /#([\dA-Fa-f]{6}|[\dA-Fa-f]{3})/g;
   const string = '#ffbbad #Fc01DF #FFF #ffE';
   console.log(string.match(regex));
 })();
