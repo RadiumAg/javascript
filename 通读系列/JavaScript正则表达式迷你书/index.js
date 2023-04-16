@@ -115,3 +115,19 @@
 })();
 
 // 反向引用
+(() => {
+  const regex = /^((\d)(\d(\d)))\1\2\3\4$/;
+  const string = '1231231233';
+  console.log(regex.test(string));
+  console.log(RegExp.$1);
+  console.log(RegExp.$2);
+  console.log(RegExp.$3);
+})();
+
+(() => {
+  const regex = /\1\2\3\4\5\6\7\8\9/;
+  console.log(regex.test('\1\2\3\4\5\6\789'));
+  console.log('\1\2\3\4\5\6\789'.split(''));
+})();
+
+// 非捕获括号
