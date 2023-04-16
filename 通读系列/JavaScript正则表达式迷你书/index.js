@@ -136,7 +136,15 @@
 (() => {
   function titleize(str = '') {
     return str.toLowerCase().replace(/(?:^|\s)\w/g, c => {
+      console.log(c);
       return c.toUpperCase();
     });
   }
+
+  titleize('my is ');
 })();
+
+// 正则表达式回溯法原理
+
+// 贪婪量词，先下手为强
+(() => {})();
