@@ -93,3 +93,25 @@
   const regex = /(?!^)(?=(\d{3})+$)/g;
   console.log('12345678'.replace(regex, ','));
 })();
+
+(() => {
+  const string = '123456778 123456789';
+  const regex = /(?!\b)(?=(\d{3})+\b)/g;
+  console.log(string.replace(regex, ','));
+})();
+
+// 分组()
+(() => {
+  const regex = /(ab)+/g;
+  const string = 'ababa abbbababab';
+  console.log(string.match(regex));
+})();
+
+// 捕获组
+(() => {
+  const regex = /(\d{4})-(\d{2})-(\d{2})/;
+  console.log('2017-06-12'.match(regex));
+  console.log('2017-06-12'.replace(regex, '$2/$3|$1'));
+})();
+
+// 反向引用
