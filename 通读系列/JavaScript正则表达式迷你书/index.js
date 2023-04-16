@@ -84,6 +84,12 @@
 })();
 
 (() => {
-  const result = '12345678'.replace(/(?!\d{3}$)/g, ',');
+  const result = '12345678'.replace(/(?=(\d{3})+$)/g, ',');
   console.log(result);
+})();
+
+// 完美千分位
+(() => {
+  const regex = /(?!^)(?=(\d{3})+$)/g;
+  console.log('12345678'.replace(regex, ','));
 })();
