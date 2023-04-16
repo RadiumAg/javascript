@@ -49,3 +49,41 @@
   const string = '#ffbbad #Fc01DF #FFF #ffE';
   console.log(string.match(regex));
 })();
+
+(() => {
+  const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  console.log(regex.test('22:59'));
+})();
+
+// 位置匹配，6个锚：^、$、\b、\B、(?=p)、(?!p)
+
+// \b \B单词边界，具体就是\w和\W之间的位置，也包括\w与^之间的位置，和\w和$之间的位置
+(() => {
+  const result = '[JS]Lesson_01.mp4'.replace(/\b/g, '#');
+  console.log(result);
+})();
+
+// (?=p)和(?!p),(?=p)，其中p是一个子模式，即p前面的位置
+
+// (?=p) 匹配p前面的位置
+(() => {
+  const result = 'hello'.replace(/(?=l)/g, '#');
+  console.log(result);
+})();
+
+// (?!p) 匹配除了p前面位置之外的位置
+(() => {
+  const result = 'hello'.replace(/(?!l)/g, '#');
+  console.log(result);
+})();
+
+// 千分位
+(() => {
+  const result = '12345678'.replace(/(?=\d{3}$)/g, ',');
+  console.log(result);
+})();
+
+(() => {
+  const result = '12345678'.replace(/(?!\d{3}$)/g, ',');
+  console.log(result);
+})();
