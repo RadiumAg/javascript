@@ -130,4 +130,13 @@
   console.log('\1\2\3\4\5\6\789'.split(''));
 })();
 
-// 非捕获括号
+// 非捕获括号(?:p) (?:p1|p2|p3)
+
+// 将每个单词的首字母转换为大写
+(() => {
+  function titleize(str = '') {
+    return str.toLowerCase().replace(/(?:^|\s)\w/g, c => {
+      return c.toUpperCase();
+    });
+  }
+})();
