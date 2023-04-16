@@ -147,4 +147,15 @@
 // 正则表达式回溯法原理
 
 // 贪婪量词，先下手为强
-(() => {})();
+(() => {
+  const string = '12345';
+  const regex = /(\d{1,3})(\d{1,3})/;
+  console.log(string.match(regex));
+})();
+
+// 惰性量词，后面加?
+(() => {
+  const string = '12345';
+  const regex = /(\d{1,3}?)(\d{1,3})/;
+  console.log(string.match(regex));
+})();
