@@ -159,3 +159,9 @@
   const regex = /(\d{1,3}?)(\d{1,3})/;
   console.log(string.match(regex));
 })();
+
+// 匹配字符串整体问题
+(() => {
+  const regex = /^(abc)|(bcd)$/;
+  console.log('abc2312312'.match(regex));
+})();
