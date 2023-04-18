@@ -165,3 +165,11 @@
   const regex = /^(abc)|(bcd)$/;
   console.log('abc2312312'.match(regex));
 })();
+
+// 转义符
+(() => {
+  const string = '111';
+  // 没有 {,n}
+  const regex = /1{,3}/g;
+  console.log(string.match(regex));
+})();
