@@ -1,3 +1,33 @@
+// 类所有方法都定义在类的prototype属性上
+(() => {
+  class Point {
+    constructor() {}
+
+    toString() {}
+
+    toValue() {}
+  }
+
+  // 等同于
+
+  Point.prototype = {
+    constructor() {},
+    toString() {},
+    toValue() {},
+  };
+})();
+
+(() => {
+  class A {}
+  class B {}
+
+  // B的实例继承A的实例
+  Object.setPrototypeOf(B.prototype, A.prototype);
+
+  // B继承A的静态属性
+  Object.setPrototypeOf(B, A);
+})();
+
 /**
  * super表示父类的constructor
  */
