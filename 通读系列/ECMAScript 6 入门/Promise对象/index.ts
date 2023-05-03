@@ -127,3 +127,50 @@
     };
   };
 })();
+
+// 实现async
+(() => {
+  async function fn(args) {
+    // ...
+  }
+  //等同于
+
+  function fn(args) {
+    return spawn(function* () {});
+  }
+
+  function spawn(genF) {
+    return new Promise((resolve, reject) => {
+      const gen = genF();
+
+      const step = nextF => {
+        try {
+          const next = nextF();
+
+          if (next.done) {
+            return resolve(next.value);
+          }
+
+          Promise.resolve(next.value).then(
+            v => {
+              step(() => {
+                return gen.next(v);
+              });
+            },
+            e => {
+              step(() => {
+                return gen.throw(e);
+              });
+            },
+          );
+        } catch (e) {
+          return reject(e);
+        }
+      };
+
+      step(() => {
+        return gen.next(undefined);
+      });
+    });
+  }
+})();
