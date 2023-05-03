@@ -87,7 +87,7 @@
   run(g);
 })();
 
-// Generator yield表示暂停的地方
+// Generator 类似协程 yield表示暂停的地方
 // 向Generator函数体内输入数据
 (() => {
   function* gen(x) {
@@ -98,4 +98,32 @@
   const g = gen(1);
   g.next();
   g.next(2);
+})();
+
+// 捕获函数体外抛出的错误
+(() => {
+  function* gen(x) {
+    try {
+      const y = yield x + 2;
+      return y;
+    } catch (e) {
+      console.log(e); //此处会捕获到错误
+    }
+  }
+
+  const g = gen(1);
+  g.next();
+  g.throw('出错了');
+})();
+
+// Thunk 函数
+(() => {
+  const Thunk = fn => {
+    return (...args) => {
+      return callback => {
+        args.push(callback);
+        return fn.apply(this, args);
+      };
+    };
+  };
 })();
