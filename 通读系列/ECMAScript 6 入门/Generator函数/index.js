@@ -110,4 +110,19 @@
 })();
 
 // Generator.prototype.return()
-(() => {})();
+// 返回给定的值，并且终结遍历
+(() => {
+  function* gen() {
+    yield 1;
+    yield 2;
+    yield 3;
+  }
+
+  const g = gen();
+
+  console.log(g.next());
+  console.log(g.return('foo'));
+  console.log(g.next());
+})();
+
+// 如果内部有try...finally代码块，则会推迟
