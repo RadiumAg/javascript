@@ -109,3 +109,13 @@
 
   console.log(new B());
 })();
+
+// 类修饰器
+(() => {
+  function testable(target) {
+    target.prototype.isTestable = true;
+  }
+
+  //@testable
+  class MyTestableClass {}
+})();
