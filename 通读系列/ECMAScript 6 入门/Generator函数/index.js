@@ -126,3 +126,62 @@
 })();
 
 // 如果内部有try...finally代码块，则会推迟
+(() => {
+  function* numbers() {
+    yield 1;
+    try {
+      yield 2;
+      yield 3;
+    } finally {
+      yield 4;
+      yield 5;
+    }
+
+    yield 6;
+  }
+
+  const g = numbers();
+  console.log(g.next()); // { done:false ,value: 1}
+  console.log(g.next()); // { done:false ,value: 2}
+  console.log(g.return(7)); // { done:false ,value: 4}
+  console.log(g.next(7)); // { done:false ,value: 5}
+  console.log(g.next(7)); // { done:true ,value: 7}
+})();
+
+// yield* 语句
+(() => {
+  function* inner() {
+    yield 'hello!';
+  }
+
+  function* outer1() {
+    yield 'open';
+    yield inner();
+    yield 'close';
+  }
+
+  const gen = outer1();
+  gen.next().value;
+  gen.next().value; // 返回一个遍历对象
+  gen.next().value; // close
+
+  function* outer2() {
+    yield 'open';
+    yield* inner();
+    yield 'close';
+  }
+
+  const gen2 = outer2();
+  gen2.next().value; // "open"
+  gen2.next().value; // "hello!"
+  gen2.value().value; //"close"
+})();
+
+// 任何数据结构只要有iterator 接口，就可以用yield * 遍历
+(() => {
+  function* gen() {
+    yield* ['a', 'b', 'c'];
+  }
+
+  gen().next();
+})();
