@@ -62,5 +62,19 @@
 // symbol.keyFor,返回一个已登记的Symbol类型值的key
 (() => {
   const s1 = Symbol.for('foo');
-  Symbol.keyFor(s1); //"foo"
+  console.log(Symbol.keyFor(s1)); //"foo"
+})();
+
+// Symbol.hasInstance
+(() => {
+  class MyClass {
+    static [Symbol.hasInstance](foo) {
+      console.log('输出', foo);
+      return false;
+    }
+  }
+
+  const o = new MyClass();
+  // eslint-disable-next-line unicorn/no-instanceof-array
+  console.log(o instanceof MyClass);
 })();
