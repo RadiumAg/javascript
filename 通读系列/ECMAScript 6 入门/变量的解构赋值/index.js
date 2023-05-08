@@ -51,3 +51,15 @@
   console.log(foo);
   console.log(bar);
 })();
+
+// 字符串解构，字符串转换成了一个类似数组的对象
+(() => {
+  const [a, b, c, d, e] = 'Hello';
+  console.log(a, b, c, d, e);
+})();
+
+// 数值和布尔值的解构赋值
+(() => {
+  const { toString: s } = 123;
+  s === Number.prototype.toString; //true
+})();
