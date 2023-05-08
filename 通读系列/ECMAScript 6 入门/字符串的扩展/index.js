@@ -54,6 +54,6 @@
 
 // charAt不支持oxFFFF,但是at支持
 (() => {
-  '𠮷'.at(0); //𠮷
-  '𠮷'.charAt(0); // "\uD842"
+  console.log('𠮷'.at(0).toString(10)); //𠮷
+  console.log('𠮷'.charAt(0).toString(10)); // "\uD842"
 })();
