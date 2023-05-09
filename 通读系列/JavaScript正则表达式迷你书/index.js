@@ -187,3 +187,9 @@
   console.log(s.endsWith('!', 0)); // true
   console.log(s.includes('o', 0)); // true
 })();
+
+// padStart, padEnd
+(() => {
+  'x'.padStart(5, 'ab'); // 'ababx'
+  'x'.padEnd(5, 'ab'); // 'xabab'
+})();
