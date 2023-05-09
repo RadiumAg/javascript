@@ -173,3 +173,17 @@
   const regex = /1{,3}/g;
   console.log(string.match(regex));
 })();
+
+// normalize() Unicode正规化
+(() => {
+  '\u01D1'.normalize() === '\u004F\u030C'.normalize(); //true
+})();
+
+// includes, startsWith, endsWith
+(() => {
+  const s = 'Hello world';
+
+  console.log(s.startsWith('Hello', 0)); // true
+  console.log(s.endsWith('!', 0)); // true
+  console.log(s.includes('o', 0)); // true
+})();
