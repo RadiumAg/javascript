@@ -57,3 +57,87 @@
   console.log('𠮷'.at(0).toString(10)); //𠮷
   console.log('𠮷'.charAt(0).toString(10)); // "\uD842"
 })();
+
+// normalize() Unicode正规化
+(() => {
+  '\u01D1'.normalize() === '\u004F\u030C'.normalize(); //true
+})();
+
+// includes, startsWith, endsWith
+(() => {
+  const s = 'Hello world';
+
+  console.log(s.startsWith('Hello', 0)); // true
+  console.log(s.endsWith('!', 0)); // true
+  console.log(s.includes('o', 0)); // true
+})();
+
+// padStart, padEnd
+(() => {
+  'x'.padStart(5, 'ab'); // 'ababx'
+  'x'.padEnd(5, 'ab'); // 'xabab'
+})();
+
+// 标签模板
+(() => {
+  const a = 5;
+  const b = 10;
+
+  tag`hello ${a + b} world ${a + b}`;
+
+  function tag(stringArr, value1, value2) {
+    console.log(stringArr, value1, value2);
+  }
+})();
+
+(() => {
+  const a = 5;
+  const b = 10;
+
+  function tag(s, v1, v2) {
+    console.log(s[0]);
+    console.log(s[1]);
+    console.log(s[2]);
+
+    console.log(v1);
+    console.log(v2);
+
+    return 'OK';
+  }
+
+  tag`Hello ${a + b} world ${a * b}`;
+})();
+
+// raw属性
+(() => {
+  function tag(strings) {
+    console.log(strings);
+    console.log(strings.raw[0]);
+  }
+})();
+
+// String.raw
+(() => {
+  console.log(String.raw`Hi\n${2 + 3}!`);
+  console.log(String.raw`Hi\u000A`);
+
+  // String.raw的代码
+  String.raw = function (strings, ...values) {
+    let output = '';
+    let idx = 0;
+    for (const [index, value] of values.entries()) {
+      output += strings.raw[index] + value;
+      idx = index;
+    }
+
+    output += strings.raw[idx + 1];
+    return output;
+  };
+
+  console.log(String.raw`Hi\n${2 + 3}!`);
+})();
+
+// String.raw方法可以作为处理模板字符串的基本方式
+(() => {
+  console.log(String.raw({ raw: 'test' }, 0, 1, 2));
+})();
