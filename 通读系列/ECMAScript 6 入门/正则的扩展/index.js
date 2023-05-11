@@ -39,3 +39,20 @@
   /^\S$/.test('𠮷'); // false
   /^\S$/u.test('𠮷'); // true
 })();
+
+// 正确返回字符串长度的函数
+(() => {
+  function codePointLength(text = '') {
+    const result = text.match(/[\s\S]/gu);
+    return result ? result.length : 0;
+  }
+
+  const s = '';
+  console.log(s.length);
+  console.log(codePointLength(s)); //2
+})();
+
+(() => {
+  console.log(/[a-z]/i.test('\u212A')); // false
+  console.log(/[a-z]/iu.test('\u212A')); // true
+})();
