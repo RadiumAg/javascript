@@ -56,3 +56,16 @@
   console.log(/[a-z]/i.test('\u212A')); // false
   console.log(/[a-z]/iu.test('\u212A')); // true
 })();
+
+// y修饰符
+(() => {
+  const s = 'aaa_aa_a';
+  const r1 = /a+/g;
+  const r2 = /a+/y;
+
+  r1.exec(s); // ["aaa"];
+  r2.exec(s); // ["aaa"]
+
+  r1.exec(s); // ["aa"]
+  r2.exec(s); // null
+})();
