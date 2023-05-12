@@ -69,3 +69,17 @@
   r1.exec(s); // ["aa"]
   r2.exec(s); // null
 })();
+
+(() => {
+  const REGEX = /a/g;
+
+  REGEX.lastIndex = 2;
+
+  const match = REGEX.exec('xaya');
+
+  match.index; //3
+
+  REGEX.lastIndex; // 4
+
+  REGEX.exec('xaxa'); // null
+})();
