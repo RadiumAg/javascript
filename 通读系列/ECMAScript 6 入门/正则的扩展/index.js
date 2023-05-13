@@ -63,24 +63,29 @@
   const r1 = /a+/g;
   const r2 = /a+/y;
 
-  r1.exec(s); // ["aaa"];
-  r2.exec(s); // ["aaa"]
+  console.log(r1.exec(s)); // ["aaa"];
+  console.log(r1.exec(s)); // ["aa"]
 
-  r1.exec(s); // ["aa"]
-  r2.exec(s); // null
+  console.log(r2.exec(s)); // ["aaa"]
+  console.log(r2.exec(s)); // null
 })();
 
 (() => {
   const REGEX = /a/g;
 
+  // 指定从2号位置（y）开始匹配
   REGEX.lastIndex = 2;
 
+  // 匹配成功
   const match = REGEX.exec('xaya');
 
-  match.index; //3
+  // 在3号位置配置成功
+  match.index; // 3
 
+  // 下一次匹配从4号位置开始
   REGEX.lastIndex; // 4
 
+  // 4号位置开始匹配失败
   REGEX.exec('xaxa'); // null
 })();
 
@@ -93,8 +98,10 @@
   // 不是粘连，匹配失败
   REGEX.exec('xaya'); // null
 
+  // 指定从3号位置开始匹配
   REGEX.lastIndex = 3;
 
+  // 3号位置匹配成功
   const match = REGEX.exec('xaxa');
   match.index; // 3
   REGEX.lastIndex; //  4
@@ -105,4 +112,9 @@
   '##x'.split(/#/y);
   '#x#'.split(/#/y);
   '##'.split(/#/y);
+})();
+
+(() => {
+  const REGEX = /a/gy;
+  'aaxa'.replace(REGEX, '-'); // '-xa'
 })();
