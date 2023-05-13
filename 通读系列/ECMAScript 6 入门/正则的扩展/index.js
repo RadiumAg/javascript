@@ -83,3 +83,19 @@
 
   REGEX.exec('xaxa'); // null
 })();
+
+(() => {
+  const REGEX = /a/y;
+
+  // 指定从2号位置开始匹配
+  REGEX.lastIndex = 2;
+
+  // 不是粘连，匹配失败
+  REGEX.exec('xaya'); // null
+
+  REGEX.lastIndex = 3;
+
+  const match = REGEX.exec('xaxa');
+  match.index; //3
+  REGEX.lastIndex; //  4
+})();
