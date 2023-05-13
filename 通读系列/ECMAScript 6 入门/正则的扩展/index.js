@@ -96,6 +96,13 @@
   REGEX.lastIndex = 3;
 
   const match = REGEX.exec('xaxa');
-  match.index; //3
+  match.index; // 3
   REGEX.lastIndex; //  4
+})();
+
+(() => {
+  'x##'.split(/#/y);
+  '##x'.split(/#/y);
+  '#x#'.split(/#/y);
+  '##'.split(/#/y);
 })();
