@@ -115,7 +115,14 @@
   '##'.split(/#/y);
 })();
 
+// y 修饰符的设计本意就是让头部匹配的标志^在全局匹配中有效
 (() => {
   const REGEX = /a/gy;
   'aaxa'.replace(REGEX, '-'); // '-xa'
+})();
+
+// sticky 属性
+(() => {
+  const r = /hello\d/y;
+  console.log(r.sticky); // true
 })();
