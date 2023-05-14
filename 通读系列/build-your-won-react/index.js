@@ -1,4 +1,58 @@
 let nextUnitOfWork = null;
+let wipRoot = null;
+
+function commitRoot() {
+  commitWork(wipRoot.child);
+  wipRoot = null;
+}
+
+function reconcileChildren(wipFiber, elements) {
+  let index = 0;
+  const oldFiber = wipFiber.alternate && wipFiber.alternate.child;
+  let prevSibing = null;
+
+  while (index < elements.length || oldFiber !== null) {
+    const element = elements[index];
+
+    const newFiber = {
+      type: element.type,
+      props: element.props,
+      parent: wipFiber,
+      dom: null,
+    };
+
+    const sameType = oldFiber && element && element.type === oldFiber.type;
+
+    if (sameType) {
+    }
+
+    if (element && !sameType) {
+    }
+
+    if (oldFiber && !sameType) {
+    }
+
+    if (index === 0) {
+      wipFiber.child = newFiber;
+    } else {
+      prevSibing.sibling = newFiber;
+    }
+
+    prevSibing = newFiber;
+    index++;
+  }
+}
+
+function commitWork(fiber) {
+  if (!fiber) {
+    return;
+  }
+
+  const domParent = fiber.parent.dom;
+  domParent.append(fiber.dom);
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+}
 
 function workLoop(deadline) {
   const shouldYield = false;
@@ -6,6 +60,10 @@ function workLoop(deadline) {
   while (nextUnitOfWork && !shouldYield) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     shouldYield = deadline.timeRemaining() < 1;
+  }
+
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot();
   }
 
   requestIdleCallback(workLoop);
@@ -21,11 +79,22 @@ function performUnitOfWork(fiber) {
     fiber.dom = createDom(fiber);
   }
 
-  if (fiber.parent) {
-    fiber.parent.dom.append(fiber.dom);
+  const elements = fiber.props.children;
+  reconcileChildren(fiber, elements);
+
+  if (fiber.child) {
+    return fiber.child;
   }
 
-  const elements = fiber.props.children;
+  let nextFiber = fiber;
+
+  while (nextFiber) {
+    if (nextFiber.sibling) {
+      return nextFiber.sibling;
+    }
+
+    nextFiber = nextFiber.parent;
+  }
 }
 
 function createDom(fiber) {
@@ -46,12 +115,14 @@ function createDom(fiber) {
 }
 
 function render(element, container) {
-  nextUnitOfWork = {
+  wipRoot = {
     dom: container,
     props: {
       children: [element],
     },
   };
+
+  nextUnitOfWork = wipRoot;
 }
 
 const Didact = {
