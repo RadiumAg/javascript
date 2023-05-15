@@ -1,8 +1,12 @@
 let nextUnitOfWork = null;
 let wipRoot = null;
+let deletions = null;
+let currentRoot = null;
 
 function commitRoot() {
+  deletions.forEach(commitWork);
   commitWork(wipRoot.child);
+  currentRoot = wipRoot;
   wipRoot = null;
 }
 
@@ -14,7 +18,7 @@ function reconcileChildren(wipFiber, elements) {
   while (index < elements.length || oldFiber !== null) {
     const element = elements[index];
 
-    const newFiber = {
+    let newFiber = {
       type: element.type,
       props: element.props,
       parent: wipFiber,
@@ -24,12 +28,30 @@ function reconcileChildren(wipFiber, elements) {
     const sameType = oldFiber && element && element.type === oldFiber.type;
 
     if (sameType) {
+      newFiber = {
+        type: oldFiber.type,
+        props: element.props,
+        dom: oldFiber.dom,
+        parent: wipFiber,
+        alternate: oldFiber,
+        effectTag: 'UPDATE',
+      };
     }
 
     if (element && !sameType) {
+      newFiber = {
+        type: element.type,
+        props: element.props,
+        dom: null,
+        parent: wipFiber,
+        alternate: null,
+        effectTag: 'PLACEMENT',
+      };
     }
 
     if (oldFiber && !sameType) {
+      oldFiber.effectTag = 'DELETION';
+      deletions.push(oldFiber);
     }
 
     if (index === 0) {
@@ -42,6 +64,8 @@ function reconcileChildren(wipFiber, elements) {
     index++;
   }
 }
+const isProperty = key => key !== 'children';
+function updateDom(dom, prevProps, nextProps) {}
 
 function commitWork(fiber) {
   if (!fiber) {
@@ -49,7 +73,13 @@ function commitWork(fiber) {
   }
 
   const domParent = fiber.parent.dom;
-  domParent.append(fiber.dom);
+  if (fiber.effectTag === 'PLACEMENT' && fiber.dom !== null) {
+    domParent.append(fiber.dom);
+  } else if (fiber.effectTag === 'DELETION') {
+    fiber.dom.remove();
+  } else if (fiber.effectTag === 'UPDATE' && fiber.dom !== null) {
+    updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+  }
   commitWork(fiber.child);
   commitWork(fiber.sibling);
 }
@@ -121,7 +151,7 @@ function render(element, container) {
       children: [element],
     },
   };
-
+  deletions = [];
   nextUnitOfWork = wipRoot;
 }
 
