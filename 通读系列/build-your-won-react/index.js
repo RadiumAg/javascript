@@ -65,6 +65,7 @@ function reconcileChildren(wipFiber, elements) {
   }
 }
 const isProperty = key => key !== 'children';
+const isNew = (prev,next)=> key =>
 function updateDom(dom, prevProps, nextProps) {}
 
 function commitWork(fiber) {
