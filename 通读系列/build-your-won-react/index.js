@@ -64,9 +64,37 @@ function reconcileChildren(wipFiber, elements) {
     index++;
   }
 }
-const isProperty = key => key !== 'children';
-const isNew = (prev,next)=> key =>
-function updateDom(dom, prevProps, nextProps) {}
+
+const isEvent = key => key.startsWith('on');
+const isProperty = key => key !== 'children' && !isEvent(key);
+const isNew = (prev, next) => key => prev[key] !== next[key];
+
+function updateDom(dom, prevProps, nextProps) {
+  // Remove old or changed event listeners
+  Object.keys(prevProps)
+    .filter(isEvent)
+    .filter(key => !(key in nextProps) || isNew(prevProps, nextProps)(key))
+    .forEach(name => {
+      const eventType = name.toLowerCase().slice(2);
+      dom.removeEventListener(eventType, prevProps[name]);
+    });
+
+  // Remove old properties
+  Object.keys(prevProps)
+    .filter(isProperty)
+    .filter(isNew(prevProps, nextProps))
+    .forEach(name => {
+      dom[name] = '';
+    });
+
+  // Set new or changed properties
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(isNaN(prevProps, nextProps))
+    .forEach(name => {
+      dom[name] = nextProps[name];
+    });
+}
 
 function commitWork(fiber) {
   if (!fiber) {
