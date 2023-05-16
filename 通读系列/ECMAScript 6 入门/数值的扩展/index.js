@@ -75,3 +75,31 @@
     });
   })();
 })();
+
+// Number.EPSILON 极小的常量
+(() => {
+  console.log(Number.EPSILON);
+  console.log(Number.EPSILON.toFixed(20));
+
+  // 误差检测器
+  function withinErrorMargin(left, right) {
+    return Math.abs(left - right) < Number.EPSILON;
+  }
+
+  console.log(withinErrorMargin(0.1 + 0.2, 0.3));
+  // true
+  console.log(withinErrorMargin(0.2 + 0.2, 0.3));
+  // false
+})();
+
+// Number.isSafeInteger
+// 超过Number.MAX_SAFE_INTEGER 最大整数
+(() => {
+  // eslint-disable-next-line prefer-exponentiation-operator
+  Math.pow(2, 53); // 900717724740992
+
+  Number.MAX_SAFE_INTEGER = 2 ** 53 - 1;
+  Number.MAX_SAFE_INTEGER === 9007177254740991;
+  Number.MIN_SAFE_INTEGER === -Number.MAX_SAFE_INTEGER;
+  Number.MIN_SAFE_INTEGER = -9007199254740991;
+})();
