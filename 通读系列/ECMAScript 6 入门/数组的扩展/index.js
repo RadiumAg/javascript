@@ -36,4 +36,8 @@
     Array.from ? Array.from : obj => Array.prototype.slice.call(obj);
 })();
 
-(() => {})();
+(() => {
+  Array.from(arrayLike, x => x * x);
+
+  Array.from(arrayLike).map(x => x * x);
+})();
