@@ -37,6 +37,10 @@
 })();
 
 (() => {
+  const arrayLike = {
+    length: 3,
+  };
+
   Array.from(arrayLike, x => x * x);
 
   Array.from(arrayLike).map(x => x * x);
