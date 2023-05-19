@@ -52,4 +52,8 @@
   const names = Array.from(spans, s => s.textContents);
 
   Array.from([1, , 2, , 3], n => n || 0);
+
+  function typesOf() {
+    return Array.from
+  }
 })();
