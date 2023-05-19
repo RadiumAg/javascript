@@ -45,3 +45,11 @@
 
   Array.from(arrayLike).map(x => x * x);
 })();
+
+(() => {
+  const spans = document.querySelectorAll('span.name');
+
+  const names = Array.from(spans, s => s.textContents);
+
+  Array.from([1, , 2, , 3], n => n || 0);
+})();
