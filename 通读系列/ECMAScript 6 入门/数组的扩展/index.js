@@ -14,11 +14,10 @@
 
 // NodeList  对象
 (() => {
-  const ps = document.querySelectorAll('p');
-
-  Array.from(ps).forEach(p => {
-    console.log(p);
-  });
+  // const ps = document.querySelectorAll('p');
+  // Array.from(ps).forEach(p => {
+  //   console.log(p);
+  // });
 })();
 
 (() => {
@@ -28,12 +27,11 @@
 })();
 
 (() => {
-  function foo() {
-    const args = [...arguments];
-  }
-
-  const toArray = () =>
-    Array.from ? Array.from : obj => Array.prototype.slice.call(obj);
+  // function foo() {
+  //   const args = [...arguments];
+  // }
+  // const toArray = () =>
+  //   Array.from ? Array.from : obj => Array.prototype.slice.call(obj);
 })();
 
 (() => {
@@ -47,13 +45,36 @@
 })();
 
 (() => {
-  const spans = document.querySelectorAll('span.name');
+  // const spans = document.querySelectorAll('span.name');
+  // const names = Array.from(spans, s => s.textContents);
+  // Array.from([1, , 2, , 3], n => n || 0);
+  // function typesOf() {
+  //   return Array.from
+  // }
+})();
 
-  const names = Array.from(spans, s => s.textContents);
+(() => {
+  // 将3号位置复制到0号位置
+  [1, 2, 3, 4, 5].copyWithin(0, 3, 4);
 
-  Array.from([1, , 2, , 3], n => n || 0);
+  // -2相当于3号位置，-1相当于4号位置
+  [1, 2, 3, 4, 5].copyWithin(0, -2, -1);
 
-  function typesOf() {
-    return Array.from
-  }
+  // 将3号位置复制到0号位置
+  Array.prototype.copyWithin.call({ length: 5, 3: 1 }, 0, 3);
+
+  // 将2号位置到数组结束，复制到0号位置
+  const i322 = new Int32Array([1, 2, 3, 4, 5]);
+  i322.copyWithin(0, 2);
+
+  // 对于没有部署TypedArray的copyWith 方法的平台
+  // 需要采用下面的写法
+  Array.prototype.copyWithin.call(new Int32Array([1, 2, 3, 4, 5]), 0, 3, 4);
+})();
+
+(() => {
+  console.log([1, 4, -5, 10].find(n => n < 0));
+  [1, 5, 10, 15].find((value, index, arr) => {
+    return value > 9;
+  });
 })();
