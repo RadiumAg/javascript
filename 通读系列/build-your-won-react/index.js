@@ -68,6 +68,7 @@ function reconcileChildren(wipFiber, elements) {
 const isEvent = key => key.startsWith('on');
 const isProperty = key => key !== 'children' && !isEvent(key);
 const isNew = (prev, next) => key => prev[key] !== next[key];
+const isGone = (prev, next) => key => !(key in nexts);
 
 function updateDom(dom, prevProps, nextProps) {
   // Remove old or changed event listeners
@@ -83,6 +84,7 @@ function updateDom(dom, prevProps, nextProps) {
   Object.keys(prevProps)
     .filter(isProperty)
     .filter(isNew(prevProps, nextProps))
+    .filter(isGone(prevProps, nextProps))
     .forEach(name => {
       dom[name] = '';
     });
@@ -90,7 +92,7 @@ function updateDom(dom, prevProps, nextProps) {
   // Set new or changed properties
   Object.keys(nextProps)
     .filter(isProperty)
-    .filter(isNaN(prevProps, nextProps))
+    .filter(isNew(prevProps, nextProps))
     .forEach(name => {
       dom[name] = nextProps[name];
     });
