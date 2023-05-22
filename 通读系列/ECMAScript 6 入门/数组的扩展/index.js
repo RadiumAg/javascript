@@ -83,3 +83,26 @@
 (() => {
   ['a', 'b', 'c'].fill(7);
 })();
+
+// Object.entries()，keys()，values()
+(() => {
+  for (const index of ['a', 'b'].keys()) {
+    console.log(index);
+  }
+
+  for (const elem of ['a', 'b'].values()) {
+    console.log(elem);
+  }
+
+  // entries() 是对键值对的遍历
+  for (const [index, elem] of ['a', 'b'].entries()) {
+    console.log(index, elem);
+  }
+})();
+
+// 数组实例的includes()
+(() => {
+  console.log([1, 2, 3].includes(2));
+  console.log([1, 2, 3].includes(4));
+  console.log([1, 2, Number.NaN].includes(Number.NaN));
+})();
