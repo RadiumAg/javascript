@@ -106,3 +106,9 @@
   console.log([1, 2, 3].includes(4));
   console.log([1, 2, Number.NaN].includes(Number.NaN));
 })();
+
+(() => {
+  // 空位不是undefined,一个位置的值等于undefined依然是有值的。空位是没有任何值
+  0 in [undefined, undefined, undefined]; // true
+  0 in [, , ,]; // false
+})();
