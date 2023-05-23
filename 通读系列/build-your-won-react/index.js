@@ -103,16 +103,70 @@ function commitWork(fiber) {
     return;
   }
 
+  const domParentFiber = fiber.parent;
+  while (!domParentFiber.dom) {
+    domParentFiber = domParentFiber.parent;
+  }
+
   const domParent = fiber.parent.dom;
   if (fiber.effectTag === 'PLACEMENT' && fiber.dom !== null) {
     domParent.append(fiber.dom);
   } else if (fiber.effectTag === 'DELETION') {
-    fiber.dom.remove();
+    commitDeletion(fiber, domParent);
   } else if (fiber.effectTag === 'UPDATE' && fiber.dom !== null) {
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
   }
   commitWork(fiber.child);
   commitWork(fiber.sibling);
+}
+
+function commitDeletion(fiber, domParent) {
+  if (fiber.dom) {
+    fiber.dom.remove();
+  } else {
+    commitDeletion(fiber.child, domParent);
+  }
+}
+let wipFiber = null;
+let hookIndex = null;
+
+function useState(initial) {
+  const oldHook =
+    wipFiber.alternate && wipFiber.hooks && wipFiber.alternate.hooks[hookIndex];
+  const hook = {
+    state: oldHook ? oldHook.state : initial,
+    queue: [],
+  };
+
+  wipFiber.hooks.push(hook);
+  hookIndex++;
+  const actions = oldHook ? oldHook.queue : [];
+  actions.forEach(action => {
+    hook.state = action(hook.state);
+  });
+
+  const setState = action => {
+    hook.queue.push(action);
+
+    wipRoot = {
+      dom: currentRoot.dom,
+      props: currentRoot.props,
+      alternate: currentRoot,
+    };
+
+    nextUnitOfWork = wipRoot;
+    deletions = [];
+  };
+
+  return [hook.state, setState];
+}
+
+function updateHostComponent(fiber) {
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+
+  reconcileChildren(fiber, fiber.props.children);
 }
 
 function workLoop(deadline) {
@@ -130,18 +184,29 @@ function workLoop(deadline) {
   requestIdleCallback(workLoop);
 }
 
+function updateFunctionComponent(fiber) {
+  wipFiber = fiber;
+  hookIndex = 0;
+  wipFiber.hooks = [];
+  const children = [fiber.type(fiber.props)];
+  reconcileChildren(fiber, children);
+}
+
 requestIdleCallback(workLoop);
 
 // 每个fiber只做三件事
 // 把element添加到DOM上
 // 跳出下一个任务单元
 function performUnitOfWork(fiber) {
+  const isFunctionComponent = fiber.type instanceof Function;
+  if (isFunctionComponent) {
+    updateFunctionComponent(fiber);
+  } else {
+    updateHostComponent(fiber);
+  }
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
   }
-
-  const elements = fiber.props.children;
-  reconcileChildren(fiber, elements);
 
   if (fiber.child) {
     return fiber.child;
