@@ -14,3 +14,14 @@
 (() => {
   window.location.replace;
 })();
+
+// 手动触发popstate事件
+(() => {
+  function dispatchPopStateEvent() {
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }
+
+  function dispatchHashChangeEvent() {
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  }
+})();
