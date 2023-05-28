@@ -57,16 +57,24 @@ class Stack {
   }
 }
 
+// 十进制到二进制
 function decimalToBinary(decNumber) {
   const remStack = new Stack();
-  const number = decNumber;
+  let number = decNumber;
   let rem;
-  const binaryString = '';
+  let binaryString = '';
 
   while (number > 0) {
     rem = Math.floor(number % 2);
     remStack.push(rem);
+    number = Math.floor(number / 2);
   }
+
+  while (!remStack.isEmpty()) {
+    binaryString += remStack.pop().toString();
+  }
+
+  return binaryString;
 }
 
 const stack = new Stack();
