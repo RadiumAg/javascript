@@ -57,26 +57,6 @@ class Stack {
   }
 }
 
-// 十进制到二进制
-function decimalToBinary(decNumber) {
-  const remStack = new Stack();
-  let number = decNumber;
-  let rem;
-  let binaryString = '';
-
-  while (number > 0) {
-    rem = Math.floor(number % 2);
-    remStack.push(rem);
-    number = Math.floor(number / 2);
-  }
-
-  while (!remStack.isEmpty()) {
-    binaryString += remStack.pop().toString();
-  }
-
-  return binaryString;
-}
-
 const stack = new Stack();
 
 stack.push(1);
@@ -86,3 +66,56 @@ stack.push(2);
 stack.push(3);
 
 console.log(stack.toString());
+
+() => {
+  // 十进制到二进制
+  function decimalToBinary(decNumber) {
+    const remStack = new Stack();
+    let number = decNumber;
+    let rem;
+    let binaryString = '';
+
+    while (number > 0) {
+      rem = Math.floor(number % 2);
+      remStack.push(rem);
+      number = Math.floor(number / 2);
+    }
+
+    while (!remStack.isEmpty()) {
+      binaryString += remStack.pop().toString();
+    }
+
+    return binaryString;
+  }
+
+  console.log(decimalToBinary(233));
+  console.log(decimalToBinary(10));
+  console.log(decimalToBinary(1000));
+};
+
+// 进制转换算法
+(() => {
+  function baseConverter(decNumber, base) {
+    const remStack = new Stack();
+    const digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let number = decNumber;
+    let rem;
+    const baseString = '';
+
+    if (!(base >= 2 && base <= 36)) {
+      return '';
+    }
+
+    while (number > 0) {
+      rem = Math.floor(number % base);
+      remStack.push(rem);
+      number = Math.floor(number / base);
+    }
+
+    while (!remStack.isEmpty()) {
+      baseString += digits[remStack.pop()];
+    }
+
+    return baseString;
+  }
+})();
