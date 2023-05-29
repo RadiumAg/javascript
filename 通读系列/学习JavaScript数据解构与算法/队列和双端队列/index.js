@@ -49,11 +49,20 @@ class Queue {
       return '';
     }
 
-    const objString = `${this.items[this.lowestCount]}`;
+    let objString = `${this.items[this.lowestCount]}`;
 
     for (let i = this.lowestCount + 1; i < this.count; i++) {
-      objString = `${objString}，${this.items[i]}`;
+      objString = `${objString},${this.items[i]}`;
     }
     return objString;
   }
 }
+
+(() => {
+  const queue = new Queue();
+  console.log(queue.isEmpty());
+
+  queue.enqueue('John');
+  queue.enqueue('Jack');
+  console.log(queue.toString());
+})();
