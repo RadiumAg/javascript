@@ -65,4 +65,12 @@ class Queue {
   queue.enqueue('John');
   queue.enqueue('Jack');
   console.log(queue.toString());
+
+  console.log(queue.size());
+  console.log(queue.isEmpty());
+
+  queue.denqueue();
+  queue.denqueue();
+
+  console.log(queue.toString());
 })();
