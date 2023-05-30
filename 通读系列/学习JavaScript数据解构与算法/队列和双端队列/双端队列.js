@@ -1,5 +1,4 @@
-const { deprecate } = require('util');
-
+// 刷个那段队列是一种允许我们同时从前端和后端添加和移除元素的特殊队列
 class Deque {
   constructor() {
     this.count = 0;
@@ -23,7 +22,10 @@ class Deque {
     }
   }
 
-  addBack(element) {}
+  addBack(element) {
+    this.items[this.count] = element;
+    this.count++;
+  }
 
   removeFront() {}
 
@@ -31,13 +33,21 @@ class Deque {
 
   peekFront() {}
 
-  peekBack() {}
+  peekBack() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    return this.items[this.count - 1];
+  }
 
   isEmpty() {
     return this.lowestCount === this.count;
   }
 
-  toString() {}
+  toString() {
+    if(this.isEmpty)
+  }
 }
 
 (() => {
