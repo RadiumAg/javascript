@@ -6,6 +6,12 @@ class Deque {
     this.items = {};
   }
 
+  clear() {
+    this.items = {};
+    this.count = 0;
+    this.lowestCount = 0;
+  }
+
   addFront(element) {
     if (this.isEmpty()) {
       this.addBack(element);
@@ -27,11 +33,32 @@ class Deque {
     this.count++;
   }
 
-  removeFront() {}
+  removeFront() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
 
-  removeBack() {}
+    const result = this.items[this.lowestCount];
+    delete this.items[this.lowestCount];
+    this.lowestCount++;
+    return result;
+  }
 
-  peekFront() {}
+  removeBack() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    this.count--;
+    const result = this.items[this.count];
+    return result;
+  }
+
+  peekFront() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items[this.count - 1];
+  }
 
   peekBack() {
     if (this.isEmpty()) {
@@ -46,7 +73,16 @@ class Deque {
   }
 
   toString() {
-    if(this.isEmpty)
+    if (this.isEmpty()) {
+      return '';
+    }
+    let objString = `${this.items[this.lowestCount]}`;
+
+    for (let i = this.lowestCount + 1; i < this.count; i++) {
+      objString = `${objString}，${this.items[i]}`;
+    }
+
+    return objString;
   }
 }
 
