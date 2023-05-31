@@ -74,3 +74,38 @@ class Queue {
 
   console.log(queue.toString());
 })();
+
+(() => {
+  // 应用
+  function hotPotato(elementsList, num) {
+    const queue = new Queue();
+    const elimitatedList = [];
+    for (const element of elementsList) {
+      queue.enqueue(element);
+    }
+
+    while (queue.size() > 1) {
+      for (let i = 0; i < num; i++) {
+        queue.enqueue(queue.denqueue());
+      }
+      elimitatedList.push(queue.denqueue());
+    }
+
+    return {
+      elilminated: elementsList,
+      winner: queue.denqueue(),
+    };
+  }
+
+  const names = ['John', 'Jack', 'Camila', 'Ingrid', 'Carl'];
+  const result = hotPotato(names, 7);
+
+  result.elilminated.forEach(name => {
+    console.log(`${name}在击鼓传花游戏中被淘汰。`);
+  });
+
+  console.log(`胜利者：${result.winner}`);
+})();
+
+// 回文检查器
+(() => {})();
