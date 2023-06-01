@@ -106,6 +106,3 @@ class Queue {
 
   console.log(`胜利者：${result.winner}`);
 })();
-
-// 回文检查器
-(() => {})();
