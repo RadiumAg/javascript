@@ -229,6 +229,83 @@ class DoublyLinkList extends LinkedList {
   }
 }
 
+const Compare = {
+  LESS_THAN: -1,
+  BIGGER_THAN: 1,
+};
+
+function defaultCompare(a, b) {
+  if (a === b) {
+    return 0;
+  }
+
+  return a < b ? Compare.LESS_THAN : Compare.BIGGER_THAN;
+}
+
+// 有序列表
+class SortedLinkedList extends LinkedList {
+  constructor(equalFn = defaultCompare, compareFn = defaultCompare) {
+    super(equalFn);
+    this.compareFn = compareFn;
+  }
+
+  insert(element, index) {
+    if (this.isEmpty()) {
+      return super.insert(element, 0);
+    }
+    const pos = this.getIndexNextSortedElement(element);
+    return super.insert(element, pos);
+  }
+
+  getIndexNextSortedElement(element) {
+    let current = this.head;
+    let i = 0;
+    for (; i < this.size() && current; i++) {
+      const comp = this.compareFn(element, current.element);
+
+      if (comp === Compare.LESS_THAN) {
+        return i;
+      }
+
+      current = current.next;
+    }
+
+    return i;
+  }
+}
+
+class StackLinkedList {
+  constructor() {
+    this.items = new DoublyLinkList();
+  }
+
+  push(element) {
+    this.items.push(element);
+  }
+
+  pop() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items.removeAt(this.size() - 1);
+  }
+
+  peek() {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    return this.items.getElementAt(this.size() - 1).element;
+  }
+
+  clear() {
+    this.items.clear();
+  }
+
+  toString() {
+    return this.items.toString();
+  }
+}
+
 (() => {
   const list = new LinkedList();
   list.push(15);
