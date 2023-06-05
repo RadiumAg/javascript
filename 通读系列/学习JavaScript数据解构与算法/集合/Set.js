@@ -50,6 +50,20 @@ class Set {
 
     return unionSet;
   }
+
+  intersection(otherSet) {
+    const intersectionSet = new Set();
+
+    const values = this.values();
+
+    for (const value of values) {
+      if (otherSet.has(value)) {
+        intersectionSet.add(values[i]);
+      }
+    }
+
+    return intersectionSet;
+  }
 }
 
 (() => {
