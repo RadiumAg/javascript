@@ -53,8 +53,15 @@ class Set {
 
   intersection(otherSet) {
     const intersectionSet = new Set();
-
     const values = this.values();
+    const otherValues = otherSet.values();
+    let biggerSet = values;
+    let smallerSet = otherValues;
+
+    if (otherValues.length - values.length > 0) {
+      biggerSet = otherValues;
+      smallerSet = values;
+    }
 
     for (const value of values) {
       if (otherSet.has(value)) {
