@@ -71,6 +71,18 @@ class Set {
 
     return intersectionSet;
   }
+
+  difference(otherSet) {
+    const differenceSet = new Set();
+
+    this.values().forEach(value => {
+      if (!otherSet.has(value)) {
+        differenceSet.add(value);
+      }
+    });
+
+    return differenceSet;
+  }
 }
 
 (() => {
