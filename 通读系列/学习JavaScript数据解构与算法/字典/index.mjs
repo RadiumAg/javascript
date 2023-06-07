@@ -48,4 +48,24 @@ class Dictionary {
   keyValues() {
     return Object.values(this.table);
   }
+
+  keys() {
+    return this.keyValues().map(valuePair => valuePair.key);
+  }
+
+  values() {
+    return this.keyValues().map(valuePair => valuePair.value);
+  }
+
+  size() {
+    return Object.keys(this.table).length;
+  }
+
+  isEmpty() {
+    return this.size() === 0;
+  }
+
+  clear() {
+    this.table = {};
+  }
 }
