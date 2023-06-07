@@ -38,4 +38,14 @@ class Dictionary {
 
     return false;
   }
+
+  get(key) {
+    const ValuePair = this.table[this.toStrFn(key)];
+
+    return ValuePair == null ? undefined : ValuePair.value;
+  }
+
+  keyValues() {
+    return Object.values(this.table);
+  }
 }
