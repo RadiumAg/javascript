@@ -68,4 +68,14 @@ class Dictionary {
   clear() {
     this.table = {};
   }
+
+  forEach(callbackFn) {
+    const valuePairs = this.keyValues();
+
+    for (const valuePair of valuePairs) {
+      const result = callbackFn(valuePair.key, valuePair.value);
+
+      if (result === false) break;
+    }
+  }
 }
