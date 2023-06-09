@@ -78,4 +78,12 @@ class Dictionary {
       if (result === false) break;
     }
   }
+
+  toString() {
+    if (this.isEmpty()) return '';
+
+    const valuePairs = this.keyValues();
+
+    
+  }
 }
