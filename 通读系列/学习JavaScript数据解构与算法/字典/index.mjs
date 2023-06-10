@@ -92,3 +92,9 @@ class Dictionary {
     return objString;
   }
 }
+
+const dictionary = new Dictionary();
+
+dictionary.set('Gandalf', 'grandalf@email.com');
+dictionary.set('John', 'johnsow@email.com');
+dictionary.set('Tyrion', 'tyrion@email.com');
