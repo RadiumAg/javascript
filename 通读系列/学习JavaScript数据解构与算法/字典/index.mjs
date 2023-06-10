@@ -83,7 +83,12 @@ class Dictionary {
     if (this.isEmpty()) return '';
 
     const valuePairs = this.keyValues();
+    let objString = `${objString}，${valuePairs[0].toString()}`;
 
-    
+    for (let i = 1; i < valuePairs.length; i++) {
+      objString = `${objString}，${valuePairs[i].toString()}`;
+    }
+
+    return objString;
   }
 }
