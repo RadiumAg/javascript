@@ -28,9 +28,22 @@ class HashTable {
     return false;
   }
 
-  remove(key) {}
+  remove(key) {
+    const hash = this.hashCode(key);
+    const valuePair = this.table[hash];
 
-  get(key) {}
+    if (valuePair != null) {
+      delete this.table[hash];
+      return true;
+    }
+
+    return false;
+  }
+
+  get(key) {
+    const valuePair = this.table[this.hashCode(key)];
+    return valuePair == null ? undefined : valuePair.value;
+  }
 
   loseloseHashCode(key) {
     if (typeof key === 'number') {
@@ -50,4 +63,32 @@ class HashTable {
   hashCode(key) {
     return this.loseloseHashCode(key);
   }
+
+  toString() {
+    if (this.isEmpty()) {
+      return '';
+    }
+
+    const keys = Object.keys(this.table);
+    let objString = `${keys[0]}=>${this.table[keys[0]].toString()}`;
+
+    for (const key of keys) {
+      objString = `${objString},{${key} => ${this.table[key.toString()]}}`;
+    }
+
+    return objString;
+  }
+
+  isEmpty() {
+    return Object.keys(this.table).keys().length === 0;
+  }
 }
+
+const hash = new HashTable();
+
+hash.put('Gandalf', 'grandlf@email.com');
+hash.put('John', 'johnsnow@email.com');
+hash.put('Tyrion', 'tryion@email.com');
+
+console.log(`${hash.hashCode('Gandalf')} - Gandalf`);
+console.log(hash.toString());
