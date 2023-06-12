@@ -111,12 +111,14 @@ class HashTableSeparateChining {
     const linkedList = this.table[position];
 
     if (linkedList !== null && !linkedList.isEmpty()) {
-      const current = linkedList.getHead();
+      let current = linkedList.getHead();
 
       while (current != null) {
         if (current.element.key === key) {
-          linkedList.remove(current.element);
+          return current.element.value;
         }
+
+        current = current.next;
       }
     }
 
@@ -128,14 +130,23 @@ class HashTableSeparateChining {
     const linkedList = this.table[position];
 
     if (linkedList != null && !linkedList.isEmpty()) {
-      const current = linkedList.getHead();
+      let current = linkedList.getHead();
 
       while (current != null) {
         if (current.element.key === key) {
-          linkedList.remove(current.element  );
+          linkedList.remove(current.element);
+          if (linkedList.isEmpty()) {
+            delete this.table[position];
+          }
+
+          return true;
         }
+
+        current = current.next;
       }
     }
+
+    return false;
   }
 }
 
