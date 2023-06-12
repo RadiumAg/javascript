@@ -115,12 +115,27 @@ class HashTableSeparateChining {
 
       while (current != null) {
         if (current.element.key === key) {
-          return current.element.value;
+          linkedList.remove(current.element);
         }
       }
     }
 
     return undefined;
+  }
+
+  remove(key) {
+    const position = this.hashCode(key);
+    const linkedList = this.table[position];
+
+    if (linkedList != null && !linkedList.isEmpty()) {
+      const current = linkedList.getHead();
+
+      while (current != null) {
+        if (current.element.key === key) {
+          linkedList.remove(current.element  );
+        }
+      }
+    }
   }
 }
 
