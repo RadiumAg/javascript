@@ -1,4 +1,5 @@
 import { defaultToString } from '../util.mjs';
+import { LinkedList } from '../链表数据结构/index.mjs';
 
 class ValuePair {
   constructor(key, value) {
@@ -103,6 +104,23 @@ class HashTableSeparateChining {
     }
 
     return false;
+  }
+
+  get(key) {
+    const position = this.hashCode(key);
+    const linkedList = this.table[position];
+
+    if (linkedList !== null && !linkedList.isEmpty()) {
+      const current = linkedList.getHead();
+
+      while (current != null) {
+        if (current.element.key === key) {
+          return current.element.value;
+        }
+      }
+    }
+
+    return undefined;
   }
 }
 

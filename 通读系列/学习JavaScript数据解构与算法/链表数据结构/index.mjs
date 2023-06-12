@@ -316,3 +316,5 @@ class StackLinkedList {
 })();
 
 (() => {})();
+
+export { LinkedList };
