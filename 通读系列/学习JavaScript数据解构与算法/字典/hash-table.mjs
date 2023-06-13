@@ -167,6 +167,25 @@ class HashTableSeparateChining {
 
     return false;
   }
+
+  put1(key, value) {
+    if (key != null && value != null) {
+      const position = this.hashCode(key);
+
+      if (this.table[position] == null) {
+        this.table[position] = new ValuePair(key, value);
+      } else {
+        let index = position + 1;
+        while (this.table[index] != null) {
+          index++;
+        }
+        this.table[index] = new ValuePair(key, value);
+      }
+      return true;
+    }
+
+    return false;
+  }
 }
 
 const hash = new HashTable();
