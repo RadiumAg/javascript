@@ -206,6 +206,22 @@ class HashTableSeparateChining {
 
     return undefined;
   }
+
+  verifyRemoveSideEffect(key, removedPosition) {
+    const hash = this.hashCode(key);
+    let index = removedPosition + 1;
+
+    while (this.table[index] != null) {
+      const posHash = this.hashCode(this.table[index].key);
+      if (posHash <= hash || posHash <= removedPosition) {
+        this.table[removedPosition] = this.table[index];
+        delete this.table[index];
+        removedPosition = index;
+      }
+
+      index++;
+    }
+  }
 }
 
 const hash = new HashTable();
