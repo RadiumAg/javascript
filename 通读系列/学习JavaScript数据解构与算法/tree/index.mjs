@@ -14,6 +14,19 @@ class BinarySearchTree {
     this.root = null;
   }
 
+  min() {
+    return this.minNode(this.root);
+  }
+
+  minNode(node) {
+    let current = node;
+    while (current != null && current.left != null) {
+      current = current.left;
+    }
+
+    return current;
+  }
+
   postOrderTraverse(callback) {
     this.postOrderTraverseNode(this.root, callback);
   }
