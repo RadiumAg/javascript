@@ -14,6 +14,19 @@ class BinarySearchTree {
     this.root = null;
   }
 
+  max() {
+    return this.maxNode(this.root);
+  }
+
+  maxNode(node) {
+    let current = node;
+    while (current != null && current.right != null) {
+      current = current.right;
+    }
+
+    return current;
+  }
+
   min() {
     return this.minNode(this.root);
   }
@@ -25,6 +38,24 @@ class BinarySearchTree {
     }
 
     return current;
+  }
+
+  search(key) {
+    return this.searchNode(this.root, key);
+  }
+
+  searchNode(node, key) {
+    if (node == null) {
+      return false;
+    }
+
+    if (this.compareFn(key, node.key) === Compare.LESS_THAN) {
+      return this.searchNode(node.left, key);
+    } else if (this.compareFn(key, node.key) === Compare.BIGGER_THAN) {
+      return this.searchNode(node.right, key);
+    } else {
+      return true;
+    }
   }
 
   postOrderTraverse(callback) {
