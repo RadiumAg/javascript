@@ -103,6 +103,41 @@ class BinarySearchTree {
       this.insertNode(node.right, key);
     }
   }
+
+  removeNode(node, key) {
+    if (node == null) {
+      return null;
+    }
+
+    if (this.compareFn(key, node.key) === Compare.LESS_THAN) {
+      node.left = this.removeNode(node.left, key);
+      return node;
+    } else if (this.compareFn(key, node.key) === Compare.BIGGER_THAN) {
+      node.right = this.removeNode(node.right, key);
+      return node;
+    } else {
+      if (node.left === null && node.right == null) {
+        node = null;
+        return node;
+      }
+
+      if (node.left == null) {
+        node = node.right;
+      } else if (node.right == null) {
+        node = node.left;
+        return node;
+      }
+
+      const aux = this.minNode(node.right);
+      node.key = aux.key;
+      node.right = this.removeNode(node.right, aux.key);
+      return node;
+    }
+  }
+
+  remove(key) {
+    this.root = this.removeNode(this.root, key);
+  }
 }
 
 (() => {
