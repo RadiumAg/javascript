@@ -140,6 +140,67 @@ class BinarySearchTree {
   }
 }
 
+const BalanceFactor = {
+  UNBALANCED_RIGHT: 1,
+  SLIGHTLY_UNBALANCED_RIGHT: 2,
+  BALANCED: 3,
+  SLIGHTLY_UNBALANCED_LEFT: 4,
+  UNBALANCED_LEFT: 5,
+};
+
+class AVLTree extends BinarySearchTree {
+  constructor(compareFn = defaultCompare) {
+    super(compareFn);
+    this.compareFn = compareFn;
+  }
+
+  insert() {}
+
+  getNodeHeight(node) {
+    if (node == null) {
+      return -1;
+    }
+
+    return Math.max(
+      this.getNodeHeight(node.left),
+      this.getNodeHeight(node.right),
+    );
+  }
+
+  getBalanceFactor(node) {
+    const heightDifference =
+      this.getNodeHeight(node.left) - this.getNodeHeight(node.right);
+
+    switch (heightDifference) {
+      case -2:
+        return BalanceFactor;
+
+      default:
+        break;
+    }
+  }
+
+  rotationLL(node) {
+    const tmp = node.left;
+    node.left = tmp.right;
+
+    tmp.right = node;
+    return tmp;
+  }
+
+  rotationRR(node) {
+    const tmp = node.right;
+    node.right = tmp.left;
+    tmp.left = node;
+    return tmp;
+  }
+
+  rotationLR(node) {
+    node.left = this.rotationRR(node.left);
+    return this.rotationLL(node);
+  }
+}
+
 (() => {
   const tree = new BinarySearchTree();
   tree.insert(11);
