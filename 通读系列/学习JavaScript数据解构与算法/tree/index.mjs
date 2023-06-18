@@ -154,7 +154,9 @@ class AVLTree extends BinarySearchTree {
     this.compareFn = compareFn;
   }
 
-  insert() {}
+  insert(key) {
+    this.root = this.insertNode(this.root, key);
+  }
 
   getNodeHeight(node) {
     if (node == null) {
@@ -198,6 +200,11 @@ class AVLTree extends BinarySearchTree {
   rotationLR(node) {
     node.left = this.rotationRR(node.left);
     return this.rotationLL(node);
+  }
+
+  rotationRL(node) {
+    this.right = this.rotationLL(node.right);
+    return this.rotationRR(node);
   }
 }
 
