@@ -105,6 +105,7 @@ class BinarySearchTree {
   }
 
   removeNode(node, key) {
+    code;
     if (node == null) {
       return null;
     }
