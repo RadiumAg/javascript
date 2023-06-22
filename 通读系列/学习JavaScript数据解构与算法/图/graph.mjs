@@ -2,7 +2,7 @@ class Graph {
   constructor(isDirected = false) {
     this.isDirected = isDirected;
     this.vertices = []; //{2} 存储图中所有顶点的名字
-    this.adjList = new Map();
+    this.adjList = new Map(); //{3} 存储邻接表
   }
 
   addVertex(v) {
@@ -36,6 +36,26 @@ class Graph {
   getAdjList() {
     return this.adjList;
   }
+
+  toString() {
+    let s = '';
+    for (let i = 0; i < this.vertices.length; i++) {
+      // {15}
+      s += `${this.vertices[i]} ->`;
+      const neighbors = this.adjList.get(this.vertices[i]); // {16}
+
+      console.log(neighbors);
+      for (let j = 0; i < neighbors.length; j++) {
+        // {17}
+        console.log(neighbors[j]);
+        s += `${neighbors[j]}`;
+      }
+
+      s += '\n'; // {18}
+    }
+
+    return s;
+  }
 }
 
 (() => {
@@ -58,5 +78,5 @@ class Graph {
   graph.addEdge('B', 'F');
   graph.addEdge('E', 'I');
 
-  console.log(graph);
+  console.log(graph.toString());
 })();
