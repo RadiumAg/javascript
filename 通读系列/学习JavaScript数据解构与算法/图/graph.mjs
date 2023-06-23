@@ -12,6 +12,8 @@ const initializeColor = vertices => {
     color[vertex] = Colors.WHITE;
   }
 
+  console.log(color);
+
   return color;
 };
 
@@ -73,22 +75,25 @@ class Graph {
   }
 }
 
+// 广度遍历优先算法
 const breadthFirstSearch = (graph, startVertex, callback) => {
   const vertices = graph.getVertices();
   const adjList = graph.getAdjList();
   const color = initializeColor(vertices); // {1}
 
-  const queue = new Queue();
+  const queue = new Queue(); // {2}
 
-  queue.enqueue(startVertex);
+  queue.enqueue(startVertex); // {3}
 
   while (!queue.isEmpty()) {
-    const u = queue.denqueue();
-    const neighbors = adjList.get(u);
+    // {4}
+    const u = queue.denqueue(); // {5}
+    const neighbors = adjList.get(u); // {6}
 
-    color[u] = Colors.GREY;
+    color[u] = Colors.GREY; // {7}
 
     for (const neighbor of neighbors) {
+      // {8}
       if (color[neighbor] === Colors.WHITE) {
         color[neighbor] = Colors.GREY;
         queue.enqueue(neighbor);
@@ -120,6 +125,8 @@ const breadthFirstSearch = (graph, startVertex, callback) => {
   graph.addEdge('B', 'F');
   graph.addEdge('E', 'I');
 
-  console.log(graph.toString());
-  breadthFirstSearch(graph, 0);
+  console.log(graph);
+  breadthFirstSearch(graph, 'A', value => {
+    console.log(`Visited vertex：${value}`);
+  });
 })();
