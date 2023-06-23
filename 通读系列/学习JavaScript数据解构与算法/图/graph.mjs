@@ -1,4 +1,5 @@
 import { Queue } from '../队列和双端队列/index.mjs';
+import { Stack } from '../栈/index.mjs';
 
 const Colors = {
   WHITE: 0,
@@ -105,6 +106,58 @@ const breadthFirstSearch = (graph, startVertex, callback) => {
   }
 };
 
+// 使用BFS寻找最短路径
+const BFS = (graph, startVertex) => {
+  const vertices = graph.getVertices();
+  const adjList = graph.getAdjList();
+  const color = initializeColor(vertices);
+  const queue = new Queue();
+  const distances = {};
+  const predecessors = {};
+  queue.enqueue(startVertex);
+
+  for (const vertex of vertices) {
+    distances[vertex] = 0;
+    predecessors[vertex] = null;
+  }
+  const fromVertex = vertices[0];
+
+  for (const toVertex of vertices) {
+    const path = new Stack();
+    for (let v = toVertex; v !== fromVertex; v = predecessors[v]) {
+      path.push(v);
+    }
+
+    path.push(fromVertex);
+    let s = path.pop();
+    while (!path.isEmpty()) {
+      s += `-${path.pop()}`;
+    }
+    console.log(s);
+  }
+
+  while (!queue.isEmpty()) {
+    const u = queue.denqueue();
+    const neighbors = adjList.get(u);
+    color[u] = Colors.GREY;
+
+    for (const neighbor of neighbors) {
+      if (color[neighbor] === Colors.WHITE) {
+        color[neighbor] = Colors.GREY;
+        distances[neighbor] = distances[u] + 1;
+        predecessors[neighbor] = u;
+        queue.enqueue(neighbor);
+      }
+    }
+    color[u] = Colors.BLACK;
+  }
+
+  return {
+    distances,
+    predecessors,
+  };
+};
+
 (() => {
   const graph = new Graph();
 
@@ -125,8 +178,9 @@ const breadthFirstSearch = (graph, startVertex, callback) => {
   graph.addEdge('B', 'F');
   graph.addEdge('E', 'I');
 
-  console.log(graph);
   breadthFirstSearch(graph, 'A', value => {
     console.log(`Visited vertex：${value}`);
   });
+
+  console.log(BFS(graph, myVertices[0]));
 })();

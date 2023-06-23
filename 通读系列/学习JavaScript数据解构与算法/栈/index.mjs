@@ -112,9 +112,7 @@ console.log(stack.toString());
       number = Math.floor(number / base);
     }
 
-    while (!remStack.isEmpty()) {
-      baseString += digits[remStack.pop()];
-    }
+    while (!remStack.isEmpty()) {}
 
     return baseString;
   }
@@ -124,3 +122,5 @@ console.log(stack.toString());
   console.log(baseConverter(100345, 16));
   console.log(baseConverter(100345, 35));
 })();
+
+export { Stack };
