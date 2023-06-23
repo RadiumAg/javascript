@@ -106,3 +106,5 @@ class Queue {
 
   console.log(`胜利者：${result.winner}`);
 })();
+
+export { Queue };

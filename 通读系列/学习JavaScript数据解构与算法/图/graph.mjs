@@ -1,3 +1,20 @@
+import { Queue } from '../队列和双端队列/index.mjs';
+
+const Colors = {
+  WHITE: 0,
+  GREY: 1,
+  BLACK: 2,
+};
+
+const initializeColor = vertices => {
+  const color = {};
+  for (const vertex of vertices) {
+    color[vertex] = Colors.WHITE;
+  }
+
+  return color;
+};
+
 class Graph {
   constructor(isDirected = false) {
     this.isDirected = isDirected;
@@ -44,11 +61,9 @@ class Graph {
       s += `${this.vertices[i]} ->`;
       const neighbors = this.adjList.get(this.vertices[i]); // {16}
 
-      console.log(neighbors);
-      for (let j = 0; i < neighbors.length; j++) {
+      for (const neighbor of neighbors) {
         // {17}
-        console.log(neighbors[j]);
-        s += `${neighbors[j]}`;
+        s += `${neighbor}`;
       }
 
       s += '\n'; // {18}
@@ -57,6 +72,32 @@ class Graph {
     return s;
   }
 }
+
+const breadthFirstSearch = (graph, startVertex, callback) => {
+  const vertices = graph.getVertices();
+  const adjList = graph.getAdjList();
+  const color = initializeColor(vertices); // {1}
+
+  const queue = new Queue();
+  queue.enqueue(startVertex);
+
+  while (!queue.isEmpty()) {
+    const u = queue.denqueue();
+    const neighbors = adjList.get(u);
+
+    color[u] = Colors.GREY;
+
+    for (const neighbor of neighbors) {
+      if (color[neighbor] === Colors.WHITE) {
+        color[neighbor] = Colors.GREY;
+        queue.enqueue(neighbor);
+      }
+    }
+
+    color[u] = Colors.BLACK;
+    callback && callback(u);
+  }
+};
 
 (() => {
   const graph = new Graph();
