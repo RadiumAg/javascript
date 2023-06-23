@@ -79,6 +79,7 @@ const breadthFirstSearch = (graph, startVertex, callback) => {
   const color = initializeColor(vertices); // {1}
 
   const queue = new Queue();
+
   queue.enqueue(startVertex);
 
   while (!queue.isEmpty()) {
@@ -120,4 +121,5 @@ const breadthFirstSearch = (graph, startVertex, callback) => {
   graph.addEdge('E', 'I');
 
   console.log(graph.toString());
+  breadthFirstSearch(graph, 0);
 })();
