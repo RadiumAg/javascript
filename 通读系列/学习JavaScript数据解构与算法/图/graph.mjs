@@ -122,20 +122,6 @@ const BFS = (graph, startVertex) => {
   }
   const fromVertex = vertices[0];
 
-  for (const toVertex of vertices) {
-    const path = new Stack();
-    for (let v = toVertex; v !== fromVertex; v = predecessors[v]) {
-      path.push(v);
-    }
-
-    path.push(fromVertex);
-    let s = path.pop();
-    while (!path.isEmpty()) {
-      s += `-${path.pop()}`;
-    }
-    console.log(s);
-  }
-
   while (!queue.isEmpty()) {
     const u = queue.denqueue();
     const neighbors = adjList.get(u);
@@ -158,7 +144,42 @@ const BFS = (graph, startVertex) => {
   };
 };
 
+// 深度优先算法
+const depthFirstSearch = (graph, callback) => {
+  // {1]}
+  const vertices = graph.getVertices();
+  const adjList = graph.getAdjList();
+  const color = initializeColor(vertices);
+
+  for (const vertex of vertices) {
+    if (color[vertex] === Colors.WHITE) {
+      depthFirstSearchVisit(vertex, color, adjList, callback);
+    }
+  }
+};
+
+const depthFirstSearchVisit = (u, color, adjList, callback) => {
+  color[u] = Colors.GREY; // {5}
+  if (callback) {
+    // {6}
+    callback(u);
+  }
+
+  const neighbors = adjList.get(u);
+  // {7}
+
+  for (const w of neighbors) {
+    // {8}
+    if (color[w] === Colors.WHITE) {
+      depthFirstSearchVisit(w, color, adjList, callback);
+    }
+  }
+
+  color[u] = Colors.BLACK;
+};
+
 (() => {
+  console.log('start');
   const graph = new Graph();
 
   const myVertices = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
@@ -182,5 +203,30 @@ const BFS = (graph, startVertex) => {
     console.log(`Visited vertex：${value}`);
   });
 
-  console.log(BFS(graph, myVertices[0]));
+  const shortestPathA = BFS(graph, myVertices[0]);
+  console.log(shortestPathA.distances);
+  const fromVertex = myVertices[0];
+  console.log(
+    depthFirstSearch(graph, value => {
+      console.log(`Visited vertex：${value}`);
+    }),
+  );
+
+  for (let i = 1; i < myVertices.length; i++) {
+    const toVertex = myVertices[i];
+    const path = new Stack();
+    for (
+      let v = toVertex;
+      v !== fromVertex;
+      v = shortestPathA.predecessors[v]
+    ) {
+      path.push(v);
+    }
+    path.push(fromVertex);
+    let s = path.pop();
+    while (!path.isEmpty()) {
+      s += ` - ${path.pop()}`;
+    }
+    console.log(s);
+  }
 })();

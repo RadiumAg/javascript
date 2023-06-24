@@ -94,7 +94,7 @@ console.log(stack.toString());
 };
 
 // 进制转换算法
-(() => {
+() => {
   function baseConverter(decNumber, base) {
     const remStack = new Stack();
     const digits = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -121,6 +121,6 @@ console.log(stack.toString());
   console.log(baseConverter(100345, 8));
   console.log(baseConverter(100345, 16));
   console.log(baseConverter(100345, 35));
-})();
+};
 
 export { Stack };

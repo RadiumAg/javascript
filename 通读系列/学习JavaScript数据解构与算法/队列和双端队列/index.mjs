@@ -75,7 +75,7 @@ class Queue {
   console.log(queue.toString());
 })();
 
-(() => {
+() => {
   // 应用
   function hotPotato(elementsList, num) {
     const queue = new Queue();
@@ -105,6 +105,6 @@ class Queue {
   });
 
   console.log(`胜利者：${result.winner}`);
-})();
+};
 
 export { Queue };
