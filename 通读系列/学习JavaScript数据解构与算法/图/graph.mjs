@@ -150,6 +150,8 @@ const depthFirstSearch = (graph, callback) => {
   const vertices = graph.getVertices();
   const adjList = graph.getAdjList();
   const color = initializeColor(vertices);
+  console.log('深度遍历');
+  console.log(vertices);
 
   for (const vertex of vertices) {
     if (color[vertex] === Colors.WHITE) {
@@ -178,8 +180,25 @@ const depthFirstSearchVisit = (u, color, adjList, callback) => {
   color[u] = Colors.BLACK;
 };
 
+const DFS = graph => {
+  const vertices = graph.getVertices();
+  const adjList = graph.getAdjList();
+  const color = initializeColor(vertices);
+
+  const d = {};
+  const f = {};
+  const p = {};
+
+  const time = { count: 0 };
+
+  for (const vertex of vertices) {
+    f[vertex] = 0;
+    d[vertex] = 0;
+    p[vertex] = null;
+  }
+};
+
 (() => {
-  console.log('start');
   const graph = new Graph();
 
   const myVertices = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
