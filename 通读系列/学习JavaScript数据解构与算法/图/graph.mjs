@@ -196,6 +196,33 @@ const DFS = graph => {
     d[vertex] = 0;
     p[vertex] = null;
   }
+
+  for (const vertex of vertices) {
+    if (color[vertex === Colors.WHITE]) {
+      DFSVisit(vertex, color, d, f, p, time, adjList);
+    }
+  }
+
+  return {
+    discovery: d,
+    finished: f,
+    predecessors: p,
+  };
+};
+
+const DFSVisit = (u, color, d, f, p, time, adjList) => {
+  color[u] = Colors.GREY;
+  d[u] = ++time.count;
+  const neighbors = adjList.get;
+
+  for (const neighbor of neighbors) {
+    if (color[neighbor] === Colors.WHITE) {
+      p[neighbor] = u;
+      DFSVisit(neighbor, color, d, f, p, time, adjList);
+    }
+  }
+  color[u] = Colors.BLACK;
+  f[u] = ++time.count;
 };
 
 (() => {
@@ -223,13 +250,12 @@ const DFS = graph => {
   });
 
   const shortestPathA = BFS(graph, myVertices[0]);
-  console.log(shortestPathA.distances);
   const fromVertex = myVertices[0];
-  console.log(
-    depthFirstSearch(graph, value => {
-      console.log(`Visited vertex：${value}`);
-    }),
-  );
+  depthFirstSearch(graph, value => {
+    console.log(`Visited vertex：${value}`);
+  });
+
+  DFS(graph);
 
   for (let i = 1; i < myVertices.length; i++) {
     const toVertex = myVertices[i];
