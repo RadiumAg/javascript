@@ -213,7 +213,7 @@ const DFS = graph => {
 const DFSVisit = (u, color, d, f, p, time, adjList) => {
   color[u] = Colors.GREY;
   d[u] = ++time.count;
-  const neighbors = adjList.get;
+  const neighbors = adjList.get(u);
 
   for (const neighbor of neighbors) {
     if (color[neighbor] === Colors.WHITE) {
@@ -225,7 +225,7 @@ const DFSVisit = (u, color, d, f, p, time, adjList) => {
   f[u] = ++time.count;
 };
 
-(() => {
+() => {
   const graph = new Graph();
 
   const myVertices = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
@@ -274,4 +274,22 @@ const DFSVisit = (u, color, d, f, p, time, adjList) => {
     }
     console.log(s);
   }
+};
+
+(() => {
+  const graph = new Graph();
+  const myVertices = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+  for (const myVertex of myVertices) {
+    graph.addVertex(myVertex);
+  }
+  graph.addEdge('A', 'C');
+  graph.addEdge('A', 'D');
+  graph.addEdge('B', 'D');
+  graph.addEdge('B', 'E');
+  graph.addEdge('C', 'F');
+  graph.addEdge('F', 'E');
+
+  const result = DFS(graph);
+  console.log(graph);
 })();

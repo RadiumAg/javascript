@@ -58,7 +58,7 @@ class Queue {
   }
 }
 
-(() => {
+() => {
   const queue = new Queue();
   console.log(queue.isEmpty());
 
@@ -73,7 +73,7 @@ class Queue {
   queue.denqueue();
 
   console.log(queue.toString());
-})();
+};
 
 () => {
   // 应用
