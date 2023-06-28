@@ -262,9 +262,9 @@ const dijkstra = (graph, src) => {
 const minDistance = (dist, visited) => {
   let min = INF;
   let minIndex = -1;
-  for (let v; v < dist.length; v++) {
-    if (visited[v] === false && dist[v] <= min) {
-      min = dist[v];
+  for (const [v, element] of dist.entries()) {
+    if (visited[v] === false && element <= min) {
+      min = element;
       minIndex = v;
     }
   }
@@ -357,7 +357,7 @@ const minDistance = (dist, visited) => {
   console.log(s);
 };
 
-() => {
+(() => {
   const graph = [
     [0, 2, 4, 0, 0, 0],
     [0, 0, 1, 4, 2, 0],
@@ -368,4 +368,4 @@ const minDistance = (dist, visited) => {
   ];
 
   console.log(dijkstra(graph, 0));
-};
+})();
