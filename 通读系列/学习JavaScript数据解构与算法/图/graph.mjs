@@ -259,6 +259,34 @@ const dijkstra = (graph, src) => {
   return dist;
 };
 
+// Floyd-Warshall算法
+const floydWarshall = graph => {
+  const dist = [];
+  const { length } = graph;
+
+  for (let i = 0; i < length; i++) {
+    dist[i] = [];
+
+    if (i === j) {
+      dist[i][j] = 0;
+    } else if (Number.isFinite(graph[i][j])) {
+      dist[i][j] = Number.POSITIVE_INFINITY;
+    }
+  }
+
+  for (let k = 0; k < length; i++) {
+    for (let i = 0; i < length; i++) {
+      for (let j = 0; j < length; j++) {
+        if (dist[i][k] + dist[k][j] < dist[i][j]) {
+          dist[i][j] = dist[i][k] + dist[k][j];
+        }
+      }
+    }
+  }
+
+  return dist;
+};
+
 const minDistance = (dist, visited) => {
   let min = INF;
   let minIndex = -1;
