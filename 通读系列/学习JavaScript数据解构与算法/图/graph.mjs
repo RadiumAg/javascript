@@ -385,6 +385,9 @@ const minDistance = (dist, visited) => {
   console.log(s);
 };
 
+// Prim算法
+const prim = graph => {};
+
 (() => {
   const graph = [
     [0, 2, 4, 0, 0, 0],
