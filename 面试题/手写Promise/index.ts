@@ -4,7 +4,7 @@ type AnyFun = (...args) => Promise<any> | any;
 function resolvePromise(result: unknown, self: MyPromise, resolve, reject) {
   if (result === self) {
     return reject(
-      new TypeError('Chaining cycle detected for promise #<Promise>')
+      new TypeError('Chaining cycle detected for promise #<Promise>'),
     );
   }
 
@@ -23,16 +23,16 @@ function resolvePromise(result: unknown, self: MyPromise, resolve, reject) {
       try {
         then.call(
           result,
-          (r) => {
+          r => {
             if (called) return;
             called = true;
             resolvePromise(result, r, resolve, reject);
           },
-          (j) => {
+          j => {
             if (called) return;
             called = true;
             reject(j);
-          }
+          },
         );
       } catch (e) {
         if (called) return;
@@ -50,8 +50,8 @@ class MyPromise<T = any> {
   constructor(
     executor: (
       resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void
-    ) => void
+      reject: (reason?: any) => void,
+    ) => void,
   ) {
     try {
       executor(this.resolve, this.reject);
@@ -73,7 +73,7 @@ class MyPromise<T = any> {
       return param;
     }
 
-    return new MyPromise((resolve) => {
+    return new MyPromise(resolve => {
       resolve(param);
     });
   }
@@ -111,9 +111,15 @@ class MyPromise<T = any> {
 
   // then之后返回一个新值
   then(onFulfilled?: (value) => any, onRejected?: (reason?: any) => any) {
-    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : (result) => result;
-    onRejected = typeof onRejected ==='function' ? onFulfilled : (reason) => {throw reason};
-  
+    onFulfilled =
+      typeof onFulfilled === 'function' ? onFulfilled : result => result;
+    onRejected =
+      typeof onRejected === 'function'
+        ? onFulfilled
+        : reason => {
+            throw reason;
+          };
+
     const newPromise = new MyPromise((resolve, reject) => {
       const fullQueueMicrotask = () => {
         queueMicrotask(() => {
@@ -143,7 +149,7 @@ class MyPromise<T = any> {
         rejectedQueueMicrotask();
       } else if (this.PromiseState === 'pending') {
         this.#onFulFilledCallback.push(fullQueueMicrotask);
-       this.#onRejectedCallback.push(rejectedQueueMicrotask);
+        this.#onRejectedCallback.push(rejectedQueueMicrotask);
       }
     });
 
@@ -152,8 +158,8 @@ class MyPromise<T = any> {
 }
 
 MyPromise.deferred = function () {
-  var result = {};
-  result.promise = new MyPromise(function (resolve, reject) {
+  const result = {};
+  result.promise = new MyPromise((resolve, reject) => {
     result.resolve = resolve;
     result.reject = reject;
   });
