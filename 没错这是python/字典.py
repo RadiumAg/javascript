@@ -5,5 +5,8 @@ def 创建和使用字典():
     items =[('name','Gumby') , ('age', 32)]
     d = dict(items)
     print(d)
+    x = {}
+    x[42] = 'Foobar'
+    print(x)
 
-创建和使用字典()
+创建和使用字典() 
