@@ -10,3 +10,8 @@ def 创建和使用字典():
     print(x)
 
 创建和使用字典() 
+
+
+def 将字符串格式设置功能用于字典():
+    phonebook = {'Beth': '9102', 'Alice':'2341', 'Cecil':'3258'}
+    "Cecil's phone number is {Ceil}".format_map(phonebook)
