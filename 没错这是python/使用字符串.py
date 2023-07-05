@@ -17,3 +17,14 @@ def 宽度精度千位分隔符():
     print(repr("{name:10}".format(name="Bob")))
 
 宽度精度千位分隔符()
+
+
+def 一个使用get的简单的数据库():
+    labels ={
+        'phone' :'phone number',
+        'addr' :'address'
+    }
+
+    name = input('Phone number (p) or address (a)?')
+
+一个使用get的简单的数据库()
