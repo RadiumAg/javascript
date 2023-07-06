@@ -1,5 +1,5 @@
 def combine(parameter):
-    print(parameter + globals()["parammeter"])
+    print(parameter + globals().get("parameter"))
 
 
 parameter = "berry"
