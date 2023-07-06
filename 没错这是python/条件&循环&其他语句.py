@@ -10,3 +10,14 @@ def simple():
 
 
 simple()
+
+
+def 三人行():
+    name = 1
+    if name == "a":
+        pass
+
+    exec("print('Hello,world!')")
+
+
+三人行()
