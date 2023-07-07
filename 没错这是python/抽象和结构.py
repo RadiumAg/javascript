@@ -15,3 +15,19 @@ def change_global():
 
 
 change_global()
+
+
+def 作用域():
+    x = 1
+    scope = vars()  # 使用vars返回作用域
+    print(scope)
+
+
+作用域()
+
+
+def foo():
+    def bar():
+        print("Hello, world!")
+
+    bar()
