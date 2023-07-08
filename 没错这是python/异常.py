@@ -1,3 +1,5 @@
+from warnings import warn
+
 def raise语句():
     raise Exception
 
@@ -24,4 +26,4 @@ def 不用提供参数():
 
 
 def 不那么异常的情况():
-    
+    warn("I've got a bad felling a bout this.")
