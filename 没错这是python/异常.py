@@ -27,10 +27,11 @@ def 不用提供参数():
 
 
 def 不那么异常的情况():
-    filterwarnings("ignore")
-    warn("Anyone out there?")
-    filterwarnings("error", UserWarning)
-    warn("Something is very wrong!")
+    filterwarnings("always")  # 把所有警告变成报错
+    warn("This function is really old...", DeprecationWarning)  #
+    filterwarnings("ignore", category=DeprecationWarning)
+    warn("Another deprecation warning.", DeprecationWarning)
+    warn("Somthing else.", UserWarning)
 
 
 不那么异常的情况()
