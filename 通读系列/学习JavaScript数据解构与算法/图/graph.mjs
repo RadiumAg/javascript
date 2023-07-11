@@ -267,10 +267,14 @@ const floydWarshall = graph => {
   for (let i = 0; i < length; i++) {
     dist[i] = [];
 
-    if (i === j) {
-      dist[i][j] = 0;
-    } else if (Number.isFinite(graph[i][j])) {
-      dist[i][j] = Number.POSITIVE_INFINITY;
+    for (let j = 0; j < length; j++) {
+      if (i === j) {
+        dist[i][j] = 0;
+      } else if (Number.isFinite(graph[i][j])) {
+        dist[i][j] = Number.POSITIVE_INFINITY;
+      } else {
+        dist[i][j] = graph[i][j];
+      }
     }
   }
 
