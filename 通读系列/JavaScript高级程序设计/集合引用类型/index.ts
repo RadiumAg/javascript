@@ -381,3 +381,40 @@
   colors.length = 2;
   console.log(colors[2]); // undefined
 })();
+
+// 如果将length设置为大于数组元素数的值，则新添加的元素都将以undefined填充
+(() => {
+  const colors = ['red', 'blue', 'green'];
+  colors.length = 4;
+  console.log(colors[3]); // undefined
+})();
+
+// 使用length向数组末尾添加元素
+(() => {
+  const colors = ['red', 'blue', 'green'];
+  // 创建一个包含3 个字符串数组
+  colors[colors.length] = 'black';
+  // 添加一种颜色
+  colors[colors.length] = 'brown';
+})();
+
+// 检测数组
+(() => {
+  // eslint-disable-next-line unicorn/no-instanceof-array
+  if ([] instanceof Array) {
+    // 操作数组
+  }
+
+  if (Array.isArray([])) {
+  }
+})();
+
+// 迭代器方法
+(() => {
+  // keys(),values(),entries()
+  const a = ['foo', 'bar', 'baz', 'qux'];
+  // 通过Array.from()直接转换为数组实例
+  const aKeys = Array.from(a.keys());
+  const aValues = Array.from(a.values());
+  const aEntries = Array.from(a.entries());
+})();
