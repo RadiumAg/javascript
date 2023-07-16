@@ -257,3 +257,98 @@
     job: personCopy.job,
   } = person);
 })();
+
+// 属性可以是string,number(自动转成string),symbol
+
+// 创建数组
+(() => {
+  // 使用Array构造函数
+  // eslint-disable-next-line @typescript-eslint/no-array-constructor, unicorn/no-new-array
+  new Array(20);
+  // eslint-disable-next-line unicorn/no-new-array, @typescript-eslint/no-array-constructor
+  new Array('red', 'blue', 'green');
+
+  // 省略new
+  // eslint-disable-next-line @typescript-eslint/no-array-constructor, unicorn/no-new-array, prettier/prettier, unicorn/new-for-builtins
+   Array(20);
+  // eslint-disable-next-line unicorn/no-new-array, @typescript-eslint/no-array-constructor, unicorn/new-for-builtins
+  Array('red', 'blue', 'green');
+
+  // 数组字面量
+  const colors = ['red', 'blue', 'green'];
+})();
+
+// Array.from,Array.of
+(() => {
+  console.log(Array.from('Matt')); // 字符串会被拆分成单字母数组
+
+  // 可以使用from()将集合和映射转换成一个新数组
+  const m = new Map().set(1, 2).set(3, 4);
+  const s = new Set().add(1).add(2).add(3).add(4);
+
+  console.log(Array.from(m));
+  console.log(Array.from(s));
+
+  // Array.from对现有数组执行浅复制
+  const a1 = [1, 2, 3, 4];
+  const a2 = Array.from(a1);
+
+  console.log(a1);
+  console.log(a1 === a2); // false
+
+  // 可以使用任何迭代对象
+  const iter = {
+    *[Symbol.iterator]() {
+      yield 1;
+      yield 2;
+      yield 3;
+      yield 4;
+    },
+  };
+
+  console.log(Array.from(iter));
+  // arguments对象可以轻松地转换为数组
+
+  function getArgsArray() {
+    return Array.from(arguments);
+  }
+
+  console.log(getArgsArray(1, 2, 3, 4));
+
+  // from也能转换带有必要属性的自定义对象
+  const arrayLikeObject = {
+    0: 1,
+    1: 2,
+    2: 3,
+    3: 4,
+    length: 4,
+  };
+
+  console.log(Array.from(arrayLikeObject));
+})();
+
+// from 第三个参数
+(() => {
+  const a1 = [1, 2, 3, 4];
+  const a2 = Array.from(a1, x => x ** 2);
+
+  const a3 = Array.from(
+    a1,
+    x => {
+      return x ** this.exponent;
+    },
+    { exponent: 2 },
+  );
+
+  console.log(a2);
+  console.log(a3);
+})();
+
+// 数组空位
+(() => {
+  const options = [, , , , ,]; // 空位元素为undefined
+  console.log(options.length); //5
+  console.log(options);
+
+  const options = [1, , , , 5];
+})();
