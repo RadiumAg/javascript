@@ -350,5 +350,34 @@
   console.log(options.length); //5
   console.log(options);
 
-  const options = [1, , , , 5];
+  const options1 = [1, , , , 5];
+  for (const option of options1) {
+    console.log(option === undefined);
+  }
+
+  const a = Array.from([, , ,]); // 使用ES6的Array.from()创建的包含3 个空位的数组
+  for (const val of a) {
+    console.log(val === undefined);
+  }
+  // true
+  // true
+  // true
+
+  console.log(Array.of(...[, , ,])); // [undefined, undefined, undefined, undefined]
+
+  for (const [index, value] of options.entries()) {
+    console.log(value);
+  }
+  // 1
+  // undefined
+  // undefined
+  // undefined
+  // 5
+})();
+
+// 通过修改length属性，可以从数组末尾删除或添加元素
+(() => {
+  const colors = ['blue', 'blue', 'green'];
+  colors.length = 2;
+  console.log(colors[2]); // undefined
 })();
