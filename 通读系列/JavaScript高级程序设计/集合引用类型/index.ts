@@ -1,71 +1,3 @@
-// fill
-(() => {
-  const zeroes = [0, 0, 0, 0, 0];
-  zeroes.fill(5);
-  zeroes.fill(0);
-  zeroes.fill(7, 1, 3);
-
-  // fill()静默忽略超出数组边界，零长度及方向相反的索引范围
-  console.log(zeroes.fill(1, -10, -6));
-  console.log(zeroes.fill(1, 10, 15));
-  console.log(zeroes.fill(2, 4, 2));
-  console.log(zeroes.fill(4, 3, 10));
-})();
-
-// copyWithin
-(() => {
-  console.log('copyWithin');
-
-  let ints: number[] = [],
-    reset = () => (ints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-
-  reset();
-  // 从ints中复制索引0 开始的内容，插入到索引5 开始的位置
-  // 在源索引活目标索引达到数组边界时停止
-
-  ints.copyWithin(5);
-  console.log(ints);
-  reset();
-
-  // 从ints中复制索引5开始的内容，插入到索引0开始的位置
-  ints.copyWithin(0, 5);
-  console.log(ints);
-  reset();
-
-  // 从ints中复制索引0 开始到索引3 结束的内容
-  // 插入到索引4 开始的位置
-  ints.copyWithin(4, 0, 3);
-  console.log(ints);
-  reset();
-})();
-
-(() => {
-  const person1 = {
-    toLocaleString() {
-      return 'Nikolaos';
-    },
-    toString() {
-      return 'Nicholas';
-    },
-  };
-
-  const person2 = {
-    toLocaleString() {
-      return 'Grigorios';
-    },
-    toString() {
-      return 'Greg';
-    },
-  };
-
-  const people = [person1, person2];
-
-  // conact
-  const colors = ['red', 'green', 'blue'];
-  const colors2 = colors.concat('yellow', ['black', 'brown']);
-  // console.log(colors2);
-})();
-
 () => {
   // 迭代器模式
   class Counter {
@@ -438,4 +370,74 @@
   const aKeys = Array.from(a.keys());
   const aValues = Array.from(a.values());
   const aEntries = Array.from(a.entries());
+})();
+
+// fill
+(() => {
+  const zeroes = [0, 0, 0, 0, 0];
+  zeroes.fill(5);
+  zeroes.fill(0);
+  zeroes.fill(7, 1, 3);
+
+  // fill()静默忽略超出数组边界，零长度及方向相反的索引范围
+  console.log(zeroes.fill(1, -10, -6));
+  console.log(zeroes.fill(1, 10, 15));
+  console.log(zeroes.fill(2, 4, 2));
+  console.log(zeroes.fill(4, 3, 10));
+})();
+
+// copyWithin
+(() => {
+  console.log('copyWithin');
+
+  let ints: number[] = [],
+    reset = () => (ints = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+  reset();
+  // 从ints中复制索引0 开始的内容，插入到索引5 开始的位置
+  // 在源索引活目标索引达到数组边界时停止
+
+  ints.copyWithin(5);
+  console.log(ints);
+  reset();
+
+  // 从ints中复制索引5开始的内容，插入到索引0开始的位置
+  ints.copyWithin(0, 5);
+  console.log(ints);
+  reset();
+
+  // 从ints中复制索引0 开始到索引3 结束的内容
+  // 插入到索引4 开始的位置
+  ints.copyWithin(4, 0, 3);
+  console.log(ints);
+  reset();
+})();
+
+// 转换方法
+// 所有对象的都有toLocaleString(),toString(),valueOf方法
+(() => {
+  const person1 = {
+    toLocaleString() {
+      return 'Nikolaos';
+    },
+    toString() {
+      return 'Nicholas';
+    },
+  };
+
+  const person2 = {
+    toLocaleString() {
+      return 'Grigorios';
+    },
+    toString() {
+      return 'Greg';
+    },
+  };
+
+  const people = [person1, person2];
+
+  // conact
+  const colors = ['red', 'green', 'blue'];
+  const colors2 = colors.concat('yellow', ['black', 'brown']);
+  console.log(colors2);
 })();
