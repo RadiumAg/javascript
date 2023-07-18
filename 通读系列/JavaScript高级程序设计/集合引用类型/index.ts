@@ -445,3 +445,47 @@
 })();
 
 // 栈方法
+
+(() => {
+  const colors: string[] = [];
+  let count = colors.push('red', 'green');
+  console.log(count);
+
+  count = colors.push('black');
+  console.log(count);
+  const item = colors.pop();
+  console.log(item);
+})();
+
+(() => {
+  const colors = ['red', 'blue'];
+  colors.push('brown');
+  colors[3] = 'black';
+  console.log(colors.length);
+  const item = colors.pop();
+  console.log(item);
+})();
+
+// shift() push()
+(() => {
+  const colors: string[] = [];
+  const count = colors.push('red', 'green');
+  console.log(count);
+  const item = colors.shift();
+  console.log(item);
+  console.log(colors.length);
+})();
+
+// unshift() pop()
+(() => {
+  const colors: string[] = [];
+  let count = colors.unshift('red', 'green');
+  console.log(count);
+
+  count = colors.unshift('black');
+  console.log(count);
+
+  const item = colors.pop();
+  console.log(item);
+  console.log(colors.length);
+})();
