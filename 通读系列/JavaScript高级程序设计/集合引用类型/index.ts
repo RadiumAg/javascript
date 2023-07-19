@@ -489,3 +489,25 @@
   console.log(item);
   console.log(colors.length);
 })();
+
+// 排序方法
+(() => {
+  const values = [1, 2, 3, 4, 5];
+  values.reverse();
+  console.log(values);
+})();
+
+// sort
+(() => {
+  const values = [0, 1, 5, 10, 15];
+  // 第一个参数应该排在第二个参数前面，就返回负值，如果相等，就返回0，如果第一个参数应该排在第二个参数后面，就返回正值
+  values.sort((value1, value2) => {
+    if (value1 < value2) {
+      return -1;
+    } else if (value1 > value2) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+})();
