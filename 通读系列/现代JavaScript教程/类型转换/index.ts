@@ -17,6 +17,7 @@
 
 // 布尔值转换
 (() => {
+  // truthy falsely
   // 直观上"空"的值（如0、空字符串、null、undefined和、NaN）将变为false
   // 其它值变成true
   console.log(Boolean(1)); // true
