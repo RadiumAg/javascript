@@ -14,3 +14,14 @@
 
   console.log(age);
 })();
+
+// 布尔值转换
+(() => {
+  // 直观上"空"的值（如0、空字符串、null、undefined和、NaN）将变为false
+  // 其它值变成true
+  console.log(Boolean(1)); // true
+  console.log(Boolean(0)); // false
+
+  console.log(Boolean('hello')); // true
+  console.log(Boolean('')); // false
+})();
