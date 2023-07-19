@@ -437,11 +437,6 @@
   const people = [person1, person2];
   console.log(people.toString()); // 调用每一个成员的toString
   console.log(people.toLocaleString()); // 调用每一个成员的toLocaleString
-
-  // conact
-  const colors = ['red', 'green', 'blue'];
-  const colors2 = colors.concat('yellow', ['black', 'brown']);
-  console.log(colors2);
 })();
 
 // 栈方法
@@ -510,4 +505,13 @@
       return 0;
     }
   });
+
+  values.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+})();
+
+(() => {
+  // conact
+  const colors = ['red', 'green', 'blue'];
+  const colors2 = colors.concat('yellow', ['black', 'brown']);
+  console.log(colors2);
 })();
