@@ -28,6 +28,7 @@
     console.log(i);
   }
 };
+
 // 多次迭代
 () => {
   class Counter {
@@ -485,7 +486,6 @@
   console.log(colors.length);
 };
 
-<<<<<<< Updated upstream
 // 排序方法
 (() => {
   const values = [1, 2, 3, 4, 5];
@@ -511,9 +511,6 @@
 })();
 
 () => {
-=======
-(() => {
->>>>>>> Stashed changes
   // conact
   const colors = ['red', 'green', 'blue'];
   const colors2 = colors.concat('yellow', ['black', 'brown']); // 自动打平 array
@@ -533,7 +530,6 @@
   console.log(colors.concat(newColors));
   console.log(colors.concat(moreNewColors));
   // 强制打平类数组对象
-<<<<<<< Updated upstream
 };
 
 // slice
@@ -588,9 +584,5 @@
   ];
 
   console.log(people.find((element, index, array) => element.age < 28));
-  console.log.log(
-    people.findIndex((element, index, array) => element.age < 28),
-  );
-=======
->>>>>>> Stashed changes
+  console.log(people.findIndex((element, index, array) => element.age < 28));
 })();
