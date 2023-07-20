@@ -568,3 +568,22 @@
   console.log(people.includes(person));
   console.log(morePeople.includes(person));
 })();
+
+// 断言函数
+(() => {
+  const people = [
+    {
+      name: 'Matt',
+      age: 27,
+    },
+    {
+      name: 'Nicholas',
+      age: 27,
+    },
+  ];
+
+  console.log(people.find((element, index, array) => element.age < 28));
+  console.log.log(
+    people.findIndex((element, index, array) => element.age < 28),
+  );
+})();
