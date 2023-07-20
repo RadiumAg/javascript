@@ -96,7 +96,7 @@
 };
 
 // 生成器
-(() => {
+() => {
   function* generatorFn() {}
   const foo = {
     *generatorFn() {},
@@ -104,10 +104,10 @@
   const g = generatorFn();
   console.log(g[Symbol.iterator]());
   console.log(g === g[Symbol.iterator]());
-})();
+};
 
 // 产生可迭代对象
-(() => {
+() => {
   function* generatorFn() {
     yield* [1, 2, 3];
     yield* [3, 4];
@@ -118,10 +118,10 @@
   for (const x of genatorObject) {
     console.log(x);
   }
-})();
+};
 
 // Object.defineProperty
-(() => {
+() => {
   const person: any = {};
   Object.defineProperty(person, 'name', {
     writable: false,
@@ -130,11 +130,11 @@
   console.log(person.name);
   person.name = 'Greg';
   console.log(person.name);
-})();
+};
 
 // 设置属性访问器
 
-(() => {
+() => {
   const book = {
     year_: 2017,
     edition: 1,
@@ -153,9 +153,9 @@
   });
   book.year = 2018;
   console.log(book.edition);
-})();
+};
 
-(() => {
+() => {
   let dest, src, result;
   dest = {};
   src = { id: 'src' };
@@ -169,26 +169,26 @@
       console.log(`Invoked dest setter with param ${val}`);
     },
   };
-})();
+};
 
 // Object.is 考虑边界情况
-(() => {
+() => {
   console.log(Object.is(+0, -0)); // false
   console.log(Object.is(+0, 0)); // false
   console.log(Object.is(-0, 0)); // false
   console.log(Object.is(Number.NaN, Number.NaN));
-})();
+};
 
 // 解构
-(() => {
+() => {
   // 内部调用 toObject
   const { length } = 'foobar';
   console.log(length);
   const { constructor } = 4;
-})();
+};
 
 // 嵌套结构
-(() => {
+() => {
   const person = {
     name: 'Matt',
     age: 27,
@@ -209,12 +209,12 @@
     age: personCopy.age,
     job: personCopy.job,
   } = person);
-})();
+};
 
 // 属性可以是string,number(自动转成string),symbol
 
 // 创建数组
-(() => {
+() => {
   // 使用Array构造函数
   // eslint-disable-next-line @typescript-eslint/no-array-constructor, unicorn/no-new-array
   new Array(20);
@@ -229,10 +229,10 @@
 
   // 数组字面量
   const colors = ['red', 'blue', 'green'];
-})();
+};
 
 // Array.from,Array.of
-(() => {
+() => {
   console.log(Array.from('Matt')); // 字符串会被拆分成单字母数组
 
   // 可以使用from()将集合和映射转换成一个新数组
@@ -278,10 +278,10 @@
   };
 
   console.log(Array.from(arrayLikeObject));
-})();
+};
 
 // from 第三个参数
-(() => {
+() => {
   const a1 = [1, 2, 3, 4];
   const a2 = Array.from(a1, x => x ** 2);
 
@@ -295,10 +295,10 @@
 
   console.log(a2);
   console.log(a3);
-})();
+};
 
 // 数组空位
-(() => {
+() => {
   const options = [, , , , ,]; // 空位元素为undefined
   console.log(options.length); //5
   console.log(options);
@@ -326,33 +326,33 @@
   // undefined
   // undefined
   // 5
-})();
+};
 
 // 通过修改length属性，可以从数组末尾删除或添加元素
-(() => {
+() => {
   const colors = ['blue', 'blue', 'green'];
   colors.length = 2;
   console.log(colors[2]); // undefined
-})();
+};
 
 // 如果将length设置为大于数组元素数的值，则新添加的元素都将以undefined填充
-(() => {
+() => {
   const colors = ['red', 'blue', 'green'];
   colors.length = 4;
   console.log(colors[3]); // undefined
-})();
+};
 
 // 使用length向数组末尾添加元素
-(() => {
+() => {
   const colors = ['red', 'blue', 'green'];
   // 创建一个包含3 个字符串数组
   colors[colors.length] = 'black';
   // 添加一种颜色
   colors[colors.length] = 'brown';
-})();
+};
 
 // 检测数组
-(() => {
+() => {
   // eslint-disable-next-line unicorn/no-instanceof-array
   if ([] instanceof Array) {
     // 操作数组
@@ -360,20 +360,20 @@
 
   if (Array.isArray([])) {
   }
-})();
+};
 
 // 迭代器方法
-(() => {
+() => {
   // keys(),values(),entries()
   const a = ['foo', 'bar', 'baz', 'qux'];
   // 通过Array.from()直接转换为数组实例
   const aKeys = Array.from(a.keys());
   const aValues = Array.from(a.values());
   const aEntries = Array.from(a.entries());
-})();
+};
 
 // fill
-(() => {
+() => {
   const zeroes = [0, 0, 0, 0, 0];
   zeroes.fill(5);
   zeroes.fill(0);
@@ -384,10 +384,10 @@
   console.log(zeroes.fill(1, 10, 15));
   console.log(zeroes.fill(2, 4, 2));
   console.log(zeroes.fill(4, 3, 10));
-})();
+};
 
 // copyWithin
-(() => {
+() => {
   console.log('copyWithin');
 
   let ints: number[] = [],
@@ -411,11 +411,11 @@
   ints.copyWithin(4, 0, 3);
   console.log(ints);
   reset();
-})();
+};
 
 // 转换方法
 // 所有对象的都有toLocaleString(),toString(),valueOf方法
-(() => {
+() => {
   const person1 = {
     toLocaleString() {
       return 'Nikolaos';
@@ -437,11 +437,11 @@
   const people = [person1, person2];
   console.log(people.toString()); // 调用每一个成员的toString
   console.log(people.toLocaleString()); // 调用每一个成员的toLocaleString
-})();
+};
 
 // 栈方法
 
-(() => {
+() => {
   const colors: string[] = [];
   let count = colors.push('red', 'green');
   console.log(count);
@@ -450,29 +450,29 @@
   console.log(count);
   const item = colors.pop();
   console.log(item);
-})();
+};
 
-(() => {
+() => {
   const colors = ['red', 'blue'];
   colors.push('brown');
   colors[3] = 'black';
   console.log(colors.length);
   const item = colors.pop();
   console.log(item);
-})();
+};
 
 // shift() push()
-(() => {
+() => {
   const colors: string[] = [];
   const count = colors.push('red', 'green');
   console.log(count);
   const item = colors.shift();
   console.log(item);
   console.log(colors.length);
-})();
+};
 
 // unshift() pop()
-(() => {
+() => {
   const colors: string[] = [];
   let count = colors.unshift('red', 'green');
   console.log(count);
@@ -483,7 +483,7 @@
   const item = colors.pop();
   console.log(item);
   console.log(colors.length);
-})();
+};
 
 // 排序方法
 (() => {
@@ -509,9 +509,62 @@
   values.sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
 })();
 
-(() => {
+() => {
   // conact
   const colors = ['red', 'green', 'blue'];
-  const colors2 = colors.concat('yellow', ['black', 'brown']);
+  const colors2 = colors.concat('yellow', ['black', 'brown']); // 自动打平 array
+  const moreNewColors = {
+    [Symbol.isConcatSpreadable]: true,
+    length: 2,
+    0: 'pink',
+    1: 'cyan',
+  };
+  console.log(colors);
   console.log(colors2);
+
+  // Symbol.isConcatSpreadable 阻止concat()打平数组
+  const newColors = ['black', 'brown'];
+
+  newColors[Symbol.isConcatSpreadable] = false;
+  console.log(colors.concat(newColors));
+  console.log(colors.concat(moreNewColors));
+  // 强制打平类数组对象
+};
+
+// slice
+() => {
+  // 如果只有一个参数，则slice会返回该索引到数组末尾的所有元素
+  const colors = ['red', 'green', 'blue', 'yellow', 'purple'];
+  console.log(colors.slice(1));
+  console.log(colors.slice(1, 4));
+};
+
+// splice
+(() => {
+  const colors = ['red', 'green', 'blue'];
+  const removed = colors.splice(0, 1);
+  console.log(colors);
+  console.log(removed);
+
+  colors.splice(1, 0, 'yellow', 'orange');
+  console.log(colors);
+  colors.splice(1, 1, 'red', 'purple');
+  console.log(colors);
+})();
+
+// 严格相等
+(() => {
+  const numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+
+  console.log(numbers.indexOf(4));
+  console.log(numbers.lastIndexOf(4));
+  console.log(numbers.indexOf(4, 4));
+  console.log(numbers.lastIndexOf(4, 4));
+  console.log(numbers.includes(4, 7));
+  const person = { name: 'Nicholas' };
+  const people = [{ name: 'Nicholas' }];
+  const morePeople = [person];
+  console.log(morePeople.indexOf(person));
+  console.log(people.includes(person));
+  console.log(morePeople.includes(person));
 })();
