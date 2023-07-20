@@ -74,4 +74,4 @@ result = value1 && value2 && value3
 
 2. `null` 表示的是未知值。
 
-3. `undfined` 表示未赋值。
+3. `undefined` 表示未赋值。
