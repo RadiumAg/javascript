@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+             "name": "esno",
+            "type":"node",
+            "request": "launch",
+            "args": [
+                "node ./node_modules/esno/esno.js"
+            ],
+            "program": "${file}"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "启动程序",
