@@ -11,6 +11,7 @@
             "args": [
                 "node ./node_modules/esno/esno.js"
             ],
+            "console":"integratedTerminal" ,
             "program": "${file}"
         },
         {

@@ -69,7 +69,7 @@
 
     get fullName() {
       console.log(this);
-      return `{this.name} ${this.surname}`;
+      return `￥{this.name} ${this.surname}`;
     },
   };
 
@@ -78,10 +78,39 @@
     isAdmin: true,
   };
 
-  console.log(admin.fullName);
+  //   console.log(admin.fullName);
 
   admin.fullName = 'Alice Cooper';
 
-  console.log(admin.fullName); // 此时this是admin
+  admin.fullName; // 此时this是admin
   //   console.log(user.fullName);
+})();
+
+// for...in 循环
+
+(() => {
+  const animal = {
+    eats: true,
+  };
+
+  const rabbit = {
+    jumps: true,
+    __proto__: animal,
+  };
+
+  for (const prop in rabbit) {
+    console.log(prop); //
+  }
+
+  for (const prop in rabbit) {
+    const isOwn = rabbit.hasOwnProperty(prop);
+
+    if (isOwn) {
+      console.log(`Our：${prop}`);
+    } else {
+      console.log(`Inherited：{prop}`);
+    }
+  }
+
+  // for in只能列出可枚举属性，所以Object.prototype的属性都是不可枚举的
 })();
