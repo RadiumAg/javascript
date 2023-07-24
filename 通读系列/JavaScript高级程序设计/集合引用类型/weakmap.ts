@@ -30,3 +30,18 @@
 
   console.log(wm3.get(stringKey));
 })();
+
+// 使用set再添加键值对
+// 可以使用get和has查询
+(() => {
+  const vm = new WeakMap();
+  const key1 = { id: 1 },
+    key2 = { id: 2 };
+
+  console.log(vm.has(key1));
+  console.log(vm.get(key1));
+
+  vm.set(key1, 'Matt').set(key2, 'Frisbie');
+  console.log(vm.has(key1));
+  console.log(vm.get(key1));
+})();
