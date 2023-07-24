@@ -15,3 +15,39 @@
 })();
 
 // defineProperty 更新标识符
+
+(() => {
+  const user = {};
+
+  Object.defineProperty(user, 'name', {
+    value: 'John',
+  });
+
+  const descriptor = Object.getOwnPropertyDescriptor(user, 'name');
+
+  console.log(descriptor);
+})();
+
+// 只读writable
+(() => {
+  const user = {
+    name: 'John',
+  };
+
+  Object.defineProperty(user, 'name', { writable: false });
+  user.name = 'Pete';
+})();
+
+// 不可枚举enumerable
+(() => {
+  const user = {
+    name: 'John',
+    toString() {
+      return this.name;
+    },
+  };
+
+  Object.defineProperty(user, 'toString', {
+    enumerable: false,
+  });
+})();
