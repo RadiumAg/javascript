@@ -50,4 +50,9 @@
   Object.defineProperty(user, 'toString', {
     enumerable: false,
   });
+
+  for (const key in user) console.log(key); //name
 })();
+
+// 单行道 configurable
+(() => {})();
