@@ -30,3 +30,41 @@
 
   console.log(wm3.get(stringKey));
 })();
+
+(() => {
+  const User = (() => {
+    const vm = new WeakMap();
+
+    class User {
+      constructor(id) {
+        this.idProperty = Symbol('id');
+        this.setId(id);
+      }
+
+      setPrivate(property, value) {
+        const privateMembers = vm.get(this) || {};
+        privateMembers[property] = value;
+        vm.set(this, privateMembers);
+      }
+
+      getPrivate(property) {
+        return vm.get(this)[property];
+      }
+
+      setId(id) {
+        this.setPrivate(this.idProperty, id);
+      }
+
+      getId(id) {
+        return this.getPrivate(this.idProperty);
+      }
+    }
+
+    return User;
+  })();
+
+  const user = new User(123);
+  console.log(user.getId());
+  user.setId(456);
+  console.log(user.getId());
+})();
