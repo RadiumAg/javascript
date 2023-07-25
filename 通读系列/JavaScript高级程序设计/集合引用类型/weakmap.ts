@@ -31,6 +31,22 @@
   console.log(wm3.get(stringKey));
 })();
 
+// 使用set再添加键值对
+// 可以使用get和has查询
+(() => {
+  const vm = new WeakMap();
+  const key1 = { id: 1 },
+    key2 = { id: 2 };
+
+  console.log(vm.has(key1));
+  console.log(vm.get(key1));
+
+  vm.set(key1, 'Matt').set(key2, 'Frisbie');
+  console.log(vm.has(key1));
+  console.log(vm.get(key1));
+})();
+
+// 私有变量
 (() => {
   const User = (() => {
     const vm = new WeakMap();
@@ -55,7 +71,7 @@
         this.setPrivate(this.idProperty, id);
       }
 
-      getId(id) {
+      getId() {
         return this.getPrivate(this.idProperty);
       }
     }
@@ -69,17 +85,4 @@
   console.log(user.getId());
 })();
 
-// 使用set再添加键值对
-// 可以使用get和has查询
-(() => {
-  const vm = new WeakMap();
-  const key1 = { id: 1 },
-    key2 = { id: 2 };
-
-  console.log(vm.has(key1));
-  console.log(vm.get(key1));
-
-  vm.set(key1, 'Matt').set(key2, 'Frisbie');
-  console.log(vm.has(key1));
-  console.log(vm.get(key1));
-})();
+// DOM节点元数据
