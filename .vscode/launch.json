@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-             "name": "esno",
-            "type":"node",
+            "name": "esno",
+            "type": "node",
             "request": "launch",
             "args": [
-                "node ./node_modules/esno/esno.js"
+                "./node_modules/esno/esno.js",
+                "${file}"
             ],
-            "console":"integratedTerminal" ,
-            "program": "${file}"
+            "console": "integratedTerminal",
         },
         {
             "type": "node",
