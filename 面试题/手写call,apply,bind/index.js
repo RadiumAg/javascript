@@ -1,25 +1,22 @@
 // call
-/* eslint-disable no-extend-native */
 (() => {
   Function.prototype._call = function (context, ...args) {
     let result = null;
-    context = Object(context) || window;
+    context = new Object(context) || window;
     context.fn = this;
     result = context.fn(...args);
     Reflect.deleteProperty(context, 'fn');
     return result;
   };
-  function a(a, b) {
-  }
+  function a(a, b) {}
   a._call({}, 1, 2, 3);
 })();
 
 // apply
-/* eslint-disable no-extend-native */
 (() => {
   Function.prototype._apply = function (context, args = []) {
     let result = null;
-    context = Object(context) || window;
+    context = new Object(context) || window;
     context.fn = this;
     result = context.fn(...args);
     Reflect.deleteProperty(context, 'fn');
@@ -34,7 +31,6 @@
 })();
 
 // bind
-/* eslint-disable no-extend-native */
 (() => {
   function a() {
     console.log(this);
@@ -46,7 +42,7 @@
 
   Function.prototype._bind = function (context, ...args) {
     const _this = this;
-    context = Object(context) || window;
+    context = new Object(context) || window;
     context.fn = this;
     return function F(...otherArgs) {
       let result = null;
