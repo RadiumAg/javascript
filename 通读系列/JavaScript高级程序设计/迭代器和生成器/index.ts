@@ -1,6 +1,5 @@
 // 可迭代对象（iterable）
 // iterator 接口，可迭代协议
-
 (() => {
   const num = 1;
   const obj = {};
@@ -53,3 +52,70 @@
 })();
 
 // next方法返回的迭代器对象IteratorResult包含两个属性:done和value。done是一个布尔值
+(() => {
+  const arr = ['foo', 'bar'];
+  // 迭代器工厂函数
+  console.log(arr[Symbol.iterator]);
+
+  // 迭代器
+  const iter = arr[Symbol.iterator]();
+  console.log(iter);
+
+  // 执行迭代
+  console.log(iter.next());
+  console.log(iter.next());
+  console.log(iter.next());
+})();
+
+// 如果可迭代对象在迭代期间被修改了，那么迭代器也会反应相应的变化
+(() => {
+  const arr = ['foo', 'baz'];
+  const iter = arr[Symbol.iterator]();
+  console.log(iter.next());
+
+  // 在数组中间插入值
+  arr.splice(1, 0, 'bar');
+
+  console.log(iter.next());
+  console.log(iter.next());
+  console.log(iter.next());
+})();
+
+// 自定义迭代器
+(() => {
+  class Counter {
+    private limit: number;
+
+    constructor(limit: number) {
+      this.limit = limit;
+    }
+
+    [Symbol.iterator]() {
+      let count = 1;
+      const limit = this.limit;
+
+      return {
+        next() {
+          if (count <= limit) {
+            return { done: false, value: count++ };
+          } else {
+            return { done: true, value: undefined };
+          }
+        },
+      };
+    }
+  }
+
+  const counter = new Counter(10);
+
+  for (const i of counter) {
+    console.log(i);
+  }
+
+  for (const i of counter) {
+    console.log(i);
+  }
+})();
+
+// 提前终止迭代器
+() => {};
