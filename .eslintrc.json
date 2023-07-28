@@ -1,5 +1,3 @@
 {
-    "extends": [
-        "@raag/eslint-config"
-    ]
+  "extends": ["@raag/eslint-config-ts"]
 }

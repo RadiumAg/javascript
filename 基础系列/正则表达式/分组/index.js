@@ -6,7 +6,7 @@
 
 // 反向引用
 (() => {
-  const regex1 = /\d{4}(-|\/|\.)\d{2}\1\d{2}/;
+  const regex1 = /\d{4}([./-])\d{2}\1\d{2}/;
   const string1 = '2017-06-12';
   const string2 = '2017/06/12';
   const string3 = '2017.06.12';

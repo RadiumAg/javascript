@@ -23,12 +23,14 @@
 // console.log(a);
 
 // eslint-disable-next-line camelcase
-function quick_sort (array = [], low = 0, high = array.length - 1) {
+function quick_sort(array = [], low = 0, high = array.length - 1) {
   console.log(low, high);
   if (low >= high) {
     return;
   }
-  let i = low; let j = high; const x = array[i];
+  let i = low;
+  let j = high;
+  const x = array[i];
   // 从右往左
   while (i < j) {
     while (i < j) {

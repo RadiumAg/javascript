@@ -1,13 +1,13 @@
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
-describe('beforeEach示例', function() {
-  var foo = false;
+describe('beforeEach示例', () => {
+  let foo = false;
 
-  beforeEach(function() {
+  beforeEach(() => {
     foo = true;
   });
 
-  it('修改全局变量应该成功', function() {
+  it('修改全局变量应该成功', () => {
     expect(foo).to.be.equal(true);
   });
 });

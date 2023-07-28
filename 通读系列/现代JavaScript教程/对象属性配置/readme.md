@@ -5,7 +5,7 @@
 1.构造函数
 
 ```ts
- const user = new Object();    
+ const user = new Object();
 ```
 
 2.字面量
@@ -17,10 +17,10 @@ const user = {};
 **尾随(trailing)或悬挂(hanging)逗号**
 
 ```ts
-let user = {
+const user = {
      name :'John',
      age : 30,
-}
+};
 ```
 
 3.对象的属性如果是整数，那就会产生排序。如果属性名不是整数，那它们就按照创建时的顺序来排序。
@@ -38,7 +38,7 @@ let user = {
 symbol不会自动转为换字符串，除非`显式 toString`。
 
 ```ts
-''+Symbol('id') // Cannot convert a Symbol value to a string
+`${Symbol('id')}`; // Cannot convert a Symbol value to a string
 ```
 
 ###### 

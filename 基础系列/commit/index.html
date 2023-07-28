@@ -401,181 +401,173 @@
 	<!-- <script src="jquery.particleground.min.js"></script> -->
 	<script>
 		// 建立连接
-		const socket = io.connect("/");
- 
+		const socket = io.connect('/');
+
 		// 编号
 		let id = 0;
- 
+
 		// 允许输入的最大字数
 		const maxInput = 30;
- 
+
 		// 用户头像
 		const userIcon = 'https://i.niupic.com/images/2018/08/10/5yxS.jpg';
- 
+
 		// 机器人头像
-		const robotIcon = 'http://file06.16sucai.com/2016/0921/2b04bfeb965677fe8c2d5a4dbd292478.jpg';
- 
+		const robotIcon =
+  'http://file06.16sucai.com/2016/0921/2b04bfeb965677fe8c2d5a4dbd292478.jpg';
+
 		// 用户姓名
 		let name = '';
- 
+
 		getName();
- 
+
 		// 如果监听到socket消息，那么执行该回调函数，并得到广播消息
 		// 此处的message参数是后台广播的内容
-		socket.on("message", function (message) {
-			console.log(message)
-			let html = '';
-			if (name === message.name) {
-				html =
-					'<div class="message-self"><div class="message-container"><div class="message-content"><div class="speaker-name">' +
-					message.name + '</div><div class="message">' + message.msg +
-					'</div></div><div class="icon"><img src="' + userIcon + '" /></div></div></div>';
-			} else {
-				html = '<div class="message-other"><div class="message-container"><div class="icon"><img src="' +
-					userIcon + '" /></div><div class="message-content"><div class="speaker-name">' + message.name +
-					'</div><div class="message">' + message.msg + '</div></div></div></div>';
-			}
-			$(".chat-container").append(html);
-			scrollToBottom();
+		socket.on('message', message => {
+		  console.log(message);
+		  let html = '';
+		  if (name === message.name) {
+		    html = `<div class="message-self"><div class="message-container"><div class="message-content"><div class="speaker-name">${message.name}</div><div class="message">${message.msg}</div></div><div class="icon"><img src="${userIcon}" /></div></div></div>`;
+		  } else {
+		    html = `<div class="message-other"><div class="message-container"><div class="icon"><img src="${userIcon}" /></div><div class="message-content"><div class="speaker-name">${message.name}</div><div class="message">${message.msg}</div></div></div></div>`;
+		  }
+		  $('.chat-container').append(html);
+		  scrollToBottom();
 		});
- 
+
 		// 接收到系统通知
-		socket.on("joinNoticeSelf", function (message) {
-			$("#count").text(message.count);
-			id = message.id;
-			$(".id").text(message.id + '号');
+		socket.on('joinNoticeSelf', message => {
+		  $('#count').text(message.count);
+		  id = message.id;
+		  $('.id').text(`${message.id}号`);
 		});
- 
+
 		// 接收到系统通知
-		socket.on("joinNoticeOther", function (message) {
-			console.log("joinNoticeOther：");
-			console.log(message);
-			$("#count").text(message.count);
-			const msg = {
-				name: message.name,
-				action: message.action
-			}
-			notify(msg);
+		socket.on('joinNoticeOther', message => {
+		  console.log('joinNoticeOther：');
+		  console.log(message);
+		  $('#count').text(message.count);
+		  const msg = {
+		    name: message.name,
+		    action: message.action,
+		  };
+		  notify(msg);
 		});
- 
+
 		// 断开连接回调事件
-		socket.on("disconnection", function (message) {
-			console.log(message);
-			$("#count").text(message.count);
-			const notifyMessage = {
-				name: message.name,
-				action: "退出了群聊"
-			};
-			notify(notifyMessage);
+		socket.on('disconnection', message => {
+		  console.log(message);
+		  $('#count').text(message.count);
+		  const notifyMessage = {
+		    name: message.name,
+		    action: '退出了群聊',
+		  };
+		  notify(notifyMessage);
 		});
- 
-		document.onkeydown = function (event) {
-			var e = event || window.event || arguments.callee.caller.arguments[0];
-			if (e && e.keyCode === 13) { // enter 键
-				send();
-			}
-		};
- 
+
+		document.addEventListener('keydown', function (event) {
+  const e = event || window.event || arguments.callee.caller.arguments[0];
+  if (e && e.keyCode === 13) {
+    // enter 键
+		send();
+  }
+});
+
 		/**
 		 * 发送系统通知
-		 * 
+		 *
 		 * @param {Object} message
 		 */
 		function notify(message) {
-			if (message.name && message.action) {
-				const notify = '<div class="notify-container"><div class="notify"><span class="notify-name">' + message.name +
-					'</span>' + message.action + '</div></div>';
-				$(".chat-container").append(notify);
-				scrollToBottom();
-			}
+		  if (message.name && message.action) {
+		    const notify = `<div class="notify-container"><div class="notify"><span class="notify-name">${message.name}</span>${message.action}</div></div>`;
+		    $('.chat-container').append(notify);
+		    scrollToBottom();
+		  }
 		}
- 
+
 		/**
 		 * 固定滚动条到底部
 		 */
 		function scrollToBottom() {
-			$(".chat-container").scrollTop($(".chat-container")[0].scrollHeight);
+		  $('.chat-container').scrollTop($('.chat-container')[0].scrollHeight);
 		}
- 
+
 		/**
 		 * 获取姓名
 		 */
 		function getName() {
-			const str = prompt("请输入你的聊天昵称", "");
-			if (str) {
-				name = str;
-				console.log(name)
-				$(".self-container").text(str);
-				const message = {
-					name: name
-				}
-				socket.emit("join", message);
-			} else {
-				getName();
-			}
+		  const str = prompt('请输入你的聊天昵称', '');
+		  if (str) {
+		    name = str;
+		    console.log(name);
+		    $('.self-container').text(str);
+		    const message = {
+		      name,
+		    };
+		    socket.emit('join', message);
+		  } else {
+		    getName();
+		  }
 		}
- 
+
 		/**
 		 * 输入消息
 		 */
 		function inputMessage() {
-			const msg = $("#msg").val();
-			const length = $("#msg").val().length;
-			if (length > maxInput) {
-				$("#msg").val(msg.substr(0, maxInput));
-				$(".num").text(maxInput + '/' + maxInput);
-			} else {
-				const text = length + '/' + maxInput;
-				$(".num").text(text);
-			}
+		  const msg = $('#msg').val();
+		  const length = $('#msg').val().length;
+		  if (length > maxInput) {
+		    $('#msg').val(msg.slice(0, Math.max(0, maxInput)));
+		    $('.num').text(`${maxInput}/${maxInput}`);
+		  } else {
+		    const text = `${length}/${maxInput}`;
+		    $('.num').text(text);
+		  }
 		}
- 
+
 		/**
 		 * 获取回复
 		 */
 		function getReply(msg) {
-			$.ajax({
-				url: "http://api.tianapi.com/txapi/robot/",
-				data: {
-					key: '762be789103e1ae7b65573f8d4fc0df6',
-					question: msg,
-				},
-				success: function (res) {
-					if (res.code === 200) {
-						const newslist = res.newslist;
-						for (let i = 0; i < newslist.length; i++) {
-							const html =
-								'<div class="message-other"><div class="message-container"><div class="icon"><img src="' +
-								robotIcon +
-								'" /></div><div class="message-content"><div class="speaker-name">机器人</div><div class="message">' +
-								newslist[i].reply + '</div></div></div></div>';
-							$(".chat-container").append(html);
-						}
-						scrollToBottom();
-					}
-				}
-			});
+		  $.ajax({
+		    url: 'http://api.tianapi.com/txapi/robot/',
+		    data: {
+		      key: '762be789103e1ae7b65573f8d4fc0df6',
+		      question: msg,
+		    },
+		    success(res) {
+      if (res.code === 200) {
+        const newslist = res.newslist;
+        for (const element of newslist) {
+		          const html = `<div class="message-other"><div class="message-container"><div class="icon"><img src="${robotIcon}" /></div><div class="message-content"><div class="speaker-name">机器人</div><div class="message">${element.reply}</div></div></div></div>`;
+          $('.chat-container').append(html);
+        }
+        scrollToBottom();
+      }
+    },
+		  });
 		}
- 
+
 		/**
 		 * 发送消息
 		 */
 		function send() {
-			var msg = $("#msg").val();
-			if (!name) {
-				getName();
-			} else if (msg) {
-				const message = {
-					id,
-					name,
-					msg,
-				};
-				// 通过socket发送消息
-				socket.send(message);
-				getReply(msg);
-				$("#msg").val("");
-				$(".num").text('0/' + maxInput);
-			}
+		  const msg = $('#msg').val();
+		  if (!name) {
+		    getName();
+		  } else if (msg) {
+		    const message = {
+		      id,
+		      name,
+		      msg,
+		    };
+		    // 通过socket发送消息
+		    socket.send(message);
+		    getReply(msg);
+		    $('#msg').val('');
+		    $('.num').text(`0/${maxInput}`);
+		  }
 		}
 	</script>
  

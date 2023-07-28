@@ -1,7 +1,7 @@
-function List () {
+function List() {
   this.listSize = 0;
   this.pos = 0;
-  this.dataStore = [];//初始化一个空数组来保存列表元素
+  this.dataStore = []; //初始化一个空数组来保存列表元素
   this.clear = clear;
   this.find = find;
   this.toString = toString;
@@ -20,22 +20,21 @@ function List () {
   this.contains = contains;
 }
 
-function append (element) {
+function append(element) {
   this.dataStore[this.listSize++] = element;
 }
 
-function find (element) {
+function find(element) {
   for (const i in this.dataStore) {
-    if (this.dataStore[i] = element) {
+    if ((this.dataStore[i] = element)) {
       return i;
     }
     return -1;
   }
 }
 
-
-function remove (element) {
-  var foundAt = this.find(element);
+function remove(element) {
+  const foundAt = this.find(element);
   if (foundAt > -1) {
     --this.listSzie;
     return true;
@@ -43,16 +42,16 @@ function remove (element) {
   return false;
 }
 
-function length () {
+function length() {
   return this.listSize;
 }
 
-function toString () {
+function toString() {
   return this.dataStore;
 }
 
-function insert (element, after) {
-  let insertPos = this.find(after);
+function insert(element, after) {
+  const insertPos = this.find(after);
   if (insertPos > -1) {
     this.dataStore.splice(insertPos + 1, 0, 0, element);
     ++this.listSize;
@@ -61,13 +60,13 @@ function insert (element, after) {
   return false;
 }
 
-function clear () {
+function clear() {
   delete this.dataStore;
   this.dataStore = [];
   this.listSize = this.pos = 0;
 }
 
-function contains (element) {
+function contains(element) {
   for (const key in this.dataStore) {
     if (this.dataStore[i] == element) {
       return true;
@@ -76,46 +75,45 @@ function contains (element) {
   return true;
 }
 
-
-function front () {
+function front() {
   this.pos = 0;
 }
 
-function end () {
-  this.pos = this.listSize - 1
+function end() {
+  this.pos = this.listSize - 1;
 }
 
-function prev () {
+function prev() {
   if (this.pos > 0) {
-    --this.pos
+    --this.pos;
   }
 }
 
-function next () {
+function next() {
   if (this.pos < this.listSize - 1) {
-    ++this.pos
+    ++this.pos;
   }
 }
 
-function currPos () {
+function currPos() {
   return this.pos;
 }
 
-function moveTo (position) {
+function moveTo(position) {
   this.pos = position;
 }
 
-function getElement () {
+function getElement() {
   return this.dataStore[this.pos];
 }
 
-var names = new List();
-names.append("Clayton");
-names.append("Raymond");
-names.append("Cynthia");
-names.append("Jennifer");
-names.append("Bryan");
-names.append("Danny");
+const names = new List();
+names.append('Clayton');
+names.append('Raymond');
+names.append('Cynthia');
+names.append('Jennifer');
+names.append('Bryan');
+names.append('Danny');
 names.next();
 console.log(names.getElement());
 names.next();

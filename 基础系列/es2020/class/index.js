@@ -1,4 +1,3 @@
 class APIConnector {
-    get #apiToken(){}
-    
-}
+  get #apiToken() {}
+

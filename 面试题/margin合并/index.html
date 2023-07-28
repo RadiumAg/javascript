@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .a,
+        .b {
+            width: 200px;
+            height: 200px;
+        }
+
+        .a {
+            margin-bottom: 50px;
+            background-color: red;
+        }
+
+        .b {
+            margin-top: 10px;
+            background-color: blue;
+        }
+
+        .container {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <h1>用bfc</h1>
+        <div class="a"></div>
+        <div class="container">
+            <div class="b"></div>
+        </div>
+    </section>
+
+
+    <section>
+        <h1>display:inline-block</h1>
+        <div class="a"></div>
+        <div class="b" style="display: inline-block;"></div>
+    </section>
+</body>
+
+</html>

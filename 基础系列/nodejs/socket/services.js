@@ -1,6 +1,6 @@
 // 创建TCP服务器
 const net = require('net');
-const server = net.createServer(function (socket) {
+const server = net.createServer(socket => {
   socket.on('data', data => {
     socket.write('transfer');
   });

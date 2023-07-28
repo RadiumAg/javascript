@@ -1,3 +1,3 @@
 function unknowFunction(param) {
-    var a = param;
+  const a = param;
 }

@@ -1,9 +1,9 @@
 (() => {
-  function Cat () {
+  function Cat() {
     this.name = '猫';
   }
 
-  function Animal () {
+  function Animal() {
     this.type = '哺乳动物';
   }
 
@@ -12,7 +12,7 @@
 })();
 
 (() => {
-  function SuperType () {
+  function SuperType() {
     this.property = true;
   }
 
@@ -21,7 +21,7 @@
     return this.property;
   };
 
-  function SubType () {
+  function SubType() {
     this.subproperty = false;
   }
 
@@ -37,11 +37,11 @@
 
 // 借用构造函数
 (() => {
-  function SuperType () {
+  function SuperType() {
     this.colors = ['red', 'blue', 'green'];
   }
 
-  function SubType () {
+  function SubType() {
     SuperType.call(this);
   }
 
@@ -55,7 +55,7 @@
 
 // 组合继承
 (() => {
-  function Supertype (name) {
+  function Supertype(name) {
     this.name = name;
     this.colors = ['red', 'blue', 'green'];
   }
@@ -64,7 +64,7 @@
     console.log(this);
   };
 
-  function SubType (name, age) {
+  function SubType(name, age) {
     Supertype.call(this, name);
     this.age = age;
   }
@@ -88,15 +88,15 @@
 
 // 寄生组合
 (() => {
-  function object (o) {
-    function F () {}
+  function object(o) {
+    function F() {}
     F.prototype = o;
     return new F();
   }
 
   const person = {
     name: 'Nicholas',
-    friends: ['Shelby', 'Count', 'Van']
+    friends: ['Shelby', 'Count', 'Van'],
   };
 
   const anotherPerson = object(person);
@@ -111,13 +111,16 @@
 
 // 寄生组合式继承
 (() => {
-  function inheritPrototype (subType = function () { }, superType = function () { }) {
+  function inheritPrototype(
+    subType = function () {},
+    superType = function () {},
+  ) {
     const prototype = Object.create(superType.prototype);
     prototype.constructor = subType;
     subType.prototype = prototype;
   }
 
-  function SuperType (name) {
+  function SuperType(name) {
     this.name = name;
     this.colors = ['red', 'blue', 'green'];
   }
@@ -126,7 +129,7 @@
     console.log(this.name);
   };
 
-  function SubType (name, age) {
+  function SubType(name, age) {
     SuperType.call(this);
     this.age = age;
   }
@@ -143,11 +146,11 @@
 (() => {
   class A {
     a = 1;
-    static getB () {
+    static getB() {
       console.log(this.a);
     }
-    getB() { 
-      console.log(this.a)
+    getB() {
+      console.log(this.a);
     }
   }
   A.getB();
@@ -163,7 +166,5 @@
     static {
       this.a = 3;
     }
-    
   }
-
 })();

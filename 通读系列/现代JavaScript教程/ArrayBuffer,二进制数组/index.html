@@ -10,9 +10,9 @@
 
 <body>
     <script>
-        let buffer = new ArrayBuffer(16); // 创建一个长度为 16 的 buffer
+        const buffer = new ArrayBuffer(16); // 创建一个长度为 16 的 buffer
 
-        let view = new Uint32Array(buffer); // 将 buffer   视为一个 32 位整数的序列
+        const view = new Uint32Array(buffer); // 将 buffer   视为一个 32 位整数的序列
 
         console.log(Uint32Array.BYTES_PER_ELEMENT); // 每个整数 4 个字节
 
@@ -23,8 +23,8 @@
         view[0] = 123456;
 
         // 遍历值
-        for (let num of view) {
-            console.log(num); // 123456，然后 0，0，0（一共 4 个值）
+        for (const num of view) {
+          console.log(num); // 123456，然后 0，0，0（一共 4 个值）
         }
     </script>
 

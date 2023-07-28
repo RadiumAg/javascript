@@ -5,7 +5,7 @@
 
   const promise = Promise.reject(new Error('Promise Failed'));
   promise.catch(() => console.log('caught'));
-  process.on('unhandledrejection', (event) => console.log(event.reason));
+  process.on('unhandledrejection', event => console.log(event.reason));
 })();
 
 /**
@@ -14,10 +14,10 @@
 
 (() => {
   // eslint-disable-next-line no-new
-  new Promise((resolve) => {
+  new Promise(resolve => {
     setTimeout(() => resolve(1), 1000);
   })
-    .then((result) => {
+    .then(result => {
       console.log(result);
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -25,13 +25,13 @@
         });
       });
     })
-    .then((result) => {
+    .then(result => {
       console.log(result);
       return new Promise((resolve, reject) => {
         setTimeout(() => resolve(result * 2), 1000);
       });
     })
-    .then((result) => {
+    .then(result => {
       console.log(result);
     });
 })();
@@ -42,17 +42,17 @@
 
 (() => {
   class Thenable {
-    constructor (num) {
+    constructor(num) {
       this.num = num;
     }
 
-    then (resolve, reject) {
+    then(resolve, reject) {
       console.log(resolve);
       setTimeout(() => resolve(this.num * 2), 1000);
     }
   }
 
-  new Promise((resolve) => resolve(1))
-    .then((result) => new Thenable(result))
+  new Promise(resolve => resolve(1))
+    .then(result => new Thenable(result))
     .then(console.log);
 })();

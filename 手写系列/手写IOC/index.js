@@ -28,25 +28,25 @@
 // service.apply(this, getServices(getDependices(service)));
 
 const a = {
-  [Symbol.iterator] () {
+  [Symbol.iterator]() {
     return this;
   },
 
   a: 1,
 
-  next () {
+  next() {
     if (a <= 3) {
       return {
         value: ++this.a,
-        done: false
+        done: false,
       };
     } else {
       return {
         value: ++this.a,
-        done: true
+        done: true,
       };
     }
-  }
+  },
 };
 
 for (const item of a) {

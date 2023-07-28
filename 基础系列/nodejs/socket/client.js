@@ -7,7 +7,7 @@ const client = net.connect({ port: 8080 }, () => {
 });
 
 // 接收服务端的数据
-client.on('data', (data) => {
+client.on('data', data => {
   console.log('client got data from srver:', data.toString());
   client.end();
 });

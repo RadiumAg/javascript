@@ -33,7 +33,6 @@
 // let a = [2323, 232];
 // a = mergeSort(a);
 
-
 class A {
-  static  a(){}
+  static a() {}
 }

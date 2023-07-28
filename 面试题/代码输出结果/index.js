@@ -9,21 +9,23 @@
 
 // promise
 () => {
-  const p1 = new Promise((resolve) => {
+  const p1 = new Promise(resolve => {
     setTimeout(() => {
       resolve('resolve3');
       console.log('timer1');
     });
     resolve('resolve1');
     resolve('resolve2');
-  }).then(res => {
-    console.log(res);
-    setTimeout(() => {
-      console.log(p1);
-    }, 1000);
-  }).finally(res => {
-    console.log('finally', res);
-  });
+  })
+    .then(res => {
+      console.log(res);
+      setTimeout(() => {
+        console.log(p1);
+      }, 1000);
+    })
+    .finally(res => {
+      console.log('finally', res);
+    });
 };
 
 () => {
@@ -44,7 +46,11 @@
   console.log('script start');
   async1().then(res => console.log(res));
   console.log('script end');
-  Promise.resolve(1).then(2).then(Promise.resolve(3)).catch(4).then(res => console.log(res));
+  Promise.resolve(1)
+    .then(2)
+    .then(Promise.resolve(3))
+    .catch(4)
+    .then(res => console.log(res));
 
   setTimeout(() => {
     console.log('timer2');

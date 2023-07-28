@@ -1,11 +1,11 @@
 {
-    // Some typical compiler options
-    "compilerOptions": {
-        "strict":true,
-        "target": "es2020",
-        "module": "ES2020",
-        "sourceMap": true,
-        "moduleResolution": "nodenext",
-        "baseUrl": "."
-    },
+  // Some typical compiler options
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2020",
+    "module": "ES2020",
+    "sourceMap": true,
+    "moduleResolution": "nodenext",
+    "baseUrl": "."
+  }
 }

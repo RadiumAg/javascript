@@ -8,8 +8,7 @@ console.log(Object.prototype.toString.call(undefined));
 const a = 'abc';
 a.toUpperCase(); // "ABC"
 
-function Jquery () {
-}
+function Jquery() {}
 Jquery.init = function () {};
 Jquery.init.prototype = Jquery.prototype;
 Jquery();

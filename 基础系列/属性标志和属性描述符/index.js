@@ -3,7 +3,7 @@
  */
 (() => {
   const user = {
-    name: 'John'
+    name: 'John',
   };
 
   console.log(Object.getOwnPropertyDescriptor(user, 'name'));
@@ -18,7 +18,7 @@
   const user = {};
   Object.defineProperty(user, 'name', {
     writable: true,
-    value: 'John'
+    value: 'John',
   });
 
   console.log(Object.getOwnPropertyDescriptor(user, 'name'));

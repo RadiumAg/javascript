@@ -2,7 +2,7 @@
 const pattern1 = /[bc]at/i;
 
 // 匹配第一个" [bc]at",不区分大小写
-const pattern2 = /\[bc\]at/i;
+const pattern2 = /\[bc]at/i;
 
 (() => {
   const text = 'mom and dad and baby';

@@ -1,2 +1,2 @@
-var movies = read(films.txt).split("\n");
-print(movies)
+const movies = read(films.txt).split('\n');
+print(movies);

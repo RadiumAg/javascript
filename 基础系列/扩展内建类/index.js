@@ -4,7 +4,7 @@
 
 (() => {
   class PowerArray extends Array {
-    isEmpty () {
+    isEmpty() {
       return this.length === 0;
     }
   }
@@ -15,8 +15,8 @@
 
 (() => {
   Promise.all(
-    new Promise((resolve) => setTimeout(() => resolve(1), 3000)),
-    new Promise((resolve) => setTimeout(() => resolve(1), 2000)),
-    new Promise((resolve) => setTimeout(() => resolve(1), 3000))
+    new Promise(resolve => setTimeout(() => resolve(1), 3000)),
+    new Promise(resolve => setTimeout(() => resolve(1), 2000)),
+    new Promise(resolve => setTimeout(() => resolve(1), 3000)),
   );
 })();

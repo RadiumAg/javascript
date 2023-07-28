@@ -57,15 +57,15 @@
 // }
 
 const task = {
-  [Symbol.iterator] () {
+  [Symbol.iterator]() {
     const steps = this.actions.slice();
 
     return {
       // 使迭代器称为iterable
-      [Symbol.iterator] () {
+      [Symbol.iterator]() {
         return this;
       },
-      next (...args) {
+      next(...args) {
         if (steps.length > 0) {
           const res = steps.shift()(...args);
           return { value: res, done: false };
@@ -73,28 +73,28 @@ const task = {
           return { done: true };
         }
       },
-      return (v) {
+      return(v) {
         steps.length = 0;
         return { value: v, done: true };
-      }
+      },
     };
   },
-  actions: []
+  actions: [],
 };
 
 task.actions.push(
-  function step1 (x) {
+  x => {
     console.log('step 1:', x);
     return x * 2;
   },
-  function step2 (x, y) {
+  (x, y) => {
     console.log('step 2:', x, y);
     return x + y * 2;
   },
-  function step3 (x, y, z) {
+  (x, y, z) => {
     console.log('step 3:', x, y, z);
     return x * y + z;
-  }
+  },
 );
 
 const it = task[Symbol.iterator]();

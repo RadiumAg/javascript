@@ -1,16 +1,16 @@
 const expect = require('chai').expect;
 
-describe('Hook示例', function () {
+describe('Hook示例', () => {
   let foo = false;
 
-  beforeEach(function (done) {
-    setTimeout(function () {
+  beforeEach(done => {
+    setTimeout(() => {
       foo = true;
       done();
     }, 50);
   });
 
-  it('全局变量异步修改应该成功', function () {
+  it('全局变量异步修改应该成功', () => {
     expect(foo).to.be.equal(true);
   });
 });

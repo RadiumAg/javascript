@@ -15,7 +15,7 @@
 ###### 编写数字的更多方法
 
 ```ts
-let billion = 1000000000000
+let billion = 1000000000000;
 
 // 简短写法
 let billion = 1_000_000;
@@ -38,20 +38,20 @@ let billion = 1_000_000;
 1. 等号右侧可以是任务迭代对象
    
    ```ts
-   const [one,tow,three]  = new Set[1,2,3]
+   const [one,tow,three]  = new Set[1,2,3];
    ```
 
 2. 赋值给等号左侧的任何内容
    
    ```ts
-   let user = {};
-   [user.name,user.surname] = "John Smith".split(' ')
+   const user = {};
+   [user.name,user.surname] = 'John Smith'.split(' ');
    ```
 
 3. 交换变量值的技巧
    
    ```ts
-   let guest = "Jane";
-   let admin = "Pete";
+   let guest = 'Jane';
+   let admin = 'Pete';
    [guest, admin] = [admin, guest];
    ```

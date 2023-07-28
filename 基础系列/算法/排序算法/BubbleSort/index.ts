@@ -10,11 +10,9 @@ function bubbleSort(arr: number[]) {
   return arr;
 }
 
-
 console.log(bubbleSort([2, 23, 12, 323, 2323, 122, 123123, 23232323]));
 function Swap(arr: number[], j: number) {
   const temp = arr[j + 1];
   arr[j + 1] = arr[j];
   arr[j] = temp;
 }
-

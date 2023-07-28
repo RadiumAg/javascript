@@ -1,4 +1,4 @@
-function shellSort (array = []) {
+function shellSort(array = []) {
   let gap = array.length / 2;
   for (let i = 1; gap >= i; gap /= 2) {
     for (let j = 0; j < array.length; j++) {
@@ -11,7 +11,7 @@ function shellSort (array = []) {
         d -= gap;
       }
     }
-  };
+  }
 }
 
 const a = [7, 6, 9, 3, 1, 5, 2, 4];
@@ -19,7 +19,7 @@ shellSort(a);
 console.log(a);
 
 // 交换
-function swap (array, d, gap) {
+function swap(array, d, gap) {
   const temp = array[d];
   array[d] = array[d - gap];
   array[d - gap] = temp;

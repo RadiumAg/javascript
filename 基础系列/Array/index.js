@@ -1,7 +1,7 @@
 const range = (start, stop, step) =>
   Array.from(
     {
-      length: (stop - start) / step + 1
+      length: (stop - start) / step + 1,
     },
-    (_, i) => start + i * step
+    (_, i) => start + i * step,
   );

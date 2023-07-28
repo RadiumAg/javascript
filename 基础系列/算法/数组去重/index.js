@@ -6,11 +6,11 @@
 
 const a = {
   b: 1,
-  c: function () {},
+  c() {},
   d: undefined,
   e: () => {},
   f: null,
-  g () {}
+  g() {},
 };
 
 console.log(JSON.parse(JSON.stringify(a)));

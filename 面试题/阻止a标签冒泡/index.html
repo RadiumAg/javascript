@@ -17,19 +17,18 @@
     <a id="anchor" onclick="return rejectPre();" href="https://www.baidu.com">跳转4</a>
 
     <script>
-        document.querySelector('#anchor').onclick = (e) => {
-            return false;
-        }
+        document.querySelector('#anchor').addEventListener('click', e => {
+  return false;
+});
 
-        document.querySelector('#anchor').addEventListener('click',(e) => {
-            debugger
-            e.preventDefault();
-        })
+        document.querySelector('#anchor').addEventListener('click', e => {
+          debugger;
+          e.preventDefault();
+        });
 
         function rejectPre() {
-            return false;
+          return false;
         }
-
     </script>
 </body>
 

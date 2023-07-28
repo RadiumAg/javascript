@@ -23,7 +23,7 @@
 都会转换为`boolean`值来操作。
 
 ```ts
-result = value1 || value2 || value3
+result = value1 || value2 || value3;
 ```
 
 或运算符`||` 做了如下的事情：
@@ -41,7 +41,7 @@ result = value1 || value2 || value3
 **与运算符寻找第一个假值**
 
 ```ts
-result = value1 && value2 && value3
+result = value1 && value2 && value3;
 ```
 
 与运算符`&&`做了如下的事：

@@ -9,10 +9,10 @@
 可以在内部访问
 
 ```ts
-let sayHi = function func(who) {
-    alert(`Hello,${who}`)
-    func('any')
-}
+const sayHi = function func(who) {
+    alert(`Hello,${who}`);
+    func('any');
+};
 ```
 
 # 深入理解箭头函数

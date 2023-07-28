@@ -1,6 +1,5 @@
-
-export default  {
-    get(){
-        console.log('get');
-    }
-}
+export default {
+  get() {
+    console.log('get');
+  },
+};

@@ -1,10 +1,10 @@
 function HammingCode(input: string) {
   let hArray = [];
   let hASize: number;
-  const   bArray: string[] = [];
-  let  hSize: number = 1;
+  const bArray: string[] = [];
+  let hSize = 1;
 
-  hArray = input.split("");
+  hArray = input.split('');
   // 获得海明码长度
   sethSize();
   setbArray();
@@ -19,8 +19,8 @@ function HammingCode(input: string) {
         // 获得编码中1的位置
         let result;
         const bIndexArray = [];
-        const bIndex = bArray[i].indexOf("1");
-        let  flag = false;
+        const bIndex = bArray[i].indexOf('1');
+        let flag = false;
 
         // 获得地址编码中1位置一样的地址数组
         bArray.forEach((v, _i, a) => {
@@ -32,14 +32,13 @@ function HammingCode(input: string) {
           }
         });
 
-
         for (const i of bIndexArray) {
           // tslint:disable-next-line: no-bitwise
           result = flag ? hArray[i] : result ^ hArray[i];
           flag = false;
         }
         // tslint:disable-next-line: no-bitwise
-        hArray[i] = (result ^ 0) === 0 ? "0" : "1";
+        hArray[i] = Math.trunc(result) === 0 ? '0' : '1';
       }
     });
   }
@@ -49,12 +48,12 @@ function HammingCode(input: string) {
    */
   function setbArray() {
     for (let i = 0; i < hSize; i++) {
-      hArray.splice(Math.pow(2, i) - 1, 0, -1);
+      hArray.splice(2 ** i - 1, 0, -1);
     }
 
     // 获得位置的二进制
     for (let i = 1; i <= hArray.length; i++) {
-      bArray.push(("000" + i.toString(2)).slice(-4));
+      bArray.push(`000${i.toString(2)}`.slice(-4));
     }
   }
 
@@ -63,29 +62,24 @@ function HammingCode(input: string) {
    */
   function sethSize() {
     hASize = hArray.length;
-    while (!(Math.pow(2, hSize) - 1 >= hASize + hSize)) {
+    while (!(2 ** hSize - 1 >= hASize + hSize)) {
       hSize++;
     }
   }
 
-  console.log(hArray.join(""));
+  console.log(hArray.join(''));
 }
 
-HammingCode("1010110");
-HammingCode("01101001");
-HammingCode("1101");
-HammingCode("1011");
-HammingCode("11000010");
-HammingCode("10011101");
-HammingCode("1100");
+HammingCode('1010110');
+HammingCode('01101001');
+HammingCode('1101');
+HammingCode('1011');
+HammingCode('11000010');
+HammingCode('10011101');
+HammingCode('1100');
 // 01110100110
 // 010111001001
 // 1010101
 // 0110011
 // 101110010010
 // 111000111101
-
-
-
-
-

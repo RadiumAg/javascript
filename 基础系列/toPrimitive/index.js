@@ -4,16 +4,16 @@
    *  hint为"number"|"string"|"default" 表示原始值的预期类型
    */
   const a = {
-    toString () {
+    toString() {
       return 2;
     },
-    valueOf () {
+    valueOf() {
       return 1;
     },
-    [Symbol.toPrimitive] (hint) {
+    [Symbol.toPrimitive](hint) {
       console.log(hint);
       return 3;
-    }
+    },
   };
   console.log(Object.prototype.toString.call(a));
 })();

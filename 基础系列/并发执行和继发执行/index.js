@@ -1,4 +1,3 @@
-
 // async function pOne () {
 //   return new Promise((resolve, reject) => {
 //     setTimeout(() => {
@@ -27,15 +26,20 @@
 //   // let a = await pOne();
 //   // let b = await pTwo();
 // }
-const a = new Promise((resolve, reject) => { resolve(2); }).then((res) => {
-  return 9;
-},
-() => {
-}).then((res) => {
-  console.log(res);
-});
+const a = new Promise((resolve, reject) => {
+  resolve(2);
+})
+  .then(
+    res => {
+      return 9;
+    },
+    () => {},
+  )
+  .then(res => {
+    console.log(res);
+  });
 
-async function b () {
+async function b() {
   await a;
   console.log(a);
 }

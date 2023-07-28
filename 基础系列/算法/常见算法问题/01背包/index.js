@@ -1,7 +1,6 @@
-
 const w = [4, 3, 1];
 const v = [3000, 2000, 1500];
-const T = 4;// 背包重量
+const T = 4; // 背包重量
 const dp = [];
 
 for (let i = 0; i < w.length; i++) {
@@ -17,7 +16,7 @@ for (let i = 0; i < w.length; i++) {
  * @param {*} j 背包当前重量
  * @returns
  */
-function maxValue (i, j) {
+function maxValue(i, j) {
   if (i < 0) {
     return 0;
   }

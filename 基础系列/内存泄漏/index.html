@@ -11,24 +11,28 @@
 <body>
   <input type="button" value="click">
   <script>
-    !function () {
+    !(function () {
       function Leaker() {
         this.init();
-      };
-      Leaker.prototype = {
-        init: function () {
-          this.name = (Array(100000)).join('*');
-          console.log("Leaking an object %o: %o",(new Date()),this);// this对象不能被回收
-        },
+      }
+  Leaker.prototype = {
+        init() {
+          this.name = Array.from({ length: 100000 }).join('*');
+          console.log('Leaking an object %o: %o', new Date(), this); // this对象不能被回收
+    },
 
-        destroy: function () {
+        destroy() {
           // do something....
-        }
+        },
       };
-      document.querySelector('input').addEventListener('click',function () {
-        new Leaker();
-      },false);
-    }()
+      document.querySelector('input').addEventListener(
+    'click',
+    () => {
+          new Leaker();
+        },
+    false,
+  );
+    })();
   </script>
 </body>
 

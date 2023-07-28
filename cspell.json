@@ -1,14 +1,10 @@
 {
-    "version": "0.2",
-    "language": "en",
-    "ignorePaths": [],
-    "dictionaryDefinitions": [],
-    "dictionaries": [],
-    "words": [
-        "slen",
-        "tlen",
-        "vnode"
-    ],
-    "ignoreWords": [],
-    "import": []
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": ["slen", "tlen", "vnode"],
+  "ignoreWords": [],
+  "import": []
 }

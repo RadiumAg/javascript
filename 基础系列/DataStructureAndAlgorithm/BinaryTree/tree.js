@@ -1,4 +1,4 @@
-function Node (data, left, right) {
+function Node(data, left, right) {
   this.data = data;
   this.left = left;
   this.right = right;
@@ -6,24 +6,23 @@ function Node (data, left, right) {
 }
 
 //显示当前节点数据
-function show () {
+function show() {
   return this.data;
 }
 
-function BST () {
-  this.root = null;;
+function BST() {
+  this.root = null;
   this.insert = insert;
   this.inOrder = inOrder;
 }
 
-
-function insert (data) {
-  var n = new Node(data, null, null);
+function insert(data) {
+  const n = new Node(data, null, null);
   if (this.root == null) {
     this.root = n;
   } else {
-    var current = this.root;
-    var parent;
+    let current = this.root;
+    let parent;
     while (true) {
       parent = current;
       if (data < current.data) {
@@ -32,8 +31,7 @@ function insert (data) {
           parent.left = n;
           break;
         }
-      }
-      else {
+      } else {
         current = current.right;
         if (current == null) {
           parent.right = n;
@@ -45,15 +43,15 @@ function insert (data) {
 }
 
 // 中序变量
-function inOrder (node) {
+function inOrder(node) {
   if (node != null) {
     inOrder(node.left);
-    console.log(node.show() + " ");
+    console.log(`${node.show()} `);
     inOrder(node.right);
   }
 }
 
-var nums = new BST();
+const nums = new BST();
 nums.insert(56);
 nums.insert(22);
 nums.insert(81);
