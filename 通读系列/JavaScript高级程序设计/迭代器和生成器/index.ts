@@ -119,4 +119,50 @@
 
 // 提前终止迭代器
 // return 方法必须返回一个有效的iteratorResult对象
-() => {};
+(() => {
+  class Counter {
+    private limit: number;
+
+    constructor(limit) {
+      this.limit = limit;
+    }
+
+    [Symbol.iterator]() {
+      let count = 1;
+      const limit = this.limit;
+
+      return {
+        next() {
+          if (count < limit) {
+            return { done: false, value: count++ };
+          } else {
+            return { done: true };
+          }
+        },
+
+        return() {
+          console.log('Exitingeraly');
+          return { done: true };
+        },
+      };
+    }
+  }
+
+  const counter1 = new Counter(5);
+  for (const i of counter1) {
+    if (i > 2) {
+      break;
+    }
+    console.log(i);
+  }
+
+  const counter2 = new Counter(5);
+  try {
+    for (const i of counter2) {
+      if (i > 2) {
+        throw 'err';
+      }
+      console.log(i);
+    }
+  } catch {}
+})();
