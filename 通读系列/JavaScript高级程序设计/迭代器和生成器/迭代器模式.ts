@@ -1,6 +1,6 @@
 // 可迭代对象（iterable）
 // iterator 接口，可迭代协议
-(() => {
+() => {
   const num = 1;
   const obj = {};
 
@@ -23,7 +23,7 @@
   console.log(arr[Symbol.iterator]());
   console.log(map[Symbol.iterator]());
   console.log(set[Symbol.iterator]());
-})();
+};
 
 // 接受可迭代对象的原生语言特性包括：
 // 1. for-of 循环
@@ -36,7 +36,7 @@
 // 8. Promise.race()接收由契约组成的可迭代对象
 // 9. yield* 操作符，在生成器中使用
 
-(() => {
+() => {
   // 可迭代对象
   const arr = ['foo', 'bar'];
   // 迭代工厂函数
@@ -49,10 +49,10 @@
   console.log(iter.next());
   console.log(iter.next());
   console.log(iter.next());
-})();
+};
 
 // next方法返回的迭代器对象IteratorResult包含两个属性:done和value。done是一个布尔值
-(() => {
+() => {
   const arr = ['foo', 'bar'];
   // 迭代器工厂函数
   console.log(arr[Symbol.iterator]);
@@ -65,10 +65,10 @@
   console.log(iter.next());
   console.log(iter.next());
   console.log(iter.next());
-})();
+};
 
 // 如果可迭代对象在迭代期间被修改了，那么迭代器也会反应相应的变化
-(() => {
+() => {
   const arr = ['foo', 'baz'];
   const iter = arr[Symbol.iterator]();
   console.log(iter.next());
@@ -79,10 +79,10 @@
   console.log(iter.next());
   console.log(iter.next());
   console.log(iter.next());
-})();
+};
 
 // 自定义迭代器
-(() => {
+() => {
   class Counter {
     private limit: number;
 
@@ -115,11 +115,11 @@
   for (const i of counter) {
     console.log(i);
   }
-})();
+};
 
 // 提前终止迭代器
 // return 方法必须返回一个有效的iteratorResult对象
-(() => {
+() => {
   class Counter {
     private limit: number;
 
@@ -165,4 +165,25 @@
       console.log(i);
     }
   } catch {}
-})();
+};
+
+() => {
+  const a = [1, 2, 3, 4, 5];
+  const iter = a[Symbol.iterator]();
+
+  iter.return = function () {
+    console.log('Exitingearly');
+    return { done: true };
+  };
+
+  for (const i of iter) {
+    console.log(i);
+    if (i > 2) {
+      break;
+    }
+  }
+
+  for (const i of iter) {
+    console.log(i);
+  }
+};
