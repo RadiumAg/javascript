@@ -5,9 +5,28 @@ for (let i = 0; i < 100000; i++) {
 }
 
 // ...实现算法
-
 (() => {
-  Array.prototype.unique = function () {};
+  Array.prototype.unique = function () {
+    const newArray = [];
+    let isRepeat = false;
+
+    for (let i = 0; i < this.length; i++) {
+      isRepeat = false;
+
+      for (const j of newArray) {
+        if (this[i] === j) {
+          isRepeat = true;
+          break;
+        }
+      }
+
+      if (!isRepeat) {
+        newArray.push(this[i]);
+      }
+    }
+    return newArray;
+  };
+
   console.time('test');
   arr.unique();
   console.timeEnd('test');
