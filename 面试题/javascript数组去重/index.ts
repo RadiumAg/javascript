@@ -1,3 +1,5 @@
+// https://juejin.cn/post/6844903608467587085#heading-0
+
 const arr = [];
 // 生成[0, 100000]之间的随机数
 for (let i = 0; i < 100000; i++) {
