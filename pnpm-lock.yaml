@@ -34,6 +34,9 @@ devDependencies:
   jest:
     specifier: ^29.6.2
     version: 29.6.2(@types/node@20.4.5)
+  json5:
+    specifier: ^2.2.3
+    version: 2.2.3
   prettier:
     specifier: ^3.0.0
     version: 3.0.0
@@ -43,9 +46,15 @@ devDependencies:
   style-loader:
     specifier: ^3.3.3
     version: 3.3.3(webpack@5.88.2)
+  toml:
+    specifier: ^3.0.0
+    version: 3.0.0
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
+  yamljs:
+    specifier: ^0.3.0
+    version: 0.3.0
 
 packages:
 
@@ -4868,6 +4877,10 @@ packages:
     dependencies:
       is-number: 7.0.0
 
+  /toml@3.0.0:
+    resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
+    dev: true
+
   /tsconfig-paths@3.14.2:
     resolution: {integrity: sha512-o/9iXgCYc5L/JxCHPe3Hvh8Q/2xm5Z+p18PESBU6Ff33695QnCHBEjcytY2q19ua7Mbl/DavtBOLq+oG0RCL+g==}
     dependencies:
@@ -5207,6 +5220,14 @@ packages:
   /yaml@1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
+    dev: true
+
+  /yamljs@0.3.0:
+    resolution: {integrity: sha512-C/FsVVhht4iPQYXOInoxUM/1ELSf9EsgKH34FofQOp6hwCPrW4vG4w5++TED3xRUo8gD7l0P1J1dLlDYzODsTQ==}
+    hasBin: true
+    dependencies:
+      argparse: 1.0.10
+      glob: 7.2.3
     dev: true
 
   /yargs-parser@20.2.4:

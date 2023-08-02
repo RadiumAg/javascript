@@ -1,0 +1,26 @@
+{
+  "name": "webpack",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": " webpack --config webpack.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "man": "index.js",
+  "license": "ISC",
+  "devDependencies": {
+    "csv-loader": "^3.0.5",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "xml-loader": "^1.2.1",
+    "json5": "^2.2.3",
+    "style-loader": "^3.3.3",
+    "toml": "^3.0.0",
+    "css-loader": "^6.8.1",
+    "yamljs": "^0.3.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
