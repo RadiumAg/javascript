@@ -186,5 +186,17 @@
   Object.assign(dest, src);
   // 浅赋值意味着只会复制对象的引用
   console.log(dest);
-  console.log(dest.a === src.a);
+  console.log(dest.a === src.a); //true
+})();
+
+// 对象标识以及相等判定
+(() => {
+  console.log(+0 === -0); //true
+  console.log(+0 === 0); //true
+  console.log(-0 === 0); //true
+
+  console.log(Object.is(+0, -0)); // false
+  console.log(Object.is(+0, 0)); // true
+  console.log(Object.is(-0, 0)); // false
+  console.log(Object.is(Number.NaN, Number.NaN)); // true;
 })();
