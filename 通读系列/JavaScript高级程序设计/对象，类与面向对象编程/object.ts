@@ -106,10 +106,85 @@
 
 // 合并对象Object.assign
 // Object.propertyIsEnumerable() === true && Object.hasOwnProperty() === true
-(() => {
+() => {
   let dest, src, result;
-
   dest = {};
   src = { id: 'src' };
   result = Object.assign(dest, src);
+
+  console.log(dest === result);
+  console.log(dest !== src);
+
+  console.log(result);
+  console.log(dest);
+  /**
+   * 多个源对象
+   */
+
+  dest = {};
+  result = Object.assign(dest, { a: 'foo' }, { b: 'bar' });
+  console.log(result);
+
+  /**
+   * 获取函数与设置函数
+   */
+
+  dest = {
+    set a(val) {
+      this.b = val;
+      console.log(`Invoked dest setter with param ${val}`);
+    },
+  };
+
+  src = {
+    get a() {
+      console.log('Invokded src getter');
+      return 'foo';
+    },
+  };
+
+  Object.assign(dest, src);
+  // 调用src的获取方法
+  // 调用dest的设置方法并传入参数"foo"
+  // 因为这里的设置函数不执行赋值操作
+  // 所以实际上并没有把之传递过来
+  console.log(dest);
+};
+
+// 不能在两个对象间转移获取函数和设置函数
+(() => {
+  let dest, src, result;
+
+  /**
+   * 覆盖属性
+   */
+  dest = { id: 'dest' };
+  result = Object.assign(
+    dest,
+    { id: 'srcl', a: 'foo' },
+    { id: 'src2', b: 'bar' },
+  );
+
+  // Object.assign会覆盖重复的属性
+  console.log(result);
+
+  // 可以通过目标对象上的设置函数观察到赋值的过程：
+  dest = {
+    set id(x) {
+      conosle.log(x);
+    },
+  };
+
+  Object.assign(dest, { id: 'first' }, { id: 'second' }, { id: 'third' });
+
+  /**
+   * 对象引用
+   */
+
+  dest = {};
+  src = { a: {} };
+  Object.assign(dest, src);
+  // 浅赋值意味着只会复制对象的引用
+  console.log(dest);
+  console.log(dest.a === src.a);
 })();
