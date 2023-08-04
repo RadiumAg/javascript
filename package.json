@@ -10,7 +10,7 @@
     "url": "https://gitee.com/Agrement/javascript.git"
   },
   "scripts": {
-    "test-promise": "promises-aplus-tests ./面试题/手写Promise/dist/index.js",
+    "test-promise": "promises-aplus-tests ./面试题/手写Promise/index.js",
     "lint-fix": "eslint ./**/* --fix "
   },
   "dependencies": {
