@@ -8,6 +8,7 @@
     Reflect.deleteProperty(context, 'fn');
     return result;
   };
+
   function a(a, b) {}
   a._call({}, 1, 2, 3);
 })();
@@ -22,6 +23,7 @@
     Reflect.deleteProperty(context, 'fn');
     return result;
   };
+
   function a(a, b) {
     console.log(this);
     this.a = 1;
@@ -32,14 +34,6 @@
 
 // bind
 (() => {
-  function a() {
-    console.log(this);
-  }
-
-  //   const d = a.bind({});
-  //   new d();
-  //   d();
-
   Function.prototype._bind = function (context, ...args) {
     const _this = this;
     context = new Object(context) || window;
@@ -55,9 +49,11 @@
       return result;
     };
   };
+  function a() {
+    console.log(this);
+  }
 
   const self = a._bind({});
-  // eslint-disable-next-line new-cap
   new self();
   self();
 })();
