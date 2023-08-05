@@ -171,7 +171,7 @@
   // 可以通过目标对象上的设置函数观察到赋值的过程：
   dest = {
     set id(x) {
-      conosle.log(x);
+      console.log(x);
     },
   };
 
@@ -200,3 +200,61 @@
   console.log(Object.is(-0, 0)); // false
   console.log(Object.is(Number.NaN, Number.NaN)); // true;
 })();
+
+// 不使用对象解构
+(() => {
+  const person = {
+    name: 'Matt',
+    age: 25,
+  };
+  const { name: personName, age: personAge } = person;
+  console.log(personName);
+  console.log(personAge);
+})();
+
+// 解构赋值的同时定义默认值
+(() => {
+  const person = {
+    name: 'Matt',
+    age: 25,
+  };
+  const { a = '1' } = person;
+  console.log(a);
+})();
+
+// 解构在内部使用函数ToObject
+(() => {
+  const { length } = 'foobar';
+  console.log(length);
+})();
+
+// 嵌套解构
+(() => {
+  const person = {
+    name: 'Matt',
+    age: 27,
+    job: {
+      title: 'Software engineer',
+    },
+  };
+
+  const personCopy = {};
+
+  ({
+    name: personCopy.name,
+    age: personCopy.age,
+    job: personCopy.job,
+  } = person);
+
+  person.job.title = 'Hacker';
+  console.log(person);
+  console.log(personCopy);
+
+  const {
+    job: { title },
+  } = person;
+
+  console.log(title);
+})();
+
+// 创建对象几个方式
