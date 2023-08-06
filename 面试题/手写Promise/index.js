@@ -39,9 +39,16 @@ class MyPromise {
     } else if (value instanceof MyPromise) {
       value.then(this.resolve.bind(this), this.reject.bind(this));
       return false;
-    } else if (typeof value === 'object' && value['then'] !== undefined) {
-      value.then(this.resolve.bind(this), this.reject.bind(this));
-      return false;
+    } else if (
+      (value && typeof value === 'object') ||
+      typeof value === 'function'
+    ) {
+      const thenable = Reflect.get(value, 'then');
+
+      if (thenable) {
+        thenable.call(value, this.resolve.bind(this), this.reject.bind(this));
+        return false;
+      }
     }
 
     return true;
@@ -81,9 +88,12 @@ class MyPromise {
       onFulfilledFn = function () {
         queueMicrotask(() => {
           try {
-            const result =
-              typeof onFulfilled === 'function' && onFulfilled(this.value);
-            resolve(result || this.value);
+            if (typeof onFulfilled === 'function') {
+              const result = onFulfilled(this.value);
+              resolve(result);
+            } else {
+              resolve(this.value);
+            }
           } catch (e) {
             reject(e);
           }
@@ -95,8 +105,8 @@ class MyPromise {
           try {
             if (onRejected) {
               if (typeof onRejected === 'function') {
-                const result = onRejected?.(this.reason);
-                resolve(result || this.reason);
+                const result = onRejected(this.reason);
+                resolve(result);
               } else {
                 reject(this.reason);
               }
@@ -177,7 +187,7 @@ class MyPromise {
     console.log('Promise2 is fulfilled with the same value:', result);
   });
 
-  const rejectedPromise = Promise.reject(new Error('Rejected!'));
+  const rejectedPromise = MyPromise.reject(new Error('Rejected!'));
 
   rejectedPromise
     .catch(() => {
@@ -259,14 +269,22 @@ class MyPromise {
   const fulfilledPromise = Promise.resolve();
 
   const a = fulfilledPromise.then(() => {
-    const x = Object.create(null); // 创建一个拥有 null 原型的对象
-    x.then = function () {};
-    return x; // 返回拥有 null 原型的对象
+    function xFactory() {
+      return {
+        then(resolvePromise, rejectPromise) {
+          setTimeout(() => {
+            rejectPromise(undefined);
+          }, 0);
+        },
+      };
+    }
+
+    return xFactory();
   });
 
   setTimeout(() => {
-    console.log(a);
-  });
+    console.dir(a);
+  }, 1000);
 };
 
 MyPromise.deferred = function () {
