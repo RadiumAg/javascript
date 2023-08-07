@@ -286,5 +286,7 @@
   }
 
   const person = new Person();
-  console.log((person.constructor = Person));
+  const person1 = new Person();
+  console.log(person1.constructor === Person);
+  console.log(person.constructor === Person);
 })();
