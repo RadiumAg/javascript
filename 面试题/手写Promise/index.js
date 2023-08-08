@@ -287,7 +287,7 @@ class MyPromise {
   }, 1000);
 };
 
-() => {
+(() => {
   const a = MyPromise.resolve(2).then(() => ({
     then(onFulfilled) {
       setTimeout(() => {
@@ -300,7 +300,7 @@ class MyPromise {
   setTimeout(() => {
     console.log(a);
   }, 1000);
-};
+})();
 
 MyPromise.deferred = function () {
   const result = {};

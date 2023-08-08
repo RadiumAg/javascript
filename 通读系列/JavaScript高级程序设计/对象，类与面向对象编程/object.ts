@@ -290,3 +290,27 @@
   console.log(person1.constructor === Person);
   console.log(person.constructor === Person);
 })();
+
+// 原型模式
+(() => {
+  function Person() {}
+  Person.prototype.name = 'Nicholas';
+  Person.prototype.age = 29;
+  Person.prototype.job = 'Software Engineer';
+  Person.prototype.sayName = function () {
+    console.log(this.name);
+  };
+  const person1 = new Person();
+  person1.sayName();
+  const person2 = new Person();
+  person2.sayName();
+})();
+
+(() => {
+  function Person() {}
+
+  // 如前所述，构造函数有一个prototype属性
+  // 引用其原型对象，而这个原型对象也有一个
+  // constructor 属性，引用这个构造函数
+  // 换句话说，两者循环引用
+})();
