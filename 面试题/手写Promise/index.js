@@ -287,6 +287,21 @@ class MyPromise {
   }, 1000);
 };
 
+() => {
+  const a = MyPromise.resolve(2).then(() => ({
+    then(onFulfilled) {
+      setTimeout(() => {
+        onFulfilled({ 1: 2 });
+        throw 2;
+      });
+    },
+  }));
+
+  setTimeout(() => {
+    console.log(a);
+  }, 1000);
+};
+
 MyPromise.deferred = function () {
   const result = {};
   result.promise = new MyPromise((resolve, reject) => {
