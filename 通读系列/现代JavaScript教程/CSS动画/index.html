@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    #color {
+      transition-property: background-color;
+      transition-duration: 3s;
+    }
+
+    #growing {
+      transition:
+        font-size 3s,
+        color 2s;
+    }
+  </style>
+
+  <body>
+    <button id="color">Click me</button>
+    <button id="growing">Click me</button>
+  </body>
+
+  <script>
+    document.querySelector('#color').addEventListener('click', function () {
+      this.style.backgroundColor = 'red';
+    });
+
+    document.querySelector('#growing').addEventListener('click', function () {
+      this.style.fontSize = '36px';
+      this.style.color = 'red';
+    });
+  </script>
+</html>
