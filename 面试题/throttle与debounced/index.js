@@ -26,3 +26,5 @@ const useDebounced = (fn, during) => {
 };
 
 export { useThrottle, useDebounced };
+
+type a = InstanceType<>;
