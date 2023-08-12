@@ -13,9 +13,7 @@
     "editor.formatOnSave": true
   },
   "[html]":{
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.formatOnSave": true
   },
-
-  "python.formatting.provider": "none"
 }

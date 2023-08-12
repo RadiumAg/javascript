@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+     function animate({ timing, draw, duration }) {
+       const start = performance.now();
+     
+       requestAnimationFrame(time => {
+         let timeFraction = (time - start) / duration;
+         if (timeFraction > 1) timeFraction = 1;
+
+         const progress = timing(timeFraction);
+
+         draw(progress);
+
+         if (timeFraction < 1) {
+           requestAnimationFrame(animate);
+    }
+       });
+     }
+    </script>
+</html>
