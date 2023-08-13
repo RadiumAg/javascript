@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="myButton">点击</button>
+    <div id="myDiv"></div>
+
+    <script>
+      const btn = document.querySelector('#myButton');
+      const event = document.createEvent('MouseEvents');
+      btn.addEventListener('click', event => {
+        console.log(event);
+      });
+
+      event.initEvent('click', true, true);
+      btn.dispatchEvent(event);
+    </script>
+
+    <!-- 自定义DOM事件 -->
+    <script>
+      {
+        const div = document.querySelector('#myDiv');
+        let event;
+
+        div.addEventListener('myevent', event => {
+          console.log(`DIV：${event.detail}`);
+        });
+        div.addEventListener('myevent', event => {
+          console.log(`DIV：${event.detail}`);
+        });
+
+        if (document.implementation.hasFeature('CustomEvents', '3.0')) {
+          event = document.createEvent('CustomEvent', true, false, 'Hello world!');
+          event.initCustomEvent('myevent', true, false, 'Hello world!');
+          div.dispatchEvent(event);
+        }
+      }
+    </script>
+  </body>
+</html>
