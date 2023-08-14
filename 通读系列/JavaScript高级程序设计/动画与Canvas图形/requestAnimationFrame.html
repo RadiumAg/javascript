@@ -50,5 +50,23 @@
         }
       });
     </script>
+
+    <!-- 节流改进版本 -->
+    <script>
+      let enabled = true;
+      function expensiveOperation() {
+        console.log('Invoked at', Date.now());
+      }
+
+      window.addEventListener('scroll', () => {
+        if (enabled) {
+          enabled = false;
+          requestAnimationFrame(expensiveOperation);
+          setTimeout(() => {
+            enabled = true;
+          }, 50);
+        }
+      });
+    </script>
   </body>
 </html>
