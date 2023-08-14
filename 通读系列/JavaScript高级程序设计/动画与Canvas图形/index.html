@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #status {
+        height: 100px;
+        background-color: bisque;
+      }
+    </style>
+
+    <div id="status" style="width: 0px"></div>
+  </head>
+  <body>
+    <script>
+      function updateProgress() {
+        const div = document.querySelector('#status');
+        div.style.width = `${Number.parseInt(div.style.width, 10) + 5}%`;
+
+        if (div.style.width !== '100%') {
+          requestAnimationFrame(updateProgress);
+        }
+      }
+
+      requestAnimationFrame(updateProgress);
+    </script>
+
+    <!--cancelAnimationFrame-->
+    <script>
+      const requestID = window.requestAnimationFrame(() => {
+        console.log('Repaint!');
+      });
+      window.cancelAnimationFrame(requestID);
+    </script>
+
+    <!-- requestAnimationFrame是一个非常好的节流工具 -->
+    <script>
+      let enqueued = false;
+      function expensiveOperation() {
+        console.log('Invoked at', Date.now());
+        enqueued = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!enqueued) {
+          enqueued = true;
+          requestAnimationFrame(expensiveOperation);
+        }
+      });
+    </script>
+  </body>
+</html>
