@@ -14,6 +14,15 @@
     <canvas id="drawing1" width="200" height="200"
       >a drawing o something.</canvas
     >
+    -------------------------------------------------------
+    <canvas id="drawing3" width="200" height="200"
+      >a drawing o something.</canvas
+    >
+
+    -------------------------------------------------------
+    <canvas id="drawing4" width="200" height="200"
+      >a drawing o something.</canvas
+    >
 
     <script>
       {
@@ -62,28 +71,96 @@
       {
         const drawing = document.querySelector('#drawing1');
         // 确保浏览器支持<canvas>
-        if (drawing.getContext) {
-          const context = drawing.getContext('2d');
-          // 创建路径
-          context.beginPath();
-          // 绘制外圆
-          context.arc(100, 100, 99, 0, 2 * Math.PI, false);
-          // 绘制内圆
-          context.moveTo(194, 100);
-          context.arc(100, 100, 94, 0, 2 * Math.PI, false);
-          // 绘制分针
-          context.moveTo(100, 100);
-          context.lineTo(100, 15);
-          // 绘制时针
-          context.moveTo(100, 100);
-          context.lineTo(35, 100);
-          // 描画路径
-          context.stroke();
+        const context = drawing.getContext('2d');
+        // 创建路径
+        context.beginPath();
+        // 绘制外圆
+        context.arc(100, 100, 99, 0, 2 * Math.PI, false);
+        // 绘制内圆
+        context.moveTo(194, 100);
+        context.arc(100, 100, 94, 0, 2 * Math.PI, false);
+        // 绘制分针
+        context.moveTo(100, 100);
+        context.lineTo(100, 15);
+        // 绘制时针
+        context.moveTo(100, 100);
+        context.lineTo(35, 100);
+        // 描画路径
+        context.stroke();
+
+        // 绘制文本
+        {
+          context.font = 'bold 14px Arial';
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.fillText('12', 100, 20);
+          // 与开头对齐
+          context.textAlign = 'start';
+          context.fillText('12', 100, 10);
+          // 与末尾对齐
+          context.textAlign = 'end';
+          context.fillText('12', 100, 10);
         }
       }
     </script>
 
-    <!--绘制文本-->
-    <script></script>
+    <script>
+      const context = document.querySelector('#drawing3').getContext('2d');
+
+      // measureText
+      let fontSize = 100;
+      context.font = `${fontSize}px Arial`;
+
+      while (context.measureText('Hello world!').width > 140) {
+        fontSize--;
+        context.font = `${fontSize}px Arial`;
+        context.fillText('Hello  world!', 10, 10);
+        context.fillText(`Font size is${fontSize}px`, 10, 50);
+      }
+    </script>
+
+    <script>
+      // measureText
+      {
+        const context = document.querySelector('#drawing3').getContext('2d');
+
+        let fontSize = 100;
+        context.font = `${fontSize}px Arial`;
+
+        while (context.measureText('Hello world!').width > 140) {
+          fontSize--;
+          context.font = `${fontSize}px Arial`;
+          context.fillText('Hello  world!', 10, 10);
+          context.fillText(`Font size is${fontSize}px`, 10, 50);
+        }
+      }
+    </script>
+
+    <script>
+      // 变换
+      {
+        const context = document.querySelector('#drawing4').getContext('2d');
+
+        // 创建路径
+        context.beginPath();
+        // 绘制外圈
+        context.arc(100, 100, 99, 0, 2 * Math.PI, false);
+        // 绘制内圈
+        context.moveTo(194, 100);
+        context.arc(100, 100, 94, 0, 2 * Math.PI, false);
+        // 移动原点到表盘中心
+        context.translate(100, 100);
+        // 旋转表针
+        context.rotate(1);
+        // 绘制分针
+        context.moveTo(0, 0);
+        context.lineTo(0, -85);
+        // 描绘时针
+        context.moveTo(0, 0);
+        context.lineTo(-65, 0);
+        // 描绘路径
+        context.stroke();
+      }
+    </script>
   </body>
 </html>
