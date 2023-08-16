@@ -260,5 +260,22 @@
     </script>
 
     <!-- 图像数据 -->
+    <script>
+      const context = document.querySelector('#drawing7').getContext('2d');
+      const imageData = context.getImageData(10, 5, 50, 50);
+    </script>
+
+    <!-- 合成 -->
+    <script>
+      {
+        const context = document.querySelector('#drawing8').getContext('2d');
+        context.fillStyle = '#ff0000';
+        context.fillRect(10, 10, 50, 50);
+
+        context.globalCompositeOperation = 'destination-over';
+        context.fillStyle = 'rgba(0,0,255,1)';
+        context.fillRect(30, 30, 50, 50);
+      }
+    </script>
   </body>
 </html>
