@@ -56,6 +56,12 @@
       >a drawing o something.</canvas
     >
 
+    -------------------------------------------------------
+    <br />
+    <canvas id="drawing8" width="200" height="200"
+      >a drawing o something.</canvas
+    >
+
     <script>
       {
         const drawing = document.querySelector('#drawing');
@@ -230,7 +236,29 @@
         const gradient = context.createLinearGradient(30, 30, 70, 70);
         gradient.addColorStop(0, 'white');
         gradient.addColorStop(1, 'black');
+
+        // 绘制红色矩形
+        context.fillStyle = '#ff0000';
+        context.fillRect(10, 10, 50, 50);
+
+        // 绘制渐变矩形
+        context.fillStyle = gradient;
+        context.fillRect(30, 30, 50, 50);
       }
     </script>
+
+    <!-- 图案 -->
+    <script>
+      {
+        const image = document.querySelector('#img1');
+        const context = document.querySelector('#drawing7').getContext('2d');
+        const pattern = context.createPattern(image, 'repeat');
+        // 绘制矩形
+        context.fillStyle = pattern;
+        context.fillRect(10, 10, 150, 150);
+      }
+    </script>
+
+    <!-- 图像数据 -->
   </body>
 </html>
