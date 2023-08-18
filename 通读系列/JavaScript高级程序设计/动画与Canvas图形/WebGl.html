@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <canvas id="drawing" width="200" height="100"></canvas>
+    <canvas id="drawing1" width="200" height="100"></canvas>
+    <canvas id="drawing2" width="200" height="100"></canvas>
+
+    <!-- 3．准备绘图 -->
+    <script>
+      {
+        const drawing = document.querySelector('#drawing');
+        const gl = drawing.getContext('webgl', { alpha: false });
+
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+    </script>
+
+    <!-- 视口与坐标 -->
+    <script>
+      {
+        const drawing = document.querySelector('#drawing1');
+        const gl = drawing.getContext('webgl');
+
+        // 视口是<canvas> 左下角四分之一区域
+        gl.viewport(0, 0, drawing.width / 2, drawing.height / 2);
+
+        // 视口是<canvas> 左上角四分之一区域
+        gl.viewport(0, 0, drawing.width / 2, drawing.height / 2);
+
+        // 视口是<canvas> 右下角四分之一区域
+        gl.viewport(
+          drawing.width / 2,
+          0,
+          drawing.width / 2,
+          drawing.height / 2,
+        );
+      }
+    </script>
+
+    <!-- 缓冲区 -->
+    <script>
+      {
+        const drawing = document.querySelector('#drawing2');
+        const gl = drawing.getContext('webgl');
+
+        let buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([0, 0.5, 1]),
+          gl.STATIC_DRAW,
+        );
+
+        gl.deleteBuffer(buffer);
+      }
+    </script>
+  </body>
+</html>
