@@ -1,58 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <h1>article元素嵌套</h1>
     <article>
-        <header>
-            <h1>苹果</h1>
-            <p>发表日期:
-                <time pubdate datetime="2010/10/09">2010/10/09</time>
+      <header>
+        <h1>苹果</h1>
+        <p>
+          发表日期:
+          <time pubdate datetime="2010/10/09">2010/10/09</time>
+        </p>
+      </header>
+      <p><b>苹果</b> ,植物类水果,多次花果...("苹果"文章正文)</p>
+      <section>
+        <h2>评论</h2>
+        <article>
+          <header>
+            <h3>发表者：陆凌牛</h3>
+            <p>
+              <time pubdate datetime="2010-10-10T19:10-08:00"> 1小时前 </time>
             </p>
-        </header>
-        <p><b>苹果</b> ,植物类水果,多次花果...("苹果"文章正文)</p>
-        <section>
-            <h2>评论</h2>
-            <article>
-                <header>
-                    <h3>发表者：陆凌牛</h3>
-                    <p>
-                        <time pubdate datetime="2010-10-10T19:10-08:00">
-                            1小时前
-                        </time>
-                    </p>
-                </header>
-                <p>我喜欢苹果,我最喜爱的品种是红富士。</p>
-            </article>
-            <article>
-                <header>
-                    <h3>发表者：张玉</h3>
-                    <p>
-                        <time pubdate datetime="2010-10-10T19:15-08:00">
-                            1小时前
-                        </time>
-                    </p>
-                </header>
-                <p>苹果？我不喜欢,我喜欢吃橘子。</p>
-            </article>
-        </section>
+          </header>
+          <p>我喜欢苹果,我最喜爱的品种是红富士。</p>
+        </article>
+        <article>
+          <header>
+            <h3>发表者：张玉</h3>
+            <p>
+              <time pubdate datetime="2010-10-10T19:15-08:00"> 1小时前 </time>
+            </p>
+          </header>
+          <p>苹果？我不喜欢,我喜欢吃橘子。</p>
+        </article>
+      </section>
     </article>
-
 
     <h1>用article元素表示插件</h1>
     <article>
-        <h1>My Fruit Spinner</h1>
-        <object>
-            <param name="allowFullScreen" value="true">
-            <embed src="#" width="600" height="395"></embed>
-        </object>
+      <h1>My Fruit Spinner</h1>
+      <object>
+        <param name="allowFullScreen" value="true" />
+        <embed src="#" width="600" height="395" />
+      </object>
     </article>
 
     <h1>time元素与微格式</h1>
@@ -63,33 +57,99 @@
     <time datetime="2010-11-13T20:00Z">我生日的晚上8点</time>
     <time datetime="2010-11-13T20:00+09:00">我生日的晚上8点的美国时间</time>
 
-     <h1>pubdate</h1>
-     <article>
-        <header>
-            <h1>苹果</h1>
-            <p>发布日期 
-                <time datetime="2010-10-29" pubdate>2010年10月29日</time>
-            </p>
-        </header>  
-       <p>苹果,植物类水果,多次花果...("苹果"文章正文)</p>
+    <h1>pubdate</h1>
+    <article>
+      <header>
+        <h1>苹果</h1>
+        <p>
+          发布日期
+          <time datetime="2010-10-29" pubdate>2010年10月29日</time>
+        </p>
+      </header>
+      <p>苹果,植物类水果,多次花果...("苹果"文章正文)</p>
     </article>
 
     <article>
-        <header>
-            <h1>关于<time datetime=2010-10-29>10月29日</time>的舞会通知</h1>
-            <p>发布日期:
-                <time datetime=2010-10-11 pubdate>2010年10月11日</time>
-            </p>
-        </header>
-        <p>大家好:我是法律系3年级学生代表,......(关于舞会的通知)</p>
+      <header>
+        <h1>关于<time datetime="2010-10-29">10月29日</time>的舞会通知</h1>
+        <p>
+          发布日期:
+          <time datetime="2010-10-11" pubdate>2010年10月11日</time>
+        </p>
+      </header>
+      <p>大家好:我是法律系3年级学生代表,......(关于舞会的通知)</p>
     </article>
 
     <h1>address</h1>
-    <address>  
-        <a href=http:// blog.sina.com.cn/itnewtech>陆凌牛</a> 
-        <a href=http:// blog.sina.com.cn/zhangyu>张玉</a> 
-        <a href=http:// blog.sina.com.cn/baiquanli>白权立</a>  
+    <address>
+      <a href="http://blog.sina.com.cn/itnewtech">陆凌牛</a>
+      <a href="http://blog.sina.com.cn/zhangyu">张玉</a>
+      <a href="http://blog.sina.com.cn/baiquanli">白权立</a>
     </address>
-</body>
 
+    <h1>formmethod</h1>
+    <form id="testform" action="serve.jsp">
+      姓名:<input type="text" name="name" /><br />
+      <input type="submit" value="post方式提交" formmethod="post" />
+      <input type="submit" value="get方式提交" formmethod="get" />
+    </form>
+
+    <h1>formenctype属性示例</h1>
+    <form action="server.jsp" method="post">
+      <input type="text" name="name" value="test" /><br />
+      文件：<input type="file" name="files" />
+      <input
+        type="submit"
+        value="上传"
+        formaction="uploadFile.jsp"
+        formenctype="multipart/form-data"
+      />
+      <input type="submit" value="提交" />
+    </form>
+
+    <h1>formtarget</h1>
+    <form id="testform" action="serve.jsp">
+      <input
+        type="submit"
+        name="s1"
+        value="v1"
+        formaction="sb1.html"
+        formtarget="_self"
+      />提交到S1
+      <input
+        type="submit"
+        name="s2"
+        value="v2"
+        formaction="sb2.html"
+        formtarget="_blank"
+      />提交到S2
+    </form>
+
+    <h1>formtarget</h1>
+    <form id="testform">
+      <label id="label" for="txt_name">姓名:</label>
+      <input id="txt_name" />
+      <input type="button" value="验证" onclick="validate()" />
+    </form>
+
+    <script>
+      function validate() {
+        const txtName = document.getElementById('txt_name');
+        const button = document.getElementById('btnValidate');
+        const form = document.getElementById('testform');
+
+        if (txtName.value.trim() === '') {
+          if (txtName.labels.length === 1) {
+            const label = document.createElement('label');
+            label.setAttribute('for', 'txt_name');
+            form.insertBefore(label, button);
+            txtName.labels[1].innerHTML = '请输入姓名';
+            txtName.labels[1].setAttribute('style', 'font-size:9px;color:red');
+          }
+        } else if (txtName.labels.length > 1) {
+          form.removeChild(txtName.labels[1]);
+        }
+      }
+    </script>
+  </body>
 </html>
