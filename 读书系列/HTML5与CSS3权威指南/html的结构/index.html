@@ -151,5 +151,23 @@
         }
       }
     </script>
+
+    <h1>标签的control属性使用示例</h1>
+    <script>
+      function setValue(){
+        const label = document.getElementById("label1")
+        const textbox = label.control
+        textbox.value = "213001"
+      }
+    </script>
+
+   <form>
+    <label id="label1">
+      邮编：
+      <input id="text_zip" type="text">
+      <small>请输入六位数字</small>
+    </label>
+   </form>
+    <input type="button" value="设置默认值" onclick="setValue()" />
   </body>
 </html>
