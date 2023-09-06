@@ -174,21 +174,33 @@
   </form>
 
   <h1>selectionDirection</h1>
+
   <script>
     function AlertSelectionDirection() {
-      var control = document.forms[0]['text'];
+      debugger
+      var control = document.querySelector('#direction');
       var Direction = control.selectionDirection;
       alert(Direction);
     }    
   </script>
 
-  <body>
-    <form>
-      <input type="test" name="text">
-      <input type="button" value="点击我" onclick="AlertSelectionDirection()">
-    </form>
-  </body>
+  <form>
+    <input type="test" id="direction" name="text">
+    <input type="button" value="点击我" onclick="AlertSelectionDirection()">
+  </form>
 
+
+  <h1>indeterminate</h1>
+  <input type="checkbox" id="cb" indeterminate />
+
+
+  <script>
+    const cb = document.getElementById('cb')
+    cb.indeterminate = true
+  </script>
+
+  <h1>textarea的wrap和maxlength</h1>
+  <textarea name="name" maxlength="100" rows="5" wrap="hard" cols="5"></textarea>
 </body>
 
 </html>
