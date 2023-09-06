@@ -1,155 +1,327 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
 
-  <body>
-    <h1>article元素嵌套</h1>
-    <article>
-      <header>
-        <h1>苹果</h1>
-        <p>
-          发表日期:
-          <time pubdate datetime="2010/10/09">2010/10/09</time>
-        </p>
-      </header>
-      <p><b>苹果</b> ,植物类水果,多次花果...("苹果"文章正文)</p>
-      <section>
-        <h2>评论</h2>
-        <article>
-          <header>
-            <h3>发表者：陆凌牛</h3>
-            <p>
-              <time pubdate datetime="2010-10-10T19:10-08:00"> 1小时前 </time>
-            </p>
-          </header>
-          <p>我喜欢苹果,我最喜爱的品种是红富士。</p>
-        </article>
-        <article>
-          <header>
-            <h3>发表者：张玉</h3>
-            <p>
-              <time pubdate datetime="2010-10-10T19:15-08:00"> 1小时前 </time>
-            </p>
-          </header>
-          <p>苹果？我不喜欢,我喜欢吃橘子。</p>
-        </article>
-      </section>
-    </article>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-    <h1>用article元素表示插件</h1>
-    <article>
-      <h1>My Fruit Spinner</h1>
-      <object>
-        <param name="allowFullScreen" value="true" />
-        <embed src="#" width="600" height="395" />
-      </object>
-    </article>
+<body>
+  <h1>article元素嵌套</h1>
+  <article>
+    <header>
+      <h1>苹果</h1>
+      <p>
+        发表日期:
+        <time pubdate datetime="2010/10/09">2010/10/09</time>
+      </p>
+    </header>
+    <p><b>苹果</b> ,植物类水果,多次花果...("苹果"文章正文)</p>
+    <section>
+      <h2>评论</h2>
+      <article>
+        <header>
+          <h3>发表者：陆凌牛</h3>
+          <p>
+            <time pubdate datetime="2010-10-10T19:10-08:00"> 1小时前 </time>
+          </p>
+        </header>
+        <p>我喜欢苹果,我最喜爱的品种是红富士。</p>
+      </article>
+      <article>
+        <header>
+          <h3>发表者：张玉</h3>
+          <p>
+            <time pubdate datetime="2010-10-10T19:15-08:00"> 1小时前 </time>
+          </p>
+        </header>
+        <p>苹果？我不喜欢,我喜欢吃橘子。</p>
+      </article>
+    </section>
+  </article>
 
-    <h1>time元素与微格式</h1>
-    <time datetime="2010-11-13">2010年11月13日</time>
-    <time datetime="2010-11-13">11月13日</time>
-    <time datetime="2010-11-13">我的生日</time>
-    <time datetime="2010-11-13T20:00">我生日的晚上8点</time>
-    <time datetime="2010-11-13T20:00Z">我生日的晚上8点</time>
-    <time datetime="2010-11-13T20:00+09:00">我生日的晚上8点的美国时间</time>
+  <h1>用article元素表示插件</h1>
+  <article>
+    <h1>My Fruit Spinner</h1>
+    <object>
+      <param name="allowFullScreen" value="true" />
+      <embed src="#" width="600" height="395" />
+    </object>
+  </article>
 
-    <h1>pubdate</h1>
-    <article>
-      <header>
-        <h1>苹果</h1>
-        <p>
-          发布日期
-          <time datetime="2010-10-29" pubdate>2010年10月29日</time>
-        </p>
-      </header>
-      <p>苹果,植物类水果,多次花果...("苹果"文章正文)</p>
-    </article>
+  <h1>time元素与微格式</h1>
+  <time datetime="2010-11-13">2010年11月13日</time>
+  <time datetime="2010-11-13">11月13日</time>
+  <time datetime="2010-11-13">我的生日</time>
+  <time datetime="2010-11-13T20:00">我生日的晚上8点</time>
+  <time datetime="2010-11-13T20:00Z">我生日的晚上8点</time>
+  <time datetime="2010-11-13T20:00+09:00">我生日的晚上8点的美国时间</time>
 
-    <article>
-      <header>
-        <h1>关于<time datetime="2010-10-29">10月29日</time>的舞会通知</h1>
-        <p>
-          发布日期:
-          <time datetime="2010-10-11" pubdate>2010年10月11日</time>
-        </p>
-      </header>
-      <p>大家好:我是法律系3年级学生代表,......(关于舞会的通知)</p>
-    </article>
+  <h1>pubdate</h1>
+  <article>
+    <header>
+      <h1>苹果</h1>
+      <p>
+        发布日期
+        <time datetime="2010-10-29" pubdate>2010年10月29日</time>
+      </p>
+    </header>
+    <p>苹果,植物类水果,多次花果...("苹果"文章正文)</p>
+  </article>
 
-    <h1>address</h1>
-    <address>
-      <a href="http://blog.sina.com.cn/itnewtech">陆凌牛</a>
-      <a href="http://blog.sina.com.cn/zhangyu">张玉</a>
-      <a href="http://blog.sina.com.cn/baiquanli">白权立</a>
-    </address>
+  <article>
+    <header>
+      <h1>关于<time datetime="2010-10-29">10月29日</time>的舞会通知</h1>
+      <p>
+        发布日期:
+        <time datetime="2010-10-11" pubdate>2010年10月11日</time>
+      </p>
+    </header>
+    <p>大家好:我是法律系3年级学生代表,......(关于舞会的通知)</p>
+  </article>
 
-    <h1>formmethod</h1>
-    <form id="testform" action="serve.jsp">
-      姓名:<input type="text" name="name" /><br />
-      <input type="submit" value="post方式提交" formmethod="post" />
-      <input type="submit" value="get方式提交" formmethod="get" />
-    </form>
+  <h1>address</h1>
+  <address>
+    <a href="http://blog.sina.com.cn/itnewtech">陆凌牛</a>
+    <a href="http://blog.sina.com.cn/zhangyu">张玉</a>
+    <a href="http://blog.sina.com.cn/baiquanli">白权立</a>
+  </address>
 
-    <h1>formenctype属性示例</h1>
-    <form action="server.jsp" method="post">
-      <input type="text" name="name" value="test" /><br />
-      文件：<input type="file" name="files" />
-      <input
-        type="submit"
-        value="上传"
-        formaction="uploadFile.jsp"
-        formenctype="multipart/form-data"
-      />
-      <input type="submit" value="提交" />
-    </form>
+  <h1>formmethod</h1>
+  <form id="testform" action="serve.jsp">
+    姓名:<input type="text" name="name" /><br />
+    <input type="submit" value="post方式提交" formmethod="post" />
+    <input type="submit" value="get方式提交" formmethod="get" />
+  </form>
 
-    <h1>formtarget</h1>
-    <form id="testform" action="serve.jsp">
-      <input
-        type="submit"
-        name="s1"
-        value="v1"
-        formaction="sb1.html"
-        formtarget="_self"
-      />提交到S1
-      <input
-        type="submit"
-        name="s2"
-        value="v2"
-        formaction="sb2.html"
-        formtarget="_blank"
-      />提交到S2
-    </form>
+  <h1>formenctype属性示例</h1>
+  <form action="server.jsp" method="post">
+    <input type="text" name="name" value="test" /><br />
+    文件：<input type="file" name="files" />
+    <input type="submit" value="上传" formaction="uploadFile.jsp" formenctype="multipart/form-data" />
+    <input type="submit" value="提交" />
+  </form>
 
-    <h1>formtarget</h1>
-    <form id="testform">
-      <label id="label" for="txt_name">姓名:</label>
-      <input id="txt_name" />
-      <input type="button" value="验证" onclick="validate()" />
-    </form>
+  <h1>formtarget</h1>
+  <form id="testform" action="serve.jsp">
+    <input type="submit" name="s1" value="v1" formaction="sb1.html" formtarget="_self" />提交到S1
+    <input type="submit" name="s2" value="v2" formaction="sb2.html" formtarget="_blank" />提交到S2
+  </form>
 
-    <script>
-      function validate() {
-        const txtName = document.getElementById('txt_name');
-        const button = document.getElementById('btnValidate');
-        const form = document.getElementById('testform');
+  <h1>formtarget</h1>
+  <form id="testform">
+    <label id="label" for="txt_name">姓名:</label>
+    <input id="txt_name" />
+    <input type="button" value="验证" onclick="validate()" />
+  </form>
 
-        if (txtName.value.trim() === '') {
-          if (txtName.labels.length === 1) {
-            const label = document.createElement('label');
-            label.setAttribute('for', 'txt_name');
-            form.insertBefore(label, button);
-            txtName.labels[1].innerHTML = '请输入姓名';
-            txtName.labels[1].setAttribute('style', 'font-size:9px;color:red');
-          }
-        } else if (txtName.labels.length > 1) {
-          form.removeChild(txtName.labels[1]);
+  <script>
+    function validate() {
+      const txtName = document.getElementById('txt_name');
+      const button = document.getElementById('btnValidate');
+      const form = document.getElementById('testform');
+
+      if (txtName.value.trim() === '') {
+        if (txtName.labels.length === 1) {
+          const label = document.createElement('label');
+          label.setAttribute('for','txt_name');
+          form.insertBefore(label,button);
+          txtName.labels[1].innerHTML = '请输入姓名';
+          txtName.labels[1].setAttribute('style','font-size:9px;color:red');
         }
+      } else if (txtName.labels.length > 1) {
+        form.removeChild(txtName.labels[1]);
       }
-    </script>
-  </body>
+    }
+  </script>
+
+  <h1>标签的control属性使用示例</h1>
+  <script>
+    function setValue() {
+      const label = document.getElementById("label1")
+      const textbox = label.control
+      textbox.value = "213001"
+    }
+  </script>
+
+  <form>
+    <label id="label1">
+      邮编：
+      <input id="text_zip" type="text">
+      <small>请输入六位数字</small>
+    </label>
+  </form>
+  <input type="button" value="设置默认值" onclick="setValue()" />
+
+
+  <h1>属性实例</h1>
+  text: <input type="text" name="greeting" list="greetings" />
+
+  <datalist id="greetings" style="display: none;">
+    <option value="Good Morning">Good Morning</option>
+    <option value="Hello">Hello</option>
+    <option value="Good Afternoon">Good Afternoon</option>
+  </datalist>
+
+  <h1>autocomplete</h1>
+  <input type="text" name="greeting" list="greetings" autocomplete="on" />
+
+  <h1>pattern</h1>
+  <form>
+    请输入指定格式的内容：<input pattern="[0-9][A-Z]{3}" name=part>
+    <input type="submit">
+  </form>
+
+  <h1>selectionDirection</h1>
+
+  <script>
+    function AlertSelectionDirection() {
+      debugger
+      var control = document.querySelector('#direction');
+      var Direction = control.selectionDirection;
+      alert(Direction);
+    }    
+  </script>
+
+  <form>
+    <input type="test" id="direction" name="text">
+    <input type="button" value="点击我" onclick="AlertSelectionDirection()">
+  </form>
+
+
+  <h1>indeterminate</h1>
+  <input type="checkbox" id="cb" indeterminate />
+
+
+  <script>
+    const cb = document.getElementById('cb')
+    cb.indeterminate = true
+  </script>
+
+  <h1>textarea的wrap和maxlength</h1>
+  <textarea name="name" maxlength="100" rows="5" wrap="hard" cols="5"></textarea>
+
+  <h1>checkValidity方法</h1>
+
+  <script>
+    function check() {
+      const email = document.getElementById("email");
+      if (email.value === "") {
+        alert("请输入Email地址")
+        return false;
+      } else if (!email.checkVisibility()) {
+        alert("请输入正确的Email地址")
+        return false;
+      } else
+        alert("您输入的Email地址有效")
+    }
+  </script>
+  <form id="testform" onsubmit="return check();" novalidate>
+    <label for="email">Email</label>
+    <input name="email" id="email" type="email" />
+    <input type="submit" />
+  </form>
+
+
+  <h1>details元素</h1>
+  <details>
+    <summary>精武风云</summary>
+    <p>精武风云精武风云精武风云精武风云</p>
+  </details>
+
+  <h1> mark元素应用在网页检索时的示例</h1>
+
+  <h1>搜索"<mark>HTML 5<mark>",找到相关网页约10,200,000篇,用时0.041秒</h1>
+  <section id="search-results">
+    <article>
+      <h2>
+        <a href="http:// developer.51cto.com/art/200907/133407.htm">
+          专题：<mark>HTML 5</mark> 下一代Web开发标准详解_51CTO.COM - 技术
+          成就梦想 ...
+        </a>
+      </h2>
+      <p><mark>HTML 5</mark>是近十年来Web开发标准最巨大的飞跃</p>
+    </article>
+    <article>
+      <h2>
+        <a href="http:// paranimage.com/list-of-html-5/">
+          <mark>HTML 5</mark>一览 | 帕兰映像
+        </a>
+      </h2>
+      <p><mark>html 5</mark>最近被讨论的越来越多,越来越烈...</p>
+    </article>
+    <article>
+      <h2>
+        <a href="http:// www.chinabyte.com/keyword/HTML+5/">
+          <mark>html 5</mark>_比特网
+        </a>
+      </h2>
+      <p><mark>HTML 5</mark>提供了一些新的元素和属性,反映典型...</p>
+    </article>
+    <article>
+      <h2>
+        <a href="http:// www.slideshare.net/mienflying/html5-4921810">
+          <mark>HTML 5</mark>表单
+        </a>
+      </h2>
+      <p>about <mark>HTML 5</mark> Form,the web form 2.0 tech</p>
+    </article>
+  </section>
+
+
+  <h1>progress元素的使用示例</h1>
+
+
+  <section>
+    <h2>progress元素的使用示例</h2>
+    <p>完成百分比: <progress id="p" max=100><span>0</span>%</progress></p>
+    <input type="button" id="progressInput" value="请点击" />
+  </section>
+
+  <script>
+    var progressBar = document.getElementById('p');
+
+    async function button_onclick() {
+      console.log('update')
+      var progressBar = document.getElementById('p');
+      progressBar.getElementsByTagName('span')[0].textContent = "0";
+      for (let i = 0; i <= 100; i++) {
+        await new Promise((resolve,reject) => {
+          const sign = setTimeout(() => {
+            clearInterval(sign)
+            updateProgress(i);
+            resolve()
+          },1000)
+        })
+      }
+    }
+
+    function updateProgress(newValue) {
+      var progressBar = document.getElementById('p');
+      progressBar.value = newValue;
+      progressBar.getElementsByTagName('span')[0].textContent = newValue;
+    }
+
+    document.querySelector('#progressInput').addEventListener('click',button_onclick)
+  </script>
+
+
+
+  <h1>对话框使用示例</h1>
+  <input type="button" value="打开对话框" onclick="document.getElementById('dg').show();">
+  <dialog style="width:9%;text-align:center;" id="dg">
+    <h1>用户登录</h1>
+    <main>
+      <form>
+        <label for="txtName" value="用户名：" /><input type="text" id="txtName" /><br />
+        <label for="txtPassword" value="密码：" /><input type="password" id="txtPassword" /><br />
+        <input type="button" value="登录" /><input type="button" value="
+            关闭" onclick="document.getElementById('dg').close();" />
+      </form>
+    </main>
+  </dialog>
+
+</body>
+
 </html>
