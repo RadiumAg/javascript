@@ -201,6 +201,28 @@
 
   <h1>textarea的wrap和maxlength</h1>
   <textarea name="name" maxlength="100" rows="5" wrap="hard" cols="5"></textarea>
+
+  <h1>checkValidity方法</h1>
+
+  <script>
+    function check() {
+      const email = document.getElementById("email");
+      if (email.value === "") {
+        alert("请输入Email地址")
+        return false;
+      } else if (!email.checkVisibility()) {
+        alert("请输入正确的Email地址")
+        return false;
+      } else
+        alert("您输入的Email地址有效")
+    }
+  </script>
+  <form id="testform" onsubmit="return check();" novalidate>
+    <label for="email">Email</label>
+    <input name="email" id="email" type="email" />
+    <input type="submit" />
+  </form>
+
 </body>
 
 </html>
