@@ -15,23 +15,23 @@
       function Leaker() {
         this.init();
       }
-  Leaker.prototype = {
+      Leaker.prototype = {
         init() {
           this.name = Array.from({ length: 100000 }).join('*');
-          console.log('Leaking an object %o: %o', new Date(), this); // this对象不能被回收
-    },
+          console.log('Leaking an object %o: %o',new Date(),this); // this对象不能被回收
+        },
 
         destroy() {
           // do something....
         },
       };
       document.querySelector('input').addEventListener(
-    'click',
-    () => {
+        'click',
+        () => {
           new Leaker();
         },
-    false,
-  );
+        false,
+      );
     })();
   </script>
 </body>
