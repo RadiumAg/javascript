@@ -5,15 +5,78 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
     <title>first-line伪元素使用示例</title>
-    <style type="text/css">
-        p:first-line {
-            color: #0000FF
-        }
-    </style>
+
 </head>
 
 <body>
-    <p>段落中的第一行。<br>段落中的第二行</p>
+    <h3>用于想某个元素中的第一行文字使用样式</h3>
+    <style type="text/css">
+        #test1 p::first-line {
+            color: #0000FF
+        }
+    </style>
+    <div id="test1">
+        <p>段落中的第一行。<br>段落中的第二行</p>
+    </div>
+
+    <h3>使用first-letter伪元素选择器来设置这两段文字的开头字母或文字的颜色为蓝色。</h3>
+    <style>
+        #test2 p::first-letter {
+            color: #0000ff;
+        }
+    </style>
+
+    <div id="test2">
+        <p>This is english text。</p>
+        <p>这是一段中文文字。</p>
+    </div>
+
+    <h3>使用empty选择器来指定当元素中内容为空白时使用的样式。</h3>
+    <div id="test3">
+        <table border="1" cellpading="0"></table>
+    </div>
+
+    <h3>
+        使用target选择器来对页面中某个target元素（该元素的id被当作页面中的超链接来使用）指定样式，该样式只在用户点击了页面中的超链接，并且跳转到target元素后起作用。
+    </h3>
+
+    <style type="text/css">
+        :target {
+            background-color: yellow;
+        }
+    </style>
+
+    <body>
+        <p id="menu">
+            <a href="#text1">示例文字1</a> |
+            <a href="#text2">示例文字2</a> |
+            <a href="#text3">示例文字3</a> |
+            <a href="#text4">示例文字4</a> |
+            <a href="#text5">示例文字5</a>
+        </p>
+        <div id="text1">
+            <h2>示例文字1</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text2">
+            <h2>示例文字2</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text3">
+            <h2>示例文字3</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text4">
+            <h2>示例文字4</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text5">
+            <h2>示例文字5</h2>
+            <p>...此处略去</p>
+    </body>
+
+</html>
+
 </body>
 
 </html>
