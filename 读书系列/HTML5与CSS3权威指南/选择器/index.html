@@ -75,6 +75,28 @@
             <p>...此处略去</p>
     </body>
 
+
+    <h2>E:hover选择器、E:active选择器与E:focus选择器使用示例</h2>
+    <style>
+        #test-hover input:hover {
+            background-color: greenyellow;
+        }
+
+        #test-hover input:focus {
+            background-color: skyblue;
+        }
+
+        #test-hover input:active {
+            background-color: yellow;
+        }
+    </style>
+
+    <form id="test-hover">
+        <p>姓名：<input type="text" name="name" /></p>
+        <p>地址：<input type="text" name="address" /></p>
+    </form>
+
+
 </html>
 
 </body>
