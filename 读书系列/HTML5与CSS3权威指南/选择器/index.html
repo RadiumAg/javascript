@@ -97,8 +97,42 @@
     </form>
 
 
-</html>
+    <h2>disabled伪类选择器与enabled伪类选择器</h2>
 
+
+    <script>
+        function radio_onchange() {
+            const radio = document.querySelector("#disabled-enabled #radio1");
+            const text = document.querySelector("#disabled-enabled #text1");
+            console.log(radio)
+            if (radio.checked) {
+                text.removeAttribute("disabled")
+            }
+            else {
+                text.value = "";
+                text.disabled = "disabled";
+            }
+        }
+    </script>
+
+    <style>
+        #disabled-enabled input[type="text"]:enabled {
+            background-color: yellow;
+        }
+
+        #disabled-enabled input[type="text"]:disabled {
+            background-color: purple;
+        }
+    </style>
+    </head>
+
+    <form id="disabled-enabled">
+        <input type="radio" id="radio1" name="radio" onchange="radio_onchange();">可用</radio>
+        <input type="radio" id="radio2" name="radio" onchange="radio_onchange();">不可用</radio><br />
+        <input type=text id="text1" disabled />
+    </form>
+
+</html>
 </body>
 
 </html>
