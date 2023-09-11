@@ -106,7 +106,7 @@
             const text = document.querySelector("#disabled-enabled #text1");
             console.log(radio)
             if (radio.checked) {
-                text.removeAttribute("disabled")
+                text.removeAttribute('disabled');
             }
             else {
                 text.value = "";
@@ -131,6 +131,46 @@
         <input type="radio" id="radio2" name="radio" onchange="radio_onchange();">不可用</radio><br />
         <input type=text id="text1" disabled />
     </form>
+
+    <h2>in-range 和 out-of-range</h2>
+
+    <style>
+        #test-range input:in-range {
+            background-color: white;
+        }
+
+        #test-range input:out-of-range {
+            background-color: red;
+        }
+    </style>
+
+    <form id="test-range">
+        <input type="number" min="0" max="100" />
+    </form>
+
+    <h2>~ 子元素之后的同级元素</h2>
+    <style>
+        div~p {
+            background-color: #00FF00;
+        }
+    </style>
+
+    <div>
+        <p>p元素为div元素的子元素</p>
+        <p>p元素为div元素的子元素</p>
+    </div>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
 
 </html>
 </body>
