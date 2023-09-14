@@ -1,23 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Document</title>
 </head>
 
 <style>
-.container {
-}
+   .container {
+      width: min-content;
+      position: relative;
+   }
 
+   .mask {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999;
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.5);
+   }
+
+   .box {
+      top: 300px;
+      left: 500px;
+      width: 500px;
+      height: 500px;
+      z-index: 1000;
+      position: absolute;
+      mix-blend-mode: overlay;
+      background-color: rgba(255, 255, 255, 1);
+   }
+
+   .image {
+      width: 1900px;
+   }
 </style>
 
 <body>
-    
- <div>
-    <div class="container">
-       <div></div>
-    </div>
- </div>
+   <div class="container">
+      <div class="mask"></div>
+      <div class="box"></div>
+      <!-- <img class="image" src="https://d3o1694hluedf9.cloudfront.net/sierra-750.jpg" /> -->
+      <img class="image" src="./image.jpg" />
+   </div>
+
+   <img class="image" src="https://d3o1694hluedf9.cloudfront.net/sierra-750.jpg" />
+
 </body>
+
 </html>

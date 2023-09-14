@@ -5,15 +5,174 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
     <title>first-line伪元素使用示例</title>
-    <style type="text/css">
-        p:first-line {
-            color: #0000FF
-        }
-    </style>
+
 </head>
 
 <body>
-    <p>段落中的第一行。<br>段落中的第二行</p>
+    <h3>用于想某个元素中的第一行文字使用样式</h3>
+    <style type="text/css">
+        #test1 p::first-line {
+            color: #0000FF
+        }
+    </style>
+    <div id="test1">
+        <p>段落中的第一行。<br>段落中的第二行</p>
+    </div>
+
+    <h3>使用first-letter伪元素选择器来设置这两段文字的开头字母或文字的颜色为蓝色。</h3>
+    <style>
+        #test2 p::first-letter {
+            color: #0000ff;
+        }
+    </style>
+
+    <div id="test2">
+        <p>This is english text。</p>
+        <p>这是一段中文文字。</p>
+    </div>
+
+    <h3>使用empty选择器来指定当元素中内容为空白时使用的样式。</h3>
+    <div id="test3">
+        <table border="1" cellpading="0"></table>
+    </div>
+
+    <h3>
+        使用target选择器来对页面中某个target元素（该元素的id被当作页面中的超链接来使用）指定样式，该样式只在用户点击了页面中的超链接，并且跳转到target元素后起作用。
+    </h3>
+
+    <style type="text/css">
+        :target {
+            background-color: yellow;
+        }
+    </style>
+
+    <body>
+        <p id="menu">
+            <a href="#text1">示例文字1</a> |
+            <a href="#text2">示例文字2</a> |
+            <a href="#text3">示例文字3</a> |
+            <a href="#text4">示例文字4</a> |
+            <a href="#text5">示例文字5</a>
+        </p>
+        <div id="text1">
+            <h2>示例文字1</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text2">
+            <h2>示例文字2</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text3">
+            <h2>示例文字3</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text4">
+            <h2>示例文字4</h2>
+            <p>...此处略去</p>
+        </div>
+        <div id="text5">
+            <h2>示例文字5</h2>
+            <p>...此处略去</p>
+    </body>
+
+
+    <h2>E:hover选择器、E:active选择器与E:focus选择器使用示例</h2>
+    <style>
+        #test-hover input:hover {
+            background-color: greenyellow;
+        }
+
+        #test-hover input:focus {
+            background-color: skyblue;
+        }
+
+        #test-hover input:active {
+            background-color: yellow;
+        }
+    </style>
+
+    <form id="test-hover">
+        <p>姓名：<input type="text" name="name" /></p>
+        <p>地址：<input type="text" name="address" /></p>
+    </form>
+
+
+    <h2>disabled伪类选择器与enabled伪类选择器</h2>
+
+
+    <script>
+        function radio_onchange() {
+            const radio = document.querySelector("#disabled-enabled #radio1");
+            const text = document.querySelector("#disabled-enabled #text1");
+            console.log(radio)
+            if (radio.checked) {
+                text.removeAttribute('disabled');
+            }
+            else {
+                text.value = "";
+                text.disabled = "disabled";
+            }
+        }
+    </script>
+
+    <style>
+        #disabled-enabled input[type="text"]:enabled {
+            background-color: yellow;
+        }
+
+        #disabled-enabled input[type="text"]:disabled {
+            background-color: purple;
+        }
+    </style>
+    </head>
+
+    <form id="disabled-enabled">
+        <input type="radio" id="radio1" name="radio" onchange="radio_onchange();">可用</radio>
+        <input type="radio" id="radio2" name="radio" onchange="radio_onchange();">不可用</radio><br />
+        <input type=text id="text1" disabled />
+    </form>
+
+    <h2>in-range 和 out-of-range</h2>
+
+    <style>
+        #test-range input:in-range {
+            background-color: white;
+        }
+
+        #test-range input:out-of-range {
+            background-color: red;
+        }
+    </style>
+
+    <form id="test-range">
+        <input type="number" min="0" max="100" />
+    </form>
+
+    <h2>~ 子元素之后的同级元素</h2>
+    <style>
+        div~p {
+            background-color: #00FF00;
+        }
+    </style>
+
+    <div>
+        <p>p元素为div元素的子元素</p>
+        <p>p元素为div元素的子元素</p>
+    </div>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+    <p>p元素为div元素的子元素</p>
+    <hr />
+
+</html>
 </body>
 
 </html>

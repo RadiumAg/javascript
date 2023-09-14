@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style href="./jquery.Jcrop.css"></style>
+  <script src="./jquery.min.js"></script>
+  <script src="./jquery.Jcrop.js"></script>
+
+  <body>
+    <img
+      src="./sago.jpg"
+      id="target"
+      alt="[Jcrop Example]"
+      style="display: none; visibility: hidden; width: 602px; height: 400px"
+    />
+
+    <script type="text/javascript">
+      jQuery(function ($) {
+        // How easy is this??
+        $('#target').Jcrop();
+      });
+    </script>
+  </body>
+</html>
