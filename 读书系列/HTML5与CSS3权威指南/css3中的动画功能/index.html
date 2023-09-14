@@ -26,11 +26,56 @@
     <h2>使用Transition实现元素的移动与旋转动画</h2>
 
     <style>
+        #test2 {
+            top: 70px;
+            left: 0;
+            position: relative;
+            transform: rotate(0deg);
+            transition: left 1s linear, transform 1s linear;
+        }
 
+        #test2:hover {
+            left: 30;
+            transform: rotate(720deg);
+        }
     </style>
 
-    <img src="./test.jpg" alt="*">
+    <img id="test2" src="./test.jpg" alt="*">
 
+    <h2 id="test3-title">Animations功能使用示例</h2>
+
+    <style>
+        @keyframes myColor {
+            0% {
+                background-color: red;
+            }
+
+            40% {
+                background-color: darkblue;
+            }
+
+            70% {
+                background-color: yellow;
+            }
+
+            100% {
+                background-color: red;
+            }
+        }
+
+        #test3-title {
+            margin-top: 300px;
+        }
+
+        #test3:hover {
+            cursor: pointer;
+            animation-name: myColor;
+            animation-duration: 5s;
+            animation-timing-function: linear;
+        }
+    </style>
+
+    <div id="test3">示例文字</div>
 </body>
 
 </html>
