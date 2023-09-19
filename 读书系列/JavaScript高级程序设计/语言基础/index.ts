@@ -5,6 +5,12 @@ console.log(num2);
 console.log(num.toString(2), num2.toString(2));
 
 (() => {
+  function doSomeThing() {
+    'use strict';
+  }
+})();
+
+(() => {
   let age = 29;
   const anotherAge = --age + 2;
   console.log(age); // 28
