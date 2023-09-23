@@ -1,3 +1,18 @@
+// Promise.any
+(() => {
+  Promise.any([
+    fetch('https://v8.dev/').then(() => 'home'),
+    fetch('https://v8.dev/blog').then(() => 'blog'),
+    fetch('https://v8.dev/docs').then(() => 'docs'),
+  ])
+    .then(first => {
+      console.log(first);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+})();
+
 // 异步加载图片
 () => {
   function loadImageAsync(url: string) {
