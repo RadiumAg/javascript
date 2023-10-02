@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xFF);
+  console.log(0xff);
 })();
 
 // 布尔值
@@ -22,4 +22,12 @@
 // undefined 是全局变量，它不是关键字
 
 // 包装对象
-(() => {})();
+// 通过String,Number,Boolean构造函数来显式创建包装对象
+(() => {
+  const s = 'test';
+  const n = 1;
+  const b = true;
+  const S = new String(s);
+  const N = new Number(n);
+  const B = new Boolean(b);
+})();
