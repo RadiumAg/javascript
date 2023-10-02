@@ -31,3 +31,5 @@
   const N = new Number(n);
   const B = new Boolean(b);
 })();
+
+// 类型转换
