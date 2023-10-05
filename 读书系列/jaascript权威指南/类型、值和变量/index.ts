@@ -62,4 +62,5 @@
   console.log(!!x);
 
   // toFixed，toExponential，toPrecision 都会适当的四舍五入
+  // commit
 })();
