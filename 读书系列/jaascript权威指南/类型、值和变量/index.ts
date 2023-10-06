@@ -86,3 +86,18 @@
   console.log(Number.parseInt('.1')); // NaN: 整数不能以"."开始
   console.log(Number.parseInt('$72.47')); // NaN: 整数不能以"$"开始
 })();
+
+// 对象到布尔值的转化非常简单：所有的对象（包括数组和函数）都转换成true
+(() => {
+  const a = {
+    toString() {
+      return a;
+    },
+
+    valueOf() {
+      return a;
+    },
+  };
+
+  // console.log(a == 1); // 会报错，因为toString 和 valueOf 没能返回原始值
+})();
