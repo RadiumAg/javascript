@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xFF);
+  console.log(0xff);
 })();
 
 // 布尔值
@@ -71,4 +71,18 @@
   n.toPrecision(4); // 1.235e+5
   n.toPrecision(7); // 123456.8
   n.toPrecision(10); // 123456.7890
+})();
+
+// parseInt 只能解析函数
+(() => {
+  console.log(Number.parseInt('3 bind mice'));
+  console.log(Number.parseInt(' 3.14 meters')); // 3.14
+  console.log(Number.parseInt('-12.34')); // -12
+  console.log(Number.parseInt('0xFF')); //255
+  console.log(Number.parseInt('0xff')); // 255
+  console.log(Number.parseInt('-0xff')); // -255
+  console.log(Number.parseInt('.1')); // 0.1
+  console.log(Number.parseInt('0.1')); // 0
+  console.log(Number.parseInt('.1')); // NaN: 整数不能以"."开始
+  console.log(Number.parseInt('$72.47')); // NaN: 整数不能以"$"开始
 })();
