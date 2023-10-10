@@ -101,3 +101,25 @@
 
   // console.log(a == 1); // 会报错，因为toString 和 valueOf 没能返回原始值
 })();
+
+// 类数组
+(() => {
+  const a = {
+    length: 0,
+  };
+
+  let i = 0;
+
+  while (i < 10) {
+    a[i] = i * i;
+    i++;
+  }
+  a.length = i;
+
+  let total = 0;
+  for (let j = 0; j < a.length; j++) {
+    total += a[j];
+  }
+
+  console.log(Array.from(a));
+})();
