@@ -102,6 +102,22 @@
   // console.log(a == 1); // 会报错，因为toString 和 valueOf 没能返回原始值
 })();
 
+// 文本
+(() => {
+  console.log('\u030C0');
+  console.log('\u0000');
+  console.log('\u0008');
+  console.log('\u0009');
+})()(
+  // 原始表达式
+  // 最简单的表达式是原始表达式。JavaScript中的原始表达式包含常量，直接量，关键字和变量
+
+  // 对象创建表达式
+  () => {
+    console.log(new Object());
+  },
+)();
+
 // 类数组
 (() => {
   const a = {
