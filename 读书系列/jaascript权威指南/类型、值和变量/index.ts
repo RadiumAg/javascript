@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xFF);
+  console.log(0xff);
 })();
 
 // 布尔值
@@ -153,5 +153,15 @@
     Array.prototype.map.call(a, x => {
       return x.toUpperCase();
     }),
+  );
+
+  const s = 'javaScript';
+  console.log(Array.prototype.join.call(s, ' '));
+  console.log(
+    Array.prototype.filter
+      .call(s, x => {
+        return x.match(/[^aeiou]/);
+      })
+      .join(''),
   );
 })();
