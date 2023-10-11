@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xff);
+  console.log(0xFF);
 })();
 
 // 布尔值
@@ -108,15 +108,17 @@
   console.log('\u0000');
   console.log('\u0008');
   console.log('\u0009');
-})()(
+})();
+
+(() => {
   // 原始表达式
   // 最简单的表达式是原始表达式。JavaScript中的原始表达式包含常量，直接量，关键字和变量
 
   // 对象创建表达式
   () => {
     console.log(new Object());
-  },
-)();
+  };
+})();
 
 // 类数组
 (() => {
@@ -138,4 +140,18 @@
   }
 
   console.log(Array.from(a));
+})();
+
+// 既然类数组对象米有继承自Array.prototype，那就不能在它们上面直接调用数组方法。但是可以间接地使用Function.call方法调用
+(() => {
+  const a = { '0': 'a', '1': 'b', '2': 'c', length: 3 }; // 类数组对象
+  console.log(Array.prototype.join.call(a, '+'));
+
+  console.log(Array.prototype.slice.call(a, 0));
+
+  console.log(
+    Array.prototype.map.call(a, x => {
+      return x.toUpperCase();
+    }),
+  );
 })();
