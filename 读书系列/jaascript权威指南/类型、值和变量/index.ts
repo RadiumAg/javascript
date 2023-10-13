@@ -178,4 +178,21 @@
      const dx = x2 - x1;
      const dy  = y2 - y1
    }
+
+   function factorial(x){
+    if(x <=1) return 1
+    return x * factorial(x-1)
+   }
+
+
+   const square = function(x) { return x*x}
 })();
+
+
+// 函数调用
+(()=>{
+  // 1. 作为函数
+  // 2. 作为方法
+  // 3. 作为构造函数
+  // 4. 通过它们的call()和apply()方法间接调用
+})()
