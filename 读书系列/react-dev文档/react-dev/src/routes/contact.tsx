@@ -1,22 +1,18 @@
-import { Form } from "react-router-dom";
+import { Form, useLoaderData } from 'react-router-dom';
+import { getContact } from '../contacts';
 
-export default function Contact() {
-  const contact = {
-    first: "Your",
-    last: "Name",
-    avatar: "https://placekitten.com/g/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  };
+async function loader({ params }) {
+  const contact = await getContact(params.contactId);
+  return { contact };
+}
+
+function Contact() {
+  const { contact } = useLoaderData();
 
   return (
     <div id="contact">
       <div>
-        <img
-          key={contact.avatar}
-          src={contact.avatar || null}
-        />
+        <img key={contact.avatar} src={contact.avatar || null} />
       </div>
 
       <div>
@@ -27,16 +23,13 @@ export default function Contact() {
             </>
           ) : (
             <i>No Name</i>
-          )}{" "}
+          )}
           <Favorite contact={contact} />
         </h1>
 
         {contact.twitter && (
           <p>
-            <a
-              target="_blank"
-              href={`https://twitter.com/${contact.twitter}`}
-            >
+            <a target="_blank" href={`https://twitter.com/${contact.twitter}`}>
               {contact.twitter}
             </a>
           </p>
@@ -45,18 +38,14 @@ export default function Contact() {
         {contact.notes && <p>{contact.notes}</p>}
 
         <div>
-          <Form action="edit">
+          <Form action="edit"> 
             <button type="submit">Edit</button>
           </Form>
           <Form
             method="post"
             action="destroy"
             onSubmit={(event) => {
-              if (
-                !confirm(
-                  "Please confirm you want to delete this record."
-                )
-              ) {
+              if (!confirm('Please confirm you want to delete this record.')) {
                 event.preventDefault();
               }
             }}
@@ -76,15 +65,14 @@ function Favorite({ contact }) {
     <Form method="post">
       <button
         name="favorite"
-        value={favorite ? "false" : "true"}
-        aria-label={
-          favorite
-            ? "Remove from favorites"
-            : "Add to favorites"
-        }
+        value={favorite ? 'false' : 'true'}
+        aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        {favorite ? "★" : "☆"}
+        {favorite ? '★' : '☆'}
       </button>
     </Form>
   );
 }
+
+export default Contact;
+export { loader };
