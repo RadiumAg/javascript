@@ -196,3 +196,12 @@
   // 3. 作为构造函数
   // 4. 通过它们的call()和apply()方法间接调用
 })()
+
+
+// 自定义函数属性
+(()=>{
+  uniqueInteger.counter = 0;
+  function uniqueInteger(){
+    return uniqueInteger.counter++;
+  }
+})()
