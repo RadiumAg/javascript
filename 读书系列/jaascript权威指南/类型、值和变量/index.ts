@@ -205,3 +205,17 @@
     return uniqueInteger.counter++;
   }
 })()
+
+(()=>{
+  function counter(n: number) {
+       return {
+          get count(){ return n++ },
+
+          set count(m) {
+            n = m
+          }
+       }
+  }
+})()
+
+
