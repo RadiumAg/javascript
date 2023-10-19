@@ -217,7 +217,7 @@
 })();
 
 // 函数length属性
-(()=>{
+(() => {
   function check(args){
     const actual = args.length;
     const expected = args.callee.length;
@@ -227,5 +227,10 @@
     }
   }
 
-
+  function f(x, y, z) {
+    check(arguments);
+    return x + y + z;
+  }
 })();
+
+ // prototype 属性
