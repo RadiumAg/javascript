@@ -166,12 +166,11 @@
   );
 })();
 
-
 // 函数定义
-(()=>{
+(() => {
    function printprops(o:Record<string,any>){
     for(const p in o)
-        console.log(p + ":" + o[p] + "\n")
+        console.log(p + ":" + o[p] + '\n')
    }
 
    function distance(x1:number,y1:number,x2:number,y2:number) {
@@ -188,34 +187,45 @@
    const square = function(x) { return x*x}
 })();
 
-
 // 函数调用
-(()=>{
+(() => {
   // 1. 作为函数
   // 2. 作为方法
   // 3. 作为构造函数
   // 4. 通过它们的call()和apply()方法间接调用
-})()
-
+})();
 
 // 自定义函数属性
-(()=>{
+(() => {
   uniqueInteger.counter = 0;
   function uniqueInteger(){
     return uniqueInteger.counter++;
   }
-})()
+})();
 
-(()=>{
+(() => {
   function counter(n: number) {
-       return {
-          get count(){ return n++ },
-
-          set count(m) {
-            n = m
-          }
-       }
+    return {
+      get count() {
+        return n++;
+      },
+      set count(m) {
+        n = m;
+      },
+    };
   }
-})()
+})();
+
+// 函数length属性
+(()=>{
+  function check(args){
+    const actual = args.length;
+    const expected = args.callee.length;
+
+    if(actual !== expected) {
+      throw Error("expected" + expected +"args; get" + actual)
+    }
+  }
 
 
+})();
