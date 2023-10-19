@@ -168,23 +168,23 @@
 
 // 函数定义
 (() => {
-   function printprops(o:Record<string,any>){
-    for(const p in o)
-        console.log(p + ":" + o[p] + '\n')
-   }
+  function printprops(o: Record<string, any>) {
+    for (const p in o) console.log(`${p}:${o[p]}\n`);
+  }
 
-   function distance(x1:number,y1:number,x2:number,y2:number) {
-     const dx = x2 - x1;
-     const dy  = y2 - y1
-   }
+  function distance(x1: number, y1: number, x2: number, y2: number) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+  }
 
-   function factorial(x){
-    if(x <=1) return 1
-    return x * factorial(x-1)
-   }
+  function factorial(x) {
+    if (x <= 1) return 1;
+    return x * factorial(x - 1);
+  }
 
-
-   const square = function(x) { return x*x}
+  const square = function (x) {
+    return x * x;
+  };
 })();
 
 // 函数调用
@@ -198,7 +198,7 @@
 // 自定义函数属性
 (() => {
   uniqueInteger.counter = 0;
-  function uniqueInteger(){
+  function uniqueInteger() {
     return uniqueInteger.counter++;
   }
 })();
@@ -218,12 +218,12 @@
 
 // 函数length属性
 (() => {
-  function check(args){
+  function check(args) {
     const actual = args.length;
     const expected = args.callee.length;
 
-    if(actual !== expected) {
-      throw Error("expected" + expected +"args; get" + actual)
+    if (actual !== expected) {
+      throw new Error(`expected${expected}args; get${actual}`);
     }
   }
 
@@ -233,4 +233,10 @@
   }
 })();
 
- // prototype 属性
+// prototype 属性
+
+// call（）方法和apply（）方法
+(() => {
+  const biggest = Math.max.apply(Math, [2, 3, 4, 5]);
+  function trace(o, m) {}
+})();
