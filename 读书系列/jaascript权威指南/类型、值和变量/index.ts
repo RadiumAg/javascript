@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xff);
+  console.log(0xFF);
 })();
 
 // 布尔值
@@ -236,7 +236,53 @@
 // prototype 属性
 
 // call（）方法和apply（）方法
+
 (() => {
   const biggest = Math.max.apply(Math, [2, 3, 4, 5]);
-  function trace(o, m) {}
+
+  function trace(o, m) {
+    const original = o[m];
+    console.log(new Date(), 'Entering：', m);
+    const result = Reflect.apply(original, this, arguments);
+    console.log(new Date(), 'Exiting：', m);
+    return result;
+  }
+})();
+
+// bind
+(() => {
+  function f(y) {
+    return this.x + y;
+  }
+  const o = { x: 1 };
+  const g = f.bind(o);
+
+  g(2);
+})();
+
+// apply 模拟bind
+(() => {
+  function bind(f, o) {
+    if (f.bind) return f.bind(o);
+    else
+      return function () {
+        return f.apply(o, arguments);
+      };
+  }
+})();
+
+// 使用bind实现柯里化
+(() => {
+  const sum = function (x, y) {
+    return x + y;
+  };
+
+  const succ = sum.bind(null, 1);
+  succ(2); // => 3: x绑定2到1，并传入2作为实参y
+  function f(y, z) {
+    return this.x + y + z;
+  }
+
+  const g = f.bind({ x: 1 }, 2);
+  g(3);
 })();
