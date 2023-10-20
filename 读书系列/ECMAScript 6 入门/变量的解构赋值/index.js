@@ -1,3 +1,12 @@
+// 本质上，解构属于模式匹配
+(() => {
+  const [foo, [[bar], baz]] = [1, [[2], 3]];
+  const [, , third] = ['foo', 'bar', 'baz'];
+  const [x, , y] = [1, 2, 3];
+  const [head, ...taril] = ['foo', 'bar', 'baz'];
+  const [x, y, ...z] = ['a']; // z = []
+})();
+
 // 如果等号的右边不是数组，严格的来说，没有实现Iterator接口，那么就会报错
 (() => {
   const [x, y, z] = new Set(['a', 'b', 'c']);
