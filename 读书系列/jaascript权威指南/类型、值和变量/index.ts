@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xff);
+  console.log(0xFF);
 })();
 
 // 布尔值
