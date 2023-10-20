@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xff);
+  console.log(0xFF);
 })();
 
 // 布尔值
@@ -429,4 +429,34 @@
   partialLeft(f, 2)(3, 4);
   partialRight(f, 2)(3, 4);
   partial(f, undefined, 2)(3, 4);
+})();
+
+(() => {
+  function memorize(f) {
+    const cache = {};
+
+    return function () {
+      const key = arguments.length + Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return (cache[key] = Reflect.apply(f, this, arguments));
+    };
+  }
+
+  // 返回两个整数的最大公约数
+  // 使用欧几里德算法:http://en.wikipedia.org/wiki/Euclidean_algorithm
+  function gcd(a, b) {
+    // 这里省略对a和b的类型检查
+    let t; // 临时变量用来存储交换数值
+    if (a < b) (t = b), (b = a), (a = t); // 确保 a >= b
+    while (b != 0) (t = b), (b = a % b), (a = t); // 这是求最大公约数的欧几里德算法
+    return a;
+  }
+  const gcdmemo = memorize(gcd);
+  gcdmemo(85, 187); // => 17
+  // 注意，当我们写一个递归函数时，往往需要实现记忆功能
+  // 我们更希望调用实现了记忆功能的递归函数，而不是原递归函数
+  var factorial = memorize(n => {
+    return n <= 1 ? 1 : n * factorial(n - 1);
+  });
+  factorial(5); // => 120.对于4~1的值也有缓存
 })();
