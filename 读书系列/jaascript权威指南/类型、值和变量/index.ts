@@ -1,6 +1,6 @@
 // 十六进制
 (() => {
-  console.log(0xFF);
+  console.log(0xff);
 })();
 
 // 布尔值
@@ -285,4 +285,148 @@
 
   const g = f.bind({ x: 1 }, 2);
   g(3);
+})();
+
+// 高阶函数
+(() => {
+  function not(f) {
+    return function () {
+      const result = Reflect.apply(f, this, arguments);
+      return !result;
+    };
+  }
+
+  const even = function (x) {
+    return x % 2 === 0;
+  };
+
+  const odd = not(even);
+  [1, 1, 3, 5, 5].every(odd);
+})();
+
+(() => {
+  // 对于每个数组元素调用函数f()，并返回一个结果数组
+  // 如果Array.prototype.map定义了的话，就使用这个方法
+  const map = Array.prototype.map
+    ? function (a, f) {
+        return a.map(f);
+      } // 如果已经存在map()方法，就直接使用它
+    : function (a, f) {
+        // 否则，自己实现一个
+        const results = [];
+        for (let i = 0, len = a.length; i < len; i++) {
+          if (i in a) results[i] = f.call(null, a[i], i, a);
+        }
+        return results;
+      };
+
+  // 使用函数f()和可选的初始值将数组a减至一个值
+  // 如果Array.prototype.reduce存在的话，就使用这个方法
+  const reduce = Array.prototype.reduce
+    ? function (a, f, initial) {
+        //如果reduce()方法存在的话
+        if (arguments.length > 2)
+          return a.reduce(f, initial); // 如果传入了一个初始值
+        else return a.reduce(f); // 否则没有初始值
+      }
+    : function (a, f, initial) {
+        // 这个算法来自ES5规范
+        let i = 0,
+          len = a.length,
+          accumulator;
+        // 以特定的初始值开始，否则第一个值取自a
+        if (arguments.length > 2) accumulator = initial;
+        else {
+          //找到数组中第一个已定义的索引
+          if (len == 0) throw new TypeError();
+          while (i < len) {
+            if (i in a) {
+              accumulator = a[i++];
+              break;
+            } else i++;
+          }
+          if (i == len) throw new TypeError();
+        }
+        // 对于数组中剩下的元素依次调用f()
+        while (i < len) {
+          if (i in a) accumulator = f.call(undefined, accumulator, a[i], i, a);
+          i++;
+        }
+        return accumulator;
+      };
+
+  function mapper(f) {
+    return function (a) {
+      return map(a, f);
+    };
+  }
+
+  const increment = function (x) {
+    return x + 1;
+  };
+
+  const incrementer = mapper(increment);
+  incrementer([1, 2, 3]);
+
+  function compose(f, g) {
+    return function () {
+      return f.call(this, Reflect.apply(g, this, arguments));
+    };
+  }
+
+  const square = function (x) {
+    return x * x;
+  };
+
+  const sum = function (x, y) {
+    return x + y;
+  };
+
+  const squareofsum = compose(square, sum);
+  squareofsum(2, 3);
+})();
+
+// 不完全函数
+(() => {
+  function array(a, n) {
+    return Array.prototype.slice.call(a, n || 0);
+  }
+
+  function partialLeft(f /*,...*/) {
+    const args = arguments;
+
+    return function () {
+      let a = array(args, 1);
+      a = a.concat(array(arguments));
+      return f.apply(this, a);
+    };
+  }
+
+  function partialRight(f /**,... */) {
+    const args = arguments;
+    return function () {
+      let a = array(arguments);
+      a = a.concat(array(args, 1));
+      return f.apply(this, a);
+    };
+  }
+
+  function partial(f /*,...*/) {
+    const args = arguments;
+
+    return function () {
+      const a = array(args, 1);
+      let i = 0,
+        j = 0;
+      for (; i < a.length; i++) {
+        if (a[i] === undefined) a[i] = arguments[j++];
+        a = a.concat(array(arguments, j));
+        return f.apply(this, a);
+      }
+    };
+  }
+
+  partialLeft(f, 2)(3, 4);
+  partialRight(f, 2)(3, 4);
+  partial(f, undefined, 2)(3, 4);
 })();
