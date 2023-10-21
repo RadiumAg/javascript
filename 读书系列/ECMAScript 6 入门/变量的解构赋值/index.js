@@ -7,6 +7,16 @@
   const [x, y, ...z] = ['a']; // z = []
 })();
 
+// 如果等号右边不是可遍历结构，那么将会报错
+() => {
+  const [foo] = 1;
+  const [foo] = false;
+  const [foo] = Number.NaN;
+  const [foo] = undefined;
+  const [foo] = null;
+  const [foo] = {};
+};
+
 // 如果等号的右边不是数组，严格的来说，没有实现Iterator接口，那么就会报错
 (() => {
   const [x, y, z] = new Set(['a', 'b', 'c']);
