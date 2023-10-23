@@ -82,6 +82,16 @@
   console.log(bar);
 })();
 
+// 如果变量与属性名不一致，则必须写成下面这样
+(() => {
+  const { foo: baz } = { foo: 'aaa', bar: 'bbb' };
+  console.log(baz);
+
+  const obj = { first: 'hello', last: 'world' };
+  const { first: f, last: l } = obj;
+  console.log(f, l);
+})();
+
 // 字符串解构，字符串转换成了一个类似数组的对象
 (() => {
   const [a, b, c, d, e] = 'Hello';
