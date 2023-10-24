@@ -1,6 +1,7 @@
 //ES6 允许 RegExp构造函数接受正则表达式作为参数
 (() => {
   const regex = new RegExp(/xyz/i);
+  new RegExp(/abc/gi, 'i').flags;
 })();
 
 // u修饰符,ES6 添加了 u修饰符，含义为'Unicode模式'
