@@ -19,3 +19,40 @@ const fs = require('fs');
     console.log(f2.toString());
   };
 })();
+
+// async 函数的实现原理
+(() => {
+  function spaw(genf) {
+    return new Promise((resolve, reject) => {
+      const gen = genf();
+      function step(nextF) {
+        let next;
+        try {
+          next = nextF();
+        } catch (e) {
+          return reject(e);
+        }
+
+        if (next.done) {
+          return resolve(next.value);
+        }
+
+        Promise.resolve(next.value).then(
+          v => {
+            step(() => {
+              return gen.next(v);
+            });
+          },
+          e => {
+            step(() => {
+              return gen.throw(e);
+            });
+          },
+        );
+      }
+      step(() => {
+        return g.next(undefined);
+      });
+    });
+  }
+})();
