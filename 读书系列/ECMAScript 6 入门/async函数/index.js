@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { url } = require('inspector');
 
 // 一句话就是，async 是Generator函数的语法糖
 (() => {
@@ -55,4 +56,49 @@ const fs = require('fs');
       });
     });
   }
+})();
+
+(() => {
+  function logInOrder(urls) {
+    const textPromises = urls.map(url => {
+      return fetch(url).then(response => response.text());
+    });
+
+    textPromises.reduce((chain, textPromise) => {
+      return chain.then(() => textPromise).then(text => console.log(text));
+    }, Promise.resolve());
+  }
+
+  async function asyclogInOrder(url) {
+    for (const url of urls) {
+      const response = await fetch(url);
+      console.log(await response.text());
+    }
+  }
+
+  (() => {
+    // 并发执行
+    async function logInOrder(urls) {
+      const textPromises = urls.map(async url => {
+        const response = await fetch(url);
+        return response.text();
+      });
+
+      for (const textPromise of textPromises) {
+        console.log(await textPromise);
+      }
+    }
+  })();
+})();
+
+// 顶层await，主要的目的是使用await解决模块异步加载的问题
+(() => {
+  let output;
+  async function main(someMission) {
+    const dynamic = await import(someMission);
+    const data = await fetch(url);
+    output = someMission(dynamic.default, data);
+  }
+
+  main();
 })();
