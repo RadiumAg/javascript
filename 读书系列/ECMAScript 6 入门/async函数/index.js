@@ -21,9 +21,6 @@ const { url } = require('inspector');
   };
 })();
 
-// 返回 Promise 对象
-(() => {})();
-
 // async 函数的实现原理
 (() => {
   function spaw(genf) {
