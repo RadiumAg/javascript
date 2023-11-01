@@ -72,3 +72,16 @@
   const target = {};
   Object.assign(target, source);
 };
+
+(() => {
+  const obj = {
+    foo: 123,
+    get bar() {
+      return 'abc';
+    },
+  };
+
+  console.log(Object.getOwnPropertyDescriptors(obj));
+})();
+
+// __proto__ 属性用 Object.setPrototypeOf(),Object.getPrototypeOf(),Object.create代替
