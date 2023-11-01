@@ -85,3 +85,17 @@
 })();
 
 // __proto__ 属性用 Object.setPrototypeOf(),Object.getPrototypeOf(),Object.create代替
+
+// Object.values 返回一个数组，成员是参数对象自身的
+() => {
+  const obj = { foo: 'bar', baz: 42 };
+  console.log(obj);
+};
+
+// Object.entries， 如果原对象的属性名是一个Symbol值，该属性会被忽略
+() => {
+  const obj = { foo: 'bar', baz: 42 };
+  console.log(obj);
+};
+
+// Object.fromEntries 是 Object.entries的逆向操作
