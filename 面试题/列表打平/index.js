@@ -4,11 +4,12 @@ const arr = [
   [6, 7, 8, 9, [11, 12, [12, 13, [14]]]],
   10,
 ];
+
 const set = new Set();
 
 function getArray(arr = []) {
   arr.reduce((total, current, currentIndex, arr) => {
-    if (current instanceof Object) {
+    if (Array.isArray(arr)) {
       getArray(current);
     } else {
       set.add(current);
