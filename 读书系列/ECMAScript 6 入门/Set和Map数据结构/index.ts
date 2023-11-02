@@ -16,3 +16,7 @@
 })();
 
 // WeakSet的成员只能是对象和Symbol值
+() => {
+  const ws = new WeakSet();
+  ws.add(Symbol());
+};
