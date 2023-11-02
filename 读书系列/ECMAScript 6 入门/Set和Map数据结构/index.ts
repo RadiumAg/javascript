@@ -12,7 +12,7 @@
   // add 返回自身
   set.add(Number.NaN).add(Number.NaN);
 
-  Set.prototype;
+  console.log(set.entries());
 })();
 
 // WeakSet的成员只能是对象和Symbol值
