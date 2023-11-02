@@ -7,6 +7,12 @@
   }
 };
 
-() => {
+(() => {
   const set = new Set();
-};
+  // add 返回自身
+  set.add(Number.NaN).add(Number.NaN);
+
+  Set.prototype;
+})();
+
+// WeakSet的成员只能是对象和Symbol值
