@@ -10,24 +10,24 @@
  */
 
 function parse(input = 'foo=bar&abc=xyz&abc=123') {
-  const queryStringArr = input.split('&');
-  const quer = queryStringArr.map(_ => _.split('='));
+  const queryStringArr = input.split('&').map(_ => _.split('='));
 
   const result = {};
 
-  quer.forEach(_ => {
-    if (_[0] in result) {
-      if (Array.isArray(result[_[0]])) {
-        result[_[0]] = result[_[0]].concat(_[1]);
+  queryStringArr.forEach(_ => {
+    const prop = _[0];
+    const value = _[1];
+
+    if (prop in result) {
+      if (Array.isArray(value)) {
+        result[prop].push(value);
       } else {
-        result[_[0]] = [result[_[0]]].concat(_[1]);
+        result[prop] = [result[prop]].concat(value);
       }
     } else {
-      result[_[0]] = _[1];
+      result[prop] = value;
     }
   });
 
   return result;
 }
-
-console.log(parse());
