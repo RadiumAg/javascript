@@ -23,3 +23,28 @@
     };
   };
 };
+
+(() => {
+  const myInstanceOf = (
+    instance: Record<string, ay>,
+    constructor: new (...args: any[]) => any,
+  ) => {
+    let flag = false;
+    let leftPrototype = Object.getPrototypeOf(instance);
+
+    while (leftPrototype) {
+      if (leftPrototype === constructor.prototype) {
+        flag = true;
+        break;
+      }
+
+      leftPrototype = Object.getPrototypeOf(leftPrototype);
+    }
+
+    return flag;
+  };
+
+  class a {}
+
+  console.log(myInstanceOf(new a(), a));
+})();
