@@ -83,3 +83,23 @@
     console.log(errorPromise);
   }, 1000);
 })();
+
+(() => {
+  const flatArray = (array: any[]) => {
+    const flatFn = (array: any[], see: any[] = []) => {
+      array.forEach(current => {
+        if (Array.isArray(current)) {
+          flatFn(current, see);
+        } else {
+          see.push(current);
+        }
+      });
+
+      return see;
+    };
+
+    return flatFn(array);
+  };
+
+  console.log(flatArray([1, [1, 2, 3, [1, 2, 3]]]));
+})();
