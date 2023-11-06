@@ -50,7 +50,7 @@
   console.log(myInstanceOf(new Object(), a));
 };
 
-(() => {
+() => {
   Promise.myAll = (promiseArr: Promise<any>[]) => {
     const result: any[] = [];
     let resolveFn: (value: unknown) => void;
@@ -82,9 +82,10 @@
   setTimeout(() => {
     console.log(errorPromise);
   }, 1000);
-})();
+};
 
-(() => {
+// 打平数组
+() => {
   const flatArray = (array: any[]) => {
     const flatFn = (array: any[], see: any[] = []) => {
       array.forEach(current => {
@@ -102,4 +103,4 @@
   };
 
   console.log(flatArray([1, [1, 2, 3, [1, 2, 3]]]));
-})();
+};
