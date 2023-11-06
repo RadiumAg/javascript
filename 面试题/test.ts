@@ -1,3 +1,4 @@
+// 防抖
 () => {
   const useThrottle = (fn: (...args: any[]) => any, duration: number) => {
     let lastTime = 0;
@@ -24,6 +25,7 @@
   };
 };
 
+// instanceOf怎么写
 () => {
   const myInstanceOf = (
     instance: Record<string, ay>,
@@ -50,7 +52,8 @@
   console.log(myInstanceOf(new Object(), a));
 };
 
-() => {
+// 手写Promise.all
+(() => {
   Promise.myAll = (promiseArr: Promise<any>[]) => {
     const result: any[] = [];
     let resolveFn: (value: unknown) => void;
@@ -77,12 +80,24 @@
     return promise;
   };
 
-  const errorPromise = Promise.myAll([Promise.resolve(1), Promise.reject(2)]);
+  Promise.myAll([Promise.resolve(1), Promise.reject(2)]).then(
+    value => {
+      console.log(value);
+    },
+    error => {
+      console.log(error);
+    },
+  );
 
-  setTimeout(() => {
-    console.log(errorPromise);
-  }, 1000);
-};
+  Promise.all([Promise.resolve(1), Promise.reject(2)]).then(
+    value => {
+      console.log(value);
+    },
+    error => {
+      console.log(error);
+    },
+  );
+})();
 
 // 打平数组
 () => {
