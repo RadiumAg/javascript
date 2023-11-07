@@ -53,7 +53,7 @@
 };
 
 // 手写Promise.all
-(() => {
+() => {
   Promise.myAll = (promiseArr: Promise<any>[]) => {
     const result: any[] = [];
     let resolveFn: (value: unknown) => void;
@@ -97,7 +97,7 @@
       console.log(error);
     },
   );
-})();
+};
 
 // 打平数组
 () => {
