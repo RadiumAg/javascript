@@ -8,33 +8,19 @@
 
   <body>
     <script type="module">
-      import { render } from './index.js';
+      import { render, createElement } from './index.js';
 
-      const element1 = {
-        type: 'div',
-        props: {
-          id: 'container',
-          children: [
-            { type: 'input', props: { value: 'foo', type: 'text' } },
-            { type: 'a', props: { href: '/bar' } },
-            { type: 'span', props: {} },
-          ],
-        },
-      };
+      const rootDom = document.querySelector('body');
 
-      const textElement = {
-        type: 'span',
-        props: {
-          children: [
-            {
-              type: 'TEXT ELEMENT', // 1
-              props: { nodeValue: 'Foo' }, // 2
-            },
-          ],
-        },
-      };
-      // render(element1, document.querySelector('body'));
-      render(textElement, document.querySelector('body'));
+      function tick() {
+        const time = new Date().toLocaleTimeString();
+        const clockElement = createElement('h1', {}, time);
+        console.log(clockElement);
+        render(clockElement, rootDom);
+      }
+
+      tick();
+      setInterval(tick, 1000);
     </script>
   </body>
 </html>
