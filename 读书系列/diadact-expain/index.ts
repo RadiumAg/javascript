@@ -45,6 +45,14 @@ function render(element: DidactElement, container: HTMLElement) {
   rootInstance = nextInstance;
 }
 
+/**
+ * 调度
+ *
+ * @param {HTMLElement} parentDom
+ * @param {(Record<string, any> | null)} instance
+ * @param {DidactElement} element
+ * @return {*}
+ */
 function reconcile(
   parentDom: HTMLElement,
   instance: Record<string, any> | null,
@@ -57,6 +65,7 @@ function reconcile(
   } else if (instance.element.type === element.type) {
     // 相同类型
     updateDomProperties(instance.dom, instance.element.props, element.props);
+    instance.childInstances = reconcileChildren(instance, element);
     instance.element = element;
     return instance;
   } else {
@@ -93,6 +102,13 @@ function instantiate(element: DidactElement): Record<string, any> {
   return instance;
 }
 
+/**
+ * 更新属性
+ *
+ * @param {(HTMLElement | Text)} dom
+ * @param {Record<string, any>} prevProps
+ * @param {Record<string, any>} nextProps
+ */
 function updateDomProperties(
   dom: HTMLElement | Text,
   prevProps: Record<string, any>,
@@ -132,6 +148,35 @@ function updateDomProperties(
       const eventType = name.toLowerCase().slice(2);
       dom.addEventListener(eventType, nextProps[name]);
     });
+}
+
+/**
+ * 调度子节点
+ *
+ * @param {Record<string, any>} instance
+ * @param {DidactElement} element
+ * @return {*}
+ */
+function reconcileChildren(
+  instance: Record<string, any>,
+  element: DidactElement,
+) {
+  const dom = instance.dom;
+  const childInstances = instance.childInstances;
+  const nextChildElements = element.props.children || [];
+  const newChildInstances = [];
+
+  const count = Math.max(childInstances.length, nextChildElements.length);
+
+  for (let i = 0; i < count; i++) {
+    const childInstance = childInstances[i];
+    const childElement = nextChildElements[i];
+
+    const newChildInstance = reconcile(dom, childInstance, childElement);
+    newChildInstances.push(newChildInstance);
+  }
+
+  return newChildInstances;
 }
 
 export { render, createElement };
