@@ -267,18 +267,4 @@ const Didact = {
   useState,
 };
 
-/** @jsx Didact.createElement */
-function Counter() {
-  return Didact.createElement(
-    'h1',
-    {
-      onClick() {
-        console.log(1);
-      },
-    },
-    '1',
-  );
-}
-const element = Counter();
-const container = document.querySelector('#root');
-Didact.render(element, container);
+export { Didact };
