@@ -1,5 +1,13 @@
 let rootInstance = null;
 const TEXT_ELEMENT = 'TEXT_ELEMENT';
+/**
+ * 创建虚拟dom
+ *
+ * @param {string} type
+ * @param {Record<string, any>} config
+ * @param {...any[]} args
+ * @return {*}
+ */
 function createElement(type, config, ...args) {
     const props = Object.assign({}, config);
     const hasChildren = args.length > 0;
@@ -72,7 +80,7 @@ function instantiate(element) {
     const childDoms = childInstances.map(childInstance => childInstance.dom);
     // eslint-disable-next-line unicorn/prefer-dom-node-append
     childDoms.forEach(childDom => dom.appendChild(childDom));
-    const instance = { dom, element, childInstances };
+    const instance = { dom, element, childInstances }; // 一个instance包含dom,element,childInstances
     return instance;
 }
 /**
