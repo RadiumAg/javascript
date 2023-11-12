@@ -1,0 +1,3 @@
+const beginWork = () => {};
+
+export { beginWork };

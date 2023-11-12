@@ -1,0 +1,3 @@
+const completeWork = () => {};
+
+export { completeWork };
