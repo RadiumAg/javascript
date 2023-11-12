@@ -58,5 +58,36 @@ const jsx = (
   return ReactElement(type, key, ref, props);
 };
 
-const jsxDev = jsx;
+const jsxDev = (type: ElementType, config: Record<string, any>) => {
+  let key: Key = null;
+  let ref: Ref = null;
+  const props: Props = {};
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const prop in config) {
+    const val = config[prop];
+
+    if (prop === 'key') {
+      if (key !== undefined) {
+        key = ` ${val}`;
+      }
+      continue;
+    }
+
+    if (prop === 'ref') {
+      if (val !== undefined) {
+        ref = val;
+      }
+
+      continue;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(config, prop)) {
+      props[prop] = val;
+    }
+  }
+
+  return ReactElement(type, key, ref, props);
+};
+
 export { ReactElement, jsx, jsxDev };
