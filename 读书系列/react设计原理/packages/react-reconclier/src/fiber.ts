@@ -17,6 +17,7 @@ class FiberNode {
 
   pedingProps: Props;
   memoizedProps: Props | null;
+  memoizedState: any;
   alternate: FiberNode | null;
   flags: Flags;
   updateQueue: unknown;
@@ -41,6 +42,7 @@ class FiberNode {
     this.alternate = null;
     this.flags = NoFlags;
     this.updateQueue = null;
+    this.memoizedState = null;
   }
 }
 
@@ -56,4 +58,31 @@ class FiberRootNode {
   }
 }
 
-export { FiberNode, FiberRootNode };
+const createWorkInProgress = (
+  current: FiberNode,
+  pendingProps: Props,
+): FiberNode => {
+  let wip = current.alternate;
+
+  if (wip === null) {
+    wip = new FiberNode(current.tag, pendingProps, current.key);
+    wip.type = current;
+    wip.stateNode = current.stateNode;
+
+    wip.alternate = current;
+    current.alternate = wip;
+  } else {
+    wip.pedingProps = pendingProps;
+    wip.flags = NoFlags;
+  }
+
+  wip.type = current.type;
+  wip.updateQueue = current.updateQueue;
+  wip.child = current.child;
+  wip.memoizedProps = current.memoizedProps;
+  wip.memoizedState = current.memoizedState;
+
+  return wip;
+};
+
+export { FiberNode, FiberRootNode, createWorkInProgress };
