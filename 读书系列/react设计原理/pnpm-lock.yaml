@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -14,6 +10,9 @@ importers:
       '@rollup/plugin-commonjs':
         specifier: ^25.0.7
         version: 25.0.7(rollup@4.4.0)
+      '@rollup/plugin-replace':
+        specifier: ^5.0.5
+        version: 5.0.5(rollup@4.4.0)
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
@@ -31,6 +30,12 @@ importers:
         version: 5.2.2
 
   packages/react:
+    dependencies:
+      shared:
+        specifier: workspace:*
+        version: link:../shared
+
+  packages/react-reconclier:
     dependencies:
       shared:
         specifier: workspace:*
@@ -268,6 +273,20 @@ packages:
       estree-walker: 2.0.2
       glob: 8.1.0
       is-reference: 1.2.1
+      magic-string: 0.30.5
+      rollup: 4.4.0
+    dev: true
+
+  /@rollup/plugin-replace@5.0.5(rollup@4.4.0):
+    resolution: {integrity: sha512-rYO4fOi8lMaTg/z5Jb+hKnrHHVn8j2lwkqwyS4kTRhKyWOLf2wST2sWXr4WzWiTcoHTp2sTjqUbqIj2E39slKQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.5(rollup@4.4.0)
       magic-string: 0.30.5
       rollup: 4.4.0
     dev: true
@@ -2922,3 +2941,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
