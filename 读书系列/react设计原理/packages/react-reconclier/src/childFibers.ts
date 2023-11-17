@@ -7,7 +7,9 @@ function childReconciler(shouldTrackEffect: boolean) {
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
     element: ReactElement,
-  ) {}
+  ) {
+    //
+  }
 
   return (
     returnFiber: FiberNode,
