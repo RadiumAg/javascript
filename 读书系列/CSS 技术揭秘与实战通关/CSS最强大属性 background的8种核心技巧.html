@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test</title>
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>线性渐变</h1>
+    <div class="box" style="background: linear-gradient(#fff,#000);"></div>
+
+    <h1>径向渐变</h1>
+    <div class="box" style="background: radial-gradient(#fff,#000);"></div>
+
+    <h1>角向渐变</h1>
+    <div class="box" style="background: conic-gradient(#fff,#000);"></div>
+
+    <style>
+        .g-container {
+            width: min-content;
+            position: relative;
+        }
+
+        .g-container::before {
+            content: "";
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            width: 100px;
+            background: linear-gradient(90deg, transparent, #fff);
+        }
+
+        .g-container ul {
+            display: flex;
+            list-style: none;
+        }
+    </style>
+
+    <h1>渐变颜色可以是透明色</h1>
+    <div class="g-container">
+        <ul>
+            <li>Button</li>
+            <li>Button</li>
+            <li>Button</li>
+            <li>Button</li>
+            <li>Button</li>
+            <li>Button</li>
+        </ul>
+    </div>
+
+    <h1 style="border:2px solid #000; background: linear-gradient(#fff 0%,  #fff 50%, #f00 100%);">渐变也可以是从一种颜色直接过渡到第二种颜色
+    </h1>
+
+    <div class="box" style="background: linear-gradient(45deg,  #f00 0%, #f00 50%, transparent 50%,transparent 100%);"></div>
+</body>
+
+</html>
