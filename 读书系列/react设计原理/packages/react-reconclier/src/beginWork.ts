@@ -27,7 +27,7 @@ function updateHostRoot(wip: FiberNode) {
   wip.memoizedState = memoizedState;
 
   const nextChildren = wip.memoizedState;
-  reconcileChildren(wip, nextChildren);
+  reconclieChildren(wip, nextChildren);
   return wip.child;
 }
 

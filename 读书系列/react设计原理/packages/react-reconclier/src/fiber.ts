@@ -93,6 +93,10 @@ function createFiberFromElement(element: ReactElement) {
   } else if (typeof type !== 'function' && __DEV__) {
     console.warn('未定义的type类型', element);
   }
+
+  const fiber = new FiberNode(flagTag, props, key);
+  fiber.type = type;
+  return fiber;
 }
 export {
   FiberNode,

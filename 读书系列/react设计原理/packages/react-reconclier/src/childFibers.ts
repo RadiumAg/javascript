@@ -1,6 +1,8 @@
 import { ReactElement } from 'shared/reactTypes';
 import { REACT_ELEMENT_TYPE } from 'shared/reactSymbols';
-import { FiberNode } from './fiber';
+import { FiberNode, createFiberFromElement } from './fiber';
+import { HostText } from './workTags';
+import { Placement } from './fiberFlags';
 
 function childReconciler(shouldTrackEffect: boolean) {
   function reconcileSingleElement(
@@ -8,7 +10,27 @@ function childReconciler(shouldTrackEffect: boolean) {
     currentFiber: FiberNode | null,
     element: ReactElement,
   ) {
-    //
+    const fiber = createFiberFromElement(element);
+    fiber.return = returnFiber;
+    return fiber;
+  }
+
+  function placeSingleChild(fiber: FiberNode) {
+    if (shouldTrackEffect && fiber.alternate === null) {
+      fiber.flags = Placement;
+    }
+
+    return fiber;
+  }
+
+  function reconcileSingleTextNode(
+    returnFiber: FiberNode,
+    currentFiber: FiberNode | null,
+    content: string | number,
+  ) {
+    const fiber = new FiberNode(HostText, { content }, null);
+    fiber.return = returnFiber;
+    return fiber;
   }
 
   return (
@@ -34,7 +56,7 @@ function childReconciler(shouldTrackEffect: boolean) {
 
     // HostText
     if (typeof newChild === 'string' || typeof newChild === 'number') {
-      return reconcileSingleTextNode();
+      return reconcileSingleTextNode(returnFiber, currentFiber, newChild);
     }
   };
 }

@@ -142,6 +142,11 @@ function workLoop(deadline) {
 
 requestIdleCallback(workLoop);
 
+/**
+ * 创建下一个fiberNode并赋值给wip
+ * @param {*} fiber 
+ * @returns 
+ */
 function performUnitOfWork(fiber) {
   const isFunctionComponent = fiber.type instanceof Function;
   if (isFunctionComponent) {
