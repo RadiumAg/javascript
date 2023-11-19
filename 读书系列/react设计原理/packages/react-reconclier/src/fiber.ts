@@ -20,6 +20,7 @@ class FiberNode {
   memoizedState: any;
   alternate: FiberNode | null;
   flags: Flags;
+  subtreeFlags: Flags;
   updateQueue: unknown;
 
   constructor(tag: WorkTag, pedingProps: Props, key: Key) {
@@ -40,9 +41,12 @@ class FiberNode {
     this.pedingProps = pedingProps;
     this.memoizedProps = null;
     this.alternate = null;
-    this.flags = NoFlags;
     this.updateQueue = null;
     this.memoizedState = null;
+
+    // 副作用
+    this.flags = NoFlags;
+    this.subtreeFlags = NoFlags;
   }
 }
 
@@ -74,6 +78,7 @@ const createWorkInProgress = (
   } else {
     wip.pedingProps = pendingProps;
     wip.flags = NoFlags;
+    wip.subtreeFlags = NoFlags;
   }
 
   wip.type = current.type;

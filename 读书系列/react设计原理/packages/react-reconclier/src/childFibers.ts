@@ -42,22 +42,27 @@ function childReconciler(shouldTrackEffect: boolean) {
     if (typeof newChild === 'object' && newChild !== null) {
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
-          return reconcileSingleElement(returnFiber, currentFiber, newChild);
-          break;
+          return placeSingleChild(
+            reconcileSingleElement(returnFiber, currentFiber, newChild),
+          );
 
         default:
           if (__DEV__) {
             console.warn('未实现的reconcile类型', newChild);
           }
-          break;
+          return null;
       }
     }
     // TODO 多节点情况 ul > li*3
 
     // HostText
     if (typeof newChild === 'string' || typeof newChild === 'number') {
-      return reconcileSingleTextNode(returnFiber, currentFiber, newChild);
+      return placeSingleChild(
+        reconcileSingleTextNode(returnFiber, currentFiber, newChild),
+      );
     }
+
+    return null;
   };
 }
 
