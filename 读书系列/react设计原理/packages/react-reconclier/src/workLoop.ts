@@ -1,6 +1,8 @@
 import { beginWork } from './beginWork';
+import { commitMutationEffect } from './commitWork';
 import { completeWork } from './completeWork';
 import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
+import { MutationMask, NoFlags } from './fiberFlags';
 import { HostRoot } from './workTags';
 
 let workInProgress: FiberNode | null = null;
@@ -61,6 +63,24 @@ function commitRoot(root: FiberRootNode) {
 
   if (__DEV__) {
     console.log('commit阶段开始', finishedWork);
+  }
+
+  // 重置
+  root.finishedWork = null;
+
+  // 判断是否存在3个子阶段需要执行的操作
+  const subtreeHasEffelct =
+    (finishedWork.subtreeFlags & MutationMask) !== NoFlags;
+  const rootHostEffect = (finishedWork.flags & MutationMask) !== NoFlags;
+
+  if (subtreeHasEffelct || rootHostEffect) {
+    // beforeMuation
+    // mutation Placement
+    commitMutationEffect(finishedWork);
+    root.current = finishedWork;
+    // layout
+  } else {
+    root.current = finishedWork;
   }
 }
 
