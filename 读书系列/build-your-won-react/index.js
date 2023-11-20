@@ -78,6 +78,11 @@ function commitRoot() {
   wipRoot = null;
 }
 
+/**
+ * 最终执行dom操作
+ * @param {*} fiber
+ * @returns
+ */
 function commitWork(fiber) {
   if (!fiber) {
     return;
@@ -144,16 +149,18 @@ requestIdleCallback(workLoop);
 
 /**
  * 创建下一个fiberNode并赋值给wip
- * @param {*} fiber 
- * @returns 
+ * @param {*} fiber
+ * @returns
  */
 function performUnitOfWork(fiber) {
   const isFunctionComponent = fiber.type instanceof Function;
+  // 执行更新
   if (isFunctionComponent) {
     updateFunctionComponent(fiber);
   } else {
     updateHostComponent(fiber);
   }
+  // 返回 child
   if (fiber.child) {
     return fiber.child;
   }
