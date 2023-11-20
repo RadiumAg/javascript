@@ -12,4 +12,14 @@ const createTextInstance = (...args: any) => {
   return {} as any;
 };
 
-export { Container, createInstance, appendInitialChild, createTextInstance };
+const appendChildToContainer = (...args: any) => {
+  return {} as any;
+};
+
+export {
+  Container,
+  createInstance,
+  appendInitialChild,
+  createTextInstance,
+  appendChildToContainer,
+};
