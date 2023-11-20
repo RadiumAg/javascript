@@ -46,6 +46,22 @@ function renderRoot(root: FiberRootNode) {
     }
     // eslint-disable-next-line no-constant-condition
   } while (true);
+  const finishWork = root.current.alternate;
+  root.finishedWork = finishWork;
+
+  commitRoot(root);
+}
+
+function commitRoot(root: FiberRootNode) {
+  const finishedWork = root.finishedWork;
+
+  if (finishedWork === null) {
+    return;
+  }
+
+  if (__DEV__) {
+    console.log('commit阶段开始', finishedWork);
+  }
 }
 
 function workLoop() {
