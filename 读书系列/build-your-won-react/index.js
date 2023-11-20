@@ -160,6 +160,7 @@ function performUnitOfWork(fiber) {
   } else {
     updateHostComponent(fiber);
   }
+  // 返回 child
   if (fiber.child) {
     return fiber.child;
   }
