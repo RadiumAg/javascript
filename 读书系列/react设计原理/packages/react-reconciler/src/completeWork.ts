@@ -1,10 +1,10 @@
-import { FiberNode } from './fiber';
-import { NoFlags } from './fiberFlags';
 import {
   appendInitialChild,
   createInstance,
   createTextInstance,
-} from './hostConfig';
+} from 'hostConfig';
+import { FiberNode } from './fiber';
+import { NoFlags } from './fiberFlags';
 import { HostComponent, HostRoot, HostText } from './workTags';
 
 const completeWork = (wip: FiberNode) => {
