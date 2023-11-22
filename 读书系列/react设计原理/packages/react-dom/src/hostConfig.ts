@@ -8,10 +8,10 @@ const createInstance = (type: string, props: any) => {
 };
 
 const appendInitialChild = (
-  parent: Instance | Container,
+  parent: Instance | Container | undefined,
   child: Instance | undefined,
 ) => {
-  if (!child) return;
+  if (!child || !parent) return;
   parent.append(child);
 };
 
