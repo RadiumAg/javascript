@@ -1,4 +1,5 @@
 import generatePackageJson from 'rollup-plugin-generate-package-json';
+import alias from '@rollup/plugin-alias';
 import { getBaseRollupPlugins, getPackageJson, resolvePkgPath } from './utils';
 
 const { name, module } = getPackageJson('react');
@@ -22,6 +23,11 @@ export default [
     ],
     plugins: [
       ...getBaseRollupPlugins(),
+      alias({
+        entries: {
+          hostConfig: `${pkgPath}/src/hostConfig.ts`,
+        },
+      }),
       generatePackageJson({
         inputFolder: pkgPath,
         outputFolder: pkgDistPath,
@@ -29,19 +35,12 @@ export default [
           name,
           description,
           version,
+          peerDependencies: {
+            version,
+          },
           main: 'index.js',
         }),
       }),
     ],
-  },
-  // jsx-runtime
-  {
-    input: `${pkgPath}/src/jsx.ts`,
-    output: {
-      file: `${pkgDistPath}/jsx-runtime.js`,
-      name: 'jsx-runtime.js',
-      formate: 'umd',
-    },
-    plugins: getBaseRollupPlugins(),
   },
 ];

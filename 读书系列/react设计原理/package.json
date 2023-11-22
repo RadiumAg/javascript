@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/react.config.js"
+    "build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@raag/eslint-config": "^1.1.2",
+    "@rollup/plugin-alias": "^5.0.1",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-replace": "^5.0.5",
     "rimraf": "^5.0.5",

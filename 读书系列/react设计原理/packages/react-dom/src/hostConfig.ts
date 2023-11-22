@@ -7,11 +7,15 @@ const createInstance = (type: string, props: any) => {
   return element;
 };
 
-const appendInitialChild = (parent: Instance | Container, child: Instance) => {
+const appendInitialChild = (
+  parent: Instance | Container,
+  child: Instance | undefined,
+) => {
+  if (!child) return;
   parent.append(child);
 };
 
-const createTextInstance = (content: string) => {
+const createTextInstance = (content: string, props: any) => {
   return document.createTextNode(content);
 };
 
