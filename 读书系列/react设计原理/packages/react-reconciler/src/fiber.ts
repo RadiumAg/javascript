@@ -58,6 +58,7 @@ class FiberRootNode {
   constructor(container: Container, hostRootFiber: FiberNode) {
     this.container = container;
     this.current = hostRootFiber;
+    hostRootFiber.stateNode = this;
     this.finishedWork = null;
   }
 }
