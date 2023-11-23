@@ -31,7 +31,7 @@ const completeWork = (wip: FiberNode) => {
         //  updated
       } else {
         // 1. 构建DOM
-        const instance = createTextInstance(wip.type, newProps);
+        const instance = createTextInstance(newProps.content);
         // 2. 将DOM插入到DOM树中
         wip.stateNode = instance;
       }

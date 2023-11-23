@@ -28,6 +28,12 @@
       "name": "http://127.0.0.1:5502/%E8%AF%BB%E4%B9%A6%E7%B3%BB%E5%88%97/build-your-won-react/index.html",
       "request": "launch",
       "url": "http://127.0.0.1:5502/%E8%AF%BB%E4%B9%A6%E7%B3%BB%E5%88%97/build-your-won-react/index.html"
+    },
+    {
+      "type": "msedge",
+      "name": " http://localhost:5173/",
+      "request": "launch",
+      "url": " http://localhost:5173/"
     }
   ]
 }

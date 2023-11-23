@@ -12,10 +12,11 @@ const appendInitialChild = (
   child: Instance | undefined,
 ) => {
   if (!child || !parent) return;
+  console.warn(parent, child);
   parent.append(child);
 };
 
-const createTextInstance = (content: string, props: any) => {
+const createTextInstance = (content: string) => {
   return document.createTextNode(content);
 };
 
