@@ -85,6 +85,7 @@ function appendPlacementNodeIntoContainer(
   }
 
   const child = finishedWork.child;
+  hostParent = finishedWork.stateNode;
 
   if (child !== null) {
     appendPlacementNodeIntoContainer(child, hostParent);
