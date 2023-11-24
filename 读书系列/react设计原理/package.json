@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js"
+    "build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js",
+    "demo": "vite server demos/test-fc --config scripts/vite/vite.config.ts  --force"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +15,8 @@
     "@rollup/plugin-alias": "^5.0.1",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-replace": "^5.0.5",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.4.0",

@@ -6,7 +6,7 @@ import { resolvePkgPath } from '../rollup/utils';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), replace({ __DEV__: true })],
+  plugins: [react(), replace({ __DEV__: true, preventAssignment: true })],
   resolve: {
     alias: [
       {
