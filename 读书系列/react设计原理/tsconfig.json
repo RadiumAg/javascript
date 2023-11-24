@@ -12,5 +12,6 @@
         "react-dom/src/hostConfig.ts"
       ]
     }
-  }
+  },
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

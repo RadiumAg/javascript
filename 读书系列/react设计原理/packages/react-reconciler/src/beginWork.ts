@@ -1,8 +1,14 @@
 import { ReactElement } from 'shared/reactTypes';
 import { FiberNode } from './fiber';
 import { UpdateQueue, processUpdateQueue } from './updateQueue';
-import { HostComponent, HostRoot, HostText } from './workTags';
+import {
+  FunctionComponent,
+  HostComponent,
+  HostRoot,
+  HostText,
+} from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
+import { renderWithHooks } from './fiberHooks';
 
 const beginWork = (wip: FiberNode) => {
   switch (wip.tag) {
@@ -12,6 +18,9 @@ const beginWork = (wip: FiberNode) => {
       return updateHostComponent(wip);
     case HostText:
       return null;
+
+    case FunctionComponent:
+      return updateFunctionComponent(wip);
     default:
       if (__DEV__) {
         console.warn('beginWork未实现的类型');
@@ -19,6 +28,12 @@ const beginWork = (wip: FiberNode) => {
       return null;
   }
 };
+
+function updateFunctionComponent(wip: FiberNode) {
+  const nextChildren = renderWithHooks(wip);
+  reconcileChildren(wip, nextChildren);
+  return wip.child;
+}
 
 function updateHostRoot(wip: FiberNode) {
   const baseState = wip.memoizedState;
@@ -28,18 +43,18 @@ function updateHostRoot(wip: FiberNode) {
   wip.memoizedState = memoizedState;
 
   const nextChildren = wip.memoizedState;
-  reconclieChildren(wip, nextChildren);
+  reconcileChildren(wip, nextChildren);
   return wip.child;
 }
 
 function updateHostComponent(wip: FiberNode) {
   const nextProps = wip.pedingProps;
   const nextChildren = nextProps.children;
-  reconclieChildren(wip, nextChildren);
+  reconcileChildren(wip, nextChildren);
   return wip.child;
 }
 
-function reconclieChildren(wip: FiberNode, children?: ReactElement) {
+function reconcileChildren(wip: FiberNode, children?: ReactElement) {
   const current = wip.alternate;
   if (current !== null) {
     // update
