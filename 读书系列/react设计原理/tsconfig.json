@@ -11,7 +11,7 @@
       "hostConfig": [
         "react-dom/src/hostConfig.ts"
       ]
-    }
+    },
   },
   "references": [
     {
@@ -20,5 +20,9 @@
     {
       "path": "./tsconfig.demo.json"
     }
-  ]
+  ],
+  "includes": [
+    "./packages/**/*.ts",
+    "./demos/**/*.tsx"
+  ],
 }

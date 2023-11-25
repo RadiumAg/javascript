@@ -103,4 +103,4 @@ const jsxDEV = (type: ElementType, config: Record<string, any>) => {
   return ReactElement(type, key, ref, props);
 };
 
-export { ReactElement, jsx, jsxDEV };
+export { ReactElement, jsxDEV, jsx };
