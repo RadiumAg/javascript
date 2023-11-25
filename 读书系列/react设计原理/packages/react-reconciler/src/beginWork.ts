@@ -18,7 +18,6 @@ const beginWork = (wip: FiberNode) => {
       return updateHostComponent(wip);
     case HostText:
       return null;
-
     case FunctionComponent:
       return updateFunctionComponent(wip);
     default:

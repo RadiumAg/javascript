@@ -18,6 +18,7 @@
     },
     "include": [
         "./demos/**/*.tsx",
-        "./packages/**/*.ts"
+        "./packages/react/index.ts",
+        "./packages/react-dom/index.ts",
     ]
 }

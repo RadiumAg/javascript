@@ -12,7 +12,6 @@ const appendInitialChild = (
   child: Instance | undefined,
 ) => {
   if (!child || !parent) return;
-  console.warn(parent, child);
   parent.append(child);
 };
 
