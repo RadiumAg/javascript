@@ -21,7 +21,10 @@ function getPackageJson(pkgName) {
   return JSON.parse(str);
 }
 
-function getBaseRollupPlugins(alias = { __DEV__: true }, typescript = {}) {
+function getBaseRollupPlugins(
+  alias = { __DEV__: true, preventAssignment: true },
+  typescript = {},
+) {
   return [replace(alias), ts(typescript), cjs()];
 }
 

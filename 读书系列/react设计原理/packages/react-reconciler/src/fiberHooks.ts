@@ -8,7 +8,7 @@ import {
 } from './updateQueue';
 import { scheduleUpdateOnFiber } from './workLoop';
 import type { Action } from 'shared/reactTypes';
-import type { Dispatch, Dispatcher } from '../../react/src/currentDispatcher';
+import type { Dispatch, Dispatcher } from 'react/src/currentDispatcher';
 
 interface Hook {
   memoizedState: any;
@@ -63,19 +63,19 @@ function mountState<State>(
   hook.memoizedState = memoizedState;
 
   // dispatch
-  const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber);
+  const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber) as any;
   queue.dispatch = dispatch;
   return [memoizedState, dispatch];
 }
 
 function dispatchSetState<State>(
-  fiber: FiberNode,
+  fiber: FiberNode | null,
   updateQueue: UpdateQueue<State>,
   action: Action<State>,
 ) {
   const update = createUpdate(action);
   enqueueUpdate(updateQueue, update);
-  scheduleUpdateOnFiber(fiber);
+  scheduleUpdateOnFiber(fiber!);
 }
 
 function mountWorkInProgressWork(): Hook {

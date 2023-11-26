@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'react/index';
 
 const internals = React.__SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE;
 

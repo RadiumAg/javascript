@@ -17,12 +17,12 @@
     {
       "path": "./tsconfig.node.json"
     },
-    {
-      "path": "./tsconfig.demo.json"
-    }
   ],
   "includes": [
-    "./packages/**/*.ts",
-    "./demos/**/*.tsx"
+    "./packages/**/*.ts"
   ],
+  "exclude": [
+    "./demos/**/*.tsx",
+    "./scripts/**/*.ts"
+  ]
 }

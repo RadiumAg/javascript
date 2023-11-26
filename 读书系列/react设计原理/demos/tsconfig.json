@@ -7,14 +7,5 @@
         "moduleResolution": "bundler",
         "allowSyntheticDefaultImports": true,
         "baseUrl": "./demos",
-        "paths": {
-            "react": [
-                "../packages/react"
-            ],
-            "react-dom": [
-                "../packages/react-dom"
-            ],
-        },
     },
-   
 }
