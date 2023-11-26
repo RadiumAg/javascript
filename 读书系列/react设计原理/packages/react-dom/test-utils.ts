@@ -1,9 +1,10 @@
 import { ReactElement } from 'shared/reactTypes';
-import ReactDOM from 'react-dom/index';
+import ReactDOM from 'react-dom';
 
-function renderIntoContainer(element: ReactElement) {
+function renderIntoDocument(element: ReactElement) {
   const div = document.createElement('div');
   ReactDOM.createRoot(div).render(element);
+  return element;
 }
 
-export { renderIntoContainer };
+export { renderIntoDocument };

@@ -40,8 +40,8 @@ const jsx = (
     const val = config[prop];
 
     if (prop === 'key') {
-      if (key !== undefined) {
-        key = ` ${val}`;
+      if (val !== undefined) {
+        key = `${val}`;
       }
       continue;
     }
@@ -60,7 +60,7 @@ const jsx = (
   }
 
   const maybeChildrenLength = maybeChildren.length;
-  if (maybeChildren) {
+  if (maybeChildrenLength) {
     if (maybeChildrenLength === 1) {
       props.children = maybeChildren[0];
     } else {
@@ -81,8 +81,8 @@ const jsxDEV = (type: ElementType, config: Record<string, any>) => {
     const val = config[prop];
 
     if (prop === 'key') {
-      if (key !== undefined) {
-        key = ` ${val}`;
+      if (val !== undefined) {
+        key = `${val}`;
       }
       continue;
     }
@@ -103,4 +103,12 @@ const jsxDEV = (type: ElementType, config: Record<string, any>) => {
   return ReactElement(type, key, ref, props);
 };
 
-export { ReactElement, jsxDEV, jsx };
+function isValidElement(object: any) {
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    object.$$typeof === REACT_ELEMENT_TYPE
+  );
+}
+
+export { isValidElement, ReactElement, jsxDEV, jsx };

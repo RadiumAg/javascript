@@ -1,8 +1,6 @@
-import currentDispatcher, {
-  Dispatcher,
-  resolveDispatcher,
-} from './src/currentDispatcher';
-import { jsxDEV } from './src/jsx';
+import currentDispatcher, { resolveDispatcher } from './src/currentDispatcher';
+import { isValidElement as isValidElementFn, jsx, jsxDEV } from './src/jsx';
+import type { Dispatcher } from './src/currentDispatcher';
 
 const useState: Dispatcher['userState'] = initialState => {
   const dispatcher = resolveDispatcher();
@@ -14,9 +12,13 @@ const __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE = {
   currentDispatcher,
 };
 
-export { useState, __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE };
+const version = '0.0.0';
+const createElement = jsx;
 
-export default {
-  version: '0.0.0',
-  createElement: jsxDEV,
+export {
+  useState,
+  createElement,
+  isValidElementFn as isValidElement,
+  version,
+  __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE,
 };
