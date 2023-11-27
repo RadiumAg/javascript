@@ -28,7 +28,9 @@ function childReconciler(shouldTrackEffect: boolean) {
     element: ReactElement,
   ) {
     const key = element.key;
-    if (currentFiber !== null) {
+
+    // eslint-disable-next-line no-restricted-syntax
+    work: if (currentFiber !== null) {
       // update
       if (currentFiber.key === key) {
         // key 相同
@@ -42,10 +44,10 @@ function childReconciler(shouldTrackEffect: boolean) {
           }
           // 删掉旧的
           deleteChild(returnFiber, currentFiber);
-          return;
+          break work;
         } else if (__DEV__) {
           console.warn('还未实现的react类型', element);
-          return;
+          break work;
         }
       } else {
         // 删掉旧的
@@ -70,6 +72,17 @@ function childReconciler(shouldTrackEffect: boolean) {
     currentFiber: FiberNode | null,
     content: string | number,
   ) {
+    if (currentFiber !== null) {
+      // update
+      if (currentFiber.tag === HostText) {
+        // 类型没变
+        const existing = useFiber(currentFiber, { content });
+        existing.return = returnFiber;
+        return existing;
+      } else {
+        deleteChild(returnFiber, currentFiber);
+      }
+    }
     const fiber = new FiberNode(HostText, { content }, null);
     fiber.return = returnFiber;
     return fiber;
@@ -103,6 +116,8 @@ function childReconciler(shouldTrackEffect: boolean) {
         reconcileSingleTextNode(returnFiber, currentFiber, newChild),
       );
     }
+
+    if (currentFiber) deleteChild(returnFiber, currentFiber);
 
     return null;
   };
