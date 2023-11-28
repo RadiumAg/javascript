@@ -1,8 +1,10 @@
-import React from 'react';
+import * as React from 'react';
 import ReactDOM from 'react-dom';
 
 const Child = () => {
-  return <div>11111</div>;
+  const [state, setState] = React.useState(1);
+  window.setState = setState
+  return <div>{state}</div>;
 };
 
 const App = () => {

@@ -2,9 +2,9 @@ import currentDispatcher, { resolveDispatcher } from './src/currentDispatcher';
 import { isValidElement as isValidElementFn, jsx, jsxDEV } from './src/jsx';
 import type { Dispatcher } from './src/currentDispatcher';
 
-const useState: Dispatcher['userState'] = initialState => {
+const useState: Dispatcher['useState'] = initialState => {
   const dispatcher = resolveDispatcher();
-  return dispatcher.userState(initialState);
+  return dispatcher.useState(initialState);
 };
 
 // 内部数据共享层

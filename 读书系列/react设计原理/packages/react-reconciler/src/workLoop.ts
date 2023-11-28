@@ -14,6 +14,7 @@ function prepareFreshStack(root: FiberRootNode) {
 function scheduleUpdateOnFiber(fiber: FiberNode) {
   // 调度功能
   const root = markUpdateFromFiberToRoot(fiber);
+  debugger;
   renderRoot(root);
 }
 

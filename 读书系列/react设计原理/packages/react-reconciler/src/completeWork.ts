@@ -25,6 +25,7 @@ const completeWork = (wip: FiberNode) => {
     case HostComponent:
       if (current !== null && wip.alternate) {
         //  updated
+        //  props是否变化
       } else {
         // 1. 构建DOM
         const instance = createInstance(wip.type, newProps);
