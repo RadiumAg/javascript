@@ -4,6 +4,7 @@ import {
   createInstance,
   createTextInstance,
 } from 'hostConfig';
+import { updateFiberProps } from 'react-dom/src/systemEvent';
 import { FiberNode } from './fiber';
 import { NoFlags, Update } from './fiberFlags';
 import {
@@ -27,6 +28,7 @@ const completeWork = (wip: FiberNode) => {
         //  updated
         //  props是否变化
         markUpdate(wip);
+        updateFiberProps(wip.stateNode, newProps);
       } else {
         // 1. 构建DOM
         const instance = createInstance(wip.type, newProps);
