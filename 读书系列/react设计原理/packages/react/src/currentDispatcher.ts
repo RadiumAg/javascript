@@ -10,10 +10,8 @@ const currentDispatcher: { current: Dispatcher | null } = {
   current: null,
 };
 
-window.a = currentDispatcher;
-
 const resolveDispatcher = () => {
-  const dispatcher = currentDispatcher.current || window.a.current;
+  const dispatcher = currentDispatcher.current;
 
   if (dispatcher === null) {
     throw new Error('hook只能在函数组件中执行');

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 const Child = () => {
   const [state, setState] = React.useState(1);
-  window.setState = setState
+  window.setState = setState;
   return <div>{state}</div>;
 };
 
