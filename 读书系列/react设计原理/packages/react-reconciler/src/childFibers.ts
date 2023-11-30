@@ -8,6 +8,8 @@ import {
 import { HostText } from './workTags';
 import { ChildDeletion, Placement } from './fiberFlags';
 
+type ExistingChildren = Map<string | number, FiberNode>;
+
 function childReconciler(shouldTrackEffect: boolean) {
   function deleteChild(returnFiber: FiberNode, childToDelete: FiberNode) {
     if (!shouldTrackEffect) {
@@ -86,6 +88,24 @@ function childReconciler(shouldTrackEffect: boolean) {
     return fiber;
   }
 
+  function reconcileChildrenArray(
+    returnFiber: FiberNode,
+    currentFirstChild: FiberNode | null,
+    newCHild: any[],
+  ) {
+    //1. 将current保存在map中
+    const existingChildren: ExistingChildren = new Map();
+    let current = currentFirstChild;
+    while (current !== null) {
+      const keyToUse = current.key !== null ? current.key : current?.index;
+      existingChildren.set(keyToUse, current);
+      current = current.sibling;
+    } 
+    //2. 遍历newChild,选中是否可复用
+    //3. 标记移动还是插入
+    //4. 将Map中剩下的标记为删除
+  }
+
   function reconcileSingleTextNode(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
@@ -126,7 +146,10 @@ function childReconciler(shouldTrackEffect: boolean) {
           if (__DEV__) {
             console.warn('未实现的reconcile类型', newChild);
           }
-          return null;
+      }
+
+      if (Array.isArray(newChild)) {
+        return reconcileChildrenArray(returnFiber, currentFiber, newChild);
       }
     }
     // TODO 多节点情况 ul > li*3
