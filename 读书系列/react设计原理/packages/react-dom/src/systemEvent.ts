@@ -1,3 +1,4 @@
+import path from 'path';
 import { Container } from 'hostConfig';
 import type { Props } from 'shared/reactTypes';
 
@@ -10,7 +11,7 @@ interface DOMElement extends Element {
 
 type EventCallback = (e: Event) => void;
 
-interface SyntheticEvent extends Element {
+interface SyntheticEvent extends Event {
   __stopPropagation: boolean;
 }
 
@@ -41,11 +42,16 @@ function initEvent(container: Container, eventType: string) {
 function createSyntheticEvent(e: Event) {
   const syntheticEvent = e as SyntheticEvent;
   syntheticEvent.__stopPropagation = false;
-  const orginStopPropagtion = e.stopPropagation;
+  const orginStopPropagation = e.stopPropagation;
 
-  syntheticEvent.stopPropagation = () => {};
+  syntheticEvent.stopPropagation = () => {
+    syntheticEvent.__stopPropagation = true;
+    if (orginStopPropagation) {
+      orginStopPropagation();
+    }
+  };
 
-  syntheticEvent.stop;
+  return syntheticEvent;
 }
 
 function dispatchEvent(container: Container, eventType: string, e: Event) {
@@ -62,8 +68,24 @@ function dispatchEvent(container: Container, eventType: string, e: Event) {
     eventType,
   );
   // 2. 构建合成事件
+  const se = createSyntheticEvent(e);
   // 3. 遍历captue
-  // 4. 遍历bubble
+  triggerEventFlow(capture, se);
+
+  if (!se.__stopPropagation) {
+    // 4. 遍历bubble
+    triggerEventFlow(bubble, se);
+  }
+}
+
+function triggerEventFlow(paths: EventCallback[], se: SyntheticEvent) {
+  for (const callback of paths) {
+    callback.call(null, se);
+
+    if (se.__stopPropagation) {
+      break;
+    }
+  }
 }
 
 function getEventCallbackNameFromEventType(
