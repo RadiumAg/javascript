@@ -1,4 +1,3 @@
-import path from 'path';
 import { Container } from 'hostConfig';
 import type { Props } from 'shared/reactTypes';
 
