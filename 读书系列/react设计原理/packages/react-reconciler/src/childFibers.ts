@@ -91,8 +91,12 @@ function childReconciler(shouldTrackEffect: boolean) {
   function reconcileChildrenArray(
     returnFiber: FiberNode,
     currentFirstChild: FiberNode | null,
-    newCHild: any[],
+    newChild: any[],
   ) {
+    const lastPlacedIndex = 0;
+    const lastNewFiber: FiberNode | null = null;
+    const firstNewFiber: FiberNode | null = null;
+
     //1. 将current保存在map中
     const existingChildren: ExistingChildren = new Map();
     let current = currentFirstChild;
@@ -100,10 +104,60 @@ function childReconciler(shouldTrackEffect: boolean) {
       const keyToUse = current.key !== null ? current.key : current?.index;
       existingChildren.set(keyToUse, current);
       current = current.sibling;
-    } 
-    //2. 遍历newChild,选中是否可复用
-    //3. 标记移动还是插入
+    }
+
+    for (let i = 0; i < newChild.length; i++) {
+      //2. 遍历newChild,选中是否可复用
+      const after = newChild;
+      const newFiber = updateFromMap(returnFiber, existingChildren, i, after);
+
+      if (newFiber === null) {
+        continue;
+      }
+
+      //3. 标记移动还是插入
+    }
+
     //4. 将Map中剩下的标记为删除
+  }
+
+  function updateFromMap(
+    returnFiber: FiberNode,
+    existingChildren: ExistingChildren,
+    index: number,
+    element: any,
+  ): FiberNode | null {
+    const keyToUse = element.key !== null ? element.key : index;
+    const before = existingChildren.get(keyToUse);
+
+    if (typeof element === 'string' || typeof element === 'number') {
+      //HostText
+      if (before) {
+        if (before.tag === HostText) {
+          existingChildren.delete(keyToUse);
+          return useFiber(before, { content: `${element}` });
+        }
+      } else {
+        return new FiberNode(HostText, { content: `${element}` }, null);
+      }
+    }
+
+    // ReactElement
+    if (typeof element === 'object' && element !== null) {
+      switch (element.$$typeof) {
+        case REACT_ELEMENT_TYPE:
+          if (before && before.type === element.type) {
+            existingChildren.delete(keyToUse);
+            return useFiber(before, element.props);
+          }
+          return createFiberFromElement(element);
+      }
+
+      // TODO数组类型
+      if (Array.isArray(element) && __DEV__) {
+        console.warn('还未处理数组的实现');
+      }
+    }
   }
 
   function reconcileSingleTextNode(
