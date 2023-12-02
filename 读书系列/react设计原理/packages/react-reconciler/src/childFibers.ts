@@ -93,9 +93,9 @@ function childReconciler(shouldTrackEffect: boolean) {
     currentFirstChild: FiberNode | null,
     newChild: any[],
   ) {
-    const lastPlacedIndex = 0;
-    const lastNewFiber: FiberNode | null = null;
-    const firstNewFiber: FiberNode | null = null;
+    let lastPlacedIndex = 0;
+    let lastNewFiber: FiberNode | null = null;
+    let firstNewFiber: FiberNode | null = null;
 
     //1. 将current保存在map中
     const existingChildren: ExistingChildren = new Map();
@@ -116,9 +116,42 @@ function childReconciler(shouldTrackEffect: boolean) {
       }
 
       //3. 标记移动还是插入
+      newFiber.index = 1;
+      newFiber.return = returnFiber;
+
+      if (lastNewFiber === null) {
+        lastNewFiber = newFiber;
+        firstNewFiber = newFiber;
+      } else {
+        lastNewFiber.sibling = newFiber;
+        lastNewFiber = lastNewFiber.sibling;
+      }
+
+      if (!shouldTrackEffect) {
+        continue;
+      }
+
+      const current = newFiber.alternate;
+      if (current !== null) {
+        const oldIndex = current.index;
+
+        if (oldIndex < lastPlacedIndex) {
+          // 移动
+          newFiber.flags |= Placement;
+        } else {
+          // 不移动
+          lastPlacedIndex = oldIndex;
+        }
+      } else {
+        // mount
+        newFiber.flags |= Placement;
+      }
     }
 
     //4. 将Map中剩下的标记为删除
+    existingChildren.forEach(fiber => {
+      deleteChild(returnFiber, fiber);
+    });
   }
 
   function updateFromMap(
