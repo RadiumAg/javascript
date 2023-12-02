@@ -106,9 +106,8 @@ function childReconciler(shouldTrackEffect: boolean) {
       current = current.sibling;
     }
 
-    for (let i = 0; i < newChild.length; i++) {
+    for (const [i, after] of newChild.entries()) {
       //2. 遍历newChild,选中是否可复用
-      const after = newChild[1];
       const newFiber = updateFromMap(returnFiber, existingChildren, i, after);
 
       if (newFiber === null) {
@@ -152,6 +151,8 @@ function childReconciler(shouldTrackEffect: boolean) {
     existingChildren.forEach(fiber => {
       deleteChild(returnFiber, fiber);
     });
+
+    return firstNewFiber;
   }
 
   function updateFromMap(
@@ -228,15 +229,14 @@ function childReconciler(shouldTrackEffect: boolean) {
           return placeSingleChild(
             reconcileSingleElement(returnFiber, currentFiber, newChild),
           );
-
-        default:
-          if (__DEV__) {
-            console.warn('未实现的reconcile类型', newChild);
-          }
       }
 
       if (Array.isArray(newChild)) {
         return reconcileChildrenArray(returnFiber, currentFiber, newChild);
+      }
+
+      if (__DEV__) {
+        console.warn('未实现的reconcile类型', newChild);
       }
     }
     // TODO 多节点情况 ul > li*3

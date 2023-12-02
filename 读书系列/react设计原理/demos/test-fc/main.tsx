@@ -10,13 +10,13 @@ const Child = () => {
       : [<li key="3">3</li>, <li key="2">2</li>, <li key="1">1</li>];
 
   return (
-    <div
+    <ul
       onClick={() => {
         setState(state + 1);
       }}
     >
       {ul}
-    </div>
+    </ul>
   );
 };
 
