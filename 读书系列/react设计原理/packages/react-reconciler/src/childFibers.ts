@@ -108,7 +108,7 @@ function childReconciler(shouldTrackEffect: boolean) {
 
     for (let i = 0; i < newChild.length; i++) {
       //2. 遍历newChild,选中是否可复用
-      const after = newChild;
+      const after = newChild[1];
       const newFiber = updateFromMap(returnFiber, existingChildren, i, after);
 
       if (newFiber === null) {

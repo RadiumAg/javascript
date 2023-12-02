@@ -46,6 +46,15 @@ export function commitUpdate(fiber: FiberNode) {
   }
 }
 
+function insertChildToContainer(
+  child: Instance,
+  container: Container,
+  before: Instance,
+) {
+  // eslint-disable-next-line unicorn/prefer-modern-dom-apis
+  container.insertBefore(child, before);
+}
+
 const appendChildToContainer = appendInitialChild;
 
 export {
@@ -53,5 +62,6 @@ export {
   appendInitialChild,
   createTextInstance,
   appendChildToContainer,
+  insertChildToContainer,
 };
 export type { Container, Instance };
