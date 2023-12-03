@@ -11,7 +11,10 @@ import { ChildDeletion, Placement } from './fiberFlags';
 type ExistingChildren = Map<string | number, FiberNode>;
 
 function childReconciler(shouldTrackEffect: boolean) {
-  function deleteChild(returnFiber: FiberNode, childToDelete: FiberNode) {
+  function deleteRemainChildren(
+    returnFiber: FiberNode,
+    childToDelete: FiberNode,
+  ) {
     if (!shouldTrackEffect) {
       return;
     }
@@ -35,7 +38,7 @@ function childReconciler(shouldTrackEffect: boolean) {
 
     let childToDelete = currentFirstChild;
     while (childToDelete !== null) {
-      deleteChild(returnFiber, childToDelete);
+      deleteRemainChildren(returnFiber, childToDelete);
       childToDelete = childToDelete.sibling;
     }
   }
@@ -71,7 +74,7 @@ function childReconciler(shouldTrackEffect: boolean) {
         }
       } else {
         // key不同，删掉旧的
-        deleteChild(returnFiber, currentFiber);
+        deleteRemainChildren(returnFiber, currentFiber);
         currentFiber = currentFiber.sibling;
       }
     }
@@ -149,7 +152,7 @@ function childReconciler(shouldTrackEffect: boolean) {
 
     //4. 将Map中剩下的标记为删除
     existingChildren.forEach(fiber => {
-      deleteChild(returnFiber, fiber);
+      deleteRemainChildren(returnFiber, fiber);
     });
 
     return firstNewFiber;
@@ -208,7 +211,7 @@ function childReconciler(shouldTrackEffect: boolean) {
         deleteRemainingChildren(returnFiber, currentFiber.sibling);
         return existing;
       } else {
-        deleteChild(returnFiber, currentFiber);
+        deleteRemainChildren(returnFiber, currentFiber);
         currentFiber = currentFiber.sibling;
       }
     }
@@ -222,6 +225,12 @@ function childReconciler(shouldTrackEffect: boolean) {
     currentFiber: FiberNode | null,
     newChild?: ReactElement,
   ) => {
+    // 判断Fragment
+    const isUnkeyedTolLevelFragement =
+      typeof newChild === 'object' &&
+      newChild !== null &&
+      newChild.type === REACT_ELEMENT_TYPE &&
+      newChild.key === null;
     // 判断当前fiber的类型
     if (typeof newChild === 'object' && newChild !== null) {
       switch (newChild.$$typeof) {
@@ -248,7 +257,7 @@ function childReconciler(shouldTrackEffect: boolean) {
       );
     }
 
-    if (currentFiber) deleteChild(returnFiber, currentFiber);
+    if (currentFiber) deleteRemainChildren(returnFiber, currentFiber);
 
     return null;
   };
