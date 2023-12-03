@@ -33,9 +33,10 @@ const createTextInstance = (content: string) => {
 
 export function commitUpdate(fiber: FiberNode) {
   switch (fiber.tag) {
-    case HostText:
+    case HostText: {
       const text = fiber.memoizedProps?.content;
       return commitTextUpdate(fiber.stateNode, text);
+    }
     case HostComponent:
       return updateFiberProps(fiber.stateNode, fiber.memoizedProps);
     default:

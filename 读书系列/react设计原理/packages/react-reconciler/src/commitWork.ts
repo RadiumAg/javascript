@@ -42,7 +42,6 @@ const commitMutationEffect = (finishedWork: FiberNode) => {
 
 const commitMutationEffectsonFiber = (finishedWork: FiberNode) => {
   const flags = finishedWork.flags;
-
   if ((flags & Placement) !== NoFlags) {
     commitPlacement(finishedWork);
     finishedWork.flags &= ~Placement;
@@ -139,6 +138,7 @@ function insertOrappendPlacementNodeIntoContainer(
   if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
     if (before) {
       insertChildToContainer(finishedWork.stateNode, hostParent, before);
+      return;
     } else {
       appendChildToContainer(hostParent, finishedWork.stateNode);
       return;
