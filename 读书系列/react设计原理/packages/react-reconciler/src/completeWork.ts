@@ -24,7 +24,7 @@ const completeWork = (wip: FiberNode) => {
 
   switch (wip.tag) {
     case HostComponent:
-      if (current !== null && wip.alternate) {
+      if (current !== null && wip.stateNode) {
         //  updated
         //  props是否变化
         markUpdate(wip);
@@ -40,7 +40,7 @@ const completeWork = (wip: FiberNode) => {
       return null;
 
     case HostText:
-      if (current !== null && wip.alternate) {
+      if (current !== null && wip.stateNode) {
         //  updated
         const oldText = current.memoizedProps.content;
         const newText = newProps.content;
