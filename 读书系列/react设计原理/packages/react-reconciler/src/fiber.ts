@@ -26,7 +26,7 @@ class FiberNode {
 
   constructor(tag: WorkTag, pedingProps: Props, key: Key) {
     this.tag = tag;
-    this.key = key;
+    this.key = key || null;
     this.stateNode = null;
     this.type = null;
 
@@ -93,6 +93,7 @@ const createWorkInProgress = (
 
   return wip;
 };
+
 function createFiberFromElement(element: ReactElement) {
   const { type, key, props } = element;
   let flagTag: WorkTag = FunctionComponent;
@@ -107,9 +108,13 @@ function createFiberFromElement(element: ReactElement) {
   fiber.type = type;
   return fiber;
 }
+
+function createFiberFromFragment() {}
+
 export {
   FiberNode,
   FiberRootNode,
   createWorkInProgress,
   createFiberFromElement,
+  createFiberFromFragment,
 };

@@ -1,5 +1,5 @@
 import { Props, ReactElement } from 'shared/reactTypes';
-import { REACT_ELEMENT_TYPE } from 'shared/reactSymbols';
+import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/reactSymbols';
 import {
   FiberNode,
   createFiberFromElement,
@@ -58,8 +58,13 @@ function childReconciler(shouldTrackEffect: boolean) {
 
         if (element.$$typeof === REACT_ELEMENT_TYPE) {
           if (currentFiber.type === element.type) {
+            let props = element.props;
+            if (element.type === REACT_FRAGMENT_TYPE) {
+              props = element.props.children;
+            }
+
             // type 相同
-            const existing = useFiber(currentFiber, element.props);
+            const existing = useFiber(currentFiber, props);
             existing.return = returnFiber;
             // 当前节点可复用，标记剩下的节点删除
             deleteRemainingChildren(returnFiber, currentFiber);
@@ -78,7 +83,12 @@ function childReconciler(shouldTrackEffect: boolean) {
         currentFiber = currentFiber.sibling;
       }
     }
-    const fiber = createFiberFromElement(element);
+    let fiber;
+    if (element.type === REACT_FRAGMENT_TYPE) {
+      fiber = createFiberFromFragment(element.props.children, key);
+    } else {
+      fiber = createFiberFromElement(element);
+    }
     fiber.return = returnFiber;
     return fiber;
   }
@@ -223,14 +233,18 @@ function childReconciler(shouldTrackEffect: boolean) {
   return (
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
-    newChild?: ReactElement,
+    newChild?: any,
   ) => {
     // 判断Fragment
-    const isUnkeyedTolLevelFragement =
+    const isUnkeyedTolLevelFragment =
       typeof newChild === 'object' &&
       newChild !== null &&
       newChild.type === REACT_ELEMENT_TYPE &&
       newChild.key === null;
+
+    if (isUnkeyedTolLevelFragment) {
+      newChild = newChild.props.children;
+    }
     // 判断当前fiber的类型
     if (typeof newChild === 'object' && newChild !== null) {
       switch (newChild.$$typeof) {
