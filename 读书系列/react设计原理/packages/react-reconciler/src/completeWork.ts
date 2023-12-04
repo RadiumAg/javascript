@@ -8,6 +8,7 @@ import { updateFiberProps } from 'react-dom/src/systemEvent';
 import { FiberNode } from './fiber';
 import { NoFlags, Update } from './fiberFlags';
 import {
+  Fragment,
   FunctionComponent,
   HostComponent,
   HostRoot,
@@ -57,10 +58,8 @@ const completeWork = (wip: FiberNode) => {
       bubbleProperties(wip);
       return null;
 
+    case Fragment:
     case FunctionComponent:
-      bubbleProperties(wip);
-      return null;
-
     case HostRoot:
       bubbleProperties(wip);
       return null;

@@ -109,7 +109,9 @@ function createFiberFromElement(element: ReactElement) {
   return fiber;
 }
 
-function createFiberFromFragment() {}
+function createFiberFromFragment(elements: any[], key: Key): FiberNode {
+  const fiber = new FiberNode();
+}
 
 export {
   FiberNode,

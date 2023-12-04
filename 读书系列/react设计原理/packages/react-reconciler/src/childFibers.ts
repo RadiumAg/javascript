@@ -1,11 +1,12 @@
-import { Props, ReactElement } from 'shared/reactTypes';
+import { Key, Props, ReactElement } from 'shared/reactTypes';
 import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/reactSymbols';
 import {
   FiberNode,
   createFiberFromElement,
+  createFiberFromFragment,
   createWorkInProgress,
 } from './fiber';
-import { HostText } from './workTags';
+import { Fragment, HostText } from './workTags';
 import { ChildDeletion, Placement } from './fiberFlags';
 
 type ExistingChildren = Map<string | number, FiberNode>;
@@ -173,12 +174,12 @@ function childReconciler(shouldTrackEffect: boolean) {
     existingChildren: ExistingChildren,
     index: number,
     element: any,
-  ): FiberNode | null {
+  ): FiberNode | undefined {
     const keyToUse = element.key !== null ? element.key : index;
     const before = existingChildren.get(keyToUse);
 
+    //HostText
     if (typeof element === 'string' || typeof element === 'number') {
-      //HostText
       if (before) {
         if (before.tag === HostText) {
           existingChildren.delete(keyToUse);
@@ -193,6 +194,16 @@ function childReconciler(shouldTrackEffect: boolean) {
     if (typeof element === 'object' && element !== null) {
       switch (element.$$typeof) {
         case REACT_ELEMENT_TYPE:
+          if (element.type === REACT_FRAGMENT_TYPE) {
+            return updateFragment(
+              returnFiber,
+              before,
+              element,
+              keyToUse,
+              existingChildren,
+            );
+          }
+
           if (before && before.type === element.type) {
             existingChildren.delete(keyToUse);
             return useFiber(before, element.props);
@@ -204,6 +215,16 @@ function childReconciler(shouldTrackEffect: boolean) {
       if (Array.isArray(element) && __DEV__) {
         console.warn('还未处理数组的实现');
       }
+    }
+
+    if (Array.isArray(element)) {
+      return updateFragment(
+        returnFiber,
+        before,
+        element,
+        keyToUse,
+        existingChildren,
+      );
     }
   }
 
@@ -282,6 +303,24 @@ function useFiber(fiber: FiberNode, pendingProps: Props): FiberNode {
   clone.index = 0;
   clone.sibling = null;
   return clone;
+}
+
+function updateFragment(
+  returnFiber: FiberNode,
+  current: FiberNode | undefined,
+  elements: any[],
+  key: Key,
+  existingChildren: ExistingChildren,
+) {
+  let fiber;
+  if (!current || current.tag !== Fragment) {
+    fiber = createFiberFromFragment(elements, key);
+  } else {
+    existingChildren.delete(key);
+    fiber = useFiber(current, elements);
+  }
+  fiber.return = returnFiber;
+  return fiber;
 }
 
 const reconcileChildFibers = childReconciler(true);
