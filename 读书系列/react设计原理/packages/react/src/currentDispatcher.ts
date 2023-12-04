@@ -18,6 +18,7 @@ const resolveDispatcher = () => {
   }
   return dispatcher;
 };
+
 export type { Dispatcher, Dispatch };
-export { resolveDispatcher };
+export { resolveDispatcher, Fragment };
 export default currentDispatcher;

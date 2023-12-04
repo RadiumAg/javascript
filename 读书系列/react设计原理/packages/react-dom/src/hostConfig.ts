@@ -56,9 +56,15 @@ function insertChildToContainer(
   container.insertBefore(child, before);
 }
 
+function removeChild(child: Instance | TextInstance, container: Container) {
+  // eslint-disable-next-line unicorn/prefer-dom-node-remove
+  container.removeChild(child);
+}
+
 const appendChildToContainer = appendInitialChild;
 
 export {
+  removeChild,
   createInstance,
   appendInitialChild,
   createTextInstance,

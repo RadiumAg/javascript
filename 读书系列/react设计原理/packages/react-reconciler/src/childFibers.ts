@@ -268,19 +268,19 @@ function childReconciler(shouldTrackEffect: boolean) {
     }
     // 判断当前fiber的类型
     if (typeof newChild === 'object' && newChild !== null) {
+      if (Array.isArray(newChild)) {
+        return reconcileChildrenArray(returnFiber, currentFiber, newChild);
+      }
+
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
             reconcileSingleElement(returnFiber, currentFiber, newChild),
           );
-      }
-
-      if (Array.isArray(newChild)) {
-        return reconcileChildrenArray(returnFiber, currentFiber, newChild);
-      }
-
-      if (__DEV__) {
-        console.warn('未实现的reconcile类型', newChild);
+        default:
+          if (__DEV__) {
+            console.warn('未实现的reconcile类型', newChild);
+          }
       }
     }
     // TODO 多节点情况 ul > li*3
