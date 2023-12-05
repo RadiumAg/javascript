@@ -6,6 +6,7 @@ import {
   HostComponent,
   type WorkTag,
 } from './workTags';
+import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes';
 import type { Key, Props, ReactElement, Ref } from 'shared/reactTypes';
 
 class FiberNode {
@@ -60,6 +61,8 @@ class FiberNode {
 class FiberRootNode {
   container: Container;
   current: FiberNode;
+  pendingLanes: Lanes;
+  finishedLane: Lane;
   finishedWork: FiberNode | null;
 
   constructor(container: Container, hostRootFiber: FiberNode) {
@@ -67,6 +70,8 @@ class FiberRootNode {
     this.current = hostRootFiber;
     hostRootFiber.stateNode = this;
     this.finishedWork = null;
+    this.pendingLanes = NoLanes;
+    this.finishedLane = NoLane;
   }
 }
 

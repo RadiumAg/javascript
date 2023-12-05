@@ -8,6 +8,7 @@ import {
   processUpdateQueue,
 } from './updateQueue';
 import { scheduleUpdateOnFiber } from './workLoop';
+import { requestUpdateLanes } from './fiberLanes';
 import type { Action } from 'shared/reactTypes';
 import type { Dispatch, Dispatcher } from 'react/src/currentDispatcher';
 
@@ -102,10 +103,11 @@ function dispatchSetState<State>(
   updateQueue: UpdateQueue<State>,
   action: Action<State>,
 ) {
-  const update = createUpdate(action);
+  const lane = requestUpdateLanes();
+  const update = createUpdate(action, lane);
   enqueueUpdate(updateQueue, update);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  scheduleUpdateOnFiber(fiber!);
+  scheduleUpdateOnFiber(fiber!, lane);
 }
 
 function mountWorkInProgressWork(): Hook {
