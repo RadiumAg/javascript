@@ -12,5 +12,9 @@ function mergeLanes(laneA: Lane, laneB: Lane) {
   return laneA | laneB;
 }
 
+export function getHighestPriorityLane(lanes: Lanes): Lane {
+  return lanes & -lanes;
+}
+
 export type { Lane, Lanes };
 export { SyncLane, NoLane, NoLanes, mergeLanes, requestUpdateLanes };

@@ -61,6 +61,14 @@ function removeChild(child: Instance | TextInstance, container: Container) {
   container.removeChild(child);
 }
 
+const scheduleMicroTask =
+  typeof queueMicrotask === 'function'
+    ? queueMicrotask
+    : typeof Promise === 'function'
+    ? (callback: (...args: any[]) => void) =>
+        Promise.resolve(null).then(callback)
+    : setTimeout;
+
 const appendChildToContainer = appendInitialChild;
 
 export {
@@ -68,6 +76,7 @@ export {
   createInstance,
   appendInitialChild,
   createTextInstance,
+  scheduleMicroTask,
   appendChildToContainer,
   insertChildToContainer,
 };
