@@ -1,3 +1,5 @@
+import { FiberRootNode } from './fiber';
+
 type Lane = number;
 type Lanes = number;
 const SyncLane = 0b0001;
@@ -12,9 +14,21 @@ function mergeLanes(laneA: Lane, laneB: Lane) {
   return laneA | laneB;
 }
 
-export function getHighestPriorityLane(lanes: Lanes): Lane {
+function getHighestPriorityLane(lanes: Lanes): Lane {
   return lanes & -lanes;
 }
 
+function markRootFinished(root: FiberRootNode, lane: Lane) {
+  root.pendingLanes &= ~lane;
+}
+
 export type { Lane, Lanes };
-export { SyncLane, NoLane, NoLanes, mergeLanes, requestUpdateLanes };
+export {
+  SyncLane,
+  NoLane,
+  NoLanes,
+  mergeLanes,
+  markRootFinished,
+  requestUpdateLanes,
+  getHighestPriorityLane,
+};

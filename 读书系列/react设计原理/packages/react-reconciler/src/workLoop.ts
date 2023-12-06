@@ -9,6 +9,7 @@ import {
   NoLane,
   SyncLane,
   getHighestPriorityLane,
+  markRootFinished,
   mergeLanes,
 } from './fiberLanes';
 import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
@@ -109,8 +110,16 @@ function commitRoot(root: FiberRootNode) {
     console.log('commit阶段开始', finishedWork);
   }
 
+  const lane = root.finishedLane;
+  if (lane === NoLane && __DEV__) {
+    console.error('commit阶段finishedLane不应该是NoLane');
+  }
+
   // 重置
   root.finishedWork = null;
+  root.finishedLane = NoLane;
+
+  markRootFinished(root, lane);
 
   // 判断是否存在3个子阶段需要执行的操作
   const subtreeHasEffect =

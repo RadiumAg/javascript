@@ -38,8 +38,8 @@ function updateFragment(wip: FiberNode) {
   return wip.child;
 }
 
-function updateFunctionComponent(wip: FiberNode, lane: Lane) {
-  const nextChildren = renderWithHooks(wip);
+function updateFunctionComponent(wip: FiberNode, renderLane: Lane) {
+  const nextChildren = renderWithHooks(wip, renderLane);
   reconcileChildren(wip, nextChildren);
   return wip.child;
 }
@@ -48,7 +48,7 @@ function updateHostRoot(wip: FiberNode, renderLane: Lane) {
   const baseState = wip.memoizedState;
   const updateQueue = wip.updateQueue as UpdateQueue<Element>;
   const pending = updateQueue.shared.pending;
-  const { memoizedState } = processUpdateQueue(baseState, pending);
+  const { memoizedState } = processUpdateQueue(baseState, pending, renderLane);
   wip.memoizedState = memoizedState;
 
   const nextChildren = wip.memoizedState;
