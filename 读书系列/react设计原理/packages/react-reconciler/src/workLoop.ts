@@ -135,6 +135,8 @@ function commitRoot(root: FiberRootNode) {
   } else {
     root.current = finishedWork;
   }
+
+  ensureRootIsScheduled(root);
 }
 
 function workLoop() {

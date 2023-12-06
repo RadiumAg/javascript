@@ -36,8 +36,8 @@ function renderWithHooks(wip: FiberNode, lane: Lane) {
   // 赋值操作
   currentlyRenderingFiber = wip;
   wip.memoizedState = null;
+  wip.updateQueue = null;
   renderLane = lane;
-  // wip.updateQueue = null;
 
   const current = wip.alternate;
 
@@ -94,6 +94,7 @@ function updateState<State>(): [State, Dispatch<State>] {
 
   const queue = hook.updateQueue as UpdateQueue<State>;
   const pending = queue.shared.pending;
+  queue.shared.pending = null;
 
   if (pending !== null) {
     const { memoizedState } = processUpdateQueue(
