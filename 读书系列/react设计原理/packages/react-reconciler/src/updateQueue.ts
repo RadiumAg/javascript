@@ -48,20 +48,35 @@ const enqueueUpdate = <State>(
 const processUpdateQueue = <State>(
   baseState: State,
   pendingUpdate: Update<State> | null,
+  renderLane: Lane,
 ): { memoizedState: State } => {
   const result: ReturnType<typeof processUpdateQueue<State>> = {
     memoizedState: baseState,
   };
 
   if (pendingUpdate !== null) {
-    const action = pendingUpdate.action;
-    if (action instanceof Function) {
-      result.memoizedState = action(baseState);
-    } else {
-      result.memoizedState = action;
-    }
+    // 第一个update
+    const first = pendingUpdate.next;
+    let pending = pendingUpdate as Update<any>;
+
+    do {
+      // 第一个update
+      const updateLane = pending.lane;
+      if (updateLane === renderLane) {
+        const action = pendingUpdate.action;
+        if (action instanceof Function) {
+          baseState = action(baseState);
+        } else {
+          baseState = action;
+        }
+      } else if (__DEV__) {
+        console.error('不应该进入updateLane !== renderLane的逻辑');
+      }
+      pending = pending?.next as Update<any>;
+    } while (pending !== first);
   }
 
+  result.memoizedState = baseState;
   return result;
 };
 

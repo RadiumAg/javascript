@@ -15,9 +15,11 @@ import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 import { HostRoot } from './workTags';
 
 let workInProgress: FiberNode | null = null;
+let wipRootRenderLane: Lane = NoLane;
 
-function prepareFreshStack(root: FiberRootNode) {
+function prepareFreshStack(root: FiberRootNode, lane: Lane) {
   workInProgress = createWorkInProgress(root.current, {});
+  wipRootRenderLane = lane;
 }
 
 function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
@@ -74,7 +76,7 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
   }
 
   // 初始化
-  prepareFreshStack(root);
+  prepareFreshStack(root, lane);
 
   do {
     try {
@@ -90,6 +92,8 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
   } while (true);
   const finishWork = root.current.alternate;
   root.finishedWork = finishWork;
+  root.finishedLane = lane;
+  wipRootRenderLane = NoLane;
 
   commitRoot(root);
 }
@@ -109,12 +113,12 @@ function commitRoot(root: FiberRootNode) {
   root.finishedWork = null;
 
   // 判断是否存在3个子阶段需要执行的操作
-  const subtreeHasEffelct =
+  const subtreeHasEffect =
     (finishedWork.subtreeFlags & MutationMask) !== NoFlags;
   const rootHostEffect = (finishedWork.flags & MutationMask) !== NoFlags;
 
-  if (subtreeHasEffelct || rootHostEffect) {
-    // beforeMuation
+  if (subtreeHasEffect || rootHostEffect) {
+    // beforeMution
     // mutation Placement
     commitMutationEffect(finishedWork);
     root.current = finishedWork;
@@ -131,7 +135,7 @@ function workLoop() {
 }
 
 function performUnitOfWork(fiber: FiberNode) {
-  const next = beginWork(fiber);
+  const next = beginWork(fiber, wipRootRenderLane);
   fiber.memoizedProps = fiber.pedingProps;
 
   if (next === null) {
