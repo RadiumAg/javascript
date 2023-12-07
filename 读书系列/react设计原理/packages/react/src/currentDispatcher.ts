@@ -2,10 +2,7 @@ import { Action } from 'shared/reactTypes';
 
 interface Dispatcher {
   useState: <T>(initialState: (() => T) | T) => [T, Dispatch<T>];
-  useEffect: (
-    callback: () => void | undefined,
-    deps: any[] | undefined,
-  ) => void;
+  useEffect: (callback: () => void, deps: any[] | undefined) => void;
 }
 
 type Dispatch<State> = (action: Action<State>) => void;

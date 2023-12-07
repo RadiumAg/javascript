@@ -48,6 +48,7 @@ const HooksDispatcherOrMount: Dispatcher = {
 
 const HookDispatcherOnUpdate: Dispatcher = {
   useState: updateState,
+  useEffect: updateEffect,
 };
 
 function mountEffect(create: EffectCallback, deps: EffectDeps) {
@@ -61,6 +62,57 @@ function mountEffect(create: EffectCallback, deps: EffectDeps) {
     undefined,
     nextDeps,
   );
+}
+
+function updateEffect(create: EffectCallback, deps: EffectDeps) {
+  const hook = updateWorkInProgressWork();
+  const nextDeps = deps === undefined ? null : deps;
+  let destory: EffectCallback | void;
+
+  if (currentHook !== null) {
+    const prevEffect = currentHook.memoizedState as Effect;
+    destory = prevEffect.destory;
+
+    if (nextDeps !== null) {
+      // 浅比较相等
+      const prevDeps = prevEffect.deps;
+      if (areHookInPutsEqual(nextDeps, prevDeps)) {
+        hook.memoizedState = pushEffect(Passive, create, destory, nextDeps);
+        return;
+      }
+    }
+    // 浅比较不相等
+    currentlyRenderingFiber.flags |= PassiveEffect;
+    hook.memoizedState = pushEffect(
+      Passive | HookHasEffect,
+      create,
+      destory,
+      nextDeps,
+    );
+  }
+  currentlyRenderingFiber.flags |= PassiveEffect;
+
+  hook.memoizedState = pushEffect(
+    Passive | HookHasEffect,
+    create,
+    undefined,
+    nextDeps,
+  );
+}
+
+function areHookInPutsEqual(nextDeps: EffectDeps, prevDeps: EffectDeps) {
+  if (prevDeps === null || nextDeps === null) {
+    return false;
+  }
+  for (let i = 0; i < prevDeps?.length && i < nextDeps.length; i++) {
+    if (Object.is(prevDeps[i], nextDeps[i])) {
+      continue;
+    }
+
+    return false;
+  }
+
+  return true;
 }
 
 function pushEffect(
@@ -265,3 +317,4 @@ function updateWorkInProgressWork(): Hook {
 }
 
 export { renderWithHooks };
+export type { Effect, FCUpdateQueue };

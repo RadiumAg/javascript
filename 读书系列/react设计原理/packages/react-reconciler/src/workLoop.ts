@@ -1,3 +1,4 @@
+import { effect } from 'vue';
 import { scheduleMicroTask } from 'hostConfig';
 import {
   unstable_scheduleCallback as NormalPriority,
@@ -6,8 +7,13 @@ import {
 import { beginWork } from './beginWork';
 import { commitMutationEffect } from './commitWork';
 import { completeWork } from './completeWork';
-import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
-import { MutationMask, NoFlags, PassiveMak } from './fiberFlags';
+import {
+  FiberNode,
+  FiberRootNode,
+  PendingPassiveEffects,
+  createWorkInProgress,
+} from './fiber';
+import { Flags, MutationMask, NoFlags, PassiveMak } from './fiberFlags';
 import {
   Lane,
   NoLane,
@@ -18,6 +24,8 @@ import {
 } from './fiberLanes';
 import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 import { HostRoot } from './workTags';
+import { Effect } from './fiberHooks';
+import { HookHasEffect, Passive } from './hookEffectTag';
 
 let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
@@ -136,9 +144,76 @@ function commitRoot(root: FiberRootNode) {
       // 调度副作用
       scheduleCallback(NormalPriority, () => {
         // 执行副作用
+        flushPassiveEffect(root.pendingPassiveEffect);
         return;
       });
     }
+  }
+
+  function commitHookEffectList(
+    flags: Flags,
+    lastEffect: Effect,
+    callback: (effect: Effect) => void,
+  ) {
+    let effect = lastEffect.next as Effect;
+
+    do {
+      if ((effect.tag & flags) === flags) {
+        callback(effect);
+      }
+
+      effect = effect.next as Effect;
+    } while (effect !== lastEffect.next);
+  }
+
+  function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
+    commitHookEffectList(flags, lastEffect, effect => {
+      const destory = effect.destory;
+
+      if (typeof destory === 'function') {
+        destory();
+      }
+
+      effect.tag &= ~HookHasEffect;
+    });
+  }
+
+  function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
+    commitHookEffectList(flags, lastEffect, effect => {
+      const destory = effect.destory;
+
+      if (typeof destory === 'function') {
+        destory();
+      }
+    });
+  }
+
+  function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
+    commitHookEffectList(flags, lastEffect, effect => {
+      const create = effect.create;
+
+      if (typeof create === 'function') {
+        effect.destory = create();
+      }
+    });
+  }
+
+  function flushPassiveEffect(pendingPassiveEffects: PendingPassiveEffects) {
+    pendingPassiveEffects.unmount.forEach(effect => {
+      commitHookEffectListUnmount(Passive, effect);
+    });
+    pendingPassiveEffects.unmount = [];
+
+    pendingPassiveEffects.update.forEach(effect => {
+      commitHookEffectListDestory(Passive | HookHasEffect, effect);
+    });
+
+    pendingPassiveEffects.update.forEach(effect => {
+      commitHookEffectListCreate(Passive | HookHasEffect, effect);
+    });
+
+    pendingPassiveEffects.update = [];
+    flushSyncCallbacks();
   }
 
   // 判断是否存在3个子阶段需要执行的操作
@@ -149,7 +224,7 @@ function commitRoot(root: FiberRootNode) {
   if (subtreeHasEffect || rootHostEffect) {
     // beforeMution
     // mutation Placement
-    commitMutationEffect(finishedWork);
+    commitMutationEffect(finishedWork, root);
     root.current = finishedWork;
     // layout
   } else {
