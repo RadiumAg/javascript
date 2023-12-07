@@ -50,7 +50,7 @@ const HookDispatcherOnUpdate: Dispatcher = {
   useState: updateState,
 };
 
-function mountEffect(create: GamepadEffectParameters, deps: EffectDeps) {
+function mountEffect(create: EffectCallback, deps: EffectDeps) {
   const hook = mountWorkInProgressWork();
   const nextDeps = deps === undefined ? null : deps;
   currentlyRenderingFiber.flags |= PassiveEffect;
@@ -66,7 +66,7 @@ function mountEffect(create: GamepadEffectParameters, deps: EffectDeps) {
 function pushEffect(
   hookFlags: Flags,
   create: EffectCallback,
-  destory: EffectCallback,
+  destory: EffectCallback | undefined,
   deps: EffectDeps,
 ) {
   const effect: Effect = {

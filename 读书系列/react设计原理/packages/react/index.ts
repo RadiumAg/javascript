@@ -7,6 +7,11 @@ const useState: Dispatcher['useState'] = initialState => {
   return dispatcher.useState(initialState);
 };
 
+const useEffect: Dispatcher['useEffect'] = (create, deps) => {
+  const dispatcher = resolveDispatcher();
+  return dispatcher.useEffect(create, deps);
+};
+
 // 内部数据共享层
 const __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE = {
   currentDispatcher,
@@ -17,6 +22,7 @@ const createElement = jsx;
 
 export {
   useState,
+  useEffect,
   createElement,
   isValidElementFn as isValidElement,
   version,
