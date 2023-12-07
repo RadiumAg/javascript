@@ -9,6 +9,8 @@ import {
 } from './updateQueue';
 import { scheduleUpdateOnFiber } from './workLoop';
 import { Lane, NoLane, requestUpdateLanes } from './fiberLanes';
+import { Flags, PassiveEffect } from './fiberFlags';
+import { HookHasEffect, Passive } from './hookEffectTag';
 import type { Action } from 'shared/reactTypes';
 import type { Dispatch, Dispatcher } from 'react/src/currentDispatcher';
 
@@ -17,6 +19,21 @@ interface Hook {
   updateQueue: unknown;
   next: Hook | null;
 }
+
+interface Effect {
+  tag: Flags;
+  create: EffectCallback;
+  destory: EffectCallback;
+  deps: EffectDeps;
+  next: Effect | null;
+}
+
+type EffectDeps = any[] | null;
+type EffectCallback = () => void;
+interface FCUpdateQueue<State> extends UpdateQueue<State> {
+  lastEffect: Effect | null;
+}
+
 const { currentDispatcher } = internals;
 
 let workInProgressHook: Hook | null = null;
@@ -26,11 +43,70 @@ let renderLane: Lane = NoLane;
 
 const HooksDispatcherOrMount: Dispatcher = {
   useState: mountState,
+  useEffect: mountEffect,
 };
 
 const HookDispatcherOnUpdate: Dispatcher = {
   useState: updateState,
 };
+
+function mountEffect(create: GamepadEffectParameters, deps: EffectDeps) {
+  const hook = mountWorkInProgressWork();
+  const nextDeps = deps === undefined ? null : deps;
+  currentlyRenderingFiber.flags |= PassiveEffect;
+
+  hook.memoizedState = pushEffect(
+    Passive | HookHasEffect,
+    create,
+    undefined,
+    nextDeps,
+  );
+}
+
+function pushEffect(
+  hookFlags: Flags,
+  create: EffectCallback,
+  destory: EffectCallback,
+  deps: EffectDeps,
+) {
+  const effect: Effect = {
+    create,
+    destory,
+    deps,
+    tag: hookFlags,
+    next: null,
+  };
+  const fiber = currentlyRenderingFiber as FiberNode;
+  const updateQueue = (fiber.updateQueue =
+    fiber.updateQueue as FCUpdateQueue<any>);
+
+  if (updateQueue === null) {
+    const updateQueue = createFCUpdateQueue();
+    fiber.updateQueue = updateQueue;
+    effect.next = effect;
+    updateQueue.lastEffect = effect;
+  } else {
+    // 插入effect
+    const lastEffect = updateQueue.lastEffect;
+    if (lastEffect === null) {
+      effect.next = effect;
+      updateQueue.lastEffect = effect;
+    } else {
+      const firstEffect = lastEffect.next;
+      lastEffect.next = effect;
+      effect.next = firstEffect;
+      updateQueue.lastEffect = effect;
+    }
+  }
+
+  return effect;
+}
+
+function createFCUpdateQueue<State>() {
+  const updateQueue = createUpdateQueue<State>() as FCUpdateQueue<State>;
+  updateQueue.lastEffect = null;
+  return updateQueue;
+}
 
 function renderWithHooks(wip: FiberNode, lane: Lane) {
   // 赋值操作
