@@ -90,14 +90,6 @@ function updateEffect(create: EffectCallback, deps: EffectDeps) {
       nextDeps,
     );
   }
-  currentlyRenderingFiber.flags |= PassiveEffect;
-
-  hook.memoizedState = pushEffect(
-    Passive | HookHasEffect,
-    create,
-    undefined,
-    nextDeps,
-  );
 }
 
 function areHookInPutsEqual(nextDeps: EffectDeps, prevDeps: EffectDeps) {

@@ -13,6 +13,7 @@ import {
   MutationMask,
   NoFlags,
   PassiveEffect,
+  PassiveMak,
   Placement,
   Update,
 } from './fiberFlags';
@@ -120,7 +121,7 @@ const commitMutationEffect = (finishedWork: FiberNode, root: FiberRootNode) => {
     const child: FiberNode | null = nextEffect.child;
 
     if (
-      (nextEffect.subtreeFlags & MutationMask) !== NoFlags &&
+      (nextEffect.subtreeFlags & (MutationMask | PassiveMak)) !== NoFlags &&
       child !== null
     ) {
       nextEffect = child;
