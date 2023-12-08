@@ -29,7 +29,17 @@ const Child = () => {
 };
 
 const App = () => {
-  return <Child />;
+  const [state, setState] = React.useState(1);
+
+  return (
+    <div
+      onClickCapture={() => {
+        setState(state => state + 1);
+      }}
+    >
+      {state}
+    </div>
+  );
 };
 
 ReactDOM.createRoot(document.querySelector('#root')).render(<App />);

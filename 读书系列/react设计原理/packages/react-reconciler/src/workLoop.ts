@@ -1,8 +1,7 @@
-import { effect } from 'vue';
 import { scheduleMicroTask } from 'hostConfig';
 import {
-  unstable_scheduleCallback as NormalPriority,
-  unstable_NormalPriority as scheduleCallback,
+  unstable_NormalPriority as NormalPriority,
+  unstable_scheduleCallback as scheduleCallback,
 } from 'scheduler';
 import { beginWork } from './beginWork';
 import { commitMutationEffect } from './commitWork';

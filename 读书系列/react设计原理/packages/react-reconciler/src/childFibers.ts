@@ -174,7 +174,7 @@ function childReconciler(shouldTrackEffect: boolean) {
     existingChildren: ExistingChildren,
     index: number,
     element: any,
-  ): FiberNode | undefined {
+  ): FiberNode | null {
     const keyToUse = element.key !== null ? element.key : index;
     const before = existingChildren.get(keyToUse);
 
@@ -226,6 +226,8 @@ function childReconciler(shouldTrackEffect: boolean) {
         existingChildren,
       );
     }
+
+    return null;
   }
 
   function reconcileSingleTextNode(
@@ -256,6 +258,7 @@ function childReconciler(shouldTrackEffect: boolean) {
     currentFiber: FiberNode | null,
     newChild?: any,
   ) => {
+    debugger;
     // 判断Fragment
     const isUnkeyedTolLevelFragment =
       typeof newChild === 'object' &&
@@ -280,11 +283,10 @@ function childReconciler(shouldTrackEffect: boolean) {
         default:
           if (__DEV__) {
             console.warn('未实现的reconcile类型', newChild);
+            return null;
           }
       }
     }
-    // TODO 多节点情况 ul > li*3
-
     // HostText
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       return placeSingleChild(

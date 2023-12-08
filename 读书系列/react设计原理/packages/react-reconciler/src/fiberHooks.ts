@@ -22,14 +22,15 @@ interface Hook {
 
 interface Effect {
   tag: Flags;
-  create: EffectCallback;
-  destory: EffectCallback;
+  create: () => EffectCallback;
+  destory: EffectCallback | undefined;
   deps: EffectDeps;
   next: Effect | null;
 }
 
 type EffectDeps = any[] | null;
-type EffectCallback = () => void;
+type EffectCallback = () => any;
+
 interface FCUpdateQueue<State> extends UpdateQueue<State> {
   lastEffect: Effect | null;
 }
@@ -51,10 +52,10 @@ const HookDispatcherOnUpdate: Dispatcher = {
   useEffect: updateEffect,
 };
 
-function mountEffect(create: EffectCallback, deps: EffectDeps) {
+function mountEffect(create: EffectCallback, deps: EffectDeps | undefined) {
   const hook = mountWorkInProgressWork();
   const nextDeps = deps === undefined ? null : deps;
-  currentlyRenderingFiber.flags |= PassiveEffect;
+  currentlyRenderingFiber!.flags |= PassiveEffect;
 
   hook.memoizedState = pushEffect(
     Passive | HookHasEffect,
@@ -67,7 +68,7 @@ function mountEffect(create: EffectCallback, deps: EffectDeps) {
 function updateEffect(create: EffectCallback, deps: EffectDeps) {
   const hook = updateWorkInProgressWork();
   const nextDeps = deps === undefined ? null : deps;
-  let destory: EffectCallback | void;
+  let destory: EffectCallback | undefined;
 
   if (currentHook !== null) {
     const prevEffect = currentHook.memoizedState as Effect;
@@ -82,7 +83,7 @@ function updateEffect(create: EffectCallback, deps: EffectDeps) {
       }
     }
     // 浅比较不相等
-    currentlyRenderingFiber.flags |= PassiveEffect;
+    currentlyRenderingFiber!.flags |= PassiveEffect;
     hook.memoizedState = pushEffect(
       Passive | HookHasEffect,
       create,

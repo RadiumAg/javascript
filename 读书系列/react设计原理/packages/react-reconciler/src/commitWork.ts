@@ -190,8 +190,8 @@ function commitPassiveEffect(
   if (updateQueue !== null) {
     if (updateQueue.lastEffect === null && __DEV__) {
       console.error('当FC存在 PassiveEffect flags时，不应该不存在Effect');
-    }
-    root.pendingPassiveEffect[type].push(updateQueue.lastEffect);
+    } else if (updateQueue.lastEffect !== null)
+      root.pendingPassiveEffect[type].push(updateQueue.lastEffect);
   }
 }
 
@@ -207,7 +207,8 @@ const commitPlacement = (finishedWork: FiberNode) => {
   const sibling = getHostSibling(finishedWork);
 
   // finishedWork ~ DOM
-  insertOrappendPlacementNodeIntoContainer(finishedWork, hostParent, sibling);
+  if (!hostParent) return;
+  insertOrAppendPlacementNodeIntoContainer(finishedWork, hostParent, sibling);
 };
 
 function getHostSibling(fiber: FiberNode) {
@@ -269,9 +270,10 @@ function getHostParent(fiber: FiberNode) {
   if (__DEV__) {
     console.warn('未找到parent');
   }
+  return null;
 }
 
-function insertOrappendPlacementNodeIntoContainer(
+function insertOrAppendPlacementNodeIntoContainer(
   finishedWork: FiberNode,
   hostParent: Container,
   before?: Instance,
@@ -290,11 +292,11 @@ function insertOrappendPlacementNodeIntoContainer(
   const child = finishedWork.child;
 
   if (child !== null) {
-    insertOrappendPlacementNodeIntoContainer(child, hostParent);
+    insertOrAppendPlacementNodeIntoContainer(child, hostParent);
     let sibling = child.sibling;
 
     while (sibling !== null) {
-      insertOrappendPlacementNodeIntoContainer(sibling, hostParent);
+      insertOrAppendPlacementNodeIntoContainer(sibling, hostParent);
       sibling = sibling.sibling;
     }
   }
