@@ -21,6 +21,6 @@
     "babel-preset-es2015": "~6.1.18",
     "chai": "~3.4.1",
     "mocha": "~2.3.4",
-    "mochawesome": "~1.2.1"
+    "mochawesome": "~1.5.0"
   }
 }
