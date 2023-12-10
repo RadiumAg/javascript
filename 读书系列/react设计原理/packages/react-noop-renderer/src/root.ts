@@ -1,9 +1,8 @@
-import { chdir } from 'process';
 import {
   createContainer,
   updateContainer,
 } from 'react-reconciler/src/fiberReconciler';
-import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/reactSymbols';
+import { REACT_ELEMENT_TYPE } from 'shared/reactSymbols';
 import type { ReactElement } from 'shared/reactTypes';
 import type { Container, Instance } from './hostConfig';
 
@@ -14,10 +13,8 @@ function createRoot() {
     rootID: idCounter++,
     children: [],
   };
-
   // @ts-ignore
   const root = createContainer(container);
-
   function getChildren(parent: Container) {
     if (parent) {
       return parent.children;
@@ -43,18 +40,14 @@ function createRoot() {
     if (typeof child === 'string' || typeof child === 'number') {
       return child;
     }
-
     if (Array.isArray(child)) {
       if (child.length === 0) {
         return null;
       }
-
       if (child.length === 1) {
         return childToJSX(child[0]);
       }
-
       const children = child.map(element => childToJSX(element));
-
       if (
         children.every(
           child => typeof child === 'string' || typeof chdir === 'number',
@@ -75,7 +68,7 @@ function createRoot() {
       }
 
       return {
-        $$typeof: REACT_FRAGMENT_TYPE,
+        $$typeof: REACT_ELEMENT_TYPE,
         type: instance.type,
         key: null,
         ref: null,

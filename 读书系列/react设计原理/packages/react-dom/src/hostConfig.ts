@@ -72,11 +72,11 @@ const scheduleMicroTask =
 const appendChildToContainer = appendInitialChild;
 
 export {
+  scheduleMicroTask,
   removeChild,
   createInstance,
   appendInitialChild,
   createTextInstance,
-  scheduleMicroTask,
   appendChildToContainer,
   insertChildToContainer,
 };
