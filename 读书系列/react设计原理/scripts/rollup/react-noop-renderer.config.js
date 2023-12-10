@@ -25,7 +25,17 @@ export default [
     ],
     external: [...Object.keys(peerDependencies), 'scheduler'],
     plugins: [
-      ...getBaseRollupPlugins(),
+      ...getBaseRollupPlugins({
+        typescript: {
+          tsconfigOverride: {
+            compilerOptions: {
+              paths: {
+                hostConfig: [`./${name}/src/hostConfig.ts`],
+              },
+            },
+          },
+        },
+      }),
       alias({
         entries: {
           hostConfig: `${pkgPath}/src/hostConfig.ts`,
@@ -45,17 +55,5 @@ export default [
         }),
       }),
     ],
-  },
-  {
-    input: `${pkgPath}/test-utils.ts`,
-    output: [
-      {
-        file: `${pkgDistPath}/test-utils.js`,
-        name: 'test-utils',
-        format: 'umd',
-      },
-    ],
-    external: ['react', 'react-dom'],
-    plugins: getBaseRollupPlugins(),
   },
 ];

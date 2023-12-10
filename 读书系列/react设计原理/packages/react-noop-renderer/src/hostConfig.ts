@@ -108,7 +108,7 @@ const scheduleMicroTask =
         Promise.resolve(null).then(callback)
     : setTimeout;
 
-const appendChildToContainer = (parent: Container, child: Instance) => {
+const appendChildToContainer = (parent: any, child: Instance) => {
   const prevParentID = child.parent;
   const parentID = 'rootID' in parent ? parent.rootID : parent.id;
 
