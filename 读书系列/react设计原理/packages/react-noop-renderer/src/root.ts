@@ -50,7 +50,7 @@ function createRoot() {
       const children = child.map(element => childToJSX(element));
       if (
         children.every(
-          child => typeof child === 'string' || typeof chdir === 'number',
+          child => typeof child === 'string' || typeof child === 'number',
         )
       ) {
         return children.join('');
