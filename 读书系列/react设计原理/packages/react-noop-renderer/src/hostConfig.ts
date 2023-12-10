@@ -1,34 +1,62 @@
 import { FiberNode } from 'react-reconciler/src/fiber';
-import { HostComponent, HostText } from 'react-reconciler/src/workTags';
-import { updateFiberProps } from './systemEvent';
-import type { DOMElement } from './systemEvent';
+import { HostText } from 'react-reconciler/src/workTags';
 import type { Props } from 'shared/reactTypes';
 
-type Container = Element;
-type Instance = Element;
-type TextInstance = Text;
+interface Container {
+  rootID: number;
+  children: (Instance | TextInstance)[];
+}
 
+interface Instance {
+  id: number;
+  type: string;
+  children: any[];
+  parent: number;
+  props: Props;
+}
+interface TextInstance {
+  text: string;
+  id: number;
+  parent: number;
+}
+
+let instanceCounter = 0;
 const createInstance = (type: string, props: Props) => {
-  // TODO 处理props
-  const element = document.createElement(type) as unknown;
-  updateFiberProps(element as DOMElement, props);
-  return element as DOMElement;
+  const instance = {
+    id: instanceCounter,
+    type,
+    children: [],
+    parent: -1,
+    props,
+  };
+
+  return instance;
 };
 
 function commitTextUpdate(textInstance: TextInstance, content: string) {
-  textInstance.textContent = content;
+  textInstance.text = content;
 }
 
-const appendInitialChild = (
-  parent: Instance | Container | undefined,
-  child: Instance | undefined,
-) => {
-  if (!child || !parent) return;
-  parent.append(child);
+const appendInitialChild = (parent: Instance | Container, child: Instance) => {
+  const prevParentID = child.parent;
+  const parentID = 'rootID' in parent ? parent.rootID : parent.id;
+
+  if (prevParentID !== -1 && prevParentID !== parentID) {
+    throw new Error('不能重复挂载child');
+  }
+
+  child.parent = parentID;
+  parent.children.push(child);
 };
 
 const createTextInstance = (content: string) => {
-  return document.createTextNode(content);
+  const instance = {
+    text: content,
+    id: instanceCounter++,
+    parent: -1,
+  };
+
+  return instance;
 };
 
 export function commitUpdate(fiber: FiberNode) {
@@ -37,8 +65,6 @@ export function commitUpdate(fiber: FiberNode) {
       const text = fiber.memoizedProps?.content;
       return commitTextUpdate(fiber.stateNode, text);
     }
-    case HostComponent:
-      return updateFiberProps(fiber.stateNode, fiber.memoizedProps);
     default:
       if (__DEV__) {
         console.warn('未实现的Update类型', fiber);
@@ -52,13 +78,26 @@ function insertChildToContainer(
   container: Container,
   before: Instance,
 ) {
-  // eslint-disable-next-line unicorn/prefer-modern-dom-apis
-  container.insertBefore(child, before);
+  const beforeIndex = container.children.indexOf(before);
+
+  if (beforeIndex === -1) {
+    throw new Error('before不存在');
+  }
+
+  const index = container.children.indexOf(child);
+
+  if (index !== -1) {
+    container.children.splice(index, 1);
+  }
+  container.children.splice(beforeIndex, 0, child);
 }
 
 function removeChild(child: Instance | TextInstance, container: Container) {
-  // eslint-disable-next-line unicorn/prefer-dom-node-remove
-  container.removeChild(child);
+  const index = container.children.indexOf(child);
+  if (index === -1) {
+    throw new Error('child不存在');
+  }
+  container.children.splice(index, 1);
 }
 
 const scheduleMicroTask =
@@ -69,14 +108,24 @@ const scheduleMicroTask =
         Promise.resolve(null).then(callback)
     : setTimeout;
 
-const appendChildToContainer = appendInitialChild;
+const appendChildToContainer = (parent: Container, child: Instance) => {
+  const prevParentID = child.parent;
+  const parentID = 'rootID' in parent ? parent.rootID : parent.id;
+
+  if (prevParentID !== -1 && prevParentID !== parent.rootID) {
+    throw new Error('不能重复挂载child');
+  }
+
+  child.parent = parentID;
+  parent.children.push(child);
+};
 
 export {
+  scheduleMicroTask,
   removeChild,
   createInstance,
   appendInitialChild,
   createTextInstance,
-  scheduleMicroTask,
   appendChildToContainer,
   insertChildToContainer,
 };

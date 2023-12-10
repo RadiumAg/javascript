@@ -1,5 +1,5 @@
 {
-  "name": "react-noop-render",
+  "name": "react-noop-renderer",
   "version": "1.0.0",    
   "description": "",
   "module": "index.ts",

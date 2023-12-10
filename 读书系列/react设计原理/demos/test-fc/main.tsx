@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-noop-renderer';
 
 const Child = () => {
   const [state, setState] = React.useState(1);
@@ -42,4 +42,5 @@ const App = () => {
   );
 };
 
-ReactDOM.createRoot(document.querySelector('#root')).render(<App />);
+const root = ReactDOM.createRoot();
+root.render(<App />);
