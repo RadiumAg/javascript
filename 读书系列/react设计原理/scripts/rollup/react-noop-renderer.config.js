@@ -27,6 +27,7 @@ export default [
     plugins: [
       ...getBaseRollupPlugins({
         typescript: {
+          exclude: ['./packages/react-dom/**/*.ts'],
           tsconfigOverride: {
             compilerOptions: {
               paths: {
