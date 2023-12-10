@@ -2,7 +2,9 @@ import generatePackageJson from 'rollup-plugin-generate-package-json';
 import alias from '@rollup/plugin-alias';
 import { getBaseRollupPlugins, getPackageJson, resolvePkgPath } from './utils';
 
-const { name, module, peerDependencies } = getPackageJson('react-dom');
+const { name, module, peerDependencies } = getPackageJson(
+  'react-noop-renderer',
+);
 const pkgPath = resolvePkgPath(name);
 const pkgDistPath = resolvePkgPath(name, true);
 
@@ -12,7 +14,7 @@ export default [
     output: [
       {
         file: `${pkgDistPath}/index.js`,
-        name: 'reactDom',
+        name: 'reactNoopRenderer',
         format: 'umd',
       },
       {

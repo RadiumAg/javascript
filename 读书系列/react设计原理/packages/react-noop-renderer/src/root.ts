@@ -89,11 +89,9 @@ function createRoot() {
     render(element: ReactElement) {
       return updateContainer(element, root);
     },
-
     getChildren() {
       return getChildren(container);
     },
-
     getChildrenAsJSX() {
       return getChildrenAsJSX(container);
     },
