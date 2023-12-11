@@ -1,4 +1,9 @@
 import { Container } from 'hostConfig';
+import {
+  unstable_ImmediatePriority,
+  unstable_NormalPriority,
+  unstable_UserBlockingPriority,
+} from 'scheduler';
 import type { Props } from 'shared/reactTypes';
 
 const elementPropsKey = '__props';
@@ -127,6 +132,19 @@ function collectPatchs(
   }
 
   return paths;
+}
+
+function eventTypeToSchdulerPriority(eventType: string) {
+  switch (eventType) {
+    case 'click':
+    case 'keydown':
+    case 'keyup':
+      return unstable_ImmediatePriority;
+    case 'scroll':
+      return unstable_UserBlockingPriority;
+    default:
+      return unstable_NormalPriority;
+  }
 }
 
 export type { DOMElement };
