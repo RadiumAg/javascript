@@ -2,6 +2,7 @@ import { scheduleMicroTask } from 'hostConfig';
 import {
   unstable_NormalPriority as NormalPriority,
   unstable_scheduleCallback as scheduleCallback,
+  unstable_scheduleCallback,
 } from 'scheduler';
 import { beginWork } from './beginWork';
 import { commitMutationEffect } from './commitWork';
@@ -31,6 +32,9 @@ let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
 let rootDoesHasPassiveEffect = false;
 
+type RootExitStatus = number;
+const RootInComplete = 1;
+
 function prepareFreshStack(root: FiberRootNode, lane: Lane) {
   workInProgress = createWorkInProgress(root.current, {});
   wipRootRenderLane = lane;
@@ -59,8 +63,44 @@ function ensureRootIsScheduled(root: FiberRootNode) {
   } else {
     // 其它优先级 用宏任务调度
     const schedulePriority = lanesToSchedulePriority(updateLane);
-    scheduleCallback(schedulePriority,)
+    scheduleCallback(
+      schedulePriority,
+      performConcurrentWorkOnRoot.bind(null, root),
+    );
   }
+}
+
+function performConcurrentWorkOnRoot(root: FiberRootNode, didTimeout: boolean) {
+  const lane = getHighestPriorityLane(root.pendingLanes);
+  if (lane === NoLane) {
+    return null;
+  }
+  const needSync = lane === SyncLane || didTimeout;
+  // render阶段
+}
+
+function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
+  if (__DEV__) {
+    console.log(`开始${shouldTimeSlice ? '并发' : '同步'}更新`);
+  }
+
+  if (wipRootRenderLane !== lane) {
+    // 初始化
+    prepareFreshStack(root, lane);
+  }
+
+  do {
+    try {
+      shouldTimeSlice ? workLoopConcurrent() : workLoopSync();
+      break;
+    } catch (e) {
+      if (__DEV__) {
+        console.warn('workLoop发生错误', e);
+      }
+      workInProgress = null;
+    }
+    // eslint-disable-next-line no-constant-condition
+  } while (true);
 }
 
 function markRootUpdated(root: FiberRootNode, lane: Lane) {
@@ -237,8 +277,14 @@ function commitRoot(root: FiberRootNode) {
   ensureRootIsScheduled(root);
 }
 
-function workLoop() {
+function workLoopSync() {
   while (workInProgress !== null) {
+    performUnitOfWork(workInProgress);
+  }
+}
+
+function workLoopConcurrent() {
+  while (workInProgress !== null && !unstable_scheduleCallback) {
     performUnitOfWork(workInProgress);
   }
 }
