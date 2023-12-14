@@ -18,6 +18,7 @@ import {
   NoLane,
   SyncLane,
   getHighestPriorityLane,
+  lanesToSchedulePriority,
   markRootFinished,
   mergeLanes,
 } from './fiberLanes';
@@ -57,6 +58,8 @@ function ensureRootIsScheduled(root: FiberRootNode) {
     scheduleMicroTask(flushSyncCallbacks);
   } else {
     // 其它优先级 用宏任务调度
+    const schedulePriority = lanesToSchedulePriority(updateLane);
+    scheduleCallback(schedulePriority,)
   }
 }
 
