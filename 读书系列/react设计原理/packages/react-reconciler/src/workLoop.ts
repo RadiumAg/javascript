@@ -33,7 +33,7 @@ let wipRootRenderLane: Lane = NoLane;
 let rootDoesHasPassiveEffect = false;
 
 type RootExitStatus = number;
-const RootInComplete = 1;
+const RootComplete = 1;
 
 function prepareFreshStack(root: FiberRootNode, lane: Lane) {
   workInProgress = createWorkInProgress(root.current, {});
@@ -101,6 +101,18 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
     }
     // eslint-disable-next-line no-constant-condition
   } while (true);
+
+  // 中断执行
+  if (shouldTimeSlice && workInProgress !== null) {
+    return RootComplete;
+  }
+
+  // render阶段执行完
+  if (!shouldTimeSlice && workInProgress !== null && __DEV__) {
+    console.error('render阶段结束时wip不应该不是null');
+  }
+
+  return RootComplete;
 }
 
 function markRootUpdated(root: FiberRootNode, lane: Lane) {
@@ -122,7 +134,7 @@ function markUpdateFromFiberToRoot(fiber: FiberNode) {
   return null;
 }
 
-function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
+function performSyncWorkOnRoot(root: FiberRootNode) {
   const nextLanes = getHighestPriorityLane(root.pendingLanes);
   if (nextLanes !== SyncLane) {
     // 其他比SyncLane低的优先级
@@ -131,27 +143,17 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
     return;
   }
 
-  // 初始化
-  prepareFreshStack(root, lane);
+  const exitStatus = renderRoot(root, nextLanes, false);
+  if (exitStatus === RootComplete) {
+    const finishWork = root.current.alternate;
+    root.finishedWork = finishWork;
+    root.finishedLane = nextLanes;
+    wipRootRenderLane = NoLane;
 
-  do {
-    try {
-      workLoop();
-      break;
-    } catch (e) {
-      if (__DEV__) {
-        console.warn('workLoop发生错误', e);
-      }
-      workInProgress = null;
-    }
-    // eslint-disable-next-line no-constant-condition
-  } while (true);
-  const finishWork = root.current.alternate;
-  root.finishedWork = finishWork;
-  root.finishedLane = lane;
-  wipRootRenderLane = NoLane;
-
-  commitRoot(root);
+    commitRoot(root);
+  } else if (__DEV__) {
+    console.error('还未实现同步');
+  }
 }
 
 function commitRoot(root: FiberRootNode) {
