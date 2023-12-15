@@ -258,7 +258,6 @@ function childReconciler(shouldTrackEffect: boolean) {
     currentFiber: FiberNode | null,
     newChild?: any,
   ) => {
-    debugger;
     // 判断Fragment
     const isUnkeyedTolLevelFragment =
       typeof newChild === 'object' &&
