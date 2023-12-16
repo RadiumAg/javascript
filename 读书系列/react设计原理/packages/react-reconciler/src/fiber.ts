@@ -1,4 +1,5 @@
 import { Container } from 'hostConfig';
+import { CallbackNode } from 'scheduler';
 import { Flags, NoFlags } from './fiberFlags';
 import {
   Fragment,
@@ -70,6 +71,8 @@ class FiberRootNode {
   pendingLanes: Lanes;
   finishedLane: Lane;
   finishedWork: FiberNode | null;
+  callbackNode: CallbackNode | null;
+  callbackPriority: Lane;
   pendingPassiveEffect: PendingPassiveEffects;
 
   constructor(container: Container, hostRootFiber: FiberNode) {
@@ -79,6 +82,9 @@ class FiberRootNode {
     this.finishedWork = null;
     this.pendingLanes = NoLanes;
     this.finishedLane = NoLane;
+
+    this.callbackNode = null;
+    this.callbackPriority = NoLane;
 
     this.pendingPassiveEffect = {
       unmount: [],

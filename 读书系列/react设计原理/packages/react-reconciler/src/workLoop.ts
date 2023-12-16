@@ -77,6 +77,11 @@ function performConcurrentWorkOnRoot(root: FiberRootNode, didTimeout: boolean) {
   }
   const needSync = lane === SyncLane || didTimeout;
   // render阶段
+  const exitStatus = renderRoot(root, lane, !needSync);
+
+  if (exitStatus === RootInComplete) {
+    // 中断
+  }
 }
 
 function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
