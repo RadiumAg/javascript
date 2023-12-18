@@ -267,6 +267,8 @@ function mountWorkInProgressWork(): Hook {
     memoizedState: null,
     updateQueue: null,
     next: null,
+    baseQueue: null,
+    baseState: null,
   };
 
   if (workInProgressHook === null) {
@@ -314,6 +316,8 @@ function updateWorkInProgressWork(): Hook {
     memoizedState: currentHook?.memoizedState,
     updateQueue: currentHook?.updateQueue,
     next: null,
+    baseQueue: currentHook.baseQueue,
+    baseState: currentHook.baseState,
   };
 
   if (workInProgressHook === null) {
