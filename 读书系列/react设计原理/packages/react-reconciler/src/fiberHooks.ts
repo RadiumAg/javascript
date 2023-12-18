@@ -1,6 +1,7 @@
 import internals from '../../shared/internals';
 import { FiberNode } from './fiber';
 import {
+  Update,
   UpdateQueue,
   createUpdate,
   createUpdateQueue,
@@ -18,6 +19,8 @@ interface Hook {
   memoizedState: any;
   updateQueue: unknown;
   next: Hook | null;
+  baseState: any;
+  baseQueue: Update<any> | null;
 }
 
 interface Effect {
@@ -214,16 +217,34 @@ function updateState<State>(): [State, Dispatch<State>] {
   const hook = updateWorkInProgressWork();
 
   const queue = hook.updateQueue as UpdateQueue<State>;
+  const baseState = hook.baseState;
   const pending = queue.shared.pending;
-  queue.shared.pending = null;
+  const current = currentHook as Hook;
+  let baseQueue = current.baseQueue;
 
   if (pending !== null) {
-    const { memoizedState } = processUpdateQueue(
-      hook.memoizedState,
-      pending,
-      renderLane,
-    );
-    hook.memoizedState = memoizedState;
+    if (baseQueue !== null) {
+      const baseFirst = baseQueue.next;
+      const pendingFirst = pending.next;
+
+      baseQueue.next = pendingFirst;
+      pending.next = baseFirst;
+    }
+
+    baseQueue = pending;
+    current.baseQueue = pending;
+    queue.shared.pending = null;
+
+    if (baseQueue !== null) {
+      const {
+        memoizedState,
+        baseQueue: newBaseQueue,
+        baseState: newBaseState,
+      } = processUpdateQueue(baseState, baseQueue, renderLane);
+      hook.memoizedState = memoizedState;
+      hook.baseState = newBaseState;
+      hook.baseQueue = newBaseQueue;
+    }
   }
 
   return [hook.memoizedState, queue.dispatch as Dispatch<State>];
