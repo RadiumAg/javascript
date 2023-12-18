@@ -1,6 +1,6 @@
 import { Action } from 'shared/reactTypes';
 import { Dispatch } from '../../react/src/currentDispatcher';
-import { Lane } from './fiberLanes';
+import { Lane, isSubseOfLanes } from './fiberLanes';
 
 interface Update<State> {
   action: Action<State>;
@@ -62,16 +62,17 @@ const processUpdateQueue = <State>(
     do {
       // 第一个update
       const updateLane = pending.lane;
-      if (updateLane === renderLane) {
+      if (!isSubseOfLanes(renderLane, updateLane)) {
+      } else {
+        // 优先级足够
         const action = pending.action;
         if (action instanceof Function) {
           baseState = action(baseState);
         } else {
           baseState = action;
         }
-      } else if (__DEV__) {
-        console.error('不应该进入updateLane !== renderLane的逻辑');
       }
+
       pending = pending?.next as Update<any>;
     } while (pending !== first);
   }

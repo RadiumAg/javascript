@@ -23,6 +23,10 @@ function requestUpdateLanes() {
   return lane;
 }
 
+function isSubseOfLanes(set: Lanes, subset: Lane) {
+  return (set & subset) === subset;
+}
+
 function lanesToSchedulePriority(lanes: Lanes) {
   const lane = getHighestPriorityLane(lanes);
 
@@ -76,6 +80,7 @@ export {
   NoLanes,
   mergeLanes,
   DefaultLane,
+  isSubseOfLanes,
   markRootFinished,
   requestUpdateLanes,
   InputContinuonusLane,
