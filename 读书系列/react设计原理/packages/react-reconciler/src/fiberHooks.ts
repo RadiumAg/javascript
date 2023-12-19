@@ -230,6 +230,7 @@ function mountState<State>(
   const queue = createUpdateQueue<State>();
   hook.updateQueue = queue;
   hook.memoizedState = memoizedState;
+  hook.baseState = memoizedState;
 
   // dispatch
   const dispatch = dispatchSetState.bind(
@@ -263,17 +264,17 @@ function updateState<State>(): [State, Dispatch<State>] {
     baseQueue = pending;
     current.baseQueue = pending;
     queue.shared.pending = null;
+  }
 
-    if (baseQueue !== null) {
-      const {
-        memoizedState,
-        baseQueue: newBaseQueue,
-        baseState: newBaseState,
-      } = processUpdateQueue(baseState, baseQueue, renderLane);
-      hook.memoizedState = memoizedState;
-      hook.baseState = newBaseState;
-      hook.baseQueue = newBaseQueue;
-    }
+  if (baseQueue !== null) {
+    const {
+      memoizedState,
+      baseQueue: newBaseQueue,
+      baseState: newBaseState,
+    } = processUpdateQueue(baseState, baseQueue, renderLane);
+    hook.memoizedState = memoizedState;
+    hook.baseState = newBaseState;
+    hook.baseQueue = newBaseQueue;
   }
 
   return [hook.memoizedState, queue.dispatch as Dispatch<State>];
