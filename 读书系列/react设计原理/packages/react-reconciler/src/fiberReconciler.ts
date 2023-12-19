@@ -1,5 +1,9 @@
 import { Container } from 'hostConfig';
 import { ReactElement } from 'shared/reactTypes';
+import {
+  unstable_ImmediatePriority,
+  unstable_runWithPriority,
+} from 'scheduler';
 import { FiberNode, FiberRootNode } from './fiber';
 import { HostRoot } from './workTags';
 import {
@@ -20,16 +24,16 @@ function createContainer(container: Container) {
 }
 
 function updateContainer(element: ReactElement | null, root: FiberRootNode) {
-  const hostRootFiber = root.current;
-  const lane = requestUpdateLanes();
-  const update = createUpdate<ReactElement | null>(element, lane);
-
-  enqueueUpdate(
-    hostRootFiber.updateQueue as UpdateQueue<ReactElement | null>,
-    update,
-  );
-
-  scheduleUpdateOnFiber(hostRootFiber, lane);
+  unstable_runWithPriority(unstable_ImmediatePriority, () => {
+    const hostRootFiber = root.current;
+    const lane = requestUpdateLanes();
+    const update = createUpdate<ReactElement | null>(element, lane);
+    enqueueUpdate(
+      hostRootFiber.updateQueue as UpdateQueue<ReactElement | null>,
+      update,
+    );
+    scheduleUpdateOnFiber(hostRootFiber, lane);
+  });
   return element;
 }
 

@@ -4,6 +4,7 @@ import { Fragment } from './jsx';
 interface Dispatcher {
   useState: <T>(initialState: (() => T) | T) => [T, Dispatch<T>];
   useEffect: (callback: () => any, deps: any[] | null) => void;
+  useTransition: () => [boolean, (callback: () => void) => void];
 }
 
 type Dispatch<State> = (action: Action<State>) => void;

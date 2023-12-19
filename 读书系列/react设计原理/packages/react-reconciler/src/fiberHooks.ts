@@ -48,12 +48,18 @@ let renderLane: Lane = NoLane;
 const HooksDispatcherOrMount: Dispatcher = {
   useState: mountState,
   useEffect: mountEffect,
+  useTransition: mountTransition,
 };
 
 const HookDispatcherOnUpdate: Dispatcher = {
   useState: updateState,
   useEffect: updateEffect,
+  useTransition: updateTransition,
 };
+
+function mountTransition(): [boolean, (callback: () => void) => void] {}
+
+function updateTransition(): [boolean, (callback: () => void) => void] {}
 
 function mountEffect(create: EffectCallback, deps: EffectDeps | undefined) {
   const hook = mountWorkInProgressWork();

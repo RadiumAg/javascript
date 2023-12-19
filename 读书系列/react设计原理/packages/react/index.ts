@@ -12,6 +12,11 @@ const useEffect: Dispatcher['useEffect'] = (create, deps) => {
   return dispatcher.useEffect(create, deps);
 };
 
+const useTransition: Dispatcher['useTransition'] = () => {
+  const dispatcher = resolveDispatcher();
+  return dispatcher.useTransition();
+};
+
 // 内部数据共享层
 const __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE = {
   currentDispatcher,
@@ -24,6 +29,7 @@ export {
   useState,
   useEffect,
   createElement,
+  useTransition,
   isValidElementFn as isValidElement,
   version,
   __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE,

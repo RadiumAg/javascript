@@ -9,12 +9,13 @@ import { FiberRootNode } from './fiber';
 
 type Lane = number;
 type Lanes = number;
-const SyncLane = 0b0001;
-const NoLane = 0b0000;
-const NoLanes = 0b0000;
-const InputContinuonusLane = 0b0010;
-const DefaultLane = 0b0100;
-const IdleLane = 0b1000;
+const SyncLane = 0b00001;
+const NoLane = 0b00000;
+const NoLanes = 0b00000;
+const InputContinuonusLane = 0b00010;
+const DefaultLane = 0b00100;
+const TransitionLane = 0b01000;
+const IdleLane = 0b10000;
 
 function requestUpdateLanes() {
   const currentSchedulerPriority = unstable_getCurrentPriorityLevel();
@@ -82,6 +83,7 @@ export {
   DefaultLane,
   isSubseOfLanes,
   markRootFinished,
+  TransitionLane,
   requestUpdateLanes,
   InputContinuonusLane,
   getHighestPriorityLane,
