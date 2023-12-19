@@ -47,16 +47,30 @@ let currentlyRenderingFiber: FiberNode | null = null;
 let renderLane: Lane = NoLane;
 
 const HooksDispatcherOrMount: Dispatcher = {
+  useRef: mountRef,
   useState: mountState,
   useEffect: mountEffect,
   useTransition: mountTransition,
 };
 
 const HookDispatcherOnUpdate: Dispatcher = {
+  useRef: updateRef,
   useState: updateState,
   useEffect: updateEffect,
   useTransition: updateTransition,
 };
+
+function mountRef<T>(initialValue: T): { current: T } {
+  const hook = mountWorkInProgressWork();
+  const ref = { current: initialValue };
+  hook.memoizedState = ref;
+  return ref;
+}
+
+function updateRef<T>(): { current: T } {
+  const hook = mountWorkInProgressWork();
+  return hook.memoizedState;
+}
 
 function mountTransition(): [boolean, (callback: () => void) => void] {
   const [isPending, setPending] = mountState(false);

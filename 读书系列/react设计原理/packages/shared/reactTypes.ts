@@ -1,7 +1,7 @@
 type Type = any;
 type Key = any;
-type Ref = any;
 type Props = any;
+type Ref = { current: any } | ((instance: any) => void);
 type ElementType = any;
 
 interface ReactElement {

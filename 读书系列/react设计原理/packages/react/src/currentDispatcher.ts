@@ -5,6 +5,7 @@ interface Dispatcher {
   useState: <T>(initialState: (() => T) | T) => [T, Dispatch<T>];
   useEffect: (callback: () => any, deps: any[] | null) => void;
   useTransition: () => [boolean, (callback: () => void) => void];
+  useRef: <T>(initialValue: T) => { current: T };
 }
 
 type Dispatch<State> = (action: Action<State>) => void;

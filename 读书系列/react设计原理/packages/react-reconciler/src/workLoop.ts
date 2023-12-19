@@ -6,7 +6,7 @@ import {
   unstable_scheduleCallback,
 } from 'scheduler';
 import { beginWork } from './beginWork';
-import { commitMutationEffect } from './commitWork';
+import { commitLayoutEffects, commitMutationEffect } from './commitWork';
 import { completeWork } from './completeWork';
 import {
   FiberNode,
@@ -254,6 +254,7 @@ function commitRoot(root: FiberRootNode) {
     // mutation Placement
     commitMutationEffect(finishedWork, root);
     root.current = finishedWork;
+    commitLayoutEffects(finishedWork, root);
     // layout
   } else {
     root.current = finishedWork;
