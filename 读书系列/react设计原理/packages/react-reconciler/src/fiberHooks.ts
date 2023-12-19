@@ -1,3 +1,4 @@
+import currentBatchConfig from 'react/src/currentBatchConfig';
 import internals from '../../shared/internals';
 import { FiberNode } from './fiber';
 import {
@@ -57,9 +58,31 @@ const HookDispatcherOnUpdate: Dispatcher = {
   useTransition: updateTransition,
 };
 
-function mountTransition(): [boolean, (callback: () => void) => void] {}
+function mountTransition(): [boolean, (callback: () => void) => void] {
+  const [isPending, setPending] = mountState(false);
+  const hook = mountWorkInProgressWork();
+  const start = startTransition.bind(null, setPending);
+  hook.memoizedState = start;
+  return [isPending, start];
+}
 
-function updateTransition(): [boolean, (callback: () => void) => void] {}
+function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
+  setPending(true);
+  const prevTransition = currentBatchConfig.transition;
+  currentBatchConfig.transition = 1;
+
+  callback();
+  setPending(false);
+
+  currentBatchConfig.transition = prevTransition;
+}
+
+function updateTransition(): [boolean, (callback: () => void) => void] {
+  const [isPending] = updateState();
+  const hook = updateWorkInProgressWork();
+  const start = hook.memoizedState;
+  return [isPending as boolean, start];
+}
 
 function mountEffect(create: EffectCallback, deps: EffectDeps | undefined) {
   const hook = mountWorkInProgressWork();

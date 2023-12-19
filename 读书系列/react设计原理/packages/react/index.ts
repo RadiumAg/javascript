@@ -1,4 +1,5 @@
 import currentDispatcher, { resolveDispatcher } from './src/currentDispatcher';
+import currentBatchConfig from './src/currentBatchConfig';
 import { isValidElement as isValidElementFn, jsx, jsxDEV } from './src/jsx';
 import type { Dispatcher } from './src/currentDispatcher';
 
@@ -20,6 +21,7 @@ const useTransition: Dispatcher['useTransition'] = () => {
 // 内部数据共享层
 const __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE = {
   currentDispatcher,
+  currentBatchConfig,
 };
 
 const version = '0.0.0';
