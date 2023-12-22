@@ -5,6 +5,7 @@ import {
   unstable_UserBlockingPriority,
   unstable_getCurrentPriorityLevel,
 } from 'scheduler';
+import ReactCurrentBatchConfig from 'react/src/currentBatchConfig';
 import { FiberRootNode } from './fiber';
 
 type Lane = number;
@@ -18,6 +19,11 @@ const TransitionLane = 0b01000;
 const IdleLane = 0b10000;
 
 function requestUpdateLanes() {
+  const isTransition = ReactCurrentBatchConfig.transition !== null;
+  if (!isTransition) {
+    return TransitionLane;
+  }
+
   const currentSchedulerPriority = unstable_getCurrentPriorityLevel();
   const lane = schedulerPriorityToLane(currentSchedulerPriority);
 

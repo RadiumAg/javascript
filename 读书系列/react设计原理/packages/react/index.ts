@@ -1,4 +1,5 @@
 import currentDispatcher, { resolveDispatcher } from './src/currentDispatcher';
+import currentBatchConfig from './src/currentBatchConfig';
 import { isValidElement as isValidElementFn, jsx, jsxDEV } from './src/jsx';
 import type { Dispatcher } from './src/currentDispatcher';
 
@@ -17,15 +18,22 @@ const useTransition: Dispatcher['useTransition'] = () => {
   return dispatcher.useTransition();
 };
 
+const useRef: Dispatcher['useRef'] = initialValue => {
+  const dispatcher = resolveDispatcher();
+  return dispatcher.useRef(initialValue);
+};
+
 // 内部数据共享层
 const __SECRET_INTERNALAS_DO_NOT_USE_OR_YOU_WILL_BE_FIRE = {
   currentDispatcher,
+  currentBatchConfig,
 };
 
 const version = '0.0.0';
 const createElement = jsx;
 
 export {
+  useRef,
   useState,
   useEffect,
   createElement,

@@ -1,3 +1,4 @@
+import currentBatchConfig from 'react/src/currentBatchConfig';
 import internals from '../../shared/internals';
 import { FiberNode } from './fiber';
 import {
@@ -46,20 +47,56 @@ let currentlyRenderingFiber: FiberNode | null = null;
 let renderLane: Lane = NoLane;
 
 const HooksDispatcherOrMount: Dispatcher = {
+  useRef: mountRef,
   useState: mountState,
   useEffect: mountEffect,
   useTransition: mountTransition,
 };
 
 const HookDispatcherOnUpdate: Dispatcher = {
+  useRef: updateRef,
   useState: updateState,
   useEffect: updateEffect,
   useTransition: updateTransition,
 };
 
-function mountTransition(): [boolean, (callback: () => void) => void] {}
+function mountRef<T>(initialValue: T): { current: T } {
+  const hook = mountWorkInProgressWork();
+  const ref = { current: initialValue };
+  hook.memoizedState = ref;
+  return ref;
+}
 
-function updateTransition(): [boolean, (callback: () => void) => void] {}
+function updateRef<T>(): { current: T } {
+  const hook = mountWorkInProgressWork();
+  return hook.memoizedState;
+}
+
+function mountTransition(): [boolean, (callback: () => void) => void] {
+  const [isPending, setPending] = mountState(false);
+  const hook = mountWorkInProgressWork();
+  const start = startTransition.bind(null, setPending);
+  hook.memoizedState = start;
+  return [isPending, start];
+}
+
+function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
+  setPending(true);
+  const prevTransition = currentBatchConfig.transition;
+  currentBatchConfig.transition = 1;
+
+  callback();
+  setPending(false);
+
+  currentBatchConfig.transition = prevTransition;
+}
+
+function updateTransition(): [boolean, (callback: () => void) => void] {
+  const [isPending] = updateState();
+  const hook = updateWorkInProgressWork();
+  const start = hook.memoizedState;
+  return [isPending as boolean, start];
+}
 
 function mountEffect(create: EffectCallback, deps: EffectDeps | undefined) {
   const hook = mountWorkInProgressWork();
@@ -207,6 +244,7 @@ function mountState<State>(
   const queue = createUpdateQueue<State>();
   hook.updateQueue = queue;
   hook.memoizedState = memoizedState;
+  hook.baseState = memoizedState;
 
   // dispatch
   const dispatch = dispatchSetState.bind(
@@ -240,17 +278,17 @@ function updateState<State>(): [State, Dispatch<State>] {
     baseQueue = pending;
     current.baseQueue = pending;
     queue.shared.pending = null;
+  }
 
-    if (baseQueue !== null) {
-      const {
-        memoizedState,
-        baseQueue: newBaseQueue,
-        baseState: newBaseState,
-      } = processUpdateQueue(baseState, baseQueue, renderLane);
-      hook.memoizedState = memoizedState;
-      hook.baseState = newBaseState;
-      hook.baseQueue = newBaseQueue;
-    }
+  if (baseQueue !== null) {
+    const {
+      memoizedState,
+      baseQueue: newBaseQueue,
+      baseState: newBaseState,
+    } = processUpdateQueue(baseState, baseQueue, renderLane);
+    hook.memoizedState = memoizedState;
+    hook.baseState = newBaseState;
+    hook.baseQueue = newBaseQueue;
   }
 
   return [hook.memoizedState, queue.dispatch as Dispatch<State>];
