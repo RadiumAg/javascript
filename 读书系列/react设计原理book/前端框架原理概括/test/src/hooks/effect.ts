@@ -13,7 +13,6 @@ function cleanup(effect) {
   for (const subs of effect.deps) {
     subs.delete(effect);
   }
-
   effect.clear();
 }
 
