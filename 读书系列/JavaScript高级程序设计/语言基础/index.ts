@@ -23,3 +23,10 @@ console.log(num.toString(2), num2.toString(2));
   console.log(num3); // 22
   console.log(num4); // 21
 })(); // 递增/递减操作符
+
+// number 类型
+(() => {
+  // 八进制字面量，第一个数字必须是0
+  let octalNum1 = 070; // 八进制的56
+  let octalNum2 = 079; // 无效的八进制值，当成79处理
+})();
