@@ -29,3 +29,23 @@ const priority2UseList: Priority[] = [
   NormalPriority,
   LowPriority,
 ];
+
+const priority2Name = [
+  'noop',
+  'ImmediatePriority',
+  'UserBlockingPriority',
+  'NormalPriority',
+  'LowPriority',
+  'IdlePriority',
+];
+
+const workList: Work[] = [];
+const prevPriority: Priority = IdlePriority;
+let currentCallback: CallbackNode | null;
+
+function schedule() {
+  const cbNode = getFirstCallbackNode();
+  const curWork = workList.sort((w1, w2) => {
+    return w1.priority - w2.priority;
+  })[0];
+}
