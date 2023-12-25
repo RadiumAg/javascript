@@ -1,5 +1,5 @@
 const State = {
-  pending: 'pedding',
+  pending: 'pending',
   fulfilled: 'fulfilled',
   rejected: 'rejected',
 };
@@ -27,7 +27,7 @@ class MyPromise {
     });
   }
 
-  specialValue(value) {
+  resolvePromise(value) {
     if (value === this) {
       this.reject(
         new TypeError(
@@ -39,15 +39,31 @@ class MyPromise {
     } else if (value instanceof MyPromise) {
       value.then(this.resolve.bind(this), this.reject.bind(this));
       return false;
-    } else if (
-      (value && typeof value === 'object') ||
-      typeof value === 'function'
-    ) {
+    } else if (value && typeof value === 'object') {
       const thenable = Reflect.get(value, 'then');
 
-      if (thenable) {
-        thenable.call(value, this.resolve.bind(this), this.reject.bind(this));
-        return false;
+      if (typeof thenable === 'function') {
+        try {
+          thenable.call(value, this.resolve.bind(this), this.reject.bind(this));
+          return false;
+        } catch (e) {
+          this.reject(e);
+          return false;
+        }
+      }
+    } else if (value && typeof value === 'function') {
+      if (Reflect.has(value, 'then')) {
+        return this.resolvePromise(Reflect.get(value, 'then'));
+      }
+
+      if (value) {
+        try {
+          value.call(value, this.resolve.bind(this), this.reject.bind(this));
+          return false;
+        } catch (e) {
+          this.reject(e);
+          return false;
+        }
       }
     }
 
@@ -55,8 +71,8 @@ class MyPromise {
   }
 
   resolve(value) {
-    if (!this.specialValue(value)) return;
     if (this.state !== State.pending) return;
+    if (!this.resolvePromise(value)) return;
 
     this.value = value;
     this.state = State.fulfilled;
@@ -136,172 +152,6 @@ class MyPromise {
   }
 }
 
-() => {
-  // 多次调用;
-  const a = new MyPromise((resolve, reject) => {
-    setTimeout(() => resolve(2));
-  });
-
-  a.then(() => {
-    console.log('first');
-  });
-
-  a.then(() => {
-    console.log('seconed');
-  });
-};
-
-() => {
-  function delay(ms, value) {
-    return new MyPromise(resolve => {
-      setTimeout(() => {
-        resolve(value);
-      }, ms);
-    });
-  }
-
-  const promise1 = delay(1000, 'Promise1 was fulfilled after a delay!');
-
-  const promise2 = promise1.then();
-
-  promise2.then(result => {
-    console.log('Promise2 is fulfilled with the same value:', result);
-  });
-};
-
-//
-() => {
-  function delay(ms, value) {
-    return new MyPromise(resolve => {
-      setTimeout(() => {
-        resolve(value);
-      }, ms);
-    });
-  }
-
-  const promise1 = delay(1000, 'Promise1 was fulfilled after a delay!');
-
-  const promise2 = promise1.then(false);
-
-  promise2.then(result => {
-    console.log('Promise2 is fulfilled with the same value:', result);
-  });
-
-  const rejectedPromise = MyPromise.reject(new Error('Rejected!'));
-
-  rejectedPromise
-    .catch(() => {
-      const x = Object.create(null); // 创建一个拥有 null 原型的对象
-      x.then = function (onFulfilled) {
-        onFulfilled('Thenable fulfilled!');
-      };
-      return x; // 返回拥有 null 原型的对象
-    })
-    .then(result => {
-      console.log('Returned value from thenable:', result); // 输出："Returned value from thenable: Thenable fulfilled!"
-    });
-};
-
-//
-() => {
-  function delay(ms, value) {
-    return new MyPromise((resolve, reject) => {
-      setTimeout(() => {
-        reject(value);
-      }, ms);
-    });
-  }
-
-  const promise1 = delay(1000, 'Promise1 was fulfilled after a delay!');
-
-  const promise2 = promise1.then(false, false);
-
-  promise2.then(
-    () => {},
-    result => {
-      console.log('Promise2 is fulfilled with the same value:', result);
-    },
-  );
-};
-
-() => {
-  const myPromise = new MyPromise(resolve => {
-    resolve('Hello, Promise!');
-  });
-
-  const samePromise = myPromise.then(() => {
-    return samePromise; // 返回了同一个Promise对象
-  });
-
-  setTimeout(() => {
-    console.log(samePromise);
-  });
-};
-
-() => {
-  const promise1 = new MyPromise((resolve, reject) => {
-    // 模拟一个异步操作，1秒后兑现
-    setTimeout(() => {
-      resolve('Promise1 fulfilled!');
-    }, 1000);
-  });
-
-  const promise2 = new MyPromise((resolve, reject) => {
-    // 模拟一个异步操作，2秒后兑现
-    setTimeout(() => {
-      resolve('Promise2 fulfilled!');
-    }, 2000);
-  });
-
-  const promise3 = promise1.then(() => promise2);
-
-  promise3.then(
-    result => {
-      console.log('promise3 fulfilled with the same value:', result);
-    },
-    error => {
-      console.error('promise3 rejected:', error.message);
-    },
-  );
-};
-
-() => {
-  const fulfilledPromise = Promise.resolve();
-
-  const a = fulfilledPromise.then(() => {
-    function xFactory() {
-      return {
-        then(resolvePromise, rejectPromise) {
-          setTimeout(() => {
-            rejectPromise(undefined);
-          }, 0);
-        },
-      };
-    }
-
-    return xFactory();
-  });
-
-  setTimeout(() => {
-    console.dir(a);
-  }, 1000);
-};
-
-() => {
-  const a = MyPromise.resolve(2).then(() => ({
-    then(onFulfilled) {
-      setTimeout(() => {
-        onFulfilled({ 1: 2 });
-        throw 2;
-      });
-    },
-  }));
-
-  setTimeout(() => {
-    console.log(a);
-  }, 1000);
-};
-
 MyPromise.deferred = function () {
   const result = {};
   result.promise = new MyPromise((resolve, reject) => {
@@ -311,5 +161,9 @@ MyPromise.deferred = function () {
 
   return result;
 };
+
+process.on('uncaughtException', error => {
+  // console.error('Unhandled error:', error);
+});
 
 module.exports = MyPromise;
