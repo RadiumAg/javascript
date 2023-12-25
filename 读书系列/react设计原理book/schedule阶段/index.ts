@@ -65,13 +65,13 @@ function schedule() {
   const { priority: curPriority } = curWork;
 
   if (curPriority === prevPriority) {
-    // 有work在进行，比较该work与症状进行的work的优先级
+    // 有work在进行，比较该work与正在进行的work的优先级
     // 如果优先级相同，则退出调度
     return;
   }
 
   // 准备调度当前优先级最高的work
-  // 调度之前，如果有work症状进行，则中断它
+  // 调度之前，如果有work正在进行，则中断它
   cbNode && cancelCallback(cbNode);
 
   // 调度当前优先级最高的work
@@ -112,13 +112,13 @@ function perform(work: Work, didTimeout?: boolean): any {
 
 const insertItem = (content: string) => {
   const ele = document.createElement('span');
-  ele.innerText = `${content}`;
+  ele.textContent = `${content}`;
   ele.className = `pri-${content}`;
-  doSomeBuzyWork(10000000);
+  doSomeBusyWork(10000000);
   contentBox.append(ele);
 };
 
-const doSomeBuzyWork = (len: number) => {
+const doSomeBusyWork = (len: number) => {
   let result = 0;
   while (len--) {
     result += len;
