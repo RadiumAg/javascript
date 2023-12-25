@@ -8,6 +8,7 @@ class MyPromise {
   value; // 成功的值
   reason; // 失败的理由
   state = State.pending;
+  called = false;
   onFulfilledFnArray = [];
   onRejectedFnArray = []; // 为了可以 let a = Promise; a.then(); a.then()
 
@@ -37,16 +38,23 @@ class MyPromise {
 
       return false;
     } else if (value instanceof MyPromise) {
-      value.then(this.resolve.bind(this), this.reject.bind(this));
-      return false;
+      try {
+        value.then(this.resolve.bind(this), this.reject.bind(this));
+        return false;
+      } catch (e) {
+        this.reject(e);
+        return false;
+      } finally {
+        this.called = true;
+      }
     } else if (value && typeof value === 'object') {
       const thenable = Reflect.get(value, 'then');
-
       if (typeof thenable === 'function') {
         try {
           thenable.call(value, this.resolve.bind(this), this.reject.bind(this));
           return false;
         } catch (e) {
+          if (this.called) return;
           this.reject(e);
           return false;
         }
@@ -165,5 +173,23 @@ MyPromise.deferred = function () {
 process.on('uncaughtException', error => {
   // console.error('Unhandled error:', error);
 });
+
+(() => {
+  const sentinel = { sentinel: 'sentinel' };
+  const other = { other: 'other' };
+
+  const promise = MyPromise.resolve({ dummy: 'dummy' }).then(() => {
+    return {
+      then(resolvePromise) {
+        resolvePromise(sentinel);
+        throw other;
+      },
+    };
+  });
+
+  promise.then(value => {
+    console.log(value === sentinel);
+  });
+})();
 
 module.exports = MyPromise;
