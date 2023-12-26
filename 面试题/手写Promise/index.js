@@ -189,30 +189,35 @@ process.on('uncaughtException', error => {
 });
 
 (() => {
-  const y = {
-    get then() {
-      throw new Error('访问`then`时出错');
-    },
-  };
+  function a(value) {
+    return {
+      then(onFulfilled) {
+        setTimeout(() => {
+          onFulfilled(value);
+        }, 1000);
+      },
+    };
+  }
 
-  const x = {
-    then(resolvePromise, rejectPromise) {
-      // 异步使用`y`解析
-      MyPromise.resolve().then(() => {
-        resolvePromise(y); // 这一行将永远不会到达，因为`y.then`抛出了错误
-      });
-    },
-  };
+  function xFactory() {
+    return {
+      then(resolvePromise) {
+        resolvePromise(a(111));
+      },
+    };
+  }
 
-  new MyPromise((resolve, reject) => {
-    // 这里`x`作为我们的thenable对象
-    resolve(x);
-  }).then(
+  // 创建一个新的Promise，并尝试解析thenable `x`
+  const promise = new MyPromise((resolve, reject) => {
+    resolve(xFactory());
+  });
+
+  promise.then(
     value => {
-      console.log('成功实现，值为:', value);
+      console.log(value);
     },
     reason => {
-      console.error('被拒绝，理由为:', reason);
+      console.log(reason);
     },
   );
 })();
