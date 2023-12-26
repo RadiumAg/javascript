@@ -8,7 +8,6 @@ class MyPromise {
   value; // 成功的值
   reason; // 失败的理由
   state = State.pending;
-  called = false;
   onFulfilledFnArray = [];
   onRejectedFnArray = []; // 为了可以 let a = Promise; a.then(); a.then()
 
@@ -29,6 +28,8 @@ class MyPromise {
   }
 
   resolvePromise(value) {
+    let called = false;
+
     if (value === this) {
       this.reject(
         new TypeError(
@@ -39,13 +40,23 @@ class MyPromise {
       return false;
     } else if (value instanceof MyPromise) {
       try {
-        value.then(this.resolve.bind(this), this.reject.bind(this));
+        value.then(
+          x => {
+            if (called) return;
+            called = true;
+            this.resolve(x);
+          },
+          y => {
+            if (called) return;
+            called = true;
+            this.reject(y);
+          },
+        );
         return false;
       } catch (e) {
+        if (called) return;
         this.reject(e);
         return false;
-      } finally {
-        this.called = true;
       }
     } else if (value && typeof value === 'object') {
       try {
@@ -54,17 +65,26 @@ class MyPromise {
           try {
             thenable.call(
               value,
-              this.resolve.bind(this),
-              this.reject.bind(this),
+              x => {
+                if (called) return;
+                called = true;
+                this.resolve(x);
+              },
+              y => {
+                if (called) return;
+                called = true;
+                this.reject(y);
+              },
             );
             return false;
           } catch (e) {
-            if (this.called) return;
+            if (called) return;
             this.reject(e);
             return false;
           }
         }
       } catch (e) {
+        if (called) return;
         this.reject(e);
         return false;
       }
@@ -73,17 +93,30 @@ class MyPromise {
         if (Reflect.has(value, 'then')) {
           return this.resolvePromise(Reflect.get(value, 'then'));
         }
-
         if (value) {
           try {
-            value.call(value, this.resolve.bind(this), this.reject.bind(this));
+            value.call(
+              value,
+              x => {
+                if (called) return;
+                called = true;
+                this.resolve(x);
+              },
+              y => {
+                if (called) return;
+                called = true;
+                this.reject(y);
+              },
+            );
             return false;
           } catch (e) {
+            if (called) return;
             this.reject(e);
             return false;
           }
         }
       } catch (e) {
+        if (called) return;
         this.reject(e);
         return false;
       }
@@ -187,39 +220,5 @@ MyPromise.deferred = function () {
 process.on('uncaughtException', error => {
   // console.error('Unhandled error:', error);
 });
-
-(() => {
-  function a(value) {
-    return {
-      then(onFulfilled) {
-        setTimeout(() => {
-          onFulfilled(value);
-        }, 1000);
-      },
-    };
-  }
-
-  function xFactory() {
-    return {
-      then(resolvePromise) {
-        resolvePromise(a(111));
-      },
-    };
-  }
-
-  // 创建一个新的Promise，并尝试解析thenable `x`
-  const promise = new MyPromise((resolve, reject) => {
-    resolve(xFactory());
-  });
-
-  promise.then(
-    value => {
-      console.log(value);
-    },
-    reason => {
-      console.log(reason);
-    },
-  );
-})();
 
 module.exports = MyPromise;
