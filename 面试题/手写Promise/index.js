@@ -48,30 +48,44 @@ class MyPromise {
         this.called = true;
       }
     } else if (value && typeof value === 'object') {
-      const thenable = Reflect.get(value, 'then');
-      if (typeof thenable === 'function') {
-        try {
-          thenable.call(value, this.resolve.bind(this), this.reject.bind(this));
-          return false;
-        } catch (e) {
-          if (this.called) return;
-          this.reject(e);
-          return false;
+      try {
+        const thenable = Reflect.get(value, 'then');
+        if (typeof thenable === 'function') {
+          try {
+            thenable.call(
+              value,
+              this.resolve.bind(this),
+              this.reject.bind(this),
+            );
+            return false;
+          } catch (e) {
+            if (this.called) return;
+            this.reject(e);
+            return false;
+          }
         }
+      } catch (e) {
+        this.reject(e);
+        return false;
       }
     } else if (value && typeof value === 'function') {
-      if (Reflect.has(value, 'then')) {
-        return this.resolvePromise(Reflect.get(value, 'then'));
-      }
-
-      if (value) {
-        try {
-          value.call(value, this.resolve.bind(this), this.reject.bind(this));
-          return false;
-        } catch (e) {
-          this.reject(e);
-          return false;
+      try {
+        if (Reflect.has(value, 'then')) {
+          return this.resolvePromise(Reflect.get(value, 'then'));
         }
+
+        if (value) {
+          try {
+            value.call(value, this.resolve.bind(this), this.reject.bind(this));
+            return false;
+          } catch (e) {
+            this.reject(e);
+            return false;
+          }
+        }
+      } catch (e) {
+        this.reject(e);
+        return false;
       }
     }
 
@@ -175,21 +189,32 @@ process.on('uncaughtException', error => {
 });
 
 (() => {
-  const sentinel = { sentinel: 'sentinel' };
-  const other = { other: 'other' };
+  const y = {
+    get then() {
+      throw new Error('访问`then`时出错');
+    },
+  };
 
-  const promise = MyPromise.resolve({ dummy: 'dummy' }).then(() => {
-    return {
-      then(resolvePromise) {
-        resolvePromise(sentinel);
-        throw other;
-      },
-    };
-  });
+  const x = {
+    then(resolvePromise, rejectPromise) {
+      // 异步使用`y`解析
+      MyPromise.resolve().then(() => {
+        resolvePromise(y); // 这一行将永远不会到达，因为`y.then`抛出了错误
+      });
+    },
+  };
 
-  promise.then(value => {
-    console.log(value === sentinel);
-  });
+  new MyPromise((resolve, reject) => {
+    // 这里`x`作为我们的thenable对象
+    resolve(x);
+  }).then(
+    value => {
+      console.log('成功实现，值为:', value);
+    },
+    reason => {
+      console.error('被拒绝，理由为:', reason);
+    },
+  );
 })();
 
 module.exports = MyPromise;

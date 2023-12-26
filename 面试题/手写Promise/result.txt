@@ -482,15 +482,15 @@ true
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              1) via return from a fulfilled promise
+              2) via return from a rejected promise
           `y` is an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              1) via return from a fulfilled promise
-              2) via return from a rejected promise
+              3) via return from a fulfilled promise
+              4) via return from a rejected promise
           `y` is an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -581,15 +581,15 @@ true
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              5) via return from a fulfilled promise
+              6) via return from a rejected promise
           `y` is a synchronously-fulfilled custom thenable for an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              7) via return from a fulfilled promise
+              8) via return from a rejected promise
           `y` is a synchronously-fulfilled custom thenable for an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -676,18 +676,18 @@ true
               ✓ via return from a rejected promise
           `y` is an asynchronously-fulfilled custom thenable for a thenable that immediately throws in `then`
             `then` calls `resolvePromise` synchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              9) via return from a fulfilled promise
+              10) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              11) via return from a fulfilled promise
+              12) via return from a rejected promise
           `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
-              3) via return from a fulfilled promise
-              4) via return from a rejected promise
+              13) via return from a fulfilled promise
+              14) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              5) via return from a fulfilled promise
-              6) via return from a rejected promise
+              15) via return from a fulfilled promise
+              16) via return from a rejected promise
           `y` is an asynchronously-fulfilled custom thenable for an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -777,15 +777,15 @@ true
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              17) via return from a fulfilled promise
+              18) via return from a rejected promise
           `y` is a synchronously-fulfilled one-time thenable for an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              19) via return from a fulfilled promise
+              20) via return from a rejected promise
           `y` is a synchronously-fulfilled one-time thenable for an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -809,11 +809,11 @@ true
               ✓ via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable
             `then` calls `resolvePromise` synchronously
-              7) via return from a fulfilled promise
-              8) via return from a rejected promise
+              21) via return from a fulfilled promise
+              22) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              9) via return from a fulfilled promise
-              10) via return from a rejected promise
+              23) via return from a fulfilled promise
+              24) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for a synchronously-fulfilled one-time thenable
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -837,18 +837,18 @@ true
               ✓ via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an already-fulfilled promise
             `then` calls `resolvePromise` synchronously
-              11) via return from a fulfilled promise
-              12) via return from a rejected promise
+              25) via return from a fulfilled promise
+              26) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              13) via return from a fulfilled promise
-              14) via return from a rejected promise
+              27) via return from a fulfilled promise
+              28) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise
             `then` calls `resolvePromise` synchronously
-              15) via return from a fulfilled promise
-              16) via return from a rejected promise
+              29) via return from a fulfilled promise
+              30) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              17) via return from a fulfilled promise
-              18) via return from a rejected promise
+              31) via return from a fulfilled promise
+              32) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for a synchronously-rejected custom thenable
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -858,11 +858,11 @@ true
               ✓ via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable
             `then` calls `resolvePromise` synchronously
-              19) via return from a fulfilled promise
-              20) via return from a rejected promise
+              33) via return from a fulfilled promise
+              34) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              21) via return from a fulfilled promise
-              22) via return from a rejected promise
+              35) via return from a fulfilled promise
+              36) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for a synchronously-rejected one-time thenable
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -875,29 +875,29 @@ true
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              37) via return from a fulfilled promise
+              38) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              39) via return from a fulfilled promise
+              40) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an already-rejected promise
             `then` calls `resolvePromise` synchronously
-              23) via return from a fulfilled promise
-              24) via return from a rejected promise
+              41) via return from a fulfilled promise
+              42) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              25) via return from a fulfilled promise
-              26) via return from a rejected promise
+              43) via return from a fulfilled promise
+              44) via return from a rejected promise
           `y` is a thenable that tries to fulfill twice for an eventually-rejected promise
             `then` calls `resolvePromise` synchronously
-              27) via return from a fulfilled promise
-              28) via return from a rejected promise
+              45) via return from a fulfilled promise
+              46) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              29) via return from a fulfilled promise
-              30) via return from a rejected promise
+              47) via return from a fulfilled promise
+              48) via return from a rejected promise
           `y` is a thenable that fulfills but then throws for a synchronously-fulfilled custom thenable
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -907,11 +907,11 @@ true
               ✓ via return from a rejected promise
           `y` is a thenable that fulfills but then throws for an asynchronously-fulfilled custom thenable
             `then` calls `resolvePromise` synchronously
-              31) via return from a fulfilled promise
-              32) via return from a rejected promise
+              ✓ via return from a fulfilled promise
+              ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              33) via return from a fulfilled promise
-              34) via return from a rejected promise
+              ✓ via return from a fulfilled promise
+              ✓ via return from a rejected promise
           `y` is a thenable that fulfills but then throws for a synchronously-fulfilled one-time thenable
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -956,11 +956,11 @@ true
               ✓ via return from a rejected promise
           `y` is a thenable that fulfills but then throws for an asynchronously-rejected custom thenable
             `then` calls `resolvePromise` synchronously
-              35) via return from a fulfilled promise
-              36) via return from a rejected promise
+              ✓ via return from a fulfilled promise
+              ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              37) via return from a fulfilled promise
-              38) via return from a rejected promise
+              ✓ via return from a fulfilled promise
+              ✓ via return from a rejected promise
           `y` is a thenable that fulfills but then throws for a synchronously-rejected one-time thenable
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -973,15 +973,15 @@ true
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              49) via return from a fulfilled promise
+              50) via return from a rejected promise
           `y` is a thenable that fulfills but then throws for an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              ✓ via return from a fulfilled promise
-              ✓ via return from a rejected promise
+              51) via return from a fulfilled promise
+              52) via return from a rejected promise
           `y` is a thenable that fulfills but then throws for an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -1078,8 +1078,8 @@ true
               ✓ via return from a fulfilled promise
               ✓ via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              39) via return from a fulfilled promise
-              40) via return from a rejected promise
+              53) via return from a fulfilled promise
+              54) via return from a rejected promise
           `y` is an already-fulfilled promise for an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -1173,11 +1173,11 @@ true
               ✓ via return from a rejected promise
           `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor
             `then` calls `resolvePromise` synchronously
-              41) via return from a fulfilled promise
-              42) via return from a rejected promise
+              55) via return from a fulfilled promise
+              56) via return from a rejected promise
             `then` calls `resolvePromise` asynchronously
-              43) via return from a fulfilled promise
-              44) via return from a rejected promise
+              57) via return from a fulfilled promise
+              58) via return from a rejected promise
           `y` is an eventually-fulfilled promise for an already-rejected promise
             `then` calls `resolvePromise` synchronously
               ✓ via return from a fulfilled promise
@@ -1281,11 +1281,11 @@ true
           ✓ via return from a fulfilled promise
           ✓ via return from a rejected promise
         calling `resolvePromise` with an asynchronously-fulfilled promise, then calling `rejectPromise`, both synchronously
-          45) via return from a fulfilled promise
-          46) via return from a rejected promise
+          59) via return from a fulfilled promise
+          60) via return from a rejected promise
         calling `resolvePromise` with an asynchronously-rejected promise, then calling `rejectPromise`, both synchronously
-          47) via return from a fulfilled promise
-          48) via return from a rejected promise
+          61) via return from a fulfilled promise
+          62) via return from a rejected promise
         calling `rejectPromise` then `resolvePromise`, both synchronously
           ✓ via return from a fulfilled promise
           ✓ via return from a rejected promise
@@ -1305,11 +1305,11 @@ true
           ✓ via return from a fulfilled promise
           ✓ via return from a rejected promise
         calling `resolvePromise` with an asynchronously-fulfilled promise, then calling it again, both times synchronously
-          49) via return from a fulfilled promise
-          50) via return from a rejected promise
+          63) via return from a fulfilled promise
+          64) via return from a rejected promise
         calling `resolvePromise` with an asynchronously-rejected promise, then calling it again, both times synchronously
-          51) via return from a fulfilled promise
-          52) via return from a rejected promise
+          65) via return from a fulfilled promise
+          66) via return from a rejected promise
         calling `rejectPromise` twice synchronously
           ✓ via return from a fulfilled promise
           ✓ via return from a rejected promise
@@ -1423,10 +1423,20 @@ true
       ✓ eventually-rejected
 
 
-  820 passing (20s)
-  52 failing
+  806 passing (23s)
+  66 failing
 
-  1) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable `y` is an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  1) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable `y` is a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  2) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable `y` is a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  3) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable `y` is an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1434,7 +1444,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  2) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable `y` is an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  4) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable `y` is an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1442,7 +1452,47 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  3) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  5) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled custom thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  6) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled custom thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  7) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  8) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  9) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  10) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` synchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  11) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  12) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  13) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1450,7 +1500,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  4) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  14) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1458,7 +1508,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  5) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  15) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1466,7 +1516,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  6) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  16) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an asynchronously-fulfilled custom thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1474,167 +1524,187 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  7) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  17) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled one-time thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  8) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  18) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled one-time thenable for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  9) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  19) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled one-time thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  10) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  20) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a synchronously-fulfilled one-time thenable for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  11) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  21) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  12) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  22) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  13) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  23) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  14) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  24) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  15) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  25) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  16) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  26) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  17) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  27) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  18) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  28) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  19) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  29) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  20) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  30) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  21) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  31) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  22) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  32) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-fulfilled promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  23) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  33) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  24) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  34) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  25) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  35) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  26) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  36) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an asynchronously-rejected custom thenable `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  27) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  37) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  28) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  38) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  29) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  39) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  30) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  40) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  31) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  41) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  32) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  42) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  33) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  43) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  34) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-fulfilled custom thenable `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  44) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an already-rejected promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  35) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-rejected custom thenable `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  45) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  36) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-rejected custom thenable `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  46) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  37) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-rejected custom thenable `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  47) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  38) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an asynchronously-rejected custom thenable `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  48) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that tries to fulfill twice for an eventually-rejected promise `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  39) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an already-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  49) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  50) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for a thenable that immediately throws in `then` `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  51) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  52) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is a thenable that fulfills but then throws for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+     Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
+      at listOnTimeout (node:internal/timers:573:17)
+      at process.processTimers (node:internal/timers:514:7)
+
+  53) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an already-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1642,7 +1712,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  40) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an already-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  54) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an already-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1650,7 +1720,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  41) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
+  55) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a fulfilled promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1658,7 +1728,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  42) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a rejected promise:
+  56) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` synchronously via return from a rejected promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1666,7 +1736,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  43) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
+  57) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a fulfilled promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1674,7 +1744,7 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  44) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
+  58) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.1: If/when `resolvePromise` is called with value `y`, run `[[Resolve]](promise, y)` `y` is a thenable for a thenable `y` is an eventually-fulfilled promise for an object with a throwing `then` accessor `then` calls `resolvePromise` asynchronously via return from a rejected promise:
      Error: the object {
   "sentinel": "sentinel"
   "uncaught": true
@@ -1682,46 +1752,46 @@ true
       at process.emit (node:events:526:35)
       at process._fatalException (node:internal/process/execution:159:25)
 
-  45) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling `rejectPromise`, both synchronously via return from a fulfilled promise:
+  59) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling `rejectPromise`, both synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  46) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling `rejectPromise`, both synchronously via return from a rejected promise:
+  60) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling `rejectPromise`, both synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  47) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling `rejectPromise`, both synchronously via return from a fulfilled promise:
+  61) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling `rejectPromise`, both synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  48) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling `rejectPromise`, both synchronously via return from a rejected promise:
+  62) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling `rejectPromise`, both synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  49) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling it again, both times synchronously via return from a fulfilled promise:
+  63) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling it again, both times synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  50) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling it again, both times synchronously via return from a rejected promise:
+  64) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-fulfilled promise, then calling it again, both times synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  51) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling it again, both times synchronously via return from a fulfilled promise:
+  65) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling it again, both times synchronously via return from a fulfilled promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
-  52) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling it again, both times synchronously via return from a rejected promise:
+  66) 2.3.3: Otherwise, if `x` is an object or function, 2.3.3.3: If `then` is a function, call it with `x` as `this`, first argument `resolvePromise`, and second argument `rejectPromise` 2.3.3.3.3: If both `resolvePromise` and `rejectPromise` are called, or multiple calls to the same argument are made, the first call takes precedence, and any further calls are ignored. calling `resolvePromise` with an asynchronously-rejected promise, then calling it again, both times synchronously via return from a rejected promise:
      Error: timeout of 200ms exceeded. Ensure the done() callback is being called in this test.
       at listOnTimeout (node:internal/timers:573:17)
       at process.processTimers (node:internal/timers:514:7)
 
 
 
- ELIFECYCLE  Command failed with exit code 52.
+ ELIFECYCLE  Command failed with exit code 66.
