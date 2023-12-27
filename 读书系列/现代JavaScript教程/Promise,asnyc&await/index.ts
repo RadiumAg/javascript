@@ -1,3 +1,4 @@
+// Promisification
 (() => {
   function loadScript(src: string, callback: (...args: any[]) => void) {
     const script = document.createElement('script');
