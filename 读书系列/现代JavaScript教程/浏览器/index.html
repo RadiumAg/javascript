@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p id="p">Hello</p>
+
+    <script>
+        (() => {
+            // 选取部分文本
+            const p = document.querySelector('#p')
+            const range = new Range();
+            range.setStart(p.firstChild,2)
+            range.setEnd(p.firstChild,4)
+
+            console.log(ragne.toString());
+        })()
+    </script>
+</body>
+
+</html>
