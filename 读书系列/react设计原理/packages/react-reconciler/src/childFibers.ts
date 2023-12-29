@@ -56,7 +56,6 @@ function childReconciler(shouldTrackEffect: boolean) {
       // update
       if (currentFiber.key === key) {
         // key 相同
-
         if (element.$$typeof === REACT_ELEMENT_TYPE) {
           if (currentFiber.type === element.type) {
             let props = element.props;
@@ -68,7 +67,7 @@ function childReconciler(shouldTrackEffect: boolean) {
             const existing = useFiber(currentFiber, props);
             existing.return = returnFiber;
             // 当前节点可复用，标记剩下的节点删除
-            deleteRemainingChildren(returnFiber, currentFiber);
+            deleteRemainingChildren(returnFiber, currentFiber.sibling);
             return existing;
           }
           // key相同，type不同 删掉所有旧的
