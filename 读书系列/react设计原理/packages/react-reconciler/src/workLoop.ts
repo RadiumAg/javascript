@@ -3,7 +3,7 @@ import {
   unstable_NormalPriority as NormalPriority,
   unstable_scheduleCallback as scheduleCallback,
   unstable_cancelCallback,
-  unstable_scheduleCallback,
+  unstable_shouldYield,
 } from 'scheduler';
 import { beginWork } from './beginWork';
 import { commitLayoutEffects, commitMutationEffect } from './commitWork';
@@ -14,7 +14,7 @@ import {
   PendingPassiveEffects,
   createWorkInProgress,
 } from './fiber';
-import { Flags, MutationMask, NoFlags, PassiveMak } from './fiberFlags';
+import { Flags, MutationMask, NoFlags, PassiveMask } from './fiberFlags';
 import {
   Lane,
   NoLane,
@@ -33,8 +33,6 @@ let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
 let rootDoesHasPassiveEffect = false;
 
-type RootExitStatus = number; // 工作中的状态
-const RootInProgress = 0;
 // 并发中间状态
 const RootInComplete = 1;
 // 完成状态
@@ -130,7 +128,7 @@ function performConcurrentWorkOnRoot(
   if (exitStatus === RootCompleted) {
     const finishedWork = root.current.alternate;
     root.finishedWork = finishedWork;
-    root.finishedLane = NoLane;
+    root.finishedLane = lane;
     wipRootRenderLane = NoLane;
 
     commitRoot(root);
@@ -161,6 +159,8 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
     }
     // eslint-disable-next-line no-constant-condition
   } while (true);
+
+  return RootCompleted;
 }
 
 function markRootUpdated(root: FiberRootNode, lane: Lane) {
@@ -229,8 +229,8 @@ function commitRoot(root: FiberRootNode) {
   markRootFinished(root, lane);
 
   if (
-    (finishedWork.flags & PassiveMak) !== NoFlags ||
-    (finishedWork.subtreeFlags & PassiveMak) !== NoFlags
+    (finishedWork.flags & PassiveMask) !== NoFlags ||
+    (finishedWork.subtreeFlags & PassiveMask) !== NoFlags
   ) {
     // eslint-disable-next-line unicorn/no-lonely-if
     if (!rootDoesHasPassiveEffect) {
@@ -246,8 +246,9 @@ function commitRoot(root: FiberRootNode) {
 
   // 判断是否存在3个子阶段需要执行的操作
   const subtreeHasEffect =
-    (finishedWork.subtreeFlags & MutationMask) !== NoFlags;
-  const rootHostEffect = (finishedWork.flags & MutationMask) !== NoFlags;
+    (finishedWork.subtreeFlags & (MutationMask | PassiveMask)) !== NoFlags;
+  const rootHostEffect =
+    (finishedWork.flags & (MutationMask | PassiveMask)) !== NoFlags;
 
   if (subtreeHasEffect || rootHostEffect) {
     // beforeMution
@@ -343,7 +344,7 @@ function workLoopSync() {
 }
 
 function workLoopConcurrent() {
-  while (workInProgress !== null && !unstable_scheduleCallback) {
+  while (workInProgress !== null && !unstable_shouldYield()) {
     performUnitOfWork(workInProgress);
   }
 }
@@ -351,7 +352,6 @@ function workLoopConcurrent() {
 function performUnitOfWork(fiber: FiberNode) {
   const next = beginWork(fiber, wipRootRenderLane);
   fiber.memoizedProps = fiber.pedingProps;
-
   if (next === null) {
     completeUnitOfWork(fiber);
   } else {

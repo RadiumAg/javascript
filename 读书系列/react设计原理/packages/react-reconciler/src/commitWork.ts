@@ -15,7 +15,7 @@ import {
   MutationMask,
   NoFlags,
   PassiveEffect,
-  PassiveMak,
+  PassiveMask,
   Placement,
   Ref,
   Update,
@@ -151,7 +151,7 @@ const commitEffect = (
 
 const commitMutationEffect = commitEffect(
   'mutation',
-  MutationMask | PassiveEffect,
+  MutationMask | PassiveMask,
   commitMutationEffectsOnFiber,
 );
 

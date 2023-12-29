@@ -6,7 +6,7 @@ const Update = 0b000010;
 const ChildDeletion = 0b000100;
 const PassiveEffect = 0b001000;
 const Ref = 0b010000;
-const PassiveMak = PassiveEffect | ChildDeletion;
+const PassiveMask = PassiveEffect | ChildDeletion;
 const MutationMask = Placement | Update | ChildDeletion | Ref;
 const LayoutMask = Ref;
 
@@ -16,7 +16,7 @@ export {
   Update,
   Placement,
   LayoutMask,
-  PassiveMak,
+  PassiveMask,
   MutationMask,
   PassiveEffect,
   ChildDeletion,

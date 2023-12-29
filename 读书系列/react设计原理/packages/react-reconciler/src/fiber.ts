@@ -21,7 +21,7 @@ class FiberNode {
   key: Key;
   tag: WorkTag;
   stateNode: any;
-  ref: Ref;
+  ref: Ref | null;
 
   return: FiberNode | null;
   sibling: FiberNode | null;
@@ -112,7 +112,6 @@ const createWorkInProgress = (
     wip.subtreeFlags = NoFlags;
     wip.deletions = null;
   }
-
   wip.type = current.type;
   wip.updateQueue = current.updateQueue;
   wip.child = current.child;
