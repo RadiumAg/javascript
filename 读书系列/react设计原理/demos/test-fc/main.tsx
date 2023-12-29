@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom';
 
 const App = () => {
   const [state, setState] = React.useState(0);
+  const [transition, setTransition] = React.useTransition();
+
+  console.log(transition);
 
   return (
     <div
       onClick={() => {
-        setState(state => state + 1);
+        setTransition(() => {
+          setState(state => state + 1);
+        });
       }}
     >
       {state}
