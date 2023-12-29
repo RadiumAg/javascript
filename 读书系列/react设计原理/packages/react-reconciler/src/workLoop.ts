@@ -130,7 +130,6 @@ function performConcurrentWorkOnRoot(
     root.finishedWork = finishedWork;
     root.finishedLane = lane;
     wipRootRenderLane = NoLane;
-
     commitRoot(root);
   } else if (__DEV__) {
     console.error('还未实现并发更新结束状态');
@@ -208,26 +207,20 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
 
 function commitRoot(root: FiberRootNode) {
   const finishedWork = root.finishedWork;
-
   if (finishedWork === null) {
     return;
   }
-
   if (__DEV__) {
     console.log('commit阶段开始', finishedWork);
   }
-
   const lane = root.finishedLane;
   if (lane === NoLane && __DEV__) {
     console.error('commit阶段finishedLane不应该是NoLane');
   }
-
   // 重置
   root.finishedWork = null;
   root.finishedLane = NoLane;
-
   markRootFinished(root, lane);
-
   if (
     (finishedWork.flags & PassiveMask) !== NoFlags ||
     (finishedWork.subtreeFlags & PassiveMask) !== NoFlags

@@ -68,7 +68,7 @@ const processUpdateQueue = <State>(
     let newBaseState = baseState;
     let newBaseQueueFirst: Update<State> | null = null;
     let newBaseQueueLast: Update<State> | null = null;
-    const newState = baseState;
+    let newState = baseState;
 
     do {
       // 第一个update
@@ -95,9 +95,9 @@ const processUpdateQueue = <State>(
 
         const action = pending.action;
         if (action instanceof Function) {
-          baseState = action(baseState);
+          newState = action(baseState);
         } else {
-          baseState = action;
+          newState = action;
         }
       }
 
