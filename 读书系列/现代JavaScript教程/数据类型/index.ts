@@ -6,9 +6,37 @@
 
 // 数组方法
 (() => {
-  // splice
   const arr = ['1', 'go', 'home'];
   delete arr[1];
   console.log(arr[1]);
   console.log(arr.length);
+})();
+
+// splice
+// 从索引1删除一个元素
+(() => {
+  const arr = ['I', 'study', 'JavaScript'];
+  arr.splice(1, 1); // 从索引1 开始删除1个元素
+  console.log(arr);
+})();
+
+// 用另外两个元素替换它们
+(() => {
+  const arr = ['I', 'study', 'JavaScript'];
+  arr.splice(0, 3, "Let's", 'dance');
+  console.log(arr);
+})();
+
+// 在这里我们可以看到splice返回了被删除的元素所组成的数组
+(() => {
+  const arr = ['I', 'study', 'JavaScript', 'right', 'now'];
+  // 删除前两个元素
+  const removed = arr.splice(0, 2);
+  console.log(removed);
+})();
+
+(() => {
+  const arr = ['I', 'study', 'JavaScript'];
+  arr.splice(2, 0, 'complex', 'language');
+  console.log(arr);
 })();
