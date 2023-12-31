@@ -55,5 +55,16 @@
     console.log(arr.concat(arrayLike));
   })();
 
-  
+  // Symbol.isConcatSpreadable
+  (() => {
+    const arr = [1, 2];
+    const arrayLike = {
+      0: 'something',
+      1: 'else',
+      [Symbol.isConcatSpreadable]: true,
+      length: 2,
+    };
+
+    console.log(arr.concat(arrayLike));
+  })();
 })();
