@@ -10,7 +10,7 @@ function quick(array, left, right, compareFn) {
     index = partition(array, left, right, compareFn);
 
     if (left < index - 1) {
-      index = quick(array, left, right, compareFn);
+      quick(array, left, right, compareFn);
     }
 
     if (index < right) {
