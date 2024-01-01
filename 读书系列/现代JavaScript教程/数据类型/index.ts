@@ -68,3 +68,79 @@
     console.log(arr.concat(arrayLike));
   })();
 })();
+
+// 在数组中搜索
+(() => {
+  // indexOf
+  (() => {
+    const arr = [1, 0, false];
+    console.log(arr.indexOf(0));
+    console.log(arr.indexOf(false));
+    console.log(arr.indexOf(null));
+    console.log(arr.includes(1));
+  })();
+
+  // lastIndexOf
+  (() => {
+    const arr = ['Apple', 'Orange', 'Apple'];
+    console.log(arr.indexOf('Apple'));
+    console.log(arr.lastIndexOf('Apple'));
+  })();
+
+  // find 和 findeIndex/findLastIndex
+  (() => {
+    const users = [
+      {
+        id: 1,
+        name: 'John',
+      },
+      {
+        id: 2,
+        name: 'Pete',
+      },
+      {
+        id: 3,
+        name: 'Mary',
+      },
+    ];
+
+    const user = users.find(item => item.id == 1);
+    console.log(user?.name);
+  })();
+
+  // findLastIndex
+  (() => {
+    const users = [
+      {
+        id: 1,
+        name: 'John',
+      },
+      {
+        id: 2,
+        name: 'Pete',
+      },
+      {
+        id: 3,
+        name: 'Mary',
+      },
+      {
+        id: 4,
+        name: 'John',
+      },
+    ];
+
+    console.log(users.findIndex(item => item.id == 1));
+    console.log(users.findLastIndex(item => item.id == 1));
+  })();
+})();
+
+// filter
+(() => {
+  const users = [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Pete' },
+    { id: 3, name: 'Mary' },
+  ];
+
+  console.log(users.filter(item => item.id < 3));
+})();
