@@ -8,8 +8,4 @@ document.documentElement的clientWidth/clientHeight。
 
 
 
-
-
-
-
 坐标

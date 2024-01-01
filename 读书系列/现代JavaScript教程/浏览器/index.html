@@ -1,26 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <p id="p">Hello</p>
+    <p id="p1">Example: <i>italic</i> and <b>bold</b></p>
+    <textarea id="area" style="width: 80%; height: 60px">Focus on me, the cursor will be at position 10. </textarea>
 
     <script>
-        (() => {
-            // 选取部分文本
-            const p = document.querySelector('#p')
-            const range = new Range();
-            range.setStart(p.firstChild,2)
-            range.setEnd(p.firstChild,4)
+      // 选取部分文本
+      (() => {
+        const p = document.querySelector('#p');
+        const range = new Range();
+        range.setStart(p.firstChild, 2);
+        range.setEnd(p.firstChild, 4);
+        console.log(range.toString());
+      })();
 
-            console.log(ragne.toString());
-        })()
+      // 选择元素节点，那么offset则必须是子元素的编号
+      (() => {
+        const p = document.querySelector('#p1');
+        const range = new Range();
+        range.setStart(p, 0);
+        range.setEnd(p, 2);
+        console.log(range.toString());
+
+        document.getSelection().addRange(range);
+      })();
+
+      // 表单控件中的选择
+
+      // 1.移动光标
+      (() => {
+        const area = document.querySelector('#area');
+        area.addEventListener('focus', () => {
+          // 我们可以设置任务选择
+          // 如果 start=end ，则光标就会在该位置
+          setTimeout(() => {
+            area.selectionStart = area.selectionEnd = 100;
+          });
+        });
+      })();
     </script>
-</body>
-
+  </body>
 </html>

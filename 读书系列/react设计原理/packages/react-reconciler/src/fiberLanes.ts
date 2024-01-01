@@ -20,7 +20,7 @@ const IdleLane = 0b10000;
 
 function requestUpdateLanes() {
   const isTransition = ReactCurrentBatchConfig.transition !== null;
-  if (!isTransition) {
+  if (isTransition) {
     return TransitionLane;
   }
 
