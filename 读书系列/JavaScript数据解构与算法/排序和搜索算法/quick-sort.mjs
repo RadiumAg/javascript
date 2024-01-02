@@ -46,5 +46,5 @@ function partition(array, left, right, compareFn) {
 }
 
 function quickSort(array, compareFn = defaultCompare) {
-  return quick(array, 0, array.lenght - 1, compareFn);
+  return quick(array, 0, array.length - 1, compareFn);
 }
