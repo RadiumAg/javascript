@@ -55,4 +55,4 @@ function quickSort(array, compareFn = defaultCompare) {
   return quick(array, 0, array.length - 1, compareFn);
 }
 
-console.log(quickSort([3, 2, 1]));
+export { quickSort };
