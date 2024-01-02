@@ -10,7 +10,7 @@ function quick(array, left, right, compareFn) {
     index = partition(array, left, right, compareFn);
 
     if (left < index - 1) {
-      quick(array, left, right, compareFn);
+      quick(array, left, index - 1, compareFn);
     }
 
     if (index < right) {
@@ -48,3 +48,5 @@ function partition(array, left, right, compareFn) {
 function quickSort(array, compareFn = defaultCompare) {
   return quick(array, 0, array.length - 1, compareFn);
 }
+
+console.log(quickSort([3, 2, 1]));
