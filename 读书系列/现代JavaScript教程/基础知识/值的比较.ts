@@ -11,3 +11,20 @@
   // 4.重复上述步骤进行比较，直到比较完成某字符串的所有字符为止
   // 5.如果两个字符串的字符同时用完，那么则判定它们相等，否则未结束（还有未比较的字符）的字符串更大
 })();
+
+// 奇怪的结果
+(() => {
+  console.log(null > 0); // false
+  console.log(null == 0); // false
+  console.log(null >= 0); // true
+})();
+
+// 特立独行的undefined
+/**
+ * 1 和 2都返回false是因为undefined在比较中被转换成了NaN,而NaN十一个特殊的数值类型，它与任何值比较都会返回false
+ * 3 返回false是因为这是一个想等性检查，而undefined只与null想等，不会与其它值想等
+ */
+(() => {
+  console.log(undefined > 0); // false
+  console.log(undefined < 0); // false
+})();
