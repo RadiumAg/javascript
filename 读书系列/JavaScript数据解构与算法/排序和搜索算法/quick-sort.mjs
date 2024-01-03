@@ -15,12 +15,12 @@ function quick(array, left, right, compareFn) {
   if (array.length > 1) {
     index = partition(array, left, right, compareFn);
 
-    if (left < index - 1) {
-      quick(array, left, index - 1, compareFn);
-    }
-
     if (index < right) {
       quick(array, index, right, compareFn);
+    }
+
+    if (left < index - 1) {
+      quick(array, left, index - 1, compareFn);
     }
   }
 
@@ -56,3 +56,4 @@ function quickSort(array, compareFn = defaultCompare) {
 }
 
 console.log(quickSort([3, 2, 1]));
+export { quickSort };
