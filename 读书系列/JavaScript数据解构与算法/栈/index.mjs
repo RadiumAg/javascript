@@ -1,13 +1,15 @@
 // 栈是一种遵从后进先出的有序集合
 
+const _items = Symbol('stackItems');
+
 class Stack {
   constructor() {
-    this._items = {};
+    this[_items] = {};
     this._count = 0;
   }
 
   push(element) {
-    this._items[this._count] = element;
+    this[_items][this._count] = element;
     this._count++;
   }
 
@@ -17,8 +19,8 @@ class Stack {
     }
 
     this._count--;
-    const result = this._items[this._count];
-    delete this._items[this._count];
+    const result = this[_items][this._count];
+    delete this[_items][this._count];
 
     return result;
   }
@@ -27,7 +29,7 @@ class Stack {
     if (this.isEmpty()) {
       return undefined;
     }
-    return this._items[this._count - 1];
+    return this[_items][this._count - 1];
   }
 
   size() {
@@ -35,7 +37,7 @@ class Stack {
   }
 
   clear() {
-    this._items = {};
+    this[_items] = {};
     this._count = 0;
   }
 
@@ -48,27 +50,48 @@ class Stack {
       return '';
     }
 
-    let objString = `${this._items[0]}`;
+    let objString = `${this[_items][0]}`;
     for (let i = 1; i < this._count; i++) {
-      objString = `${objString},${this._items[i]}`;
+      objString = `${objString},${this[_items][i]}`;
     }
 
     return objString;
   }
 }
 
-const stack = new Stack();
+// 用WeakMap实现
+const items = new WeakMap();
+class WeakMapStack {
+  constructor() {
+    items.set(this, []);
+  }
 
-stack.push(1);
-// eslint-disable-next-line unicorn/no-array-push-push
-stack.push(2);
-// eslint-disable-next-line unicorn/no-array-push-push
-stack.push(3);
+  push(element) {
+    const s = items.get(this);
+    s.push(element);
+  }
 
-console.log(stack.toString());
+  pop() {
+    const s = items.get(this);
+    const r = s.pop();
+    return r;
+  }
+}
 
+// 简单使用
 () => {
-  // 十进制到二进制
+  const stack = new Stack();
+
+  stack.push(1);
+  // eslint-disable-next-line unicorn/no-array-push-push
+  stack.push(2);
+  // eslint-disable-next-line unicorn/no-array-push-push
+  stack.push(3);
+  console.log(stack.toString());
+};
+
+// 十进制到二进制
+(() => {
   function decimalToBinary(decNumber) {
     const remStack = new Stack();
     let number = decNumber;
@@ -91,7 +114,7 @@ console.log(stack.toString());
   console.log(decimalToBinary(233));
   console.log(decimalToBinary(10));
   console.log(decimalToBinary(1000));
-};
+})();
 
 // 进制转换算法
 () => {
