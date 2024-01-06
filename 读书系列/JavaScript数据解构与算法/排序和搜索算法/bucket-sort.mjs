@@ -26,5 +26,6 @@ function createBuckets(array, bucketSize) {
     const bucketIndex = Math.floor((element - minValue) / bucketSize);
     buckets[bucketIndex].push(array[index]);
   }
+
   return buckets;
 }
