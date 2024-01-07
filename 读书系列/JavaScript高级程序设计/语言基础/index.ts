@@ -1,13 +1,9 @@
-const num = 1;
-const num2 = ~num;
-
-console.log(num2);
-console.log(num.toString(2), num2.toString(2));
-
 (() => {
-  function doSomeThing() {
-    'use strict';
-  }
+  const num = 1;
+  const num2 = ~num;
+
+  console.log(num2);
+  console.log(num.toString(2), num2.toString(2));
 })();
 
 (() => {
@@ -26,7 +22,14 @@ console.log(num.toString(2), num2.toString(2));
 
 // number 类型
 (() => {
-  // 八进制字面量，第一个数字必须是0
-  let octalNum1 = 070; // 八进制的56
-  let octalNum2 = 079; // 无效的八进制值，当成79处理
+  (() => {
+    // 八进制字面量，第一个数字必须是0
+    // const octalNum1 = 070; // 八进制的56
+    // const octalNum2 = 079; // 无效的八进制值，当成79处理
+  })();
+
+  (() => {
+    const hexNum1 = 0xA;
+    const bexNum2 = 0x1f;
+  })();
 })();
