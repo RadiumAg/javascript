@@ -29,7 +29,28 @@
   })();
 
   (() => {
-    const hexNum1 = 0xA;
-    const bexNum2 = 0x1f;
+    const hexNum1 = 0xa;
+    const bexNum2 = 0x1F;
   })();
+})();
+
+// parseFloat始终忽略字符串开头的零
+(() => {
+  const num1 = Number.parseFloat('1234blue');
+  console.log(num1);
+
+  const num2 = Number.parseFloat('0xa');
+  console.log(num2);
+
+  const num3 = Number.parseFloat('22.5');
+  console.log(num3);
+
+  const num4 = Number.parseFloat('22.34.5');
+  console.log(num4);
+
+  const num5 = Number.parseFloat('0908.5');
+  console.log(num5);
+
+  const num6 = Number.parseFloat('3.125e7');
+  console.log(num6);
 })();
