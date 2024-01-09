@@ -54,3 +54,8 @@
   const num6 = Number.parseFloat('3.125e7');
   console.log(num6);
 })();
+
+(() => {
+  let message;
+  console.log(message === undefined);
+})();
