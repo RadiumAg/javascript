@@ -291,7 +291,6 @@ function createRenderer(options) {
 
         if (!instance.isMounted) {
           beforeMount && beforeMount.call(renderContext);
-          debugger;
           patch(null, subTree, container, anchor);
           mounted && mounted.call(renderContext);
           instance.isMounted = true;
@@ -429,4 +428,4 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
-export { renderer, normalizeClass, Text, Comment, Fragment };
+export { renderer, normalizeClass, resolveProps, Text, Comment, Fragment };

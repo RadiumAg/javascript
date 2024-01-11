@@ -1,4 +1,4 @@
-import { Fragment } from './render';
+import { Fragment, resolveProps } from './render';
 let closeIndex;
 let currentDynamicChildren = null;
 const TextModes = {
@@ -155,6 +155,12 @@ function renderComponentVNode(vnode) {
     }
   }
 
+  // setup
+  const setupState = null;
+  if (setup) {
+    const setupContent = { attrs, emit, slots };
+    const prevInstance = setCurrentInstance(instance);
+  }
   const render = setup();
   const subTree = render();
   return renderVNode(subTree);
