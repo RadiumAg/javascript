@@ -1,21 +1,20 @@
+import { Fragment } from './render';
+
 const TextModes = {
   DATA: 'DATA',
   RCDATA: 'RCDATA',
   RAWTEXT: 'RAWTEXT',
   CDATA: 'CDATA',
 };
-
 const VOID_TAGS =
-  'area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr'.split(
-    ',',
-  );
-
+  'area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr';
+const shouldIgnoreProp = ['key', 'ref'];
+const escapeRE = /["&'<>]/;
 const PatchFlags = {
   TEXT: 1, // 代表节点有动态的 textContent
   CLASS: 2, // 代表元素有动态的 class 绑定
   STYLE: 3,
 };
-
 const dynamicChildrenStack = [];
 let currentDynamicChildren = null;
 
@@ -28,33 +27,33 @@ const namedCharacterReferences = {
 };
 
 const CCR_REPLACEMENTS = {
-  0x80: 0x20ac,
-  0x82: 0x201a,
+  0x80: 0x20AC,
+  0x82: 0x201A,
   0x83: 0x0192,
-  0x84: 0x201e,
+  0x84: 0x201E,
   0x85: 0x2026,
   0x86: 0x2020,
   0x87: 0x2021,
-  0x88: 0x02c6,
+  0x88: 0x02C6,
   0x89: 0x2030,
-  0x8a: 0x0160,
-  0x8b: 0x2039,
-  0x8c: 0x0152,
-  0x8e: 0x017d,
+  0x8A: 0x0160,
+  0x8B: 0x2039,
+  0x8C: 0x0152,
+  0x8E: 0x017D,
   0x91: 0x2018,
   0x92: 0x2019,
-  0x93: 0x201c,
-  0x94: 0x201d,
+  0x93: 0x201C,
+  0x94: 0x201D,
   0x95: 0x2022,
   0x96: 0x2013,
   0x97: 0x2014,
-  0x98: 0x02dc,
+  0x98: 0x02DC,
   0x99: 0x2122,
-  0x9a: 0x0161,
-  0x9b: 0x203a,
-  0x9c: 0x0153,
-  0x9e: 0x017e,
-  0x9f: 0x0178,
+  0x9A: 0x0161,
+  0x9B: 0x203A,
+  0x9C: 0x0153,
+  0x9E: 0x017E,
+  0x9F: 0x0178,
 };
 
 let closeIndex;
@@ -85,26 +84,19 @@ function parse(str) {
 }
 
 function renderElementVNode(vnode) {
-  // 返回选然后的结果，即 HTML 字符串
-  // 取出标签名称 tag 和 标签属性 props, 以及标签的子节点
   const { type: tag, props, children } = vnode;
+  // 判断是否是闭合标签
   const isVoidElement = VOID_TAGS.includes(tag);
-  // 开始标签的头部
+
   let ret = `<${tag}`;
 
   if (props) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const k in props) {
-      ret += `${k}="${props[k]}"`;
-    }
+    ret += renderAttrs(props);
   }
 
-  // 开始标签的闭合
-  ret += isVoidElement ? '/>' : '>';
+  ret += isVoidElement ? `/>` : `>`;
   if (isVoidElement) return ret;
 
-  // 处理子节点
-  // 如果子节点的类型是字符串，则是文本内容，直接拼接
   if (typeof children === 'string') {
     ret += children;
   } else if (Array.isArray(children)) {
@@ -114,8 +106,112 @@ function renderElementVNode(vnode) {
   }
 
   ret += `</${tag}>`;
+  return ret;
+}
+
+function renderComponentVNode(vnode) {
+  const {
+    type: { setup },
+  } = vnode;
+  const render = setup();
+  const subTree = render();
+  return renderVNode(subTree);
+}
+
+function renderAttrs(props) {
+  let ret = '';
+
+  for (const key in props) {
+    if (shouldIgnoreProp.includes(key) || /^on[^a-z]/.test(key)) {
+      continue;
+    }
+    const value = props[key];
+    ret += renderDynamicAttr(key, value);
+  }
 
   return ret;
+}
+
+const isBooleanAttr = key =>
+  `itemscope,allowfullscreen,formnovalidate,ismap,nomodule,novalidate,readonly,async,autofocus,autoplay,controls,default,defer,disabled,hidden,loop,open,required,reversed,scoped,semaless,checked,muted,multiple,selected`
+    .split(',')
+    .includes(key);
+
+const isSSRSafeAttrName = key => !/[ "'/09=acu|]/.test(key);
+
+function renderDynamicAttr(key, value) {
+  if (isBooleanAttr(key)) {
+    return value === false ? `` : ` ${key}`;
+  } else if (isSSRSafeAttrName(key)) {
+    return value === '' ? ` ${key}` : ` ${key}="${escapeHtml(value)}"`;
+  } else {
+    console.warn(
+      `[@vue/server-renderer] Skipped rendering unsafe attribute name: ${name}`,
+    );
+    return ``;
+  }
+}
+
+function escapeHtml(string) {
+  const str = `${string}`;
+  const match = escapeRE.exec(str);
+  if (!match) return str;
+
+  let html = '';
+  let escaped;
+  let index;
+  let lastIndex = 0;
+
+  for (index = match.index; index < str.length; index++) {
+    switch (str.charCodeAt(index)) {
+      case 34:
+        escaped = '&quot;';
+        break;
+
+      case 38:
+        escaped = '&amp;';
+        break;
+
+      case 39:
+        escaped = '&#39;';
+        break;
+
+      case 60:
+        escaped = '&lt;';
+        break;
+
+      case 62:
+        escaped = '&gt;';
+        break;
+
+      default:
+        continue;
+    }
+
+    if (lastIndex !== index) {
+      html += str.substring(lastIndex, index);
+    }
+    lastIndex = index + 1;
+    html += escaped;
+  }
+
+  return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
+}
+
+function renderVNode(vnode) {
+  const type = typeof vnode.type;
+
+  if (type === 'string') {
+    return renderElementVNode(vnode);
+  } else if (type === 'object' || type === 'function') {
+    return renderComponentVNode(vnode);
+  } else if (vnode.type === Text) {
+    /* empty */
+  } else if (vnode.type === Fragment) {
+    /* empty */
+  } else {
+    /* empty */
+  }
 }
 
 // openBlock 用来创建一个新的动态节点集合，并将该集合压入栈中
@@ -388,19 +484,19 @@ function decodeHtml(rawText, asAttr = false) {
         // 码点的合法性检查
         if (cp === 0) {
           // 如果码点值为 0x00，替换为 0xfff
-          cp = 0xfffd;
-        } else if (cp > 0x10ffff) {
+          cp = 0xFFFD;
+        } else if (cp > 0x10FFFF) {
           // 如果码点值超过 Unicode 的最大值，替换为 0xfffd
-          cp = 0xfffd;
-        } else if (cp >= 0xd800 && cp <= 0xdfff) {
-          cp = 0xfffd;
-        } else if ((cp > 0xfdd0 && cp <= 0xfdef) || (cp & 0xfffe) === 0xfffe) {
+          cp = 0xFFFD;
+        } else if (cp >= 0xD800 && cp <= 0xDFFF) {
+          cp = 0xFFFD;
+        } else if ((cp > 0xFDD0 && cp <= 0xFDEF) || (cp & 0xFFFE) === 0xFFFE) {
         } else if (
           // 控制字符集的范围是:[0x01, 0x1f] 加上 [0x7f, 0x9f]
           (cp >= 0x01 && cp <= 0x08) ||
-          cp === 0x0b ||
-          (cp >= 0x0d && cp <= 0x1f) ||
-          (cp >= 0x7f && cp <= 0x9f)
+          cp === 0x0B ||
+          (cp >= 0x0D && cp <= 0x1F) ||
+          (cp >= 0x7F && cp <= 0x9F)
         ) {
           cp = CCR_REPLACEMENTS[cp] || cp;
         }
