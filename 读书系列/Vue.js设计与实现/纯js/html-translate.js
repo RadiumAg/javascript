@@ -1,5 +1,6 @@
 import { Fragment } from './render';
-
+let closeIndex;
+let currentDynamicChildren = null;
 const TextModes = {
   DATA: 'DATA',
   RCDATA: 'RCDATA',
@@ -16,7 +17,6 @@ const PatchFlags = {
   STYLE: 3,
 };
 const dynamicChildrenStack = [];
-let currentDynamicChildren = null;
 
 const namedCharacterReferences = {
   gt: '>',
@@ -27,36 +27,34 @@ const namedCharacterReferences = {
 };
 
 const CCR_REPLACEMENTS = {
-  0x80: 0x20AC,
-  0x82: 0x201A,
+  0x80: 0x20ac,
+  0x82: 0x201a,
   0x83: 0x0192,
-  0x84: 0x201E,
+  0x84: 0x201e,
   0x85: 0x2026,
   0x86: 0x2020,
   0x87: 0x2021,
-  0x88: 0x02C6,
+  0x88: 0x02c6,
   0x89: 0x2030,
-  0x8A: 0x0160,
-  0x8B: 0x2039,
-  0x8C: 0x0152,
-  0x8E: 0x017D,
+  0x8a: 0x0160,
+  0x8b: 0x2039,
+  0x8c: 0x0152,
+  0x8e: 0x017d,
   0x91: 0x2018,
   0x92: 0x2019,
-  0x93: 0x201C,
-  0x94: 0x201D,
+  0x93: 0x201c,
+  0x94: 0x201d,
   0x95: 0x2022,
   0x96: 0x2013,
   0x97: 0x2014,
-  0x98: 0x02DC,
+  0x98: 0x02dc,
   0x99: 0x2122,
-  0x9A: 0x0161,
-  0x9B: 0x203A,
-  0x9C: 0x0153,
-  0x9E: 0x017E,
-  0x9F: 0x0178,
+  0x9a: 0x0161,
+  0x9b: 0x203a,
+  0x9c: 0x0153,
+  0x9e: 0x017e,
+  0x9f: 0x0178,
 };
-
-let closeIndex;
 
 function parse(str) {
   const context = {
@@ -110,9 +108,53 @@ function renderElementVNode(vnode) {
 }
 
 function renderComponentVNode(vnode) {
-  const {
-    type: { setup },
-  } = vnode;
+  const isFunctional = typeof vnode.type === 'function';
+  let componentOptions = vnode.type;
+
+  if (isFunctional) {
+    componentOptions = {
+      render: vnode.type,
+      props: vnode.type.props,
+    };
+  }
+
+  let {
+    render,
+    data,
+    setup,
+    beforeCreate,
+    created,
+    props: propsOption,
+  } = componentOptions;
+
+  beforeCreate && beforeCreate();
+
+  const state = data ? data() : null;
+  const [props, attrs] = resolveProps(propsOption, vnode.props);
+
+  const slots = vnode.children || {};
+
+  const instance = {
+    state,
+    props,
+    isMounted: false,
+    subTree: null,
+    slots,
+    mounted: [],
+    keepAliveCtx: null,
+  };
+
+  function emit(event, ...payload) {
+    const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
+    const handler = instance.props[eventName];
+
+    if (handler) {
+      handler(...payload);
+    } else {
+      console.error('事件不存在');
+    }
+  }
+
   const render = setup();
   const subTree = render();
   return renderVNode(subTree);
@@ -484,19 +526,19 @@ function decodeHtml(rawText, asAttr = false) {
         // 码点的合法性检查
         if (cp === 0) {
           // 如果码点值为 0x00，替换为 0xfff
-          cp = 0xFFFD;
-        } else if (cp > 0x10FFFF) {
+          cp = 0xfffd;
+        } else if (cp > 0x10ffff) {
           // 如果码点值超过 Unicode 的最大值，替换为 0xfffd
-          cp = 0xFFFD;
-        } else if (cp >= 0xD800 && cp <= 0xDFFF) {
-          cp = 0xFFFD;
-        } else if ((cp > 0xFDD0 && cp <= 0xFDEF) || (cp & 0xFFFE) === 0xFFFE) {
+          cp = 0xfffd;
+        } else if (cp >= 0xd800 && cp <= 0xdfff) {
+          cp = 0xfffd;
+        } else if ((cp > 0xfdd0 && cp <= 0xfdef) || (cp & 0xfffe) === 0xfffe) {
         } else if (
           // 控制字符集的范围是:[0x01, 0x1f] 加上 [0x7f, 0x9f]
           (cp >= 0x01 && cp <= 0x08) ||
-          cp === 0x0B ||
-          (cp >= 0x0D && cp <= 0x1F) ||
-          (cp >= 0x7F && cp <= 0x9F)
+          cp === 0x0b ||
+          (cp >= 0x0d && cp <= 0x1f) ||
+          (cp >= 0x7f && cp <= 0x9f)
         ) {
           cp = CCR_REPLACEMENTS[cp] || cp;
         }
