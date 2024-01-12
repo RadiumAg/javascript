@@ -40,7 +40,7 @@ const CCR_REPLACEMENTS = {
   0x8a: 0x0160,
   0x8b: 0x2039,
   0x8c: 0x0152,
-  0x8E: 0x017D,
+  0x8e: 0x017d,
   0x91: 0x2018,
   0x92: 0x2019,
   0x93: 0x201c,
@@ -132,9 +132,7 @@ function renderComponentVNode(vnode) {
 
   const state = data ? data() : null;
   const [props, attrs] = resolveProps(propsOption, vnode.props);
-
   const slots = vnode.children || {};
-
   const instance = {
     state,
     props,
@@ -155,9 +153,8 @@ function renderComponentVNode(vnode) {
       console.error('事件不存在');
     }
   }
-
   // setup
-  const setupState = null;
+  let setupState = null;
   if (setup) {
     const setupContext = { attrs, emit, slots };
     const prevInstance = setCurrentInstance(instance);
@@ -170,12 +167,36 @@ function renderComponentVNode(vnode) {
       setupState = setupContext;
     }
   }
-
   vnode.component = instance;
+  const renderContext = new Proxy(instance, {
+    get(t, k, r) {
+      const { state, props, slots } = t;
 
-  const renderContext = new Proxy(instance, {});
-  const render = setup();
-  const subTree = render();
+      if (k === '$slots') return slots;
+
+      if (state && k in state) {
+        return state[k];
+      } else if (k in props) {
+        return props[k];
+      } else {
+        console.error('不存在');
+      }
+    },
+    set(t, k, v, r) {
+      const { state, props } = t;
+      if (state && k in state) {
+        state[k] = v;
+      } else if (k in props) {
+        props[k] = v;
+      } else if (setupState && k in setupState) {
+        setupState[k] = v;
+      } else {
+        console.error('不存在');
+      }
+    },
+  });
+  created && created.call(renderContext);
+  const subTree = render.call(renderContext, renderContext);
   return renderVNode(subTree);
 }
 
