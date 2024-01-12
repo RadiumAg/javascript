@@ -1,12 +1,17 @@
 import { effect, reactive, shallowReactive, shallowReadonly } from 'vue';
 
 let isFlushing = false;
+let currentInstance = null;
 
 const Text = Symbol();
 const Comment = Symbol();
 const Fragment = Symbol();
 const queue = new Set();
 const p = Promise.resolve();
+
+function setCurrentInstance(instance) {
+  currentInstance = instance;
+}
 
 function queueJob(job) {
   queue.add(job);
@@ -428,4 +433,12 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
-export { renderer, normalizeClass, resolveProps, Text, Comment, Fragment };
+export {
+  Text,
+  renderer,
+  normalizeClass,
+  resolveProps,
+  Comment,
+  Fragment,
+  setCurrentInstance,
+};

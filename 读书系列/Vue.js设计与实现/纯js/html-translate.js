@@ -1,4 +1,5 @@
-import { Fragment, resolveProps } from './render';
+import { shallowReadonly } from 'vue';
+import { Fragment, resolveProps, setCurrentInstance } from './render';
 let closeIndex;
 let currentDynamicChildren = null;
 const TextModes = {
@@ -39,7 +40,7 @@ const CCR_REPLACEMENTS = {
   0x8a: 0x0160,
   0x8b: 0x2039,
   0x8c: 0x0152,
-  0x8e: 0x017d,
+  0x8E: 0x017D,
   0x91: 0x2018,
   0x92: 0x2019,
   0x93: 0x201c,
@@ -158,9 +159,21 @@ function renderComponentVNode(vnode) {
   // setup
   const setupState = null;
   if (setup) {
-    const setupContent = { attrs, emit, slots };
+    const setupContext = { attrs, emit, slots };
     const prevInstance = setCurrentInstance(instance);
+    const setupResult = setup(shallowReadonly(instance.props), setupContext);
+    setCurrentInstance(prevInstance);
+    if (typeof setupResult === 'function' && render) {
+      console.error('setup 函数返回渲染函数，render 选项将被忽略');
+      render = setupResult;
+    } else {
+      setupState = setupContext;
+    }
   }
+
+  vnode.component = instance;
+
+  const renderContext = new Proxy(instance, {});
   const render = setup();
   const subTree = render();
   return renderVNode(subTree);
@@ -169,6 +182,7 @@ function renderComponentVNode(vnode) {
 function renderAttrs(props) {
   let ret = '';
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const key in props) {
     if (shouldIgnoreProp.includes(key) || /^on[^a-z]/.test(key)) {
       continue;
