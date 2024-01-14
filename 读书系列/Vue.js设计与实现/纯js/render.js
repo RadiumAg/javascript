@@ -313,6 +313,17 @@ function createRenderer(options) {
     );
   }
 
+  function hydrateNode(node, vnode) {
+    const { type } = vnode;
+    // 1. 让vnode.el 引用真实DOM
+    vnode.el = type;
+
+    // 2. 检查虚拟DOM的类型，如果时组件，则调用mountComponent函数完成激活
+    if (typeof type === 'object') {
+      mountComponent(vnode, container, null);
+    }
+  }
+
   return {
     render,
   };
@@ -436,9 +447,9 @@ function normalizeClass(cls) {
 export {
   Text,
   renderer,
+  setCurrentInstance,
   normalizeClass,
   resolveProps,
   Comment,
   Fragment,
-  setCurrentInstance,
 };
