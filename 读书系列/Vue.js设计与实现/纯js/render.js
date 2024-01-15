@@ -1,5 +1,4 @@
 import { effect, reactive, shallowReactive, shallowReadonly } from 'vue';
-import { resolveProps, setCurrentInstance } from './render';
 
 let isFlushing = false;
 let currentInstance = null;
@@ -134,6 +133,14 @@ function createRenderer(options) {
     const oldProps = n1.props;
     const newProps = n2.props;
 
+    if (n2.PatchFlags) {
+      //靶向更新
+      if (n2.PatchFlags === 1) {
+        //只需要更新 class
+      } else if (n2.PatchFlags === 2) {
+        // 只需要更新 style
+      }
+    }
     // eslint-disable-next-line no-restricted-syntax
     for (const key in newProps) {
       if (newProps[key] !== oldProps[key]) {
@@ -149,6 +156,12 @@ function createRenderer(options) {
     }
 
     patchChildren(n1, n2, el);
+  }
+
+  function patchBlockChildren(n1, n2) {
+    for (let i = 0; i < n2.dynamicChildrenChildren.length; i++) {
+      patchElement(n1.dynamicChildren[i], n2.dynamicChildren[i]);
+    }
   }
 
   function patchComponent(n1, n2, anchor) {
@@ -290,6 +303,37 @@ function createRenderer(options) {
     });
 
     created && created.call(renderContext);
+    instance.updated = effect(
+      () => {
+        const subTree = render.call(renderContext, renderContext);
+
+        if (!instance.isMounted) {
+          beforeMount && beforeMount.call(renderContext);
+          // 如果vnode.el存在，则意味着要执行激活
+          if (vnode.el) {
+            // 直接调用hydrateNode 完成激活
+            hydrateNode(vnode.el, subTree);
+          } else {
+            // 正常挂载
+            patch(null, subTree, container, anchor);
+          }
+
+          instance.isMounted = true;
+          mounted && mounted.call(renderContext);
+
+          instance.mounted &&
+            instance.mounted.forEach(hook => hook.call(renderContext));
+        } else {
+          beforeUpdate && beforeUpdate.call(renderContext);
+          patch(instance.subTree, subTree, container, anchor);
+
+          updated && updated.call(renderContext);
+        }
+
+        instance.subTree = subTree;
+      },
+      { scheduler: queueJob },
+    );
 
     effect(
       () => {
