@@ -844,7 +844,7 @@ function closeBlock() {
 
 function createBlock(tag, props, children) {
   const block = createVNode(tag, props, children);
-  block.dynamicChildrenChildren = currentDynamicChildren;
+  block.dynamicChildren = currentDynamicChildren;
 
   closeBlock();
   return block;
@@ -866,6 +866,8 @@ function createVNode(tag, props, children, flags) {
     // 动态节点，将其添加到当前动态节点集合中
     currentDynamicChildren.push(vnode);
   }
+
+  return vnode;
 }
 
 function parseChildren(context, ancestors) {
