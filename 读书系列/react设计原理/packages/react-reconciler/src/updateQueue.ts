@@ -45,6 +45,7 @@ const enqueueUpdate = <State>(
   updateQueue.shared.pending = update;
 };
 
+// 消费update
 const processUpdateQueue = <State>(
   baseState: State,
   pendingUpdate: Update<State> | null,

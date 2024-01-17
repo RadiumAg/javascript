@@ -71,7 +71,7 @@ class FiberNode {
 
 class FiberRootNode {
   container: Container;
-  current: FiberNode;
+  current: FiberNode; // 指向hostRootFiber 
   pendingLanes: Lanes;
   finishedLane: Lane;
   finishedWork: FiberNode | null;
