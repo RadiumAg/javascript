@@ -1,3 +1,5 @@
+//
+
 (() => {
   const num = 1;
   const num2 = ~num;
@@ -30,7 +32,7 @@
 
   (() => {
     const hexNum1 = 0xa;
-    const bexNum2 = 0x1F;
+    const bexNum2 = 0x1f;
   })();
 })();
 
@@ -58,4 +60,12 @@
 (() => {
   let message;
   console.log(message === undefined);
+})();
+
+// 基础类型
+(() => {
+  //  undefined是由null值派生而来的，因此表面上相等
+  (() => {
+    console.log(null == undefined); // true
+  })();
 })();
