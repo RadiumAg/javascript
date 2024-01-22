@@ -5,7 +5,6 @@
   console.log(typeof null); //object
 })();
 // typeof 是判断原始类型最好的方式
-// instanceof 是判断应用类型的最好方式
 (() => {
   console.log(typeof 1);
   console.log(typeof undefined);
@@ -14,6 +13,13 @@
 
   // eslint-disable-next-line unicorn/no-instanceof-array
   console.log([] instanceof Array);
+})();
+
+// instanceof 是判断应用类型的最好方式
+// 构造函数的prototype属性是否出现在对象的原型链上
+(() => {
+  const a = {};
+  console.log(a instanceof Object);
 })();
 
 // 全局上下文是最外层的上下文
