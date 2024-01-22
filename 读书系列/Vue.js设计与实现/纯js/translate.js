@@ -354,7 +354,6 @@ function genFunctionDecl(node, context) {
 
 function compile(template) {
   const ast = parse(template);
-  console.log(ast);
   transform(ast);
 
   const code = generate(ast.jsNode);

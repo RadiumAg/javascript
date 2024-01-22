@@ -28,7 +28,9 @@ class FiberNode {
   child: FiberNode | null;
   index: number;
 
+  // 工作中的props
   pedingProps: Props;
+  // 工作完成后的props
   memoizedProps: Props | null;
   memoizedState: any;
   alternate: FiberNode | null;
@@ -40,7 +42,9 @@ class FiberNode {
   constructor(tag: WorkTag, pedingProps: Props, key: Key) {
     this.tag = tag;
     this.key = key || null;
+    // 保存真实DOM
     this.stateNode = null;
+    // 保存类型 FunctionComponent
     this.type = null;
 
     // 构成树状结构
@@ -67,7 +71,7 @@ class FiberNode {
 
 class FiberRootNode {
   container: Container;
-  current: FiberNode;
+  current: FiberNode; // 指向hostRootFiber
   pendingLanes: Lanes;
   finishedLane: Lane;
   finishedWork: FiberNode | null;

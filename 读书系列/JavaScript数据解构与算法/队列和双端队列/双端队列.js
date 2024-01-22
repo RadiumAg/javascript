@@ -91,6 +91,7 @@ class Deque {
   }
 }
 
+// 使用
 (() => {
   const deque = new Deque();
   console.log(deque.isEmpty());

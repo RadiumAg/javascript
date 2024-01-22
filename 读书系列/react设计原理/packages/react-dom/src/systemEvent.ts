@@ -85,7 +85,7 @@ function dispatchEvent(container: Container, eventType: string, e: Event) {
 
 function triggerEventFlow(paths: EventCallback[], se: SyntheticEvent) {
   for (const callback of paths) {
-    unstable_runWithPriority(eventTypeToSchdulerPriority(se.type), () => {
+    unstable_runWithPriority(eventTypeToSchedulerPriority(se.type), () => {
       callback.call(null, se);
     });
 
@@ -112,7 +112,7 @@ function collectPatchs(
     capture: [],
     bubble: [],
   };
-
+  console.dir(targetElement);
   while (targetElement && targetElement !== container) {
     // 收集
     const elementProps = targetElement[elementPropsKey];
@@ -137,7 +137,7 @@ function collectPatchs(
   return paths;
 }
 
-function eventTypeToSchdulerPriority(eventType: string) {
+function eventTypeToSchedulerPriority(eventType: string) {
   switch (eventType) {
     case 'click':
     case 'keydown':
