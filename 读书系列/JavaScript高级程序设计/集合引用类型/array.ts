@@ -233,6 +233,7 @@
 };
 
 // Array.from,Array.of
+// Array.from的第一个参数是一个类数组对象，即任何可迭代的结构，或者有一个length属性和可索引元素的结构
 () => {
   console.log(Array.from('Matt')); // 字符串会被拆分成单字母数组
 
