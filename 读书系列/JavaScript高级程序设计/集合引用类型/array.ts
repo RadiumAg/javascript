@@ -562,6 +562,12 @@
   console.log(colors);
 })();
 
+// filter: 对数组每一项都运行传入的函数，函数返回true的项会组成数组之后返回
+(() => {
+  const numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+  console.log(numbers.filter((item, index, array) => item > 2));
+})();
+
 // 严格相等
 (() => {
   const numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
