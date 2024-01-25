@@ -299,6 +299,14 @@
   console.log(a3);
 };
 
+// Array.of
+// Array.of可以把一组参数转换为数组。这个方法用于替代ES6之前常用的Array.prototype.slice.call(arguments)
+// 一种异常笨拙的将arguments对象转换成数组的写法
+() => {
+  console.log(Array.of(1, 2, 3, 4));
+  console.log(Array.of(undefined));
+};
+
 // 数组空位
 () => {
   const options = [, , , , ,]; // 空位元素为undefined
