@@ -37,3 +37,9 @@
 // 在函数中，最接近的上下就是函数的局部上下文
 
 // 块级作用域
+
+//javaScript最常用的垃圾回收策略是标记清除（mark and sweep）
+
+// encodeURL和encodeURLComponent()方法用于编码统一资源标识符
+//（URL），以便传给浏览器。有效的URL不能包括某些字符，比如空格。
+// 使用URL编码方法来编码URL可以让浏览器能够理解它们

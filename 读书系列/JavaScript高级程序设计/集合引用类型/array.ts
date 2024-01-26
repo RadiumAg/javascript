@@ -233,6 +233,7 @@
 };
 
 // Array.from,Array.of
+// Array.from的第一个参数是一个类数组对象，即任何可迭代的结构，或者有一个length属性和可索引元素的结构
 () => {
   console.log(Array.from('Matt')); // 字符串会被拆分成单字母数组
 
@@ -296,6 +297,14 @@
 
   console.log(a2);
   console.log(a3);
+};
+
+// Array.of
+// Array.of可以把一组参数转换为数组。这个方法用于替代ES6之前常用的Array.prototype.slice.call(arguments)
+// 一种异常笨拙的将arguments对象转换成数组的写法
+() => {
+  console.log(Array.of(1, 2, 3, 4));
+  console.log(Array.of(undefined));
 };
 
 // 数组空位
@@ -551,6 +560,12 @@
   console.log(colors);
   colors.splice(1, 1, 'red', 'purple');
   console.log(colors);
+})();
+
+// filter: 对数组每一项都运行传入的函数，函数返回true的项会组成数组之后返回
+(() => {
+  const numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+  console.log(numbers.filter((item, index, array) => item > 2));
 })();
 
 // 严格相等
