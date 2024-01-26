@@ -1,19 +1,19 @@
-function __await(fun) {
-  let resolveFn;
-  let rejectFn;
+function __await(fun: GeneratorFunction) {
+  let resolveFn: (value: unknown) => void;
+  let rejectFn: (value: unknown) => void;
   const generator = fun();
   const promise = new Promise((resolve, reject) => {
     resolveFn = resolve;
     rejectFn = reject;
   });
 
-  const adopt = value => {
+  const adopt = (value: unknown) => {
     return value instanceof Promise ? value : Promise.resolve(value);
   };
 
-  const step = nextValue => {
+  const step = (preValue?: unknown) => {
     try {
-      const { value, done } = generator.next(nextValue);
+      const { value, done } = generator.next(preValue);
 
       adopt(value).then(
         nextValue => {
@@ -41,7 +41,6 @@ function __await(fun) {
 }
 
 const promise = __await(function* a() {
-  return yield Promise.resolve(1);
+  yield Promise.resolve(1);
+  yield Promise.resolve(2);
 });
-
-console.log(promise);
