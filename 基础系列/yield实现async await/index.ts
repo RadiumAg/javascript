@@ -41,6 +41,11 @@ function __await(fun: GeneratorFunction) {
 }
 
 const promise = __await(function* a() {
+  throw 1;
   yield Promise.resolve(1);
   yield Promise.resolve(2);
+});
+
+setTimeout(() => {
+  console.log(promise);
 });
