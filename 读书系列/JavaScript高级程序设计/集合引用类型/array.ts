@@ -568,6 +568,24 @@
   console.log(numbers.filter((item, index, array) => item > 2));
 })();
 
+// 归并方法
+() => {
+  (() => {
+    const values = [1, 2, 3, 4, 5];
+    const sum = values.reduce((pre, cur, index, array) => {
+      return pre + cur;
+    });
+  })();
+
+  (() => {
+    const values = [1, 2, 3, 4, 5];
+    const sum = values.reduceRight((prev, cur, index, array) => {
+      return prev + cur;
+    });
+    console.log(sum);
+  })();
+};
+
 // 严格相等
 (() => {
   const numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
