@@ -22,7 +22,6 @@
     ['key2', 'val2'],
   ]);
 
-  console.log(m1.size);
   // 使用自定义迭代器初始化映射
   const m2 = new Map({
     *[Symbol.iterator]() {
@@ -30,6 +29,7 @@
       yield ['key1', 'val2'];
     },
   });
+  console.log(m1.size);
 
   // 映射期待的键/值对，无论是否提供
   const m3 = new Map([[]]);
