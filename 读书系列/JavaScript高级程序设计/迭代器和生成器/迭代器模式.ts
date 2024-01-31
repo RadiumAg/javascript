@@ -61,7 +61,7 @@
   console.log(iter.next());
 };
 
-// next方法返回的迭代器对象IteratorResult包含两个属性:done和value。done是一个布尔值
+// next方法返回的迭代器对象IteratorResult包含两个属性:done和value。done是一个布尔值,表示是否还可以调用next()取得下一个值
 () => {
   const arr = ['foo', 'bar'];
   // 迭代器工厂函数
