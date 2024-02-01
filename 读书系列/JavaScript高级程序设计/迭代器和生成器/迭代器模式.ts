@@ -129,6 +129,11 @@
 
 // 提前终止迭代器
 // return 方法必须返回一个有效的iteratorResult对象
+// 可选的return方法用于指定在迭代器提前关闭时的逻辑。
+// 执行迭代对结构在想让迭代器知道它不想遍历到可迭代对象耗尽时，就可以“关闭”迭代器器。可能的情况包括：
+// 1. for of 循环通过break，continue，return或throw提前退出
+// 2. 解构操作并未消费所有值
+
 () => {
   class Counter {
     private limit: number;
@@ -158,6 +163,7 @@
     }
   }
 
+  // 提前关闭
   const counter1 = new Counter(5);
   for (const i of counter1) {
     if (i > 2) {
@@ -166,6 +172,7 @@
     console.log(i);
   }
 
+  // 提前关闭
   const counter2 = new Counter(5);
   try {
     for (const i of counter2) {
