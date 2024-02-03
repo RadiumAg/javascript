@@ -26,4 +26,52 @@ console.log(person1.sayName == person2.sayName); //true
 // 2.[[Enumerable]：表示属性是否可以通过for in循环返回。默认情况下，所有直接定义在对象上的属性的这个特性都是true，如前面的例子所示
 // 3.[[Writable]]: 表示属性的值是否可以呗修改.默认情况下,所有直接定义在对象上的属性的这个特性都是true,如前面的例子所示
 // 4.[[Value]]: 包含属性实际的值.这就是前面提到的那个读取和写入属性值的位置.这个特性的默认值为undefined.
-(()=>{})()
+(()=>{
+  const  person = {};
+  Object.defineProperty(person, "name", {
+    writable: false,
+    value: "Nicholas"
+  });
+
+
+  console.log(person.name)
+  person.name = 'Greg'
+  console.log(person.name)
+})();
+
+(()=>{
+  const person = {}
+  Object.defineProperty(person, "name", {
+     configurable: false,
+      value:"Nicholas"
+  })
+
+
+  Object.defineProperty(person, "name" ,{
+    configurable:true,
+    value: "Nicholas"
+  })
+})()
+
+
+// 2. 属性访问器
+(()=>{
+   const book = {
+    year_: 2017,
+    edition:1
+   }
+
+   Object.defineProperty(book, "year", {
+      get(){
+        return this.year_;
+      },
+      set(newValue){
+        if(newValue > 2017) {
+          this.year_ = newValue;
+          this.edition += newValue -2017
+        }
+      }
+   })
+
+   book.year = 2018
+})()
