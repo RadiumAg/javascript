@@ -107,3 +107,15 @@
 
   Object.assign(dest, src);
 })();
+
+// 对象表示以及相等判定
+(() => {
+  console.log(true === 1); //false
+  console.log({} === {});
+  console.log('2' === 2);
+  console.log(+0 === -0); //true
+  console.log(+0 === 0); // true
+  console.log(-0 === 0); // true
+  console.log(NaN === NaN);
+  console.log(isNaN(NaN));
+})();
