@@ -28,7 +28,7 @@
        })();
 
        (() => {
-         performance.mark();
+         performance.mark('foo');
          for (let i = 0; i < 1e6; ++i) {}
          performance.mark('bar');
          performance.measure('bar', 'foo', 'bar');
