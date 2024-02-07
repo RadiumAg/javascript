@@ -10,33 +10,37 @@
 
 <body>
     <script>
-        () => {
-          const reativeTimestamp = performance.now();
-          const absoluteTimestamp = performance.timeOrigin + reativeTimestamp;
-          console.log(reativeTimestamp);
-          console.log(absoluteTimestamp);
-        };
+     //  High Resolution Time API
+     (() => {
+       (() => {
+         const reativeTimestamp = performance.now();
+         const absoluteTimestamp = performance.timeOrigin + reativeTimestamp;
+         console.log(reativeTimestamp);
+         console.log(absoluteTimestamp);
+       })();
+     })();
 
-        () => {
-          const entry = performance.getEntries()[0];
-          console.log(entry.name);
-        };
+     // Performance Timeline API
+     () => {
+       const entry = performance.getEntries()[0];
+       console.log(entry.name);
+     };
 
-        () => {
-          performance.mark();
+     () => {
+       performance.mark();
 
-          for (let i = 0; i < 1e6; ++i) {}
-          performance.mark('bar');
-          performance.measure('bar', 'foo', 'bar');
-          const [differenceMark] = performance.getEntriesByType('measure');
-          console.log(differenceMark);
-        };
+       for (let i = 0; i < 1e6; ++i) {}
+       performance.mark('bar');
+       performance.measure('bar', 'foo', 'bar');
+       const [differenceMark] = performance.getEntriesByType('measure');
+       console.log(differenceMark);
+     };
 
-        (() => {
-          const [performanceNavigationTimingEntry] =
-            performance.getEntriesByType('navigation');
-          console.log(performanceNavigationTimingEntry);
-        })();
+     (() => {
+       const [performanceNavigationTimingEntry] =
+         performance.getEntriesByType('navigation');
+       console.log(performanceNavigationTimingEntry);
+     })();
     </script>
 </body>
 
