@@ -21,20 +21,21 @@
      })();
 
      // Performance Timeline API
-     () => {
-       const entry = performance.getEntries()[0];
-       console.log(entry.name);
-     };
+     (() => {
+       (() => {
+         const entry = performance.getEntries()[0];
+         console.log(entry.name);
+       })();
 
-     () => {
-       performance.mark();
-
-       for (let i = 0; i < 1e6; ++i) {}
-       performance.mark('bar');
-       performance.measure('bar', 'foo', 'bar');
-       const [differenceMark] = performance.getEntriesByType('measure');
-       console.log(differenceMark);
-     };
+       (() => {
+         performance.mark();
+         for (let i = 0; i < 1e6; ++i) {}
+         performance.mark('bar');
+         performance.measure('bar', 'foo', 'bar');
+         const [differenceMark] = performance.getEntriesByType('measure');
+         console.log(differenceMark);
+       })();
+     })();
 
      (() => {
        const [performanceNavigationTimingEntry] =
