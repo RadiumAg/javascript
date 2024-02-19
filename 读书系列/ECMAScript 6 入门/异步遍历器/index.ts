@@ -48,3 +48,12 @@ async function* createAsyncIterable(syncIterable) {
   it.next().value;
   it.next().value;
 })();
+
+// for await ...of
+(() => {
+  async function f() {
+    for await (const x of createAsyncIterable(['a', 'b'])) {
+      console.log(x);
+    }
+  }
+})();
