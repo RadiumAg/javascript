@@ -187,7 +187,6 @@
 () => {
   const a = [1, 2, 3, 4, 5];
   const iter = a[Symbol.iterator]();
-
   iter.return = function () {
     console.log('Exitingearly');
     return { done: true };
