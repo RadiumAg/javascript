@@ -95,6 +95,9 @@
 // 字符串解构，字符串转换成了一个类似数组的对象
 (() => {
   const [a, b, c, d, e] = 'Hello';
+  const { length: len } = 'hello';
+
+  console.log(len);
   console.log(a, b, c, d, e);
 })();
 
