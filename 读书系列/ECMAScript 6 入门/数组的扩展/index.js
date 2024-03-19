@@ -1,3 +1,17 @@
+// 扩展运算符
+(() => {
+  console.log(...[1, 2, 3]);
+  console.log(1, ...[2, 3, 4], 5);
+  function push(array, ...items) {
+    array.push(...items);
+  }
+  function add(x, y) {
+    return x + y;
+  }
+  const numbers = [4.38];
+  add(...numbers);
+})();
+
 (() => {
   const arrayLike = {
     0: 'a',
@@ -8,7 +22,6 @@
 
   const arr1 = Array.prototype.slice.call(arrayLike); // ["a","b","c"]
   const arr2 = Array.from(arrayLike); // ['a','b','c']
-
   console.log(arr1, arr2);
 })();
 

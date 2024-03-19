@@ -71,4 +71,15 @@
   foo(undefined, null);
 })();
 
+// 利用默认参数值
+(() => {
+  function throwIfMissing() {
+    throw new Error('Missing parameter');
+  }
 
+  function foo(mustBeProvided = throwIfMissing()) {
+    return mustBeProvided;
+  }
+
+  foo();
+})();
