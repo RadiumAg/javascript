@@ -119,3 +119,51 @@
   //@testable
   class MyTestableClass {}
 })();
+
+// 继承
+(() => {
+  class Point {}
+
+  class ColorPoint extends Point {
+    constructor(x, y, color) {
+      super(x, y); // 必须通过父类的构造函数完成塑造
+      this.color = color;
+    }
+
+    toString() {
+      return `${this.color}   ${super.toString()}`;
+    }
+  }
+})();
+
+// 私有属性和私有方法的继承
+(() => {
+  class Foo {
+    #p = 1;
+
+    #m() {
+      console.log('hello');
+    }
+  }
+
+  class Bar extends Foo {
+    constructor() {
+      super();
+      console.log(this.#p);
+      this.#m();
+    }
+  }
+})();
+
+// 静态属性和静态方法的继承
+(() => {
+  class A {
+    static hello() {
+      console.log('hello world');
+    }
+  }
+
+  class B extends A {}
+
+  B.hello();
+})();
