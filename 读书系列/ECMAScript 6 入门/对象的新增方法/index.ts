@@ -47,6 +47,12 @@
   console.log(target);
 };
 
+() => {
+  const obj = { a: 1 };
+  Object.assign(obj, undefined) === obj; //true
+  Object.assign(obj, null) === obj; // true
+};
+
 // Object.assign 是浅拷贝，而不是深拷贝
 () => {
   const obj1 = { a: { b: 1 } };
