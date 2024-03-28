@@ -39,7 +39,7 @@
       if (ref && !ref.deref()) cache.delete(key);
     });
 
-    return key => {
+    return (key: string) => {
       const ref = cache.get(key);
       if (ref) {
         const cached = ref.deref();
@@ -49,7 +49,6 @@
       const fresh = f(key);
       cache.set(key, new WeakRef(fresh));
       cleanup.register(fresh, key);
-
       return fresh;
     };
   }
