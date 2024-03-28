@@ -31,4 +31,26 @@
 
   register.register(a, 'some value');
   a = null;
+
+  function makeWeakCached(f) {
+    const cache = new Map();
+    const cleanup = new FinalizationRegistry(key => {
+      const ref = cache.get(key);
+      if (ref && !ref.deref()) cache.delete(key);
+    });
+
+    return key => {
+      const ref = cache.get(key);
+      if (ref) {
+        const cached = ref.deref();
+        if (cached !== undefined) return cached;
+      }
+
+      const fresh = f(key);
+      cache.set(key, new WeakRef(fresh));
+      cleanup.register(fresh, key);
+
+      return fresh;
+    };
+  }
 })();
