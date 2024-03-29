@@ -21,6 +21,16 @@
   ws.add(Symbol());
 };
 
+// WeakRef
+(() => {
+  const target = {};
+  const wr = new WeakRef(target);
+
+  const obj = wr.deref();
+  if (obj) {
+  }
+})();
+
 // FinalizationRegistry
 (() => {
   // 新建一个注册表实例
