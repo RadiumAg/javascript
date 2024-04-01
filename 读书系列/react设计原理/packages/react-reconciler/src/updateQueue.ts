@@ -31,6 +31,11 @@ const createUpdateQueue = <State>() => {
   } as UpdateQueue<State>;
 };
 
+/**
+ * 更新update队列
+ * @param updateQueue
+ * @param update
+ */
 const enqueueUpdate = <State>(
   updateQueue: UpdateQueue<State>,
   update: Update<State>,
