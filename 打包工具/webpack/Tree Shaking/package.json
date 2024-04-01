@@ -2,6 +2,7 @@
   "name": "webpack",
   "version": "1.0.0",
   "description": "",
+  "sideEffects": false,
   "scripts": {
     "start": "webpack serve --open",
     "build": "webpack --config webpack.config.ts",
