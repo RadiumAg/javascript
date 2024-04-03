@@ -1,12 +1,13 @@
 // 用一个全局变量存储被注册的副作用函数
 let activeEffect;
+const effectStack = [];
 const bucket = new WeakMap();
 
 // 原始数据
 const data = { text: 'hello world' };
 
 /**
- * 执行副作用
+ * 收集副作用函数
  * @param {*} fn
  */
 function effect(fn) {
@@ -15,7 +16,10 @@ function effect(fn) {
     // 调用 cleanup 函数完成清理工作
     cleanup(effectFn);
     activeEffect = effectFn;
+    effectStack.push(effectFn); // 新增
     fn();
+    effectStack.pop(); // 新增
+    activeEffect = effectStack[effectStack.length - 1];
   };
 
   // activeEffect.deps 用来存储所有与该副作用函数相关联的依赖集合
@@ -71,8 +75,8 @@ function trigger(target, key) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
 
-  const effect = depsMap.get(key);
-  const effectsToRun = new Set(effect);
+  const effects = depsMap.get(key);
+  const effectsToRun = new Set(effects);
   // effect && effect.forEach(fn => fn());
   effectsToRun &&
     effectsToRun.forEach(effectFn => {
