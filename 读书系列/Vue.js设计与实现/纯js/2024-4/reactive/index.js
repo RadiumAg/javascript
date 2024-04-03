@@ -3,9 +3,6 @@ let activeEffect;
 const effectStack = [];
 const bucket = new WeakMap();
 
-// 原始数据
-const data = { text: 'hello world' };
-
 /**
  * 收集副作用函数
  * @param {*} fn
@@ -28,19 +25,6 @@ function effect(fn) {
   effectFn();
 }
 
-// 对原始数据的代理
-const obj = new Proxy(data, {
-  get(target, key) {
-    track(target, key);
-    return target[key];
-  },
-
-  set(target, key) {
-    trigger(target, key);
-    return true;
-  },
-});
-
 /**
  * 收集依赖
  * @param {*} target
@@ -52,7 +36,7 @@ function track(target, key) {
   if (!activeEffect) return;
   let depsMap = bucket.get(target);
   if (!depsMap) {
-    // target --> value
+    // target --> value --> callback    // 存储当前 target 相关联的依赖
     bucket.set(target, (depsMap = new Map()));
   }
   let deps = depsMap.get(key);
@@ -97,12 +81,21 @@ function cleanup(effectFn) {
   effectFn.deps.length = 0;
 }
 
-effect(() => {
-  document.body.textContent = obj.text;
-});
+function reactive(target) {
+  // 对原始数据的代理
+  const obj = new Proxy(target, {
+    get(target, key) {
+      track(target, key);
+      return target[key];
+    },
 
-setTimeout(() => {
-  obj.text = 'hello world2';
-}, 1000);
+    set(target, key) {
+      trigger(target, key);
+      return true;
+    },
+  });
 
-export { effect };
+  return obj;
+}
+
+export { effect, reactive };

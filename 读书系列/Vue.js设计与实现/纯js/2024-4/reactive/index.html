@@ -8,7 +8,46 @@
   <body>
     <script type="module">
       // eslint-disable-next-line unicorn/import-index
-      import './index.js';
+      import { effect, reactive } from './index.js';
+
+      (() => {
+        // 原始数据
+        const data = { text: 'hello world' };
+        const obj = reactive(data);
+
+        effect(() => {
+          document.body.textContent = obj.text;
+        });
+
+        setTimeout(() => {
+          obj.text = 'hello world2';
+        }, 1000);
+      })();
+
+      // 嵌套
+      (() => {
+        // 原始数据
+        const data = { foo: true, bar: true };
+        const obj = reactive(data);
+
+        // 当局变量
+        let temp1, temp2;
+        effect(() => {
+          console.log('effectFn1 执行');
+
+          effect(() => {
+            console.log('effectFn2 执行');
+            // 在 effectFn2 中读取 obj.bar 属性
+            temp2 = obj.bar;
+          });
+
+          temp1 = obj.foo;
+        });
+
+        setTimeout(() => {
+          obj.text = 'hello world2';
+        }, 1000);
+      })();
     </script>
   </body>
 </html>
