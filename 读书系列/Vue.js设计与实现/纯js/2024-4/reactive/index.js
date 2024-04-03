@@ -1,28 +1,51 @@
 // 用一个全局变量存储被注册的副作用函数
 let activeEffect;
 const effectStack = [];
+let isFlushing = false;
+const jobQueue = new Set();
+const p = Promise.resolve();
 const bucket = new WeakMap();
+
+function flushJob() {
+  // 如果队列正在刷新，则什么都不做
+  if (isFlushing) return;
+  isFlushing = true;
+  // 在微任务队列中刷新 jobQueue 队列
+  p.then(() => {
+    jobQueue.forEach(job => job());
+  }).finally(() => {
+    isFlushing = false;
+  });
+}
 
 /**
  * 收集副作用函数
  * @param {*} fn
  */
-function effect(fn) {
+function effect(fn, options = {}) {
   // 包装函数
   const effectFn = () => {
     // 调用 cleanup 函数完成清理工作
     cleanup(effectFn);
     activeEffect = effectFn;
     effectStack.push(effectFn); // 新增
-    fn();
+    const res = fn();
     effectStack.pop(); // 新增
     activeEffect = effectStack[effectStack.length - 1];
+
+    return res;
   };
 
+  // 将 options 挂载到 effectFn 上
+  effectFn.options = options;
   // activeEffect.deps 用来存储所有与该副作用函数相关联的依赖集合
   effectFn.deps = [];
+  // 只有非 lazy 的时候，才执行
+  if (!options.lazy) {
+    effectFn();
+  }
   // 执行副作用函数
-  effectFn();
+  return effectFn;
 }
 
 /**
@@ -64,7 +87,12 @@ function trigger(target, key) {
   // effect && effect.forEach(fn => fn());
   effectsToRun &&
     effectsToRun.forEach(effectFn => {
-      effectFn();
+      // 如果 trigger 触发执行的副作用函数宇当前正在执行的副作用函数相同，则不触发执行
+      if (effectFn.options.scheduler) {
+        effectFn.options.scheduler(effectFn);
+      } else {
+        effectFn();
+      }
     });
 }
 
@@ -98,4 +126,22 @@ function reactive(target) {
   return obj;
 }
 
-export { effect, reactive };
+function computed(getter) {
+  let value;
+  const dirty = true;
+  const effectFn = effect(getter, { lazy: true });
+
+  const obj = {
+    get value() {
+      if (dirty) {
+        value = effectFn();
+        dirty = false;
+      }
+      return value;
+    },
+  };
+
+  return obj;
+}
+``;
+export { effect, reactive, flushJob, jobQueue, computed };
