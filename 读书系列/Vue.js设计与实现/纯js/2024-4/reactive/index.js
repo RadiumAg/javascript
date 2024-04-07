@@ -128,8 +128,17 @@ function reactive(target) {
 
 function computed(getter) {
   let value;
-  const dirty = true;
-  const effectFn = effect(getter, { lazy: true });
+  let dirty = true;
+  const effectFn = effect(getter, {
+    lazy: true,
+    scheduler() {
+      if (!dirty) {
+        dirty = true;
+        // 当计算属性依赖的响应式数据变化时， 手动调用 trigger 函数触发响应
+        trigger(obj, 'value');
+      }
+    },
+  });
 
   const obj = {
     get value() {
@@ -137,11 +146,71 @@ function computed(getter) {
         value = effectFn();
         dirty = false;
       }
+      track(obj, 'value');
       return value;
     },
   };
 
   return obj;
 }
-``;
-export { effect, reactive, flushJob, jobQueue, computed };
+
+function watch(source, cb, options = {}) {
+  // 定义
+  let getter;
+  // 如果 source 是函数，说明用户传递的是 getter，所以直接把 source 赋值给 getter
+  if (typeof source === 'function') {
+    getter = source;
+  } else {
+    getter = () => traverse(source);
+  }
+  // 定义旧
+  let oldValue, newValue;
+  let cleanup;
+  function onInvalidate(fn) {
+    cleanup = fn;
+  }
+
+  const job = () => {
+    newValue = effectFn();
+    if (cleanup) {
+      cleanup();
+    }
+    cb(newValue, oldValue, onInvalidate);
+    oldValue = newValue;
+  };
+
+  const effectFn = effect(() => getter(source), {
+    lazy: true,
+    scheduler: () => {
+      if (options.flush === 'post') {
+        const p = Promise.resolve();
+        p.then(job);
+      } else {
+        job();
+      }
+    },
+  });
+
+  if (options.immediate) {
+    job();
+  } else {
+    // 手动调用副作用男宿，拿到的值就是旧值
+    oldValue = effectFn();
+  }
+}
+
+function traverse(value, seen = new Set()) {
+  if (typeof value !== 'object' || value === null || seen.has(value)) return;
+
+  // 将数据添加到seen中，代表遍历地读取过了，避免循环引用引起的死循环
+  seen.add(value);
+  // 暂时不考虑数组等其他机构
+  // 假设value就是一个对象，使用for .... in 读取对象的每一个值，递归地调用 traverse 进行处理
+  // eslint-disable-next-line no-restricted-syntax
+  for (const k in value) {
+    traverse(value[k], seen);
+  }
+  return value;
+}
+
+export { watch, effect, reactive, flushJob, computed, jobQueue };
