@@ -9,6 +9,7 @@ const ITERATE_KEY = Symbol();
 const TriggerType = {
   SET: 'SET',
   ADD: 'ADD',
+  DELETE: 'DELETE',
 };
 
 function flushJob() {
@@ -98,7 +99,8 @@ function trigger(target, key, type) {
       }
     });
 
-  if (type === TriggerType.ADD) {
+  // 当操作类型为 ADD 或 DELETE 时，需要触发 ITERATE_KEY 相关联的副作用函数重新执行
+  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
         if (effectFn !== activeEffect) {
@@ -156,6 +158,18 @@ function reactive(target) {
     ownKeys(target) {
       track(target, ITERATE_KEY);
       return Reflect.ownKeys(target);
+    },
+
+    defineProperty(target, key) {
+      // 检查被操作的属性是否是对象自己的属性
+      const hadKey = Object.prototype.hasOwnProperty.call(target, key);
+      // 使用 Reflect.defineProperty 定义属性
+      const res = Reflect.deleteProperty(target, key);
+
+      if (res && hadKey) {
+        // 只有当被删除的属性是对象自己的属性并且成功删除时，才触发更新
+        trigger(target, key, TriggerType.DELETE);
+      }
     },
   });
 
