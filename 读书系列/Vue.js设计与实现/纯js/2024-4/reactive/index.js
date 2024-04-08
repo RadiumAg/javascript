@@ -5,6 +5,7 @@ let isFlushing = false;
 const jobQueue = new Set();
 const p = Promise.resolve();
 const bucket = new WeakMap();
+const ITERATE_KEY = Symbol();
 
 function flushJob() {
   // 如果队列正在刷新，则什么都不做
@@ -120,6 +121,16 @@ function reactive(target) {
     set(target, key) {
       trigger(target, key);
       return true;
+    },
+
+    has(target, key) {
+      track(target, key);
+      return Reflect.has(target, key);
+    },
+
+    ownKeys(target) {
+      track(target, ITERATE_KEY);
+      return Reflect.ownKeys(target);
     },
   });
 
