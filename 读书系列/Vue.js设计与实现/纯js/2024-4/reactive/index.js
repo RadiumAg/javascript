@@ -6,6 +6,10 @@ const jobQueue = new Set();
 const p = Promise.resolve();
 const bucket = new WeakMap();
 const ITERATE_KEY = Symbol();
+const TriggerType = {
+  SET: 'SET',
+  ADD: 'ADD',
+};
 
 function flushJob() {
   // 如果队列正在刷新，则什么都不做
@@ -79,13 +83,30 @@ function track(target, key) {
  * @param {*} key
  * @returns
  */
-function trigger(target, key) {
+function trigger(target, key, type) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
 
   const effects = depsMap.get(key);
-  const effectsToRun = new Set(effects);
-  // effect && effect.forEach(fn => fn());
+  const iterateEffects = depsMap.get(ITERATE_KEY);
+
+  const effectsToRun = new Set();
+  effects &&
+    effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn);
+      }
+    });
+
+  if (type === TriggerType.ADD) {
+    iterateEffects &&
+      iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
   effectsToRun &&
     effectsToRun.forEach(effectFn => {
       // 如果 trigger 触发执行的副作用函数宇当前正在执行的副作用函数相同，则不触发执行
@@ -118,9 +139,13 @@ function reactive(target) {
       return target[key];
     },
 
-    set(target, key) {
-      trigger(target, key);
-      return true;
+    set(target, key, newVal, receiver) {
+      const type = Object.prototype.hasOwnProperty.call(target, key)
+        ? TriggerType.SET
+        : TriggerType.ADD;
+      const res = Reflect.set(target, key, newVal, receiver);
+      trigger(target, type, key);
+      return res;
     },
 
     has(target, key) {
@@ -205,7 +230,7 @@ function watch(source, cb, options = {}) {
   if (options.immediate) {
     job();
   } else {
-    // 手动调用副作用男宿，拿到的值就是旧值
+    // 手动调用副作用函数，拿到的值就是旧值
     oldValue = effectFn();
   }
 }
