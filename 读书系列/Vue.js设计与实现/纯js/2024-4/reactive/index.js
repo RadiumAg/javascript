@@ -243,7 +243,7 @@ function watch(source, cb, options = {}) {
     oldValue = newValue;
   };
 
-  const effectFn = effect(() => getter(source), {
+  const effectFn = effect(() => getter(), {
     lazy: true,
     scheduler: () => {
       if (options.flush === 'post') {
