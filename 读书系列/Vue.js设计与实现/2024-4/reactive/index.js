@@ -140,7 +140,13 @@ function reactive(target) {
       // 代理对象可以通过 raw 属性访问原始数据
       if (key === 'raw') return target;
       track(target, key);
-      return Reflect.get(target, key, receiver);
+      const res = Reflect.get(target, key, receiver);
+
+      if (typeof res === 'object' && res !== null) {
+        return reactive(res);
+      }
+
+      return res;
     },
 
     set(target, key, newVal, receiver) {

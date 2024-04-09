@@ -106,7 +106,7 @@
         const sumRes = computed(() => obj.foo + obj.bar);
       };
 
-      (() => {
+      () => {
         const obj = reactive({ a: 1 });
 
         watch(
@@ -120,6 +120,20 @@
 
         console.log(obj);
         obj.a = 2;
+      };
+
+      (() => {
+        const obj = {};
+        const proto = { bar: 1 };
+        const child = reactive(obj);
+        const parent = reactive(proto);
+        Object.setPrototypeOf(child, parent);
+
+        effect(() => {
+          console.log(child.bar);
+        });
+
+        child.bar = 2;
       })();
     </script>
   </body>
