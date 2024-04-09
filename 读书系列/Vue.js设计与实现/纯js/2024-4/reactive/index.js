@@ -136,17 +136,31 @@ function cleanup(effectFn) {
 function reactive(target) {
   // 对原始数据的代理
   const obj = new Proxy(target, {
-    get(target, key) {
+    get(target, key, receiver) {
+      // 代理对象可以通过 raw 属性访问原始数据
+      if (key === 'raw') return target;
       track(target, key);
-      return target[key];
+      return Reflect.get(target, key, receiver);
     },
 
     set(target, key, newVal, receiver) {
+      // 先获取旧值
+      const oldVal = target[key];
+
       const type = Object.prototype.hasOwnProperty.call(target, key)
         ? TriggerType.SET
         : TriggerType.ADD;
+
       const res = Reflect.set(target, key, newVal, receiver);
-      trigger(target, type, key);
+
+      if (
+        target === receiver.raw && // 比较新值与旧值，只有当它们不相等，并且都不是 NaN 时，才触发响应
+        oldVal !== newVal &&
+        (oldVal === oldVal || newVal === newVal)
+      ) {
+        trigger(target, key, type);
+      }
+
       return res;
     },
 
