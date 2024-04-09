@@ -133,13 +133,18 @@ function cleanup(effectFn) {
   effectFn.deps.length = 0;
 }
 
-function createReactive(obj, isShallow = false) {
+function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     get(target, key, receiver) {
       // 代理对象可以通过 raw 属性访问原始数据
       if (key === 'raw') return target;
-      track(target, key);
       const res = Reflect.get(target, key, receiver);
+      track(target, key);
+
+      // 如果是浅响应
+      if (isShallow) {
+        return res;
+      }
 
       if (typeof res === 'object' && res !== null) {
         return reactive(res);
@@ -179,6 +184,10 @@ function createReactive(obj, isShallow = false) {
     },
 
     defineProperty(target, key) {
+      if (isReadonly) {
+        console.warn(`属性${key}是只读的`);
+        return true;
+      }
       // 检查被操作的属性是否是对象自己的属性
       const hadKey = Object.prototype.hasOwnProperty.call(target, key);
       // 使用 Reflect.defineProperty 定义属性
@@ -192,66 +201,13 @@ function createReactive(obj, isShallow = false) {
   });
 }
 
-function reactive(target) {
+function reactive(obj) {
   // 对原始数据的代理
-  const obj = new Proxy(target, {
-    get(target, key, receiver) {
-      // 代理对象可以通过 raw 属性访问原始数据
-      if (key === 'raw') return target;
-      track(target, key);
-      const res = Reflect.get(target, key, receiver);
+  return createReactive(obj);
+}
 
-      if (typeof res === 'object' && res !== null) {
-        return reactive(res);
-      }
-
-      return res;
-    },
-
-    set(target, key, newVal, receiver) {
-      // 先获取旧值
-      const oldVal = target[key];
-      const res = Reflect.set(target, key, newVal, receiver);
-
-      const type = Object.prototype.hasOwnProperty.call(target, key)
-        ? TriggerType.SET
-        : TriggerType.ADD;
-
-      if (
-        target === receiver.raw && // 比较新值与旧值，只有当它们不相等，并且都不是 NaN 时，才触发响应
-        oldVal !== newVal &&
-        (oldVal === oldVal || newVal === newVal)
-      ) {
-        trigger(target, key, type);
-      }
-
-      return res;
-    },
-
-    has(target, key) {
-      track(target, key);
-      return Reflect.has(target, key);
-    },
-
-    ownKeys(target) {
-      track(target, ITERATE_KEY);
-      return Reflect.ownKeys(target);
-    },
-
-    defineProperty(target, key) {
-      // 检查被操作的属性是否是对象自己的属性
-      const hadKey = Object.prototype.hasOwnProperty.call(target, key);
-      // 使用 Reflect.defineProperty 定义属性
-      const res = Reflect.deleteProperty(target, key);
-
-      if (res && hadKey) {
-        // 只有当被删除的属性是对象自己的属性并且成功删除时，才触发更新
-        trigger(target, key, TriggerType.DELETE);
-      }
-    },
-  });
-
-  return obj;
+function shallowReactive(obj) {
+  return createReactive(obj, true);
 }
 
 function computed(getter) {
@@ -341,4 +297,12 @@ function traverse(value, seen = new Set()) {
   return value;
 }
 
-export { watch, effect, reactive, flushJob, computed, jobQueue };
+export {
+  watch,
+  effect,
+  reactive,
+  flushJob,
+  computed,
+  shallowReactive,
+  jobQueue,
+};
