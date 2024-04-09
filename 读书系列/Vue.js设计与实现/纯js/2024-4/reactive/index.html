@@ -108,7 +108,7 @@
 
       (() => {
         const obj = reactive({ foo: 1, bar: 2 });
-      
+
         watch(
           () => {
             return obj.foo;
@@ -117,9 +117,6 @@
             console.log('obj 变化了');
           },
   );
-
-        obj.foo = 3;
-        console.log(obj);
       })();
     </script>
   </body>
