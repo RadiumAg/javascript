@@ -99,6 +99,16 @@ function trigger(target, key, type) {
       }
     });
 
+  if (type === TriggerType.ADD && Array.isArray(target)) {
+    const lengthEffects = depsMap.get('length');
+    lengthEffects &&
+      lengthEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
   // 当操作类型为 ADD 或 DELETE 时，需要触发 ITERATE_KEY 相关联的副作用函数重新执行
   if (type === TriggerType.ADD || type === TriggerType.DELETE) {
     iterateEffects &&
@@ -159,7 +169,11 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       const oldVal = target[key];
       const res = Reflect.set(target, key, newVal, receiver);
 
-      const type = Object.prototype.hasOwnProperty.call(target, key)
+      const type = Array.isArray(target)
+        ? Number(key) < target.length
+          ? TriggerType.SET
+          : TriggerType.ADD
+        : Object.prototype.hasOwnProperty.call(target, key)
         ? TriggerType.SET
         : TriggerType.ADD;
 
