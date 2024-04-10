@@ -72,7 +72,9 @@ function updateDom(dom, prevProps, nextProps) {
 }
 
 function commitRoot() {
-  deletions.forEach(commitWork);
+  deletions.forEach(deletion => {
+    commitWork(deletion);
+  });
   commitWork(wipRoot.child);
   currentRoot = wipRoot;
   wipRoot = null;
@@ -274,9 +276,9 @@ function reconcileChildren(wipFiber, elements) {
 }
 
 const Didact = {
-  createElement,
   render,
   useState,
+  createElement,
 };
 
 export { Didact };
