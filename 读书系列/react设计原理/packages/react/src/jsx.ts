@@ -105,6 +105,8 @@ const jsxDEV = (
     }
   }
 
+  console.log();
+
   return ReactElement(type, key, ref, props);
 };
 

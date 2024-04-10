@@ -6,7 +6,11 @@ const App = () => {
     { a: 1, key: 1 },
     { a: 2, key: 2 },
   ]);
-  const children = state.map(item => <div key={item.key}>{item.a}</div>);
+  const children = state.map((item, index) => (
+    <div className="item" key={index}>
+      {item.a}
+    </div>
+  ));
 
   return (
     <div
