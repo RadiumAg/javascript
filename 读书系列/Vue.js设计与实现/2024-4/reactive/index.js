@@ -138,8 +138,9 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
     get(target, key, receiver) {
       // 代理对象可以通过 raw 属性访问原始数据
       if (key === 'raw') return target;
+      if (!isReadonly) track(target, key);
+
       const res = Reflect.get(target, key, receiver);
-      track(target, key);
 
       // 如果是浅响应
       if (isShallow) {
@@ -147,7 +148,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       }
 
       if (typeof res === 'object' && res !== null) {
-        return reactive(res);
+        return isReadonly ? readonly(res) : reactive(res);
       }
 
       return res;
@@ -238,6 +239,14 @@ function computed(getter) {
   return obj;
 }
 
+function readonly(obj) {
+  return createReactive(obj, false, true);
+}
+
+function shallowReadonly(obj) {
+  return createReactive(obj, true, true);
+}
+
 function watch(source, cb, options = {}) {
   // 定义
   let getter;
@@ -303,6 +312,8 @@ export {
   reactive,
   flushJob,
   computed,
+  readonly,
   shallowReactive,
+  shallowReadonly,
   jobQueue,
 };
