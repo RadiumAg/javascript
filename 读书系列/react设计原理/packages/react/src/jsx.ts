@@ -71,10 +71,15 @@ const jsx = (
   return ReactElement(type, key, ref, props);
 };
 
-const jsxDEV = (type: ElementType, config: Record<string, any>) => {
+const jsxDEV = (
+  type: ElementType,
+  config: Record<string, any>,
+  itemKey: Key,
+) => {
   let key: Key = null;
   let ref: Ref = null;
   const props: Props = {};
+  config.key = itemKey;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const prop in config) {
