@@ -8,6 +8,7 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": "./packages",
+    "downlevelIteration":true,
     "paths": {
       "hostConfig": [
         "react-dom/src/hostConfig.ts"

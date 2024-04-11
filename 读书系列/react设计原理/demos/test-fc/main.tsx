@@ -2,20 +2,26 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 
 const App = () => {
-  const [state, setState] = React.useState(0);
-  const [transition, setTransition] = React.useTransition();
-
-  console.log(transition);
+  const [state, setState] = React.useState([
+    { a: 1, key: 1 },
+    { a: 2, key: 2 },
+  ]);
+  const children = state.map((item, index) => (
+    <div className="item" key={index}>
+      {item.a}
+    </div>
+  ));
 
   return (
     <div
       onClick={() => {
-        setTransition(() => {
-          setState(state => state + 1);
+        setState(() => {
+          const newState = [...state];
+          return newState.reverse();
         });
       }}
     >
-      {state}
+      {children}
     </div>
   );
 };

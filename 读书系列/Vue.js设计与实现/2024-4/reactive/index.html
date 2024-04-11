@@ -8,9 +8,16 @@
   <body>
     <script type="module">
       // eslint-disable-next-line unicorn/import-index
-      import { computed, effect, flushJob, jobQueue, reactive } from './index.js';
+      import {
+        computed,
+        effect,
+        flushJob,
+        jobQueue,
+        reactive,
+        watch,
+      } from './index.js';
 
-      (() => {
+      () => {
         // 原始数据
         const data = { text: 'hello world' };
         const obj = reactive(data);
@@ -22,10 +29,10 @@
         setTimeout(() => {
           obj.text = 'hello world2';
         }, 1000);
-      })();
+      };
 
       // 嵌套
-      (() => {
+      () => {
         // 原始数据
         const data = { foo: true, bar: true };
         const obj = reactive(data);
@@ -47,18 +54,18 @@
         setTimeout(() => {
           obj.text = 'hello world2';
         }, 1000);
-      })();
+      };
 
-      (() => {
+      () => {
         const data = { foo: 1 };
         const obj = reactive(data);
 
         effect(() => {
           obj.foo = obj.foo + 1;
         });
-      })();
+      };
 
-      (() => {
+      () => {
         // 原始数据
         const data = { foo: true, bar: true };
         const obj = reactive(data);
@@ -73,10 +80,10 @@
               flushJob();
             },
           },
-        );
-      })();
+  );
+      };
 
-      (() => {
+      () => {
         // 原始数据
         const data = { foo: true, bar: true };
         const obj = reactive(data);
@@ -91,12 +98,42 @@
               flushJob();
             },
           },
-        );
-      })();
+  );
+      };
 
-      (() => {
+      () => {
         const obj = reactive({ foo: 1, bar: 2 });
         const sumRes = computed(() => obj.foo + obj.bar);
+      };
+
+      () => {
+        const obj = reactive({ a: 1 });
+
+        watch(
+          () => {
+            return obj.foo;
+          },
+          () => {
+            console.log('obj 变化了');
+          },
+  );
+
+        console.log(obj);
+        obj.a = 2;
+      };
+
+      (() => {
+        const obj = {};
+        const proto = { bar: 1 };
+        const child = reactive(obj);
+        const parent = reactive(proto);
+        Object.setPrototypeOf(child, parent);
+
+        effect(() => {
+          console.log(child.bar);
+        });
+
+        child.bar = 2;
       })();
     </script>
   </body>

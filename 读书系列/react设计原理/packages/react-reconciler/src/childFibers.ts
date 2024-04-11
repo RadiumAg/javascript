@@ -101,6 +101,13 @@ function childReconciler(shouldTrackEffect: boolean) {
     return fiber;
   }
 
+  /**
+   * 协调List
+   * @param returnFiber
+   * @param currentFirstChild
+   * @param newChild
+   * @returns
+   */
   function reconcileChildrenArray(
     returnFiber: FiberNode,
     currentFirstChild: FiberNode | null,
