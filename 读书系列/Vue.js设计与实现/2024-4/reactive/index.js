@@ -166,9 +166,14 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
 
     set(target, key, newVal, receiver) {
       // 先获取旧值
+      if(isReadonly) {
+        console.warn(`属性 ${key} 是只读的`)
+        return true
+      }
       const oldVal = target[key];
       const res = Reflect.set(target, key, newVal, receiver);
 
+      // 如果属性不存在，则说明是在添加新的属性，否则是设置已有属性
       const type = Array.isArray(target)
         ? Number(key) < target.length
           ? TriggerType.SET
