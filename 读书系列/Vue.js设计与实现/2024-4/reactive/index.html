@@ -122,7 +122,7 @@
         obj.a = 2;
       };
 
-      (() => {
+      () => {
         const obj = {};
         const proto = { bar: 1 };
         const child = reactive(obj);
@@ -134,7 +134,19 @@
         });
 
         child.bar = 2;
-      })();
+      };
+
+      // 代理数组
+      () => {
+        const arr = reactive(['foo']);
+
+        effect(() => {
+           forof
+        });
+
+        arr[1] = 'bar';
+        arr.length = 0;
+      };
     </script>
   </body>
 </html>

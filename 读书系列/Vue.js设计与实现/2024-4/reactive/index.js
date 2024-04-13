@@ -84,7 +84,7 @@ function track(target, key) {
  * @param {*} key
  * @returns
  */
-function trigger(target, key, type) {
+function trigger(target, key, type, newVal) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
 
@@ -99,14 +99,16 @@ function trigger(target, key, type) {
       }
     });
 
-  if (type === TriggerType.ADD && Array.isArray(target)) {
-    const lengthEffects = depsMap.get('length');
-    lengthEffects &&
-      lengthEffects.forEach(effectFn => {
-        if (effectFn !== activeEffect) {
-          effectsToRun.add(effectFn);
-        }
-      });
+  if (Array.isArray(target) && key === 'length') {
+    depsMap.forEach((effects, key) => {
+      if (key >= newVal) {
+        effects.forEach(effectFn => {
+          if (effectFn !== activeEffect) {
+            effectsToRun.add(effectFn);
+          }
+        });
+      }
+    });
   }
 
   // 当操作类型为 ADD 或 DELETE 时，需要触发 ITERATE_KEY 相关联的副作用函数重新执行
@@ -187,7 +189,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         oldVal !== newVal &&
         (oldVal === oldVal || newVal === newVal)
       ) {
-        trigger(target, key, type);
+        trigger(target, key, type, newVal);
       }
 
       return res;
@@ -199,11 +201,11 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
     },
 
     ownKeys(target) {
-      track(target, ITERATE_KEY);
+      track(target, Array.isArray(target) ? 'length' : ITERATE_KEY);
       return Reflect.ownKeys(target);
     },
 
-    defineProperty(target, key) {
+    deleteProperty(target, key) {
       if (isReadonly) {
         console.warn(`属性${key}是只读的`);
         return true;
@@ -217,6 +219,8 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         // 只有当被删除的属性是对象自己的属性并且成功删除时，才触发更新
         trigger(target, key, TriggerType.DELETE);
       }
+
+      return res;
     },
   });
 }
