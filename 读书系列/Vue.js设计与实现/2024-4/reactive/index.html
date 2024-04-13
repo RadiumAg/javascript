@@ -141,12 +141,34 @@
         const arr = reactive(['foo']);
 
         effect(() => {
-           forof
+          for (const key in arr) {
+            console.log(key);
+          }
         });
 
         arr[1] = 'bar';
         arr.length = 0;
       };
+
+      (() => {
+        const obj = {
+          val: 0,
+          [Symbol.iterator]() {
+            return {
+              next() {
+                return {
+                  value: obj.val++,
+                  done: obj.val > 10 ? true : false,
+                };
+              },
+            };
+          },
+  };
+
+  for (const value of obj) {
+    console.log(value);
+  }
+      })();
     </script>
   </body>
 </html>

@@ -99,6 +99,16 @@ function trigger(target, key, type, newVal) {
       }
     });
 
+  if (type === TriggerType.ADD && Array.isArray(target)) {
+    const lenghtEffects = depsMap.get('length');
+    lenghtEffects &&
+      lenghtEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
+
   if (Array.isArray(target) && key === 'length') {
     depsMap.forEach((effects, key) => {
       if (key >= newVal) {
@@ -173,7 +183,6 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return true;
       }
       const oldVal = target[key];
-      const res = Reflect.set(target, key, newVal, receiver);
 
       // 如果属性不存在，则说明是在添加新的属性，否则是设置已有属性
       const type = Array.isArray(target)
@@ -183,6 +192,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         : Object.prototype.hasOwnProperty.call(target, key)
         ? TriggerType.SET
         : TriggerType.ADD;
+      const res = Reflect.set(target, key, newVal, receiver);
 
       if (
         target === receiver.raw && // 比较新值与旧值，只有当它们不相等，并且都不是 NaN 时，才触发响应
@@ -328,6 +338,8 @@ function traverse(value, seen = new Set()) {
   }
   return value;
 }
+
+console.log(bucket);
 
 export {
   watch,
