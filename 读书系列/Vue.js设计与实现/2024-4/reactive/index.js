@@ -166,9 +166,9 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
 
     set(target, key, newVal, receiver) {
       // 先获取旧值
-      if(isReadonly) {
-        console.warn(`属性 ${key} 是只读的`)
-        return true
+      if (isReadonly) {
+        console.warn(`属性 ${key} 是只读的`);
+        return true;
       }
       const oldVal = target[key];
       const res = Reflect.set(target, key, newVal, receiver);
