@@ -6,11 +6,26 @@ const jobQueue = new Set();
 const p = Promise.resolve();
 const bucket = new WeakMap();
 const ITERATE_KEY = Symbol();
+const reactiveMap = new Map();
 const TriggerType = {
   SET: 'SET',
   ADD: 'ADD',
   DELETE: 'DELETE',
 };
+const originMeghod = Array.prototype.includes;
+const arrayInstrumentataions = {};
+
+['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
+  arrayInstrumentataions[method] = function (...args) {
+    let res = originMeghod.apply(this, args);
+
+    if (res === false) {
+      res = originMeghod.apply(this.raw, args);
+    }
+
+    return res;
+  };
+});
 
 function flushJob() {
   // 如果队列正在刷新，则什么都不做
@@ -160,6 +175,15 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
     get(target, key, receiver) {
       // 代理对象可以通过 raw 属性访问原始数据
       if (key === 'raw') return target;
+
+      // 如果操作的目标对象是数组，并且 key 存在于 arrayInstrumentations 上
+      if (
+        Array.isArray(target) &&
+        Object.prototype.hasOwnProperty.call(arrayInstrumentataions, key)
+      ) {
+        return Reflect.get(arrayInstrumentataions, key, receiver);
+      }
+
       if (!isReadonly && typeof key !== 'symbol') track(target, key);
 
       const res = Reflect.get(target, key, receiver);
@@ -237,7 +261,11 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
 
 function reactive(obj) {
   // 对原始数据的代理
-  return createReactive(obj);
+  const existionProxy = reactiveMap.get(obj);
+  if (existionProxy) return existionProxy;
+  const proxy = createReactive(obj);
+  reactiveMap.set(obj, proxy);
+  return proxy;
 }
 
 function shallowReactive(obj) {
