@@ -2,6 +2,7 @@
 let activeEffect;
 const effectStack = [];
 let isFlushing = false;
+let shouldTrack = true;
 const jobQueue = new Set();
 const p = Promise.resolve();
 const bucket = new WeakMap();
@@ -23,6 +24,16 @@ const arrayInstrumentataions = {};
       res = originMeghod.apply(this.raw, args);
     }
 
+    return res;
+  };
+});
+
+['push', 'pop', 'shift', 'unshift', 'splice'].forEach(method => {
+  const originMeghod = Array.prototype[method];
+  arrayInstrumentataions[method] = function (...args) {
+    shouldTrack = false;
+    const res = originMeghod.apply(this, args);
+    shouldTrack = true;
     return res;
   };
 });
@@ -77,7 +88,7 @@ function effect(fn, options = {}) {
  */
 function track(target, key) {
   // 没有 activeEffect, 直接return
-  if (!activeEffect) return;
+  if (!activeEffect || !shouldTrack) return;
   let depsMap = bucket.get(target);
   if (!depsMap) {
     // target --> value --> callback    // 存储当前 target 相关联的依赖

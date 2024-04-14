@@ -165,7 +165,7 @@
                 done: index++ >= len,
               };
             },
-    };
+          };
         };
 
         const obj = reactive(arr);
@@ -180,7 +180,7 @@
         obj.length = 1;
       };
 
-      (() => {
+      () => {
         const arr = reactive([1, 2]);
 
         effect(() => {
@@ -188,6 +188,15 @@
         });
 
         arr[0] = 3;
+      };
+
+      (() => {
+        const arr = reactive([]);
+        effect(() => {
+          console.log(arr.length);
+        });
+
+        arr.push(122);
       })();
     </script>
   </body>
