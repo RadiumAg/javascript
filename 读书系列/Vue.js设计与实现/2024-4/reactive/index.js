@@ -14,10 +14,10 @@ const TriggerType = {
   DELETE: 'DELETE',
 };
 const originMeghod = Array.prototype.includes;
-const arrayInstrumentataions = {};
+const arrayInstrumentations = {};
 
 ['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
-  arrayInstrumentataions[method] = function (...args) {
+  arrayInstrumentations[method] = function (...args) {
     let res = originMeghod.apply(this, args);
 
     if (res === false) {
@@ -30,13 +30,63 @@ const arrayInstrumentataions = {};
 
 ['push', 'pop', 'shift', 'unshift', 'splice'].forEach(method => {
   const originMeghod = Array.prototype[method];
-  arrayInstrumentataions[method] = function (...args) {
+  arrayInstrumentations[method] = function (...args) {
     shouldTrack = false;
     const res = originMeghod.apply(this, args);
     shouldTrack = true;
     return res;
   };
 });
+
+const mutableInstrumentations = {
+  add(key) {
+    const target = this.raw;
+    const res = target.add(key);
+
+    trigger(target, key, TriggerType.ADD);
+    // 调用 trigger 函数触发响应，并指定操作类型为 ADD
+    return res;
+  },
+
+  delete(key) {
+    const target = this.raw;
+    const hadKey = target.has(key);
+    const res = target.delete(key);
+    // 当要删除的元素确实存在，才触发响应
+    if (hadKey) {
+      trigger(target, key, TriggerType.DELETE);
+    }
+    return res;
+  },
+
+  get(key) {
+    const target = this.raw;
+    const had = target.has(key);
+    track(target, key);
+
+    if (had) {
+      const res = target.get(key);
+      return typeof res === 'object' ? reactive(res) : res;
+    }
+  },
+
+  set(key, value) {
+    const target = this.raw;
+    const had = target.has(key);
+
+    const oldValue = target.get(key);
+    target.set(key, value);
+
+    if (!had) {
+      trigger(trigger, key, TriggerType.ADD);
+    } else if (
+      oldValue !== value ||
+      (oldValue === oldValue && value === value)
+    ) {
+      trigger(trigger, key, TriggerType.SET);
+    }
+  },
+};
 
 function flushJob() {
   // 如果队列正在刷新，则什么都不做
@@ -126,9 +176,9 @@ function trigger(target, key, type, newVal) {
     });
 
   if (type === TriggerType.ADD && Array.isArray(target)) {
-    const lenghtEffects = depsMap.get('length');
-    lenghtEffects &&
-      lenghtEffects.forEach(effectFn => {
+    const lengthEffects = depsMap.get('length');
+    lengthEffects &&
+      lengthEffects.forEach(effectFn => {
         if (effectFn !== activeEffect) {
           effectsToRun.add(effectFn);
         }
@@ -186,17 +236,18 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
     get(target, key, receiver) {
       // 代理对象可以通过 raw 属性访问原始数据
       if (key === 'raw') return target;
+      if (key === 'size') {
+        return Reflect.get(target, key, target);
+      }
 
       // 如果操作的目标对象是数组，并且 key 存在于 arrayInstrumentations 上
       if (
         Array.isArray(target) &&
-        Object.prototype.hasOwnProperty.call(arrayInstrumentataions, key)
+        Object.prototype.hasOwnProperty.call(arrayInstrumentations, key)
       ) {
-        return Reflect.get(arrayInstrumentataions, key, receiver);
+        return Reflect.get(arrayInstrumentations, key, receiver);
       }
-
       if (!isReadonly && typeof key !== 'symbol') track(target, key);
-
       const res = Reflect.get(target, key, receiver);
 
       // 如果是浅响应
@@ -208,7 +259,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return isReadonly ? readonly(res) : reactive(res);
       }
 
-      return res;
+      return mutableInstrumentations[key];
     },
 
     set(target, key, newVal, receiver) {
@@ -377,8 +428,6 @@ function traverse(value, seen = new Set()) {
   }
   return value;
 }
-
-console.log(bucket);
 
 export {
   watch,
