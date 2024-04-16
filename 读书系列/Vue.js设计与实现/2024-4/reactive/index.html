@@ -199,7 +199,9 @@
         arr.push(122);
       };
 
-      () => {};
+      () => {
+        const p = reactive(new Map([{ key: 1 }, { value: 1 }]));
+      };
     </script>
   </body>
 </html>

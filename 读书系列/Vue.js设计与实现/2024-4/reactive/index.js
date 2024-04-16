@@ -86,6 +86,14 @@ const mutableInstrumentations = {
       trigger(trigger, key, TriggerType.SET);
     }
   },
+
+  forEach(callback) {
+    const target = this.raw;
+    track(target, ITERATE_KEY);
+    target.forEach(element => {
+      callback(element);
+    });
+  },
 };
 
 function flushJob() {
