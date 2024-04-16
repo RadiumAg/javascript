@@ -199,9 +199,17 @@
         arr.push(122);
       };
 
-      () => {
-        const p = reactive(new Map([{ key: 1 }, { value: 1 }]));
-      };
+      (() => {
+        const p = reactive(new Map([['key', 1]]));
+
+        effect(() => {
+          p.forEach(value => {
+            console.log(value);
+          });
+        });
+      
+        p.set('key', 2);
+      })();
     </script>
   </body>
 </html>

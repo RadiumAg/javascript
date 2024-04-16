@@ -78,20 +78,21 @@ const mutableInstrumentations = {
     target.set(key, value);
 
     if (!had) {
-      trigger(trigger, key, TriggerType.ADD);
+      trigger(target, key, TriggerType.ADD);
     } else if (
       oldValue !== value ||
       (oldValue === oldValue && value === value)
     ) {
-      trigger(trigger, key, TriggerType.SET);
+      trigger(target, key, TriggerType.SET);
     }
   },
 
-  forEach(callback) {
+  forEach(callback, thisArg) {
     const target = this.raw;
+    const wrap = val => (typeof val === 'object' ? reactive(val) : val);
     track(target, ITERATE_KEY);
-    target.forEach(element => {
-      callback(element);
+    target.forEach((v, k) => {
+      callback.call(thisArg, wrap(v), wrap(k), this);
     });
   },
 };
@@ -206,7 +207,12 @@ function trigger(target, key, type, newVal) {
   }
 
   // 当操作类型为 ADD 或 DELETE 时，需要触发 ITERATE_KEY 相关联的副作用函数重新执行
-  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
+  if (
+    type === TriggerType.ADD ||
+    type === TriggerType.DELETE ||
+    (type === TriggerType.SET &&
+      Object.prototype.toString.call(target) === '[object Map]')
+  ) {
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
         if (effectFn !== activeEffect) {
