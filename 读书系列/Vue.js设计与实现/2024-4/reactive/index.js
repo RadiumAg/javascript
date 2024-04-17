@@ -351,7 +351,11 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return isReadonly ? readonly(res) : reactive(res);
       }
 
-      return mutableInstrumentations[key];
+      if (Object.prototype.toString.call(target) === '[object Map]') {
+        return mutableInstrumentations[key];
+      } else {
+        return res;
+      }
     },
 
     set(target, key, newVal, receiver) {
@@ -531,15 +535,64 @@ function traverse(value, seen = new Set()) {
   return value;
 }
 
+function toRef(obj, key) {
+  const wrapper = {
+    get value() {
+      return obj[key];
+    },
+
+    set value(val) {
+      obj[key] = val;
+    },
+  };
+
+  Object.defineProperty(wrapper, '__v_isRef', { value: true });
+
+  return wrapper;
+}
+
+function toRefs(obj) {
+  const ret = {};
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in obj) {
+    ret[key] = toRef(obj, key);
+  }
+
+  return ret;
+}
+
+function proxyRefs(target) {
+  return new Proxy(target, {
+    get(target, key, receiver) {
+      const value = Reflect.get(target, key, receiver);
+      return value.__v_isRef ? value.value : value;
+    },
+
+    set(target, key, newValue, receiver) {
+      const value = target[key];
+      if (value.__v_isRef) {
+        value.value = newValue;
+        return true;
+      }
+
+      return Reflect.set(target, key, newValue, receiver);
+    },
+  });
+}
+
 export {
   jobQueue,
   ref,
+  toRef,
   watch,
   effect,
   reactive,
   flushJob,
   computed,
   readonly,
+  toRefs,
+  proxyRefs,
   shallowReactive,
   shallowReadonly,
 };
