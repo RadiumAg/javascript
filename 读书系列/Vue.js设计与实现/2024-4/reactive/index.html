@@ -14,6 +14,7 @@
         flushJob,
         jobQueue,
         reactive,
+        ref,
         watch,
       } from './index.js';
 
@@ -228,13 +229,13 @@
         p.set('key3', 'value3');
       };
 
-      (() => {
+      () => {
         const p = reactive(
           new Map([
             ['key', 'value1'],
             ['key2', 'value2'],
           ]),
-        );
+  );
 
         effect(() => {
           for (const [key, value] of p) {
@@ -243,6 +244,36 @@
         });
 
         p.set('key3', 'value3');
+      };
+
+      () => {
+        const p = reactive(
+          new Map([
+            ['key', 'value1'],
+            ['key2', 'value2'],
+          ]),
+  );
+
+        effect(() => {
+          for (const [key, value] of p) {
+            console.log(key, value);
+          }
+        });
+
+        p.set('key2', 'value3');
+        p.set('key3', 'value3');
+      };
+
+      (() => {
+        const refVal = ref(1);
+
+        console.log(refVal);
+
+        effect(() => {
+          console.log(refVal.value);
+        });
+
+        refVal.value = 2;
       })();
     </script>
   </body>

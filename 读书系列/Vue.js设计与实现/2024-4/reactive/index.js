@@ -13,6 +13,7 @@ const TriggerType = {
   ADD: 'ADD',
   DELETE: 'DELETE',
 };
+const MAP_KEY_ITERATE_KEY = Symbol();
 const originMeghod = Array.prototype.includes;
 const arrayInstrumentations = {};
 
@@ -101,6 +102,8 @@ const mutableInstrumentations = {
   [Symbol.iterator]: iterationMehtod,
 
   values: valuesIterationMethod,
+
+  keys: keysIterationMethod,
 };
 
 function valuesIterationMethod() {
@@ -110,6 +113,28 @@ function valuesIterationMethod() {
   const wrap = val => (typeof val === 'object' ? reactive(val) : val);
 
   track(target, ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
+
+function keysIterationMethod() {
+  const target = this.raw;
+  const itr = target.keys();
+
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, MAP_KEY_ITERATE_KEY);
 
   return {
     next() {
@@ -264,6 +289,8 @@ function trigger(target, key, type, newVal) {
     (type === TriggerType.SET &&
       Object.prototype.toString.call(target) === '[object Map]')
   ) {
+    const iterateEffects = depsMap.get(MAP_KEY_ITERATE_KEY);
+
     iterateEffects &&
       iterateEffects.forEach(effectFn => {
         if (effectFn !== activeEffect) {
@@ -395,6 +422,16 @@ function reactive(obj) {
   return proxy;
 }
 
+function ref(val) {
+  const wrapper = {
+    value: val,
+  };
+
+  Object.defineProperty(wrapper, '__v_isRef', { value: true });
+
+  return reactive(wrapper);
+}
+
 function shallowReactive(obj) {
   return createReactive(obj, true);
 }
@@ -495,6 +532,8 @@ function traverse(value, seen = new Set()) {
 }
 
 export {
+  jobQueue,
+  ref,
   watch,
   effect,
   reactive,
@@ -503,5 +542,4 @@ export {
   readonly,
   shallowReactive,
   shallowReadonly,
-  jobQueue,
 };
