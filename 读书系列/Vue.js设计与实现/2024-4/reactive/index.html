@@ -199,7 +199,7 @@
         arr.push(122);
       };
 
-      (() => {
+      () => {
         const p = reactive(new Map([['key', 1]]));
 
         effect(() => {
@@ -207,8 +207,42 @@
             console.log(value);
           });
         });
-      
+
         p.set('key', 2);
+      };
+
+      () => {
+        const p = reactive(
+          new Map([
+            ['key', 'value1'],
+            ['key2', 'value2'],
+          ]),
+  );
+
+        effect(() => {
+          for (const [key, value] of p) {
+            console.log(key, value);
+          }
+        });
+
+        p.set('key3', 'value3');
+      };
+
+      (() => {
+        const p = reactive(
+          new Map([
+            ['key', 'value1'],
+            ['key2', 'value2'],
+          ]),
+        );
+
+        effect(() => {
+          for (const [key, value] of p) {
+            console.log(key, value);
+          }
+        });
+
+        p.set('key3', 'value3');
       })();
     </script>
   </body>

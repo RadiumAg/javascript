@@ -95,7 +95,38 @@ const mutableInstrumentations = {
       callback.call(thisArg, wrap(v), wrap(k), this);
     });
   },
+
+  entries: iterationMehtod,
+
+  [Symbol.iterator]: iterationMehtod,
+
+  values: valuesIterationMethod,
 };
+
+function valuesIterationMethod() {}
+
+function iterationMehtod() {
+  const target = this.raw;
+  const itr = target[Symbol.iterator]();
+
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+      return {
+        value: value ? [wrap(value[0]), wrap(value[1])] : value,
+        done,
+      };
+    },
+
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
 
 function flushJob() {
   // 如果队列正在刷新，则什么都不做
