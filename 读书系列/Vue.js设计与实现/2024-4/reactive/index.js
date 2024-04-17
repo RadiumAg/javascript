@@ -103,7 +103,27 @@ const mutableInstrumentations = {
   values: valuesIterationMethod,
 };
 
-function valuesIterationMethod() {}
+function valuesIterationMethod() {
+  const target = this.raw;
+  const itr = target.values();
+
+  const wrap = val => (typeof val === 'object' ? reactive(val) : val);
+
+  track(target, ITERATE_KEY);
+
+  return {
+    next() {
+      const { value, done } = itr.next();
+      return {
+        value: wrap(value),
+        done,
+      };
+    },
+    [Symbol.iterator]() {
+      return this;
+    },
+  };
+}
 
 function iterationMehtod() {
   const target = this.raw;
