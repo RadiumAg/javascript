@@ -1,14 +1,21 @@
 function createRenderer(options) {
   const { createElement, insert, setElementText } = options;
 
+  function shouldSetAsProps(el, key, value) {
+    if (key === 'form' && el.tagName === 'INPUT') return false;
+
+    return key in el;
+  }
+
   function mountElement(vnode, container) {
     const el = createElement(vnode.type);
 
     if (vnode.props) {
       // eslint-disable-next-line no-restricted-syntax
       for (const key in vnode.props) {
+        const value = vnode.props[key];
         // 用 in 操作符判断 key 是否存在对应的 DOM Propperties
-        if (key in el) {
+        if (shouldSetAsProps(el, key, value)) {
           const type = typeof el[key];
           const value = vnode.props[key];
 
