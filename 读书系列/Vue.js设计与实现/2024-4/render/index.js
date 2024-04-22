@@ -3,6 +3,27 @@ function createRenderer(options) {
 
   function mountElement(vnode, container) {
     const el = createElement(vnode.type);
+
+    if (vnode.props) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in vnode.props) {
+        // 用 in 操作符判断 key 是否存在对应的 DOM Propperties
+        if (key in el) {
+          const type = typeof el[key];
+          const value = vnode.props[key];
+
+          if (type === 'boolean' && value === '') {
+            el[key] = true;
+          } else {
+            el[key] = value;
+          }
+        } else {
+          // 如果要设置的小户型没有对应的 DOM Propperties，则使用 setAttribute 函数设置属性
+          el.setAttribute(key, vnode.props[key]);
+        }
+      }
+    }
+
     if (typeof vnode.children === 'string') {
       setElementText(el, vnode.children);
     }
