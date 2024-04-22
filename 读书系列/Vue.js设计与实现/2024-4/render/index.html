@@ -10,7 +10,8 @@
 
     <script type="module">
       // eslint-disable-next-line unicorn/import-index
-      import { createRenderer } from './index.js';
+      import { createRenderer, shouldSetAsProps } from './index.js';
+
       const { renderer } = createRenderer({
         createElement(tag) {
           console.log(`创建元素${tag}`);
@@ -25,6 +26,20 @@
         insert(el, parent, anchor = null) {
           console.log(`将${JSON.stringify(el)} 添加到 ${JSON.stringify(parent)}下`);
           parent.children = el;
+        },
+
+        patchProps(el, key, prevValue, nextValue) {
+          if (shouldSetAsProps(el, key, nextValue)) {
+            const type = typeof el[key];
+
+            if (type === 'boolean' && nextValue === '') {
+              el[key] = true;
+            } else {
+              el[key] = nextValue;
+            }
+          } else {
+            el.setAttribute(key, nextValue);
+          }
         },
       });
 

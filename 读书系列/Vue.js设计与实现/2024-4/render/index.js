@@ -1,11 +1,11 @@
+function shouldSetAsProps(el, key, value) {
+  if (key === 'form' && el.tagName === 'INPUT') return false;
+
+  return key in el;
+}
+
 function createRenderer(options) {
   const { createElement, insert, setElementText } = options;
-
-  function shouldSetAsProps(el, key, value) {
-    if (key === 'form' && el.tagName === 'INPUT') return false;
-
-    return key in el;
-  }
 
   function mountElement(vnode, container) {
     const el = createElement(vnode.type);
@@ -64,4 +64,4 @@ function patch(n1, n2, container) {
   }
 }
 
-export { createRenderer };
+export { createRenderer, shouldSetAsProps };
