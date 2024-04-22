@@ -27,7 +27,7 @@
           console.log(`将${JSON.stringify(el)} 添加到 ${JSON.stringify(parent)}下`);
           parent.children = el;
         },
-
+      
         patchProps(el, key, prevValue, nextValue) {
           if (shouldSetAsProps(el, key, nextValue)) {
             const type = typeof el[key];
