@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      div {
+        background: linear-gradient(90deg, #ffc700);
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>线性渐变</h1>
+    <div
+      style="
+        background: linear-gradient(#fff, #000);
+        height: 100px;
+        width: 100px;
+      "
+    ></div>
+
+    <h1>径向渐变</h1>
+    <div
+      style="
+        background: radial-gradient(circle, #fff, #000);
+        height: 100px;
+        width: 100px;
+      "
+    ></div>
+
+    <h1>角向渐变</h1>
+    <div
+      style="
+        background: conic-gradient(#fff, #000);
+        height: 100px;
+        width: 100px;
+      "
+    ></div>
+
+    <h1>linear-gradient</h1>
+    <div
+      style="
+        height: 100px;
+        width: 100px;
+        background: linear-gradient(#fff, #000);
+      "
+    ></div>
+
+    <h1>透明按钮</h1>
+    <style>
+      .g-container {
+        width: 300px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .g-container ul {
+        display: flex;
+      }
+
+      .g-container li {
+        list-style: none;
+        margin-right: 10px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        position: relative;
+        border: 1px solid #000;
+      }
+
+      .g-container::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        width: 100px;
+        z-index: 1;
+        background: linear-gradient(90deg, transparent, #fff);
+      }
+    </style>
+    <div class="g-container">
+      <ul>
+        <li>Button</li>
+        <li>Button</li>
+        <li>Button</li>
+        <li>Button</li>
+        <li>Button</li>
+        <li>Button</li>
+        <li>Button</li>
+      </ul>
+    </div>
+
+    <h1>渐变色动画</h1>
+    <style>
+      .test1 {
+        background: linear-gradient(
+          90deg,
+          #ffc700 0%,
+          #e91e1e 50%,
+          #6f27b0 100%
+        );
+        background-size: 200% 100%;
+        background-position: 0 0;
+        animation: bgposition 2s infinite linear alternate;
+      }
+
+      @keyframes bgposition {
+        0% {
+          background-position: 0 0;
+        }
+
+        100% {
+          background-position: 100% 0;
+        }
+      }
+    </style>
+    <div class="test1" style="height: 200px"></div>
+
+    <h1>渐变是可以叠加多层的</h1>
+  </body>
+</html>
