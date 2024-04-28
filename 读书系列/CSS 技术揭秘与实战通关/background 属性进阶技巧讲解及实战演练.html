@@ -162,5 +162,48 @@
         );
       "
     ></div>
+
+    <style>
+      .box {
+        width: 300px;
+        height: 200px;
+        position: relative;
+        background-color: #000;
+      }
+
+      .box::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 40px;
+        right: 0;
+        background-repeat: repeat-x;
+        height: 10px;
+        background-size: 20px 20px;
+        background-image: radial-gradient(
+          circle at 10px -5px,
+          #fff 12px,
+          #fff 13px,
+          #fff 20px
+        );
+      }
+
+      /* .box::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 35px;
+        right: 0;
+        background-repeat: repeat-x;
+        height: 15px;
+        background-size: 40px 20px;
+        background-image: radial-gradient(
+          circle at 10px 15px,
+          white 12px,
+          transparent 13px
+        );
+      } */
+    </style>
+    <div class="box"></div>
   </body>
 </html>
