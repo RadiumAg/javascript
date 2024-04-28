@@ -12,7 +12,7 @@
     </style>
   </head>
 
-  <body style="background-color: #6f27b0">
+  <body>
     <h1>线性渐变</h1>
     <div
       style="
@@ -126,8 +126,35 @@
         height: 200px;
         background: linear-gradient(135deg, transparent 15px, deeppink 0),
           linear-gradient(-135deg, transparent 15px, deeppink 0),
-          linear-gradient(-45deg, transparent 15px, deeppink 0),
+          linear-gradient(45deg, transparent 15px, deeppink 0),
           linear-gradient(-45deg, transparent 15px, deeppink 0);
+        background-size: 50% 50%, 50% 50%, 50% 50%, 50% 50%;
+        background-position: top left, top right, bottom left, bottom right;
+        background-repeat: no-repeat;
+      "
+    ></div>
+
+    <h1>repeating-linear-gradient</h1>
+    <div
+      style="
+        height: 300px;
+        width: 300px;
+        background: repeating-linear-gradient(
+          45deg,
+          #f06a0e,
+          #f06a0e 11px,
+          transparent 11px,
+          transparent 20px
+        );
+      "
+    ></div>
+
+    <div>radial-gradient径向渐变</div>
+    <div
+      style="
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(#9c27b0 0%);
       "
     ></div>
   </body>
