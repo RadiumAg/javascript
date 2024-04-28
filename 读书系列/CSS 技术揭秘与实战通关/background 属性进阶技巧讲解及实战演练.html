@@ -178,7 +178,7 @@
         top: 40px;
         right: 0;
         background-repeat: repeat-x;
-        height: 10px;
+        height: 11px;
         background-size: 20px 20px;
         background-image: radial-gradient(
           circle at 10px -5px,
@@ -205,5 +205,18 @@
       }
     </style>
     <div class="box"></div>
+
+    <h1>conic-gradient</h1>
+    <div style="background: conic-gradient(deeppink, yellowgreen)"></div>
+
+    <h1>使用 conic-gradient 实现颜色表盘</h1>
+    <div
+      style="
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: conic-gradient(red, yellow, green, blue);
+      "
+    ></div>
   </body>
 </html>
