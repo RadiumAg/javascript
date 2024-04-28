@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <style>
+      .container {
+        width: 120px;
+        display: flex;
+        overflow: hidden;
+      }
+
+      .container > div {
+        display: flex;
+        animation: marquee 3s infinite linear;
+      }
+
+      .container > div > div {
+        margin-right: 10px;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+    </style>
+
+    <div class="container">
+      <div>
+        <div>C#</div>
+        <div>TypeScript</div>
+        <div>CSS</div>
+      </div>
+
+      <div>
+        <div>C#</div>
+        <div>TypeScript</div>
+        <div>CSS</div>
+      </div>
+    </div>
+  </body>
+</html>
