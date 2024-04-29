@@ -4,7 +4,7 @@ import 'webpack-dev-server';
 
 const config: webpack.Configuration = {
   entry: './src/index.js',
-  mode: 'development',
+  mode: 'production',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),

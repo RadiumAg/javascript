@@ -1,0 +1,9 @@
+/*! #__NO_SIDE_EFFECTS__ */
+
+/*! Element Plus Icons Vue v2.3.1 */
+
+/**
+* @vue/shared v3.4.25
+* (c) 2018-present Yuxi (Evan) You and Vue contributors
+* @license MIT
+**/
