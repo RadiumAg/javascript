@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
 
-    <style>
-      div {
-        background: linear-gradient(90deg, #ffc700);
-      }
-    </style>
+    <style></style>
   </head>
 
   <body>
@@ -208,7 +204,6 @@
 
     <h1>conic-gradient</h1>
     <div style="background: conic-gradient(deeppink, yellowgreen)"></div>
-
     <h1>使用 conic-gradient 实现颜色表盘</h1>
     <div
       style="
@@ -218,5 +213,77 @@
         background: conic-gradient(red, yellow, green, blue);
       "
     ></div>
+
+    <h1>渐变色动画使用transform</h1>
+    <style>
+      .test2 {
+        position: relative;
+        overflow: hidden;
+        width: 100px;
+        height: 100px;
+        margin: 100px auto;
+        border: 2px solid #000;
+      }
+
+      .test2::before {
+        content: '';
+        position: absolute;
+        top: -100%;
+        left: -100%;
+        bottom: -100%;
+        right: -100%;
+        background: linear-gradient(
+          45deg,
+          #ffc700 0%,
+          #ddc9c9 50%,
+          #6f27b0 100%
+        );
+        background-size: 100% 100%;
+        animation: bgposition 2s infinite linear alternate;
+      }
+
+      @keyframes bgposition {
+        0% {
+          transform: translate(30%, 30%);
+        }
+
+        25% {
+          transform: translate(30%, -30%);
+        }
+
+        50% {
+          transform: translate(-30%, -30%);
+        }
+
+        75% {
+          transform: translate(-30%, 30%);
+        }
+
+        100% {
+          transform: translate(30%, 30%);
+        }
+      }
+    </style>
+    <div class="test2"></div>
+
+    <h1>通过滤镜 hue-rotate 实现渐变动画</h1>
+    <style>
+      .test3 {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(45deg, #5fddcc, #ff004d);
+        animation: hueRotate 10s infinite alternate;
+      }
+
+      @keyframes hueRotate {
+        0% {
+          filter: hue-rotate(0);
+        }
+        100% {
+          filter: hue-rotate(360deg);
+        }
+      }
+    </style>
+    <div class="test3"></div>
   </body>
 </html>
