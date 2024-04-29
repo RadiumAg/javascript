@@ -100,10 +100,10 @@
         );
         background-size: 200% 100%;
         background-position: 0 0;
-        animation: bgposition 2s infinite linear alternate;
+        animation: bgposition1 2s infinite linear alternate;
       }
 
-      @keyframes bgposition {
+      @keyframes bgposition1 {
         0% {
           background-position: 0 0;
         }
@@ -285,5 +285,92 @@
       }
     </style>
     <div class="test3"></div>
+
+    <h1>使用 CSS @property 实现背景色渐变动画</h1>
+
+    <style>
+      @property --colorA {
+        syntax: '<color>';
+        inherits: false;
+        initial-value: fuchsia;
+      }
+
+      @property --colorC {
+        syntax: '<color>';
+        inherits: false;
+        initial-value: #f79188;
+      }
+
+      @property --colorF {
+        syntax: '<color>';
+        inherits: false;
+        initial-value: red;
+      }
+
+      .test4 {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(
+          45deg,
+          var(--colorA),
+          var(--colorC),
+          var(--colorF)
+        );
+
+        animation: change 10s infinite linear;
+      }
+
+      @keyframes change {
+        20% {
+          --colorA: red;
+          --colorC: #a93ee0;
+          --colorF: fuchsia;
+        }
+        40% {
+          --colorA: #ff3c41;
+          --colorC: #a93ee0;
+          --colorF: fuchsia;
+        }
+        60% {
+          --colorA: orange;
+          --colorC: green;
+          --colorF: teal;
+        }
+        80% {
+          --colorA: #ae63e4;
+          --colorC: #0ebeff;
+          --colorF: #efc371;
+        }
+      }
+    </style>
+
+    <div class="test4"></div>
+
+    <style>
+      div {
+        font-size: 54px;
+        color: transparent;
+        background: linear-gradient(
+          45deg,
+          #ffeb3b,
+          #009688,
+          yellowgreen,
+          pink,
+          #03a9f4,
+          #9c27b0,
+          #8bc34a
+        );
+        background-clip: text;
+        animation: huerotate 3s infinite;
+      }
+      @keyframes huerotate {
+        100% {
+          filter: hue-rotate(360deg);
+        }
+      }
+    </style>
+
+    <h1>background-clip text</h1>
+    <div class="test5"></div>
   </body>
 </html>
