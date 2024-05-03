@@ -1,18 +1,16 @@
 import { useActionState } from 'react';
 
 const UseAction: React.FC = () => {
-  const [state, setState] = useActionState<number, number>((state, playoud) => {
-    return state + playoud;
-  }, 1);
+  const [state, formAction] = useActionState((state, formData) => {
+    return formData.get('id');
+  }, null);
 
   return (
-    <div
-      onClick={() => {
-        setState(2);
-      }}
-    >
+    <form action={formAction}>
       {state}
-    </div>
+      <input name="id"></input>
+      <button type="submit">提交</button>
+    </form>
   );
 };
 
