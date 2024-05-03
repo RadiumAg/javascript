@@ -1,35 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Suspense } from 'react';
+import './App.css';
+import UseTFeatures from './features/use';
+import Context from './conetxt';
+import UseAction from './features/useAction/useAction';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
+    <Context.Provider value={{ name: 2 }}>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Suspense>
+          <UseTFeatures />
+        </Suspense>
+
+        <UseAction />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Context.Provider>
+  );
 }
 
-export default App
+export default App;
