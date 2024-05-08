@@ -44,3 +44,11 @@
 
   console.log(obj['']);
 })();
+
+(() => {
+  const str = 'hello';
+  const obj = {};
+  // || 支持短路操作
+  x = str || obj;
+  y = str && obj;
+})();
