@@ -91,6 +91,7 @@ function commitWork(fiber) {
   }
 
   let domParentFiber = fiber.parent;
+  // 找到最近的dom挂载上去
   while (!domParentFiber.dom) {
     domParentFiber = domParentFiber.parent;
   }
