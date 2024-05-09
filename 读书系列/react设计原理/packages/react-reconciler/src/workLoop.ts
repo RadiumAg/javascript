@@ -342,6 +342,10 @@ function workLoopConcurrent() {
   }
 }
 
+/**
+ * 创建子Fiber
+ * @param fiber
+ */
 function performUnitOfWork(fiber: FiberNode) {
   const next = beginWork(fiber, wipRootRenderLane);
   fiber.memoizedProps = fiber.pedingProps;
