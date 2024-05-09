@@ -150,7 +150,7 @@ function workLoop(deadline) {
 requestIdleCallback(workLoop);
 
 /**
- * 创建下一个fiberNode并赋值给wip
+ * 创建子Fiber并返回子Fiber
  * @param {*} fiber
  * @returns
  */
@@ -160,6 +160,7 @@ function performUnitOfWork(fiber) {
   if (isFunctionComponent) {
     updateFunctionComponent(fiber);
   } else {
+    // 初始化render mount
     updateHostComponent(fiber);
   }
   // 返回 child
@@ -270,7 +271,7 @@ function reconcileChildren(wipFiber, elements) {
       prevSibling.sibling = newFiber;
     }
 
-    prevSibling = newFiber;
+    prevSibling = newFiber; // 将child组件链接起来，组成child---child
     index++;
   }
 }
