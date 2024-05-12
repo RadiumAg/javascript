@@ -80,3 +80,6 @@
   // 示例3：两个对象（引用类型）比较时总是返回false
   console.log(o1 > o2 || o1 < o2 || o1 == o2);
 })();
+
+// 如果在for, while等循环中使用break，那么这表明停止一个最内层的循环
+// 而用break用在switch语句中的话，则表明跳出switch语句。
