@@ -1,73 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        * {
-            margin: 0px;
-            padding: 0px;
-        }
+      * {
+        margin: 0px;
+        padding: 0px;
+      }
 
-        body,
-        html {
-            min-width: 1920px;
-            min-height: 1080px;
-            width: 100%;
-            height: 100%;
-        }
+      body,
+      html {
+        min-width: 1920px;
+        min-height: 1080px;
+        width: 100%;
+        height: 100%;
+      }
 
-        #app {
-            position: relative;
-        }
+      #app {
+        position: relative;
+      }
 
-        .amount {
-            color: gold;
-            font-size: 85px;
-            display: flex;
-            justify-content: center;
-        }
+      .amount {
+        color: gold;
+        font-size: 85px;
+        display: flex;
+        justify-content: center;
+      }
 
-        .list-enter-active,
-        .list-leave-active {
-            transition: transform 1s ease, opacity 1s ease;
-        }
+      .list-enter-active,
+      .list-leave-active {
+        transition: transform 1s ease, opacity 1s ease;
+      }
 
-        .list-enter-from {
-            opacity: 0;
-            transform: translateY(50%);
-        }
+      .list-enter-from {
+        opacity: 0;
+        transform: translateY(50%);
+      }
 
-        .list-leave-to {
-            opacity: 0;
-            transform: translateY(-50%);
-        }
+      .list-leave-to {
+        opacity: 0;
+        transform: translateY(-50%);
+      }
     </style>
 
     <title>Document</title>
-</head>
+  </head>
 
-<body id="app">
+  <body id="app">
     <div class="amount">
-        <div style="display: flex;">
-            <span>￥</span>
-            <transition-group name="list" tag="p" style="position: relative;">
-                <div style="display: inline-block;position: absolute;" v-for="(item , index) in todayAmountComputed"
-                    :style="{
+      <div style="display: flex">
+        <span>￥</span>
+        <transition-group name="list" tag="p" style="position: relative">
+          <div
+            style="display: inline-block; position: absolute"
+            v-for="(item , index) in todayAmountComputed"
+            :style="{
                     left:  index * 53 + 'px',
                     'transition-delay': 0.1 * index + 's'
-    }" :key="item + index">
-                    {{item}}</div>
-            </transition-group>
-        </div>
+    }"
+            :key="item + index"
+          >
+            {{item}}
+          </div>
+        </transition-group>
+      </div>
     </div>
-</body>
+  </body>
 
-<script src="https://unpkg.com/vue@next" defer></script>
+  <script src="https://unpkg.com/vue@next" defer></script>
 
-<script>
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
       Vue.createApp({
         data() {
@@ -91,6 +95,5 @@
         },
       }).mount('#app');
     });
-</script>
-
+  </script>
 </html>
