@@ -2,17 +2,21 @@ const ELEMENT_TYPE = {
   TEXT_ELEMENT: 'TEXT_ELEMENT',
 };
 
+const isEvent = eventName => eventName.startsWith('on');
+
 function createElement(type, props, ...children) {
   return {
     type,
-    props: props || {},
-    children: children.map(child => {
-      if (typeof child === 'string') {
-        return createTextElement(child);
-      } else {
-        return child;
-      }
-    }),
+    props: {
+      ...props,
+      children: children.map(child => {
+        if (typeof child === 'string') {
+          return createTextElement(child);
+        } else {
+          return child;
+        }
+      }),
+    },
   };
 }
 
@@ -32,7 +36,7 @@ function createTextElement(text) {
 }
 
 function updateComponent(element, container) {
-  const { type, children } = element;
+  const { type, props } = element;
 
   let dom = null;
 
@@ -42,8 +46,18 @@ function updateComponent(element, container) {
     dom = document.createElement(type);
   }
 
+  Object.keys(props)
+    .filter(prop => prop !== 'children')
+    .forEach(prop => {
+      if (isEvent(prop)) {
+        dom.addEventListener(prop.slice(2).toLowerCase(), props[prop]);
+      }
+      dom[prop] = props[prop];
+    });
+
   container.append(dom);
-  children?.forEach(child => {
+
+  props.children?.forEach(child => {
     render(child, dom);
   });
 }
