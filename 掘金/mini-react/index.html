@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <script type="module">
+    import { createElement, render } from './index.js';
+
+    function A() {
+      return createElement('div', null, '1');
+    }
+
+    function Root() {
+      return createElement(
+        'div',
+        {
+          classname: '',
+          onClick: () => {},
+        },
+        createElement(A, null)
+      );
+    }
+
+    render(createElement(Root, null), document.body);
+  </script>
+  <body></body>
+</html>
