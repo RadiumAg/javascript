@@ -1,7 +1,7 @@
 const ELEMENT_TYPE = {
   TEXT_ELEMENT: 'TEXT_ELEMENT',
 };
-
+const nextUnitOfWork = null;
 const isEvent = eventName => eventName.startsWith('on');
 
 function createElement(type, props, ...children) {
@@ -86,6 +86,10 @@ function render(element, container) {
       updateFunctionComponent(element, container);
       break;
   }
+}
+
+function workLoop(deadline) {
+  const shouldYield = false;
 }
 
 export { render, createElement };
