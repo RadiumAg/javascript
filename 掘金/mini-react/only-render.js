@@ -88,8 +88,16 @@ function render(element, container) {
   }
 }
 
+function commitWork() {}
+
+/**
+ *
+ * @param {IdleDeadline} deadline
+ */
 function workLoop(deadline) {
-  const shouldYield = false;
+  requestIdleCallback(workLoop);
 }
+
+requestIdleCallback(workLoop);
 
 export { render, createElement };
