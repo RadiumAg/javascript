@@ -21,4 +21,6 @@
   Object.prototype.getInstanceof = function () {
     return this instanceof this.getClass();
   };
+
+  const samples = ['', 100, true, function () {}, {}, [], /./];
 })();
