@@ -23,4 +23,19 @@
   };
 
   const samples = ['', 100, true, function () {}, {}, [], /./];
+
+  // 样本：添加符号作为特例（不支持字面量）
+  samples.push(Symbol());
+
+  // 取特性
+  const getAttr = (v, v2, cls) => {
+    return [typeof v, v2.getTypeof(), v instanceof cls, v2.getInstanceof()];
+  };
+
+  // 检测
+  samples
+    .map(v => [typeof v, getAttr(v, v.getSelf(), v.getClass())])
+    .forEach(([metaName, attr]) => {
+      console.log(metaName, ':', attr);
+    });
 })();
