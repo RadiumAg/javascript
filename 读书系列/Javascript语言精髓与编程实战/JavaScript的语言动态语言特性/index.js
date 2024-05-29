@@ -39,3 +39,8 @@
       console.log(metaName, ':', attr);
     });
 })();
+
+// 到undefined值的显式处理
+(() => {
+  console.log(void 0);
+})();
