@@ -44,3 +44,21 @@
 (() => {
   console.log(void 0);
 })();
+
+// 动态方法调用以及this引用的管理
+(() => {
+  function calc_area(w, h) {
+    console.log(w * h);
+  }
+
+  function Area() {
+    this.name = 'MyObject';
+  }
+
+  Area.prototype.calc_area = function (v1, v2) {
+    calc_area.call(this, v1, v2);
+  };
+
+  const area = new Area();
+  area.calc_area(100, 200);
+})();
