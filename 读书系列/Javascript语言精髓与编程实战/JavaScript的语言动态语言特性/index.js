@@ -62,3 +62,19 @@
   const area = new Area();
   area.calc_area(100, 200);
 })();
+
+// bind()方法与函数的延迟调用
+(() => {
+  const obj = {};
+
+  function foo() {
+    return this;
+  }
+
+  const foo2 = foo.bind(obj);
+
+  const obj2 = {};
+  obj2.foo2 = foo2;
+
+  console.log(obj === foo2());
+})();
