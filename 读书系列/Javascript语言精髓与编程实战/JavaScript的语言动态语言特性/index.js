@@ -75,6 +75,9 @@
 
   const obj2 = {};
   obj2.foo2 = foo2;
+  global.foo2 = foo2;
 
   console.log(obj === foo2());
+  console.log(obj === global.foo2);
+  console.log(obj === obj2.foo2());
 })();
