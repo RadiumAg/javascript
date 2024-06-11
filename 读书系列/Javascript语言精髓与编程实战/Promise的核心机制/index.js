@@ -34,3 +34,15 @@
   // - （注，所有其它元素的状态是未确定的，并且他们的执行过程与结果不确定）
   const p = Promise.race([1]);
 })();
+
+(() => {
+  function sleep(tag, n, value) {
+    console.log(tag);
+    return new Promise(resolve => setTimeout(() => resolve(value), n));
+  }
+
+  async function* myAsyncGenerator() {
+    yield sleep('yild lst', 10000, 'value 1 delay 10s');
+    yield sleep('yild 2nd', 1000, 'value 2 now');
+  }
+})();
