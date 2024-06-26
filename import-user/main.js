@@ -145,4 +145,33 @@ NULL);
   // }
 };
 
-getAllUers();
+// getAllUers();
+
+/**
+ * 删除所有外键
+ */
+async function deleteAllKey() {
+  const result = await executeQuery(`
+SELECT 
+    TABLE_NAME, 
+    CONSTRAINT_NAME 
+FROM 
+    INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+WHERE 
+    CONSTRAINT_TYPE = 'FOREIGN KEY' 
+    AND TABLE_SCHEMA = 'scm_puxi';
+`);
+
+  console.log(result);
+  for (const re of result) {
+    try {
+      await executeQuery(
+        `ALTER TABLE \`${re.TABLE_NAME}\` DROP FOREIGN KEY \`${re.CONSTRAINT_NAME}\``,
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
+
+deleteAllKey();
