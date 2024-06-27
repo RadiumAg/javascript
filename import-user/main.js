@@ -32,9 +32,15 @@ const executeQuery = (sql, values) => {
 
 const getAllDepartment = async () => {
   const result = await axios({
-    url: 'https://oapi.dingtalk.com/topapi/v2/department/listsub?access_token=255dbd908223364c99b08c6a2bda301c',
+    url: 'https://oapi.dingtalk.com/topapi/v2/department/listsub?access_token=3e8d60a78d62371f8430fae67712c815',
     method: 'post',
-  }).then(result => result.data);
+  })
+    .then(result => {
+      return result.data;
+    })
+    .catch(e => {
+      console.log(e);
+    });
 
   return result;
 };
@@ -66,15 +72,15 @@ const getAllUers = async () => {
     // NULL);
     // `);
 
-    //     const {
-    //       result: { list },
-    //     } = await axios({
-    //       url: 'https://oapi.dingtalk.com/topapi/user/listsimple?access_token=255dbd908223364c99b08c6a2bda301c',
-    //       method: 'post',
-    //       data: { dept_id, cursor: 1, size: 10 },
-    //     }).then(result => result.data);
+    const {
+      result: { list },
+    } = await axios({
+      url: 'https://oapi.dingtalk.com/topapi/user/listsimple?access_token=3e8d60a78d62371f8430fae67712c815',
+      method: 'post',
+      data: { dept_id, cursor: 1, size: 10 },
+    }).then(result => result.data);
 
-    //     // userResult.push(...list);
+    userResult.push(...list);
 
     //     for (const [index, user] of Object.entries(list)) {
     //       executeQuery(`
@@ -95,22 +101,17 @@ const getAllUers = async () => {
     // `);
     //     }
     //   }
+  }
 
-    for (const user of userResult) {
-      const { userid, name } = user;
-      try {
-        await executeQuery(`UPDATE scm_puxi set userinfo
-    (
-    user_JobNumber,
-    )
-    VALUES
-    (\`${userid}\`
-    )
-    WHERE name = \`${name}\`;
-    `);
-      } catch (e) {
-        console.log(e);
-      }
+  for (const user of userResult) {
+    const { userid, name } = user;
+    try {
+      await executeQuery(`UPDATE userinfo set 
+  user_JobNumber =  '${userid}'
+  WHERE user_Name = '${name}';
+  `);
+    } catch (e) {
+      console.log(e);
     }
   }
 };
