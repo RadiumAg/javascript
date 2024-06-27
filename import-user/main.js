@@ -32,7 +32,7 @@ const executeQuery = (sql, values) => {
 
 const getAllDepartment = async () => {
   const result = await axios({
-    url: 'https://oapi.dingtalk.com/topapi/v2/department/listsub?access_token=3e8d60a78d62371f8430fae67712c815',
+    url: 'https://oapi.dingtalk.com/topapi/v2/department/listsub?access_token=e9e0fee19dc63bcc98f548bfa25fe19e',
     method: 'post',
   })
     .then(result => {
@@ -75,10 +75,11 @@ const getAllUers = async () => {
     const {
       result: { list },
     } = await axios({
-      url: 'https://oapi.dingtalk.com/topapi/user/listsimple?access_token=3e8d60a78d62371f8430fae67712c815',
+      url: 'https://oapi.dingtalk.com/topapi/user/listsimple?access_token=e9e0fee19dc63bcc98f548bfa25fe19e',
       method: 'post',
-      data: { dept_id, cursor: 1, size: 10 },
+      data: { dept_id, cursor: 0, size: 10 },
     }).then(result => result.data);
+    console.log(depName, list);
 
     userResult.push(...list);
 
@@ -106,10 +107,18 @@ const getAllUers = async () => {
   for (const user of userResult) {
     const { userid, name } = user;
     try {
-      await executeQuery(`UPDATE userinfo set 
-  user_JobNumber =  '${userid}'
-  WHERE user_Name = '${name}';
-  `);
+      //     await executeQuery(`UPDATE userinfo set
+      // user_JobNumber =  '${userid}'
+      // WHERE user_Name = '${name}';
+      // `);
+
+      const result = await executeQuery(
+        `Select * from userinfo where user_Name='${name}'`,
+      );
+
+      result.forEach(_ => {
+        console.log(_.user_JobNumber, name);
+      });
     } catch (e) {
       console.log(e);
     }
