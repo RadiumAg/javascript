@@ -32,9 +32,15 @@ const executeQuery = (sql, values) => {
 
 const getAllDepartment = async () => {
   const result = await axios({
-    url: 'https://oapi.dingtalk.com/topapi/v2/department/listsub?access_token=255dbd908223364c99b08c6a2bda301c',
+    url: 'https://oapi.dingtalk.com/topapi/v2/department/listsub?access_token=b36af32eebfc38dea81ee86c9fe76d92',
     method: 'post',
-  }).then(result => result.data);
+  })
+    .then(result => {
+      return result.data;
+    })
+    .catch(e => {
+      console.log(e);
+    });
 
   return result;
 };
@@ -69,80 +75,85 @@ const getAllUers = async () => {
     const {
       result: { list },
     } = await axios({
-      url: 'https://oapi.dingtalk.com/topapi/user/listsimple?access_token=255dbd908223364c99b08c6a2bda301c',
+      url: 'https://oapi.dingtalk.com/topapi/user/listsimple?access_token=b36af32eebfc38dea81ee86c9fe76d92',
       method: 'post',
-      data: { dept_id, cursor: 1, size: 10 },
-    }).then(result => result.data);
+      data: { dept_id, cursor: 0, size: 10 },
+    }).then(result => {
+      return result.data;
+    });
 
-    // userResult.push(...list);
+    userResult.push(...list);
 
-    for (const [index, user] of Object.entries(list)) {
-      executeQuery(`
-      INSERT INTO scm_puxi.userinfo_department
-(user_dep_RelationId,
-user_Id,
-dep_Id,
-is_Leader,
-user_dep_CreateDate,
-user_dep_CreateUserId)
-VALUES
-('${user.userid + dept_id}',
-'${user.userid}',
-'${dept_id}',
-NULL,
-NULL,
-NULL);
-`);
-    }
+    //     for (const [index, user] of Object.entries(list)) {
+    //       executeQuery(`
+    //       INSERT INTO scm_puxi.userinfo_department
+    // (user_dep_RelationId,
+    // user_Id,
+    // dep_Id,
+    // is_Leader,
+    // user_dep_CreateDate,
+    // user_dep_CreateUserId)
+    // VALUES
+    // ('${user.userid + dept_id}',
+    // '${user.userid}',
+    // '${dept_id}',
+    // NULL,
+    // NULL,
+    // NULL);
+    // `);
+    //     }
+    //   }
   }
 
-  // for (const user of userResult) {
-  //   const { userid, name } = user;
-  //   executeQuery(`INSERT INTO scm_puxi.userinfo
-  //   (user_Id,
-  //   user_Name,
-  //   user_Password,
-  //   user_Avatar,
-  //   user_State,
-  //   user_Type,
-  //   user_Position,
-  //   user_Tel,
-  //   user_JobTitle,
-  //   user_JobNumber,
-  //   basic_Id_Company,
-  //   user_JoinDate,
-  //   user_CreateDate,
-  //   user_CreateUserId,
-  //   is_Insider,
-  //   managerId,
-  //   handoverUserId,
-  //   feishu_User_Id,
-  //   appid,
-  //   user_brandId,
-  //   user_salesChannelId)
-  //   VALUES
-  //   ('${userid}',
-  //    '${name}',
-  //     NULL,
-  //     NULL,
-  //   1,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL,
-  //   NULL)`);
-  // }
+  for (const user of userResult) {
+    const { userid, name } = user;
+    try {
+      await executeQuery(`UPDATE userinfo set
+      user_JobNumber = '${userid}',
+      user_State = '1'
+      WHERE user_Name = '${name}';
+      `);
+
+      const result = await executeQuery(
+        `Select * from userinfo where user_Name='${name}'`,
+      );
+
+      result.forEach(_ => {
+        console.log(_.user_JobNumber, name);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
 };
+
+// getAllUers();
+
+/**
+ * 删除所有外键
+ */
+async function deleteAllKey() {
+  const result = await executeQuery(`
+SELECT 
+    TABLE_NAME, 
+    CONSTRAINT_NAME 
+FROM 
+    INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+WHERE 
+    CONSTRAINT_TYPE = 'FOREIGN KEY' 
+    AND TABLE_SCHEMA = 'scm_puxi';
+`);
+
+  console.log(result);
+  for (const re of result) {
+    try {
+      await executeQuery(
+        `ALTER TABLE \`${re.TABLE_NAME}\` DROP FOREIGN KEY \`${re.CONSTRAINT_NAME}\``,
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
 
 getAllUers();
