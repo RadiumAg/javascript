@@ -1,0 +1,58 @@
+// ReactElement
+
+import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
+import { ElementType, Key, Props, Type } from 'shared/ReactTypes';
+import { Ref } from 'vue';
+
+const ReactElement = function (type: Type, key: Key, ref: Ref, props: Props) {
+  const element = {
+    $$typeof: REACT_ELEMENT_TYPE,
+    type,
+    key,
+    ref,
+    props,
+    __mrak: 'Radium',
+  };
+
+  return element;
+};
+
+export const jsx = function (
+  type: ElementType,
+  config: Record<string, any>,
+  ...maybechildren: any[]
+) {
+  let key: Key = null;
+  const props: Props = {};
+  let ref: Ref = null;
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const prop in config) {
+    const val = config[prop];
+    if (prop === 'key' && val !== undefined) {
+      key = `${val}`;
+      continue;
+    }
+    if (prop === 'ref') {
+      if (val !== undefined) {
+        ref = val;
+      }
+      continue;
+    }
+    if (Object.prototype.hasOwnProperty.call(config, prop)) {
+      props[prop] = val;
+    }
+  }
+  const maybechildrenLength = maybechildren.length;
+  if (maybechildrenLength) {
+    if (maybechildrenLength === 1) {
+      props.children = maybechildren[0];
+    } else {
+      props.children = maybechildren;
+    }
+  }
+
+  return ReactElement(type, key, ref, props);
+};
+
+export const jsxDEV = jsx;
