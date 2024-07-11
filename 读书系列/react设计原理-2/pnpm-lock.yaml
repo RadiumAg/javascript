@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -66,53 +70,7 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
 
-  demos:
-    dependencies:
-      react:
-        specifier: workspace:*
-        version: link:../packages/react
-      react-dom:
-        specifier: workspace:*
-        version: link:../packages/react-dom
-    devDependencies:
-      '@types/react':
-        specifier: ^18.2.38
-        version: 18.2.38
-      '@types/react-dom':
-        specifier: ^18.2.17
-        version: 18.2.17
-
   packages/react:
-    dependencies:
-      shared:
-        specifier: workspace:*
-        version: link:../shared
-
-  packages/react-dom:
-    dependencies:
-      react:
-        specifier: workspace:*
-        version: link:../react
-      react-reconciler:
-        specifier: workspace:*
-        version: link:../react-reconciler
-      shared:
-        specifier: workspace:*
-        version: link:../shared
-
-  packages/react-noop-renderer:
-    dependencies:
-      react:
-        specifier: workspace:*
-        version: link:../react
-      react-reconciler:
-        specifier: workspace:*
-        version: link:../react-reconciler
-      shared:
-        specifier: workspace:*
-        version: link:../shared
-
-  packages/react-reconciler:
     dependencies:
       shared:
         specifier: workspace:*
@@ -1605,6 +1563,7 @@ packages:
   /@humanwhocodes/config-array@0.11.13:
     resolution: {integrity: sha512-JSBDMiDKSzQVngfRjOdFXgFfklaXI4K9nLF49Auh21lmBWRLIK3+xTErTWD4KU54pb6coM6ESE7Awz/FNU3zgQ==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
     dependencies:
       '@humanwhocodes/object-schema': 2.0.1
       debug: 4.3.4
@@ -1620,6 +1579,7 @@ packages:
 
   /@humanwhocodes/object-schema@2.0.1:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
+    deprecated: Use @eslint/object-schema instead
     dev: true
 
   /@isaacs/cliui@8.0.2:
@@ -2120,6 +2080,7 @@ packages:
     resolution: {integrity: sha512-2hBHEtCjnBTeuLvDAlHRCqsuFQSyAhTQs9vbZEVBTV8ap35pDI1ukPbIVFFCWNvL/KE7xRor5YZFvfyGCfvLnA==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -2128,6 +2089,7 @@ packages:
     resolution: {integrity: sha512-u7zy0Ygzl7O5Gvr9TSNSQj+DBzvMJC7rXfyQNgZ13KwkhgJ8z0z+gt2AO4RPd01rZioMQ2/TA24XGGg4xqhd0Q==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -2136,6 +2098,7 @@ packages:
     resolution: {integrity: sha512-VvpAdh5SgewmWo8sa5QPYG8aSKH9hU2Kr5+3of0GzBI/8n8PBqhLyvF0DbO+zDW8j5IM8NDebv82MpHrZaD0Cw==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -2144,6 +2107,7 @@ packages:
     resolution: {integrity: sha512-3g6jaXxXVFaDnFoMn2+E3ludGcXFfEr6lDn+S1lh9Qe0JcL9sPt1wGh0g2cKIlb6OakNOFopZqJ5Yub9F7gQlA==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -2278,24 +2242,6 @@ packages:
 
   /@types/normalize-package-data@2.4.4:
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
-    dev: true
-
-  /@types/prop-types@15.7.11:
-    resolution: {integrity: sha512-ga8y9v9uyeiLdpKddhxYQkxNDrfvuPrlFb0N1qnZZByvcElJaXthF1UhvCh9TLWJBEHeNtdnbysW7Y6Uq8CVng==}
-    dev: true
-
-  /@types/react-dom@18.2.17:
-    resolution: {integrity: sha512-rvrT/M7Df5eykWFxn6MYt5Pem/Dbyc1N8Y0S9Mrkw2WFCRiqUgw9P7ul2NpwsXCSM1DVdENzdG9J5SreqfAIWg==}
-    dependencies:
-      '@types/react': 18.2.38
-    dev: true
-
-  /@types/react@18.2.38:
-    resolution: {integrity: sha512-cBBXHzuPtQK6wNthuVMV6IjHAFkdl/FOPFIlkd81/Cd1+IqkHu/A+w4g43kaQQoYHik/ruaQBDL72HyCy1vuMw==}
-    dependencies:
-      '@types/prop-types': 15.7.11
-      '@types/scheduler': 0.16.8
-      csstype: 3.1.2
     dev: true
 
   /@types/scheduler@0.16.8:
@@ -3011,10 +2957,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       cssom: 0.3.8
-    dev: true
-
-  /csstype@3.1.2:
-    resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
     dev: true
 
   /data-urls@3.0.2:
@@ -4911,10 +4853,6 @@ packages:
     hasBin: true
     dev: true
 
-  /json-buffer@3.0.1:
-    resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
-    dev: true
-
   /json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
     dev: true
@@ -4961,7 +4899,7 @@ packages:
   /keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
     dependencies:
-      json-buffer: 3.0.1
+      json-buffer: registry.npmmirror.com/json-buffer@3.0.1
     dev: true
 
   /kleur@3.0.3:
@@ -5663,6 +5601,7 @@ packages:
 
   /rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
     dependencies:
       glob: 7.2.3
@@ -6528,6 +6467,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
+  registry.npmmirror.com/json-buffer@3.0.1:
+    resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==, tarball: https://registry.npmmirror.com/json-buffer/-/json-buffer-3.0.1.tgz}
+    name: json-buffer
+    version: 3.0.1
+    dev: true
