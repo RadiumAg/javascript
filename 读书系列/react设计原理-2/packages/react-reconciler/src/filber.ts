@@ -1,4 +1,4 @@
-import { Key, Props, Ref } from 'shared/ReactTypes';
+import { Key, Props, ReactElement, Ref } from 'shared/ReactTypes';
 import { Container } from 'hostConfig';
 import { WorkTag } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
@@ -90,3 +90,5 @@ export const createWorkInProgress = (
 
   return wip;
 };
+
+export function createFiberFromElement(element: ReactElement): FiberNode {}
