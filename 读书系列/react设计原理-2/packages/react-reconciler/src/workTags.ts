@@ -2,7 +2,7 @@ export type WorkTag =
   | typeof FunctionComponent
   | typeof HostText
   | typeof HostComponent
-  | typeof HostText;
+  | typeof HostRoot;
 
 export const FunctionComponent = 0;
 export const HostRoot = 3;

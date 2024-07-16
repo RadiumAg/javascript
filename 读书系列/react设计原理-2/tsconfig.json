@@ -8,23 +8,16 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": "./packages",
-    "downlevelIteration":true,
+    "downlevelIteration": true,
     "paths": {
-      "hostConfig": [
-        "react-dom/src/hostConfig.ts"
-      ]
-    },
+      "hostConfig": ["react-reconciler/src/hostConfig.ts"]
+    }
   },
   "references": [
     {
       "path": "./tsconfig.node.json"
-    },
+    }
   ],
-  "includes": [
-    "./packages/**/*.ts"
-  ],
-  "exclude": [
-    "./demos/**/*.tsx",
-    "./scripts/**/*.ts"
-  ]
+  "includes": ["./packages/**/*.ts"],
+  "exclude": ["./demos/**/*.tsx", "./scripts/**/*.ts"]
 }
