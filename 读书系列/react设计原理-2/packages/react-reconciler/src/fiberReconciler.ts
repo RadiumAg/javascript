@@ -22,6 +22,7 @@ export function updateContainer(
   root: FiberRootNode,
 ) {
   const hostRootFiber = root.current;
+  // root component
   const update = createUpdate<ReactElement | null>(element);
   enqueueUpdate(
     hostRootFiber.updateQueue as UpdateQueue<ReactElement | null>,
