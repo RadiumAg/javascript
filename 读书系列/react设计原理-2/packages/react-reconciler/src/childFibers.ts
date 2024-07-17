@@ -1,6 +1,8 @@
 import { ReactElement } from 'shared/ReactTypes';
 import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
-import { FiberNode } from './filber';
+import { FiberNode, createFiberFromElement } from './filber';
+import { HostText } from './workTags';
+import { Placement } from './fiberFlags';
 
 function childReconciler(shouldTrackEffects: boolean) {
   function reconcileSingleElement(
@@ -9,6 +11,32 @@ function childReconciler(shouldTrackEffects: boolean) {
     element: ReactElement,
   ) {
     // 根据element创建fiber
+    const filber = createFiberFromElement(element);
+    filber.return = returnFiber;
+    return filber;
+  }
+
+  function reconcileSingleTextNode(
+    returnFiber: FiberNode,
+    currentFiber: FiberNode | null,
+    content: string | number,
+  ) {
+    const fiber = new FiberNode(HostText, { content }, null);
+    fiber.return = returnFiber;
+    return fiber;
+  }
+
+  /**
+   * 打标记
+   * @param fiber
+   * @returns
+   */
+  function placeSingleChild(fiber: FiberNode) {
+    if (shouldTrackEffects && fiber.alternate === null) {
+      fiber.flags |= Placement;
+    }
+
+    return fiber;
   }
 
   return function reconcileChildFibers(
@@ -20,7 +48,9 @@ function childReconciler(shouldTrackEffects: boolean) {
     if (typeof newChild === 'object' && newChild !== null) {
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
-          return reconcileSingleElement();
+          return placeSingleChild(
+            reconcileSingleElement(returnFiber, currentFiber, newChild),
+          );
 
         default:
           if (__DEV__) {
@@ -33,13 +63,16 @@ function childReconciler(shouldTrackEffects: boolean) {
     // 多节点情况 ul > li*3
     // HostText
     if (typeof newChild === 'string' || typeof newChild === 'number') {
-      return reconcileSingleTextNode();
+      return placeSingleChild(
+        reconcileSingleTextNode(returnFiber, currentFiber, newChild),
+      );
     }
 
     if (__DEV__) {
       console.warn('未实现的reconcile类型', newChild);
     }
-    break;
+
+    return null;
   };
 }
 
