@@ -3,6 +3,7 @@ export type Instance = Element;
 
 export const createInstance = (type: string, props: any): Instance => {
   const element = document.createElement(type);
+  console.log(props);
   return element;
 };
 

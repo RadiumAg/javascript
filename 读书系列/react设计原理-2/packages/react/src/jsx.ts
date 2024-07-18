@@ -1,8 +1,7 @@
 // ReactElement
 
 import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
-import { ElementType, Key, Props, Type } from 'shared/ReactTypes';
-import { Ref } from 'vue';
+import { ElementType, Key, Props, Ref, Type } from 'shared/ReactTypes';
 
 const ReactElement = function (type: Type, key: Key, ref: Ref, props: Props) {
   const element = {

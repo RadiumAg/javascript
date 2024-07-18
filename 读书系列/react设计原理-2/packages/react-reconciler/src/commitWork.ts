@@ -51,7 +51,7 @@ const commitPlacement = (finishedWork: FiberNode) => {
   // parent DOM
   const hostParent = getHostParent(finishedWork);
   // finishedWork ~~ DOM
-  apendPlacementNodeInToContainer(finishedWork, hostParent);
+  apendPlacementNodeInToContainer(finishedWork, hostParent!);
 };
 
 function getHostParent(fiber: FiberNode) {
@@ -81,7 +81,7 @@ function apendPlacementNodeInToContainer(
 ) {
   // fiber host
   if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-    appendChildToContainer(finishedWork.stateNode, hostParent);
+    appendChildToContainer(finishedWork.stateNode, hostParent!);
   }
 
   const child = finishedWork.child;

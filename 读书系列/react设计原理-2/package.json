@@ -2,15 +2,19 @@
   "name": "mini-react",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "main": "index.js",
+  "repository": "https://github.com/RadiumAg/javascript.git",
   "scripts": {
     "build:dev": "rimraf dist && rollup --bundleConfigAsCjs --config scripts/rollup/dev.config.js",
     "demo": "vite  demos/test-fc --config scripts/vite/vite.config.ts  --force",
     "test": "jest --config scripts/jest/jest.config.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "scheduler": "^0.23.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.23.3",
     "@babel/plugin-transform-react-jsx": "^7.23.4",
@@ -31,9 +35,5 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.2"
-  },
-  "dependencies": {
-    "scheduler": "^0.23.0"
-  },
-  "repository": "https://github.com/RadiumAg/javascript.git"
+  }
 }
