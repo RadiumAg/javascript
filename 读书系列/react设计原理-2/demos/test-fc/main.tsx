@@ -1,8 +1,12 @@
-import * as React from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
-const App = () => {
+const Children = () => {
   return <div>test-a</div>;
+};
+
+const App = () => {
+  return <Children />;
 };
 
 const root = ReactDOM.createRoot(document.querySelector('#root'));

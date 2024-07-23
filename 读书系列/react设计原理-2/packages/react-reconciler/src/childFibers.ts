@@ -62,6 +62,7 @@ function childReconciler(shouldTrackEffects: boolean) {
 
     // 多节点情况 ul > li*3
     // HostText
+
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       return placeSingleChild(
         reconcileSingleTextNode(returnFiber, currentFiber, newChild),

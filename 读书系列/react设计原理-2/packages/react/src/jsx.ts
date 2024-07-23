@@ -42,8 +42,10 @@ export const jsx = function (
       props[prop] = val;
     }
   }
+
   const maybechildrenLength = maybechildren.length;
-  if (maybechildrenLength) {
+
+  if (maybechildrenLength && props.children === 0) {
     if (maybechildrenLength === 1) {
       props.children = maybechildren[0];
     } else {
