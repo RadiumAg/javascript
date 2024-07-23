@@ -13,7 +13,6 @@ import { renderWithHooks } from './fiberHooks';
 
 export const beginWork = (wip: FiberNode) => {
   // 比较，返回子fiberNode
-
   switch (wip.tag) {
     case HostRoot:
       return updateHostRoot(wip);
