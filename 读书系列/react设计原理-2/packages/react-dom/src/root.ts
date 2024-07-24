@@ -12,6 +12,7 @@ export function createRoot(container: Container) {
 
   return {
     render(element: ReactElement) {
+      console.log(element);
       updateContainer(element, root);
     },
   };
