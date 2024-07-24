@@ -1,5 +1,5 @@
 import { ReactElement } from 'shared/ReactTypes';
-import { FiberNode } from './filber';
+import { FiberNode } from './fiber';
 import { UpdateQueue, processUpdateQueue } from './updateQueue';
 import {
   FunctionComponent,

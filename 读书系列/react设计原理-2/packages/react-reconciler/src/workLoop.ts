@@ -2,7 +2,7 @@ import { beginWork } from './beginWork';
 import { commitMutationEffect } from './commitWork';
 import { completeWork } from './completeWork';
 import { MutationMask, NoFlags } from './fiberFlags';
-import { FiberNode, FiberRootNode, createWorkInProgress } from './filber';
+import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
 import { HostRoot } from './workTags';
 
 let workInProgress: FiberNode | null = null;
@@ -11,7 +11,7 @@ function prepareFreshStack(root: FiberRootNode) {
   workInProgress = createWorkInProgress(root.current, {});
 }
 
-export function scheduleUpdateOnFilber(fiber: FiberNode) {
+export function scheduleUpdateOnFiber(fiber: FiberNode) {
   // 调度功能
   const root = markUpdateFromFiberToRoot(fiber);
   renderRoot(root);

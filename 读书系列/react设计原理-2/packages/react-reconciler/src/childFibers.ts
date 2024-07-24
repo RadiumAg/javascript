@@ -1,6 +1,6 @@
 import { ReactElement } from 'shared/ReactTypes';
 import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
-import { FiberNode, createFiberFromElement } from './filber';
+import { FiberNode, createFiberFromElement } from './fiber';
 import { HostText } from './workTags';
 import { Placement } from './fiberFlags';
 

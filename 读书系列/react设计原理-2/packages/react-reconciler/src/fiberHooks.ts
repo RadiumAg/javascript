@@ -1,4 +1,4 @@
-import { FiberNode } from './filber';
+import { FiberNode } from './fiber';
 
 export function renderWithHooks(wip: FiberNode) {
   const Component = wip.type;

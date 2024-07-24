@@ -1,6 +1,6 @@
 import { Container, appendChildToContainer } from 'hostConfig';
 import { MutationMask, NoFlags, Placement } from './fiberFlags';
-import { FiberNode, FiberRootNode } from './filber';
+import { FiberNode, FiberRootNode } from './fiber';
 import { HostComponent, HostRoot, HostText } from './workTags';
 let nextEffect: FiberNode | null = null;
 

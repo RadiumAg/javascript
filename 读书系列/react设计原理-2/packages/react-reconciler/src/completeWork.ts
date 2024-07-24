@@ -4,7 +4,7 @@ import {
   createInstance,
   createTextInstance,
 } from 'hostConfig';
-import { FiberNode } from './filber';
+import { FiberNode } from './fiber';
 import {
   FunctionComponent,
   HostComponent,
