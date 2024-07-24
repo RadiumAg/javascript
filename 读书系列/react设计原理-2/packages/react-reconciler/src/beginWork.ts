@@ -22,7 +22,7 @@ export const beginWork = (wip: FiberNode) => {
     case HostText:
       return null;
     case FunctionComponent:
-      return updateFunctionComonent(wip);
+      return updateFunctionComponent(wip);
     default:
       if (__DEV__) {
         console.warn('beginWork未实现的类型');
@@ -31,7 +31,7 @@ export const beginWork = (wip: FiberNode) => {
   }
 };
 
-function updateFunctionComonent(wip: FiberNode) {
+function updateFunctionComponent(wip: FiberNode) {
   const nextChildren = renderWithHooks(wip);
   reconcileChildren(wip, nextChildren);
   return wip.child;

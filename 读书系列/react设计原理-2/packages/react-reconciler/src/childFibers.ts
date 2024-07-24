@@ -11,9 +11,9 @@ function childReconciler(shouldTrackEffects: boolean) {
     element: ReactElement,
   ) {
     // 根据element创建fiber
-    const filber = createFiberFromElement(element);
-    filber.return = returnFiber;
-    return filber;
+    const fiber = createFiberFromElement(element);
+    fiber.return = returnFiber;
+    return fiber;
   }
 
   function reconcileSingleTextNode(
