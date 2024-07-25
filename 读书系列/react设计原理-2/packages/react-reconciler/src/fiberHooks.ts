@@ -62,6 +62,7 @@ function mountState<State>(
   }
   const queue = createUpdateQueue<State>();
   hook.updateQueue = queue;
+  hook.memoizedState = memoizedState;
 
   const dispatch = (dispatchSetState as unknown as Dispatch<State>).bind(
     null,
