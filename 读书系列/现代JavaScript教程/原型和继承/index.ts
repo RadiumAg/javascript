@@ -114,3 +114,23 @@
 
   // for in只能列出可枚举属性，所以Object.prototype的属性都是不可枚举的
 })();
+
+// 数组方法
+// splice
+(() => {
+  (() => {
+    const arr = ['I', 'go', 'home'];
+    arr.splice(1, 1);
+    console.log(arr);
+  })();
+
+  // 删除了3个元素，并用另外两个元素替换它们
+  (() => {
+    const arr = ['I', 'study', 'JavaScript', 'Right', 'now'];
+
+    arr.splice(0, 3, "Let's", 'dance');
+    console.log(arr);
+  })();
+})();
+
+// slice
