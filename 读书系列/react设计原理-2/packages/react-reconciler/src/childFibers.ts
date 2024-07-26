@@ -1,4 +1,4 @@
-import { ReactElement } from 'shared/ReactTypes';
+import { Props, ReactElement } from 'shared/ReactTypes';
 import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
 import {
   FiberNode,
