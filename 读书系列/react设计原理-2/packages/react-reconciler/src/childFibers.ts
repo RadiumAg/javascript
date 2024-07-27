@@ -28,20 +28,24 @@ function childReconciler(shouldTrackEffects: boolean) {
     element: ReactElement,
   ) {
     const key = element.key;
-    if (currentFiber !== null) {
+    // eslint-disable-next-line no-restricted-syntax
+    work: if (currentFiber !== null) {
       // update
       if (currentFiber.key === key) {
         // key 相同
         if (element.$$typeof === REACT_ELEMENT_TYPE) {
           if (currentFiber.type === element.type) {
             // type 相同
+            const existing = useFiber(currentFiber, element.props);
+            existing.return = returnFiber;
+            return existing;
           }
           // 删掉旧的
           deleteChild(returnFiber, currentFiber);
-          return;
+          break work;
         } else if (__DEV__) {
           console.warn('还未实现的react类型', element);
-          return;
+          break work;
         }
       } else {
         // 删掉旧的
@@ -60,6 +64,18 @@ function childReconciler(shouldTrackEffects: boolean) {
     currentFiber: FiberNode | null,
     content: string | number,
   ) {
+    if (currentFiber !== null) {
+      // update
+      // eslint-disable-next-line unicorn/no-lonely-if
+      if (currentFiber.tag === HostText) {
+        // 类型没变，可以复用
+        const existing = useFiber(currentFiber, { content });
+        existing.return = returnFiber;
+        return existing;
+      }
+      deleteChild(returnFiber, currentFiber);
+    }
+
     const fiber = new FiberNode(HostText, { content }, null);
     fiber.return = returnFiber;
     return fiber;
@@ -108,6 +124,10 @@ function childReconciler(shouldTrackEffects: boolean) {
       );
     }
 
+    if (currentFiber !== null) {
+      deleteChild(returnFiber, currentFiber);
+    }
+
     if (__DEV__) {
       console.warn('未实现的reconcile类型', newChild);
     }
@@ -116,6 +136,12 @@ function childReconciler(shouldTrackEffects: boolean) {
   };
 }
 
+/**
+ * fiber 复用
+ * @param fiber
+ * @param pendingProps
+ * @returns
+ */
 function useFiber(fiber: FiberNode, pendingProps: Props): FiberNode {
   const clone = createWorkInProgress(fiber, pendingProps);
   clone.index = 0;
