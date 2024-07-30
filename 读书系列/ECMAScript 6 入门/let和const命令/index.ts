@@ -1,6 +1,6 @@
 // 块级作用域
 // es5只有函数作用域和全局作用域
-(() => {
+() => {
   function f1() {
     const n = 5;
     if (true) {
@@ -20,7 +20,7 @@
       }
     }
   }
-})();
+};
 
 // 块级作用域下函数声明，浏览器中类似var
 () => {
@@ -37,4 +37,14 @@
 (() => {
   const foo = Object.freeze({});
   foo.prop = 123;
+
+  // 完全冻结对象
+  const constantize = obj => {
+    Object.freeze(obj);
+    Object.keys(obj).forEach((key, i) => {
+      if (typeof obj[key] === 'object') {
+        constantize(obj[key]);
+      }
+    });
+  };
 })();
