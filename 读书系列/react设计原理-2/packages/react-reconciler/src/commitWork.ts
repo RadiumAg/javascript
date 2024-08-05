@@ -1,4 +1,9 @@
-import { Container, appendChildToContainer, commitUpdate } from 'hostConfig';
+import {
+  Container,
+  appendChildToContainer,
+  commitUpdate,
+  removeChild,
+} from 'hostConfig';
 import {
   ChildDeletion,
   MutationMask,
@@ -99,6 +104,17 @@ function commitDeleteion(childToDelete: FiberNode) {
   });
 
   // 移除rootHostComponent的DOM
+  if (rootHostNode !== null) {
+    const hostParent = getHostParent(childToDelete);
+
+    // eslint-disable-next-line eqeqeq
+    if (hostParent != null) {
+      removeChild((rootHostNode as FiberNode).stateNode, hostParent);
+    }
+  }
+
+  childToDelete.return = null;
+  childToDelete.child = null;
 }
 
 function commitNestedComponent(

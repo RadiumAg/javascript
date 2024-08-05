@@ -43,3 +43,11 @@ export function commitUpdate(fiber: FiberNode) {
 export function commitTextUpdate(textInstance: TextInstance, content: string) {
   textInstance.textContent = content;
 }
+
+export function removeChild(
+  child: Instance | TextInstance,
+  container: Container,
+) {
+  // eslint-disable-next-line unicorn/prefer-dom-node-remove
+  container.removeChild(child);
+}
