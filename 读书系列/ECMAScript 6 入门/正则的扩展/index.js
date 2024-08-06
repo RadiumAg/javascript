@@ -127,3 +127,11 @@
   const r = /hello\d/y;
   console.log(r.sticky); // true
 })();
+
+// ES6增加了对u修饰符
+// 用来处理大于\ufff的unicode字符
+
+(() => {
+  /^\uD83D/u.test('\uD83D\uDC2A'); // false
+  /^\uD83D/.test('\uD83D\uDC2A'); // true
+})();
