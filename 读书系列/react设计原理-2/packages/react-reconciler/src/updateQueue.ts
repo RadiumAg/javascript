@@ -6,7 +6,7 @@ export interface Update<State> {
 }
 
 export interface UpdateQueue<State> {
-  shred: {
+  shared: {
     pending: Update<State> | null;
   };
   dispatch: Dispatch<State> | null;
@@ -20,7 +20,7 @@ export const createUpdate = <State>(action: Action<State>): Update<State> => {
 
 export const createUpdateQueue = <State>() => {
   return {
-    shred: {
+    shared: {
       pending: null,
     },
   } as UpdateQueue<State>;
@@ -30,7 +30,7 @@ export const enqueueUpdate = <State>(
   updateQueue: UpdateQueue<State>,
   update: Update<State>,
 ) => {
-  updateQueue.shred.pending = update;
+  updateQueue.shared.pending = update;
 };
 
 /**

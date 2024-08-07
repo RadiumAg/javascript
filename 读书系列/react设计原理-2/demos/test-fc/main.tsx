@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 const Children = () => {
-  return <div>test-a</div>;
+  const [state, setState] = useState(0);
+  console.log(state);
+
+  window.setState = setState;
+  return <div>{state}</div>;
 };
 
 const App = () => {

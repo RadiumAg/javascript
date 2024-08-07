@@ -43,15 +43,15 @@ export const jsx = function (
     }
   }
 
-  const maybechildrenLength = maybechildren.length;
+  // const maybechildrenLength = maybechildren.length;
 
-  if (maybechildrenLength && props.children === 0) {
-    if (maybechildrenLength === 1) {
-      props.children = maybechildren[0];
-    } else {
-      props.children = maybechildren;
-    }
-  }
+  // if (maybechildrenLength && props.children === 0) {
+  //   if (maybechildrenLength === 1) {
+  //     props.children = maybechildren[0];
+  //   } else {
+  //     props.children = maybechildren;
+  //   }
+  // }
 
   return ReactElement(type, key, ref, props);
 };
