@@ -40,7 +40,6 @@ export function initEvent(container: Container, eventType: string) {
 }
 
 function dispatchEvent(container: Container, eventType: string, e: Event) {
-  debugger;
   const targetElement = e.target;
 
   if (targetElement === null) {

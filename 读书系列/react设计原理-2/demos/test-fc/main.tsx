@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 
 const Children = () => {
   const [state, setState] = useState('0');
-  console.log(state);
 
   return (
     <div
