@@ -4,6 +4,7 @@ import {
   createInstance,
   createTextInstance,
 } from 'hostConfig';
+import { updateFiberProps } from 'react-dom/src/SyntheticEvent';
 import { FiberNode } from './fiber';
 import {
   FunctionComponent,
@@ -26,6 +27,7 @@ export const completeWork = (wip: FiberNode) => {
     case HostComponent:
       if (current !== null && wip.stateNode) {
         // update
+        updateFiberProps(wip.stateNode, newProps);
       } else {
         // 1. 构建DOM
         const instance = createInstance(wip.type, newProps);
