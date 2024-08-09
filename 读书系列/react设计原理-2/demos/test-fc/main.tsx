@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 const Children = () => {
-  const [state, setState] = useState(0);
+  const [state, setState] = useState('0');
   console.log(state);
 
-  window.setState = setState;
-  return <div>{state}</div>;
+  return (
+    <div
+      onClick={() => {
+        setState(state + 1);
+      }}
+    >
+      {state}
+    </div>
+  );
 };
 
 const App = () => {

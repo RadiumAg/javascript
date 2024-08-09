@@ -1,4 +1,3 @@
-import path from 'path';
 import { Container } from 'hostConfig';
 import { Props } from 'shared/ReactTypes';
 
@@ -41,6 +40,7 @@ export function initEvent(container: Container, eventType: string) {
 }
 
 function dispatchEvent(container: Container, eventType: string, e: Event) {
+  debugger;
   const targetElement = e.target;
 
   if (targetElement === null) {
@@ -129,7 +129,7 @@ function collectPaths(
       }
       targetElement = targetElement.parentNode as DOMElement;
     }
-
-    return paths;
   }
+
+  return paths;
 }
