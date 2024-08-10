@@ -22,6 +22,21 @@ function childReconciler(shouldTrackEffects: boolean) {
     }
   }
 
+  function deleteRemainingChildren(
+    returnFiber: FiberNode,
+    currentFirstChild: FiberNode | null,
+  ) {
+    if (!shouldTrackEffects) {
+      return;
+    }
+    const childToDelete = currentFirstChild;
+
+    while (childToDelete !== null) {
+      deleteChild(returnFiber, childToDelete);
+      childToDelete = childToDelete.sibling;
+    }
+  }
+
   function reconcileSingleElement(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
@@ -29,7 +44,7 @@ function childReconciler(shouldTrackEffects: boolean) {
   ) {
     const key = element.key;
     // eslint-disable-next-line no-restricted-syntax
-    work: if (currentFiber !== null) {
+    while (currentFiber !== null) {
       // update
       if (currentFiber.key === key) {
         // key 相同
@@ -38,18 +53,20 @@ function childReconciler(shouldTrackEffects: boolean) {
             // type 相同
             const existing = useFiber(currentFiber, element.props);
             existing.return = returnFiber;
-            return existing;
+            // 当前节点可复用，标记剩下的节点删除
+            deleteRemainingChildren(returnFiber, currentFiber.sibling);
+            break;
           }
-          // 删掉旧的
+          // key相同，删掉旧的
           deleteChild(returnFiber, currentFiber);
-          break work;
         } else if (__DEV__) {
           console.warn('还未实现的react类型', element);
-          break work;
+          break;
         }
       } else {
-        // 删掉旧的
+        // key不同， 删掉旧的
         deleteChild(returnFiber, currentFiber);
+        currentFiber = currentFiber.sibling;
       }
     }
 
