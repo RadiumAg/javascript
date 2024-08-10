@@ -88,9 +88,11 @@ function childReconciler(shouldTrackEffects: boolean) {
         // 类型没变，可以复用
         const existing = useFiber(currentFiber, { content });
         existing.return = returnFiber;
+        deleteRemainingChildren(returnFiber, currentFiber.sibling);
         return existing;
       }
       deleteChild(returnFiber, currentFiber);
+      currentFiber = currentFiber.sibling;
     }
 
     const fiber = new FiberNode(HostText, { content }, null);
