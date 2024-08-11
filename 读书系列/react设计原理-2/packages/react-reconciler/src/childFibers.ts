@@ -8,6 +8,8 @@ import {
 import { HostText } from './workTags';
 import { ChildDeletion, Placement } from './fiberFlags';
 
+type existingChildren = Map<string | number, FiberNode>;
+
 function childReconciler(shouldTrackEffects: boolean) {
   function deleteChild(returnFiber: FiberNode, childToDelete: FiberNode) {
     if (!shouldTrackEffects) {
@@ -29,7 +31,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     if (!shouldTrackEffects) {
       return;
     }
-    const childToDelete = currentFirstChild;
+    let childToDelete = currentFirstChild;
 
     while (childToDelete !== null) {
       deleteChild(returnFiber, childToDelete);
@@ -113,6 +115,21 @@ function childReconciler(shouldTrackEffects: boolean) {
     return fiber;
   }
 
+  function reconcileChildrenArray(
+    returnFiber: FiberNode,
+    currentFirstChild: FiberNode | null,
+    newChild: any[],
+  ) {
+    // 1.将current保存在map中
+    const existingChildren: existingChildren = new Map();
+
+    // 2.遍历newChild，寻找是否可复用
+
+    // 3.标记移动还是插入
+
+    // 4.将Map中剩下的标记为删除
+  }
+
   return function reconcileChildFibers(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
@@ -132,11 +149,14 @@ function childReconciler(shouldTrackEffects: boolean) {
           }
           break;
       }
+
+      // 多节点情况 ul > li * 3
+      if (Array.isArray(newChild)) {
+        return reconcileChildrenArray(returnFiber, currentFiber, newChild);
+      }
     }
 
-    // 多节点情况 ul > li*3
     // HostText
-
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       return placeSingleChild(
         reconcileSingleTextNode(returnFiber, currentFiber, newChild),
