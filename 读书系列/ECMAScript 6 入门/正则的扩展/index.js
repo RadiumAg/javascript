@@ -142,3 +142,10 @@
   console.log(/𠮷{2}/.test('𠮷𠮷')); // false
   console.log(/𠮷{2}/u.test('𠮷𠮷')); // true
 })();
+
+// 预定义模式
+// u修饰符会影响到预定义模式，能否正确识别码点大于0XFFFF的Unicode字符
+(() => {
+  /^S$/.test('𠮷'); // false
+  /^S$/u.test('𠮷'); // true');
+})();
