@@ -136,16 +136,74 @@
   /^\uD83D/.test('\uD83D\uDC2A'); // true
 };
 
-(() => {
+() => {
   console.log(/u{61}/.test('a')); // false
   console.log(/u{61}/u.test('a')); // true;
   console.log(/𠮷{2}/.test('𠮷𠮷')); // false
   console.log(/𠮷{2}/u.test('𠮷𠮷')); // true
-})();
+};
 
 // 预定义模式
 // u修饰符会影响到预定义模式，能否正确识别码点大于0XFFFF的Unicode字符
-(() => {
+() => {
   /^S$/.test('𠮷'); // false
   /^S$/u.test('𠮷'); // true');
+};
+
+// lastIndex 是正则表达式的一个可读可写的整型属性，用来指定下一次匹配的起始索引。
+// y修饰符
+// ES6还为正则表达式增加了y修饰符，叫做“粘连(sticky)”修饰符。
+// y修饰符的作用与g修饰符类似，也是全局匹配，最后一次匹配都从上一次匹配成功的下一个位置开始，不同之处在于，g修饰符只要剩余位置中存在匹配即可，而y修饰符确保匹配必须从剩余的第一个位置开始
+() => {
+  const s = 'aaa_aa_a';
+  const r1 = /a+/g;
+  const r2 = /a+/y;
+
+  console.log(r1.exec(s));
+  console.log(r2.exec(s));
+
+  console.log('========');
+
+  console.log(r1.exec(s));
+  console.log(r2.exec(s));
+
+  console.log('========');
+
+  console.log(r1.exec(s));
+  console.log(r2.exec(s));
+};
+
+// y修饰符同样遵守lastIndex属性，但是要求必须在lastIndex指定的位置发现匹配
+() => {
+  const REGEX = /a/y;
+  REGEX.lastIndex = 2;
+  // 不是粘连
+  REGEX.exec('xaya'); // null
+
+  // 指定从3号位置开始匹配
+  REGEX.lastIndex = 3;
+
+  // 3号位置匹配成功
+  const match = REGEX.exec('xaya');
+  match.index;
+  REGEX.lastIndex;
+};
+
+// y修饰符的本意，就是让头部匹配的标志^在全局匹配中有效
+() => {
+  const REGEX = /a/gy;
+  'aaxa'.replace(REGEX, '-'); // '-xa'
+};
+
+// s修饰符：dotAll模式
+//所谓行终止符，就是该字符表示一行的终结。以下四个字符属于“行终止符”。
+// U+000A 换行符（\n）
+// U+000D 回车符（\r）
+// U+2028 行分隔符（line separator）
+// U+2029 段分隔符（paragraph separator）
+(() => {
+  console.log(/foo.bar/.test('foo\nbar'));
+  console.log(/foo.bar/s.test('foo\nbar'));
 })();
+
+// Unicode 属性类
