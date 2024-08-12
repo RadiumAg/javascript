@@ -6,7 +6,7 @@ import { jsx } from './src/jsx';
 
 export const useState: Dispatcher['useState'] = (initialState: any) => {
   const dispatcher = resolveDispatcher();
-  return dispatcher.useState(initialState);
+  return dispatcher.useState(initialState);ss
 };
 
 // 内部共享层

@@ -207,3 +207,7 @@
 })();
 
 // Unicode 属性类
+() => {
+  const regexGreekSymbol = /p{ Script=Greek}/u;
+  regexGreekSymbol.test('π'); // true
+};
