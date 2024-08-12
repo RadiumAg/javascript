@@ -52,3 +52,11 @@ export function removeChild(
   // eslint-disable-next-line unicorn/prefer-dom-node-remove
   container.removeChild(child);
 }
+
+export function insertChildToContainer(
+  child: Instance,
+  cotnainer: Container,
+  before: Instance,
+) {
+  before.before(child);
+}
