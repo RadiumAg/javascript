@@ -73,10 +73,11 @@ function mountState<State>(
   hook.updateQueue = queue;
   hook.memoizedState = memoizedState;
 
-  const dispatch = (dispatchSetState as unknown as Dispatch<State>).bind(
+  const dispatch = dispatchSetState.bind(
     null,
-    currentlyRenderingFiber!,
-    queue,
+    currentlyRenderingFiber as any,
+    queue as any,
+    null,
   );
   queue.dispatch = dispatch;
   return [memoizedState, dispatch];

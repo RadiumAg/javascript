@@ -158,7 +158,7 @@ const commitPlacement = (finishedWork: FiberNode) => {
   const hostParent = getHostParent(finishedWork);
 
   // host sibling
-  const sibling = getHostParent(finishedWork);
+  const sibling = getHostSibling(finishedWork);
 
   // finishedWork ~~ DOM
   insertOrAppendPlacementNodeInToContainer(finishedWork, hostParent!, sibling);
