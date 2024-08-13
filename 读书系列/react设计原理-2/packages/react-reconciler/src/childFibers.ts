@@ -63,10 +63,11 @@ function childReconciler(shouldTrackEffects: boolean) {
             existing.return = returnFiber;
             // 当前节点可复用，标记剩下的节点删除
             deleteRemainingChildren(returnFiber, currentFiber.sibling);
-            break;
+            return existing;
           }
           // key相同，删掉旧的
-          deleteChild(returnFiber, currentFiber);
+          deleteRemainingChildren(returnFiber, currentFiber);
+          break;
         } else if (__DEV__) {
           console.warn('还未实现的react类型', element);
           break;
@@ -89,7 +90,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     currentFiber: FiberNode | null,
     content: string | number,
   ) {
-    if (currentFiber !== null) {
+    while (currentFiber !== null) {
       // update
       // eslint-disable-next-line unicorn/no-lonely-if
       if (currentFiber.tag === HostText) {
@@ -278,7 +279,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     }
 
     if (currentFiber !== null) {
-      deleteChild(returnFiber, currentFiber);
+      deleteRemainingChildren(returnFiber, currentFiber);
     }
 
     if (__DEV__) {

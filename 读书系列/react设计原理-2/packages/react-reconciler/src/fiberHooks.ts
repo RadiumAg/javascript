@@ -77,7 +77,6 @@ function mountState<State>(
     null,
     currentlyRenderingFiber as any,
     queue as any,
-    null,
   );
   queue.dispatch = dispatch;
   return [memoizedState, dispatch];
