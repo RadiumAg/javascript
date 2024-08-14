@@ -27,7 +27,7 @@ export class FiberNode {
 
   constructor(tag: WorkTag, pendingPorps: Props, key: Key) {
     this.tag = tag;
-    this.key = key;
+    this.key = key || null;
     this.stateNode = null;
     this.type = null;
 
@@ -110,4 +110,8 @@ export function createFiberFromElement(element: ReactElement): FiberNode {
   const fiber = new FiberNode(fiberTag, props, key);
   fiber.type = type;
   return fiber;
+}
+
+export function createFiberFromFragement(elements: any[], key: Key): FiberNode {
+  const fiber = new FiberNode();
 }
