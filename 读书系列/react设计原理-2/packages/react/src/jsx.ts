@@ -19,9 +19,9 @@ const ReactElement = function (type: Type, key: Key, ref: Ref, props: Props) {
 export const jsx = function (
   type: ElementType,
   config: Record<string, any>,
-  ...maybechildren: any[]
+  key: string | number | null = null,
+  // ...maybechildren: any[]
 ) {
-  let key: Key = null;
   const props: Props = {};
   let ref: Ref = null;
 

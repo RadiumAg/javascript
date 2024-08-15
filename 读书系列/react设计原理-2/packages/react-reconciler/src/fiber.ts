@@ -27,7 +27,7 @@ export class FiberNode {
 
   constructor(tag: WorkTag, pendingPorps: Props, key: Key) {
     this.tag = tag;
-    this.key = key || null;
+    this.key = key ?? null;
     this.stateNode = null;
     this.type = null;
 
@@ -77,7 +77,6 @@ export const createWorkInProgress = (
     wip = new FiberNode(current.tag, pendingProps, current.key);
     wip.type = current.type;
     wip.stateNode = current.stateNode;
-
     wip.alternate = current;
     current.alternate = wip;
   } else {

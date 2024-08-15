@@ -58,12 +58,11 @@ function childReconciler(shouldTrackEffects: boolean) {
       if (currentFiber.key === key) {
         // key 相同
         if (element.$$typeof === REACT_ELEMENT_TYPE) {
-          let props = element.props;
-          if (element.type === REACT_FRAGEMENT_TYPE) {
-            props = element.props.chidlren;
-          }
-
           if (currentFiber.type === element.type) {
+            let props = element.props;
+            if (element.type === REACT_FRAGEMENT_TYPE) {
+              props = element.props.chidlren;
+            }
             // type 相同
             const existing = useFiber(currentFiber, props);
             existing.return = returnFiber;
@@ -155,6 +154,7 @@ function childReconciler(shouldTrackEffects: boolean) {
 
     // 1.将current保存在map中
     const existingChildren: existingChildren = new Map();
+
     let current = currentFirstChild;
     while (current !== null) {
       const keyToUse = current.key !== null ? current.key : current.index;
@@ -235,7 +235,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     if (typeof element === 'object' && element !== null) {
       switch (element.$$typeof) {
         case REACT_ELEMENT_TYPE:
-          if (element.type === REACT_ELEMENT_TYPE) {
+          if (element.type === REACT_FRAGEMENT_TYPE) {
             return updateFragement(
               returnFiber,
               before,
@@ -292,6 +292,11 @@ function childReconciler(shouldTrackEffects: boolean) {
 
     // 判断当前fiber的类型
     if (typeof newChild === 'object' && newChild !== null) {
+      // 多节点情况 ul > li * 3
+      if (Array.isArray(newChild)) {
+        return reconcileChildrenArray(returnFiber, currentFiber, newChild);
+      }
+
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
@@ -303,11 +308,6 @@ function childReconciler(shouldTrackEffects: boolean) {
             console.warn('未实现的reconcile类型', newChild);
           }
           break;
-      }
-
-      // 多节点情况 ul > li * 3
-      if (Array.isArray(newChild)) {
-        return reconcileChildrenArray(returnFiber, currentFiber, newChild);
       }
     }
 
