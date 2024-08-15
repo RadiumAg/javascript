@@ -75,8 +75,14 @@ const commitMutationEffectOnFiber = (finishedWork: FiberNode) => {
   }
 };
 
+function recordHostChidlrenToDelete(
+  childrenToDelete: FiberNode[],
+  unmountFiber: FiberNode,
+) {}
+
 function commitDeleteion(childToDelete: FiberNode) {
   let rootHostNode: FiberNode | null = null;
+  const rootChildrenToDelete: FiberNode[] = [];
 
   // 递归子树
   commitNestedComponent(childToDelete, unmountFiber => {
