@@ -210,6 +210,15 @@ function childReconciler(shouldTrackEffects: boolean) {
     return firstNewFiber;
   }
 
+  /**
+   * 寻找是否有复用的Fiber
+   *
+   * @param {FiberNode} returnFiber
+   * @param {existingChildren} existingChildren
+   * @param {number} index
+   * @param {*} element
+   * @return {*}  {(FiberNode | null)}
+   */
   function updateFromMap(
     returnFiber: FiberNode,
     existingChildren: existingChildren,
