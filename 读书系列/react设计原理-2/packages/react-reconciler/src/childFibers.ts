@@ -170,7 +170,7 @@ function childReconciler(shouldTrackEffects: boolean) {
       }
 
       // 3.标记移动还是插入
-      newFiber.index = 1;
+      newFiber.index = i;
       newFiber.return = returnFiber;
 
       if (lastNewFiber === null) {
