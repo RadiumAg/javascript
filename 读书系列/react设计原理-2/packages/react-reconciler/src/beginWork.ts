@@ -11,7 +11,11 @@ import {
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
 
-// 递归中的递阶段
+/**
+ * 递归中的递阶段
+ * @param wip
+ * @returns
+ */
 export const beginWork = (wip: FiberNode) => {
   // 比较，返回子fiberNode
   switch (wip.tag) {
