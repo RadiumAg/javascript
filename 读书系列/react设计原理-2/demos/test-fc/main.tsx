@@ -14,7 +14,10 @@ const Children = () => {
         setState(!state);
       }}
     >
-      {liArray}
+      <li key="3">4</li>
+      <li key="5">5</li>
+      <li key="6">6</li>
+      <>{liArray}</>
     </div>
   );
 };
