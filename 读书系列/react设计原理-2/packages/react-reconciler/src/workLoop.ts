@@ -87,6 +87,11 @@ function workLoop() {
   }
 }
 
+/**
+ * 创建执行执行单元
+ *
+ * @param {FiberNode} fiber
+ */
 function performUnitOfWork(fiber: FiberNode) {
   const next = beginWork(fiber);
   fiber.memoizedProps = fiber.pendingProps;

@@ -12,8 +12,7 @@ import { ChildDeletion, Placement } from './fiberFlags';
 type existingChildren = Map<string | number, FiberNode>;
 
 /**
- *
- *
+ * 创建子Fiber
  * @param {boolean} shouldTrackEffects
  * @return {*}
  */
@@ -281,9 +280,6 @@ function childReconciler(shouldTrackEffects: boolean) {
     return null;
   }
 
-  /**
-   * @description 创建子Fiber
-   */
   return function reconcileChildFibers(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
