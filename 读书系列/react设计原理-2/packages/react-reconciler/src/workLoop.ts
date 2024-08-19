@@ -4,6 +4,13 @@ import { completeWork } from './completeWork';
 import { MutationMask, NoFlags } from './fiberFlags';
 import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
 import { HostRoot } from './workTags';
+import {
+  Lane,
+  NoLane,
+  SyncLane,
+  getHighesProiorityLane,
+  mergeLanes,
+} from './fiberLanes';
 
 let workInProgress: FiberNode | null = null;
 
@@ -11,10 +18,34 @@ function prepareFreshStack(root: FiberRootNode) {
   workInProgress = createWorkInProgress(root.current, {});
 }
 
-export function scheduleUpdateOnFiber(fiber: FiberNode) {
+export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
   // 调度功能
   const root = markUpdateFromFiberToRoot(fiber);
-  renderRoot(root);
+  markRootUpdated(root, lane);
+  ensureRootIsSchedule(root);
+}
+
+/**
+ * 将本次更新的lane记录在FiberRoot上
+ *
+ * @param {FiberRootNode} root
+ * @param {Lane} lane
+ */
+function markRootUpdated(root: FiberRootNode, lane: Lane) {
+  root.pendingLanes = mergeLanes(root.pendingLanes, lane);
+}
+
+function ensureRootIsSchedule(root: FiberRootNode) {
+  const updateLane = getHighesProiorityLane(root.pendingLanes);
+  if (updateLane === NoLane) {
+    return;
+  }
+
+  if (updateLane === SyncLane) {
+    // 同步优先级 用微任务调度
+  } else {
+    // 其它优先级 用宏任务调度
+  }
 }
 
 function markUpdateFromFiberToRoot(fiber: FiberNode) {
