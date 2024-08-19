@@ -77,7 +77,6 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
     // 其它比SyncLane低的优先级
     // NoLane
     markRootUpdated(root, lane);
-    ensureRootIsSchedule(root);
   }
 
   prepareFreshStack(root);
