@@ -10,24 +10,25 @@ import {
 } from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
+import { Lane } from './fiberLanes';
 
 /**
  * 递归中的递阶段
  * @param wip
  * @returns
  */
-export const beginWork = (wip: FiberNode) => {
+export const beginWork = (wip: FiberNode, renderLane: Lane) => {
   // 比较，返回子fiberNode
   switch (wip.tag) {
     case HostRoot:
-      return updateHostRoot(wip);
+      return updateHostRoot(wip, renderLane);
     // App
     case HostComponent:
       return updateHostComponent(wip);
     case HostText:
       return null;
     case FunctionComponent:
-      return updateFunctionComponent(wip);
+      return updateFunctionComponent(wip, renderLane);
     case Fragement:
       return updateFragement(wip);
     default:
@@ -49,13 +50,13 @@ function updateFragement(wip: FiberNode) {
   return wip.child;
 }
 
-function updateFunctionComponent(wip: FiberNode) {
+function updateFunctionComponent(wip: FiberNode, renderLane: Lane) {
   const nextChildren = renderWithHooks(wip);
   reconcileChildren(wip, nextChildren);
   return wip.child;
 }
 
-function updateHostRoot(wip: FiberNode) {
+function updateHostRoot(wip: FiberNode, renderLane: Lane) {
   const baseState = wip.memoizedState;
   const updateQueue = wip.updateQueue as UpdateQueue<Element>;
   const pending = updateQueue.shared.pending;

@@ -15,9 +15,11 @@ import {
 import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 
 let workInProgress: FiberNode | null = null;
+let wipRootRenderLane: Lane = NoLane;
 
-function prepareFreshStack(root: FiberRootNode) {
+function prepareFreshStack(root: FiberRootNode, lane: Lane) {
   workInProgress = createWorkInProgress(root.current, {});
+  wipRootRenderLane = lane;
 }
 
 export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
@@ -76,10 +78,11 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
   if (nextLanes !== SyncLane) {
     // 其它比SyncLane低的优先级
     // NoLane
-    markRootUpdated(root, lane);
+    ensureRootIsSchedule(root);
   }
 
-  prepareFreshStack(root);
+  // 初始化
+  prepareFreshStack(root, lane);
 
   do {
     try {
@@ -93,6 +96,8 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
 
   const finishedWork = root.current.alternate;
   root.finishedWork = finishedWork;
+  root.finishedLane = lane;
+  wipRootRenderLane = NoLane;
 
   // wip fiberNode树 中的flags
   commitRoot(root);
@@ -138,7 +143,7 @@ function workLoop() {
  * @param {FiberNode} fiber
  */
 function performUnitOfWork(fiber: FiberNode) {
-  const next = beginWork(fiber);
+  const next = beginWork(fiber, wipRootRenderLane);
   fiber.memoizedProps = fiber.pendingProps;
 
   if (next === null) {
