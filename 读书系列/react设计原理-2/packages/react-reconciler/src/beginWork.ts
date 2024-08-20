@@ -38,6 +38,11 @@ export const beginWork = (wip: FiberNode) => {
   }
 };
 
+/**
+ * 更新Fragement
+ * @param wip
+ * @returns
+ */
 function updateFragement(wip: FiberNode) {
   const nextChildren = wip.pendingProps;
   reconcileChildren(wip, nextChildren);
