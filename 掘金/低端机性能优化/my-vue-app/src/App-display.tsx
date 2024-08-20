@@ -11,9 +11,7 @@ type ReviewImageProps = {
   onMaskClick: () => void;
 };
 const ReviewImage: React.FC<ReviewImageProps> = (props) => {
-  const { images, activeIndex, onMaskClick } = props;
-  // const [visible, setVisible] = React.useState(false);
-  // const defferValue = useDeferredValue(visible);
+  const { images, activeIndex, visible, onMaskClick } = props;
 
   const swiperSlideElementArray = images.map((img, index) => {
     return (
@@ -35,11 +33,12 @@ const ReviewImage: React.FC<ReviewImageProps> = (props) => {
   return (
     <div
       className="mask"
+      style={{ display: visible ? 'block' : 'none' }}
       onClick={() => {
         onMaskClick();
       }}
     >
-      {(
+      { (
         <Swiper initialSlide={activeIndex} slidesPerView={1}>
           {swiperSlideElementArray}
         </Swiper>
@@ -122,14 +121,12 @@ function App() {
 
   return (
     <div>
-      {visible && (
         <ReviewImage
           visible={visible}
           onMaskClick={handleOnMaskClick}
           activeIndex={activeIndex}
           images={imgs}
         />
-      )}
       <div className="previewImage">{imageElementArray}</div>
     </div>
   );

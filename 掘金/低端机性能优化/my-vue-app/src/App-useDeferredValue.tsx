@@ -12,8 +12,8 @@ type ReviewImageProps = {
 };
 const ReviewImage: React.FC<ReviewImageProps> = (props) => {
   const { images, activeIndex, onMaskClick } = props;
-  // const [visible, setVisible] = React.useState(false);
-  // const defferValue = useDeferredValue(visible);
+  const [visible, setVisible] = React.useState(false);
+  const defferValue = React.useDeferredValue(visible);
 
   const swiperSlideElementArray = images.map((img, index) => {
     return (
@@ -30,6 +30,9 @@ const ReviewImage: React.FC<ReviewImageProps> = (props) => {
     );
   });
 
+  React.useEffect(() => {
+    setVisible(true);
+  }, []);
 
   // 图片地址 https://pixabay.com/zh/photos/horse-animal-head-portrait-4330166/
   return (
@@ -39,7 +42,7 @@ const ReviewImage: React.FC<ReviewImageProps> = (props) => {
         onMaskClick();
       }}
     >
-      {(
+      {defferValue && (
         <Swiper initialSlide={activeIndex} slidesPerView={1}>
           {swiperSlideElementArray}
         </Swiper>

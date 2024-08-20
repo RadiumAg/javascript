@@ -1,0 +1,35 @@
+.previewImage {
+  img {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+
+    &:not(:first-child) {
+      margin-left: 10px;
+      object-fit: cover;
+    }
+  }
+}
+
+.lookImg {
+  width: 100%;
+  display: block;
+  max-width: 700px;
+  object-fit: cover;
+}
+
+.mask {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(#000000, $alpha: 0.4);
+}
+
+div.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
