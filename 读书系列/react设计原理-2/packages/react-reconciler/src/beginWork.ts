@@ -75,6 +75,12 @@ function updateHostComponent(wip: FiberNode) {
   return wip.child;
 }
 
+/**
+ * 协调子fiber
+ *
+ * @param {FiberNode} wip
+ * @param {ReactElement} children
+ */
 function reconcileChildren(wip: FiberNode, children: ReactElement) {
   const current = wip.alternate;
 
