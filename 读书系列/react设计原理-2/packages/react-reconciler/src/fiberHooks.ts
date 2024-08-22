@@ -10,11 +10,12 @@ import {
   processUpdateQueue,
 } from './updateQueue';
 import { scheduleUpdateOnFiber } from './workLoop';
-import { requestUpdateLanes } from './fiberLanes';
+import { Lane, NoLane, requestUpdateLanes } from './fiberLanes';
 
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
 let currentHook: Hook | null = null;
+let renderLane: Lane = NoLane;
 
 const { currentDispatcher } = internals;
 
@@ -24,10 +25,10 @@ interface Hook {
   next: Hook | null;
 }
 
-export function renderWithHooks(wip: FiberNode) {
+export function renderWithHooks(wip: FiberNode, lane: Lane) {
   currentlyRenderingFiber = wip;
   wip.memoizedState = null;
-
+  renderLane = lane;
   const current = wip.alternate;
 
   if (current !== null) {
@@ -47,6 +48,7 @@ export function renderWithHooks(wip: FiberNode) {
   currentlyRenderingFiber = null;
   workInProgressHook = null;
   currentHook = null;
+  renderLane = NoLane;
   return children;
 }
 
@@ -92,7 +94,11 @@ function updateState<State>(): [State, Dispatch<State>] {
   const pending = queue.shared.pending;
 
   if (pending !== null) {
-    const { memoizedState } = processUpdateQueue(hook, pending as any);
+    const { memoizedState } = processUpdateQueue(
+      hook,
+      pending as any,
+      renderLane,
+    );
     hook.memoizedState = memoizedState;
   }
 
