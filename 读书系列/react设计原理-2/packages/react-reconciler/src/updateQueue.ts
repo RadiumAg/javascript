@@ -48,8 +48,8 @@ export const enqueueUpdate = <State>(
   if (pending === null) {
     update.next = update;
   } else {
-    pending.next = update;
     update.next = pending.next;
+    pending.next = update;
   }
   updateQueue.shared.pending = update;
 };
@@ -87,10 +87,12 @@ export const processUpdateQueue = <State>(
         }
       } else if (__DEV__) {
         console.error('不应该进入updateLane !== renderLane逻辑');
+        break;
       }
       pending = pending?.next as Update<any>;
     } while (pending !== first);
   }
+
   result.memoizedState = baseState;
 
   return result;

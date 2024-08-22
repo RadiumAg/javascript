@@ -95,7 +95,7 @@ function updateState<State>(): [State, Dispatch<State>] {
 
   if (pending !== null) {
     const { memoizedState } = processUpdateQueue(
-      hook,
+      hook.memoizedState,
       pending as any,
       renderLane,
     );
