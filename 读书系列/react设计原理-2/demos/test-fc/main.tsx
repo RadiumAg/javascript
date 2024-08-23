@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 
 const Children = () => {
   const [count, setCount] = useState(0);
-  console.log(count);
 
   return (
     <div

@@ -104,6 +104,12 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
   commitRoot(root);
 }
 
+/**
+ * 开始更改操作
+ *
+ * @param {FiberRootNode} root
+ * @return {*}
+ */
 function commitRoot(root: FiberRootNode) {
   const finishedWork = root.finishedWork;
   if (finishedWork === null) {

@@ -30,6 +30,7 @@ export function renderWithHooks(wip: FiberNode, lane: Lane) {
   wip.memoizedState = null;
   renderLane = lane;
   const current = wip.alternate;
+  console.log('render with hooks');
 
   if (current !== null) {
     currentDispatcher.current = HooksDispatcherOnUpdate;
