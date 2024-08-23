@@ -30,7 +30,6 @@ export function renderWithHooks(wip: FiberNode, lane: Lane) {
   wip.memoizedState = null;
   renderLane = lane;
   const current = wip.alternate;
-  console.log('render with hooks');
 
   if (current !== null) {
     currentDispatcher.current = HooksDispatcherOnUpdate;
@@ -101,6 +100,8 @@ function updateState<State>(): [State, Dispatch<State>] {
       renderLane,
     );
     hook.memoizedState = memoizedState;
+    // 保证只执行一次
+    queue.shared.pending = null;
   }
 
   return [hook.memoizedState, queue.dispatch as Dispatch<State>];
