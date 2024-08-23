@@ -80,6 +80,7 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
     // 其它比SyncLane低的优先级
     // NoLane
     ensureRootIsSchedule(root);
+    return;
   }
 
   // 初始化
