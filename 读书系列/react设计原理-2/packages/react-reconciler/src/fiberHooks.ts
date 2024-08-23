@@ -11,6 +11,7 @@ import {
 } from './updateQueue';
 import { scheduleUpdateOnFiber } from './workLoop';
 import { Lane, NoLane, requestUpdateLanes } from './fiberLanes';
+import { Flags } from './fiberFlags';
 
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
@@ -24,6 +25,17 @@ interface Hook {
   updateQueue: unknown;
   next: Hook | null;
 }
+
+export interface Effect {
+  tag: Flags;
+  create: EffectCallback | void;
+  destory: EffectCallback | void;
+  deps: EffectDeps;
+}
+
+type EffectCallback = () => void;
+
+type EffectDeps = any[] | null;
 
 export function renderWithHooks(wip: FiberNode, lane: Lane) {
   currentlyRenderingFiber = wip;
@@ -59,6 +71,8 @@ const HooksDispatcherOnMount: Dispatcher = {
 const HooksDispatcherOnUpdate: Dispatcher = {
   useState: updateState,
 };
+
+function mountEffect() {}
 
 function mountState<State>(
   initialState: (() => State) | State,
