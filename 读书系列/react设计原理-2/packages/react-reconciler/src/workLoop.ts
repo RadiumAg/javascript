@@ -7,7 +7,12 @@ import { beginWork } from './beginWork';
 import { commitMutationEffect } from './commitWork';
 import { completeWork } from './completeWork';
 import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
-import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
+import {
+  FiberNode,
+  FiberRootNode,
+  PendingPassiveEffects,
+  createWorkInProgress,
+} from './fiber';
 import { HostRoot } from './workTags';
 import {
   Lane,
@@ -145,7 +150,18 @@ function commitRoot(root: FiberRootNode) {
     // 调度副作用
     scheduleCallback(NormalPriority, () => {
       // 执行副作用
+      flushPassive(root.pendingPassiveEffects);
       return;
+    });
+  }
+
+  /**
+   * 执行回调
+   * @param pendingPassiveEffects
+   */
+  function flushPassive(pendingPassiveEffects: PendingPassiveEffects) {
+    pendingPassiveEffects.unmount.forEach(effect => {
+      
     });
   }
 
@@ -158,7 +174,7 @@ function commitRoot(root: FiberRootNode) {
   if (subtreeHasEffec || rootHasEffect) {
     // beforeMutation
     // mutation Placement
-    commitMutationEffect(finishedWork);
+    commitMutationEffect(finishedWork, root);
     root.current = finishedWork;
     // layout
   } else {
