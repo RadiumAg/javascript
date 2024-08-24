@@ -119,6 +119,8 @@ function commitPassiveEffect(
   }
 }
 
+function commitHookEffectList(flags: Flags) {}
+
 function recordHostChidlrenToDelete(
   childrenToDelete: FiberNode[],
   unmountFiber: FiberNode,
