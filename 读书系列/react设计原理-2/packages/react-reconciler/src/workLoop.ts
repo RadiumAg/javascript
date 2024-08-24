@@ -1,8 +1,12 @@
 import { scheduleMicorTask } from 'hostConfig';
+import {
+  unstable_NormalPriority as NormalPriority,
+  unstable_scheduleCallback as scheduleCallback,
+} from 'scheduler';
 import { beginWork } from './beginWork';
 import { commitMutationEffect } from './commitWork';
 import { completeWork } from './completeWork';
-import { MutationMask, NoFlags } from './fiberFlags';
+import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
 import { FiberNode, FiberRootNode, createWorkInProgress } from './fiber';
 import { HostRoot } from './workTags';
 import {
@@ -17,6 +21,7 @@ import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 
 let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
+let rootDoesHasPassiveEffect = false;
 
 function prepareFreshStack(root: FiberRootNode, lane: Lane) {
   workInProgress = createWorkInProgress(root.current, {});
@@ -130,6 +135,20 @@ function commitRoot(root: FiberRootNode) {
 
   markRootFinished(root, lane);
 
+  // 执行useEffect回调
+  if (
+    ((finishedWork.flags & PassiveMask) !== NoFlags ||
+      (finishedWork.subtreeFlags & PassiveMask) !== NoFlags) &&
+    !rootDoesHasPassiveEffect
+  ) {
+    rootDoesHasPassiveEffect = true;
+    // 调度副作用
+    scheduleCallback(NormalPriority, () => {
+      // 执行副作用
+      return;
+    });
+  }
+
   // 判断是否存在3个子阶段需要执行的操作
   // root flags root subtreeFlags
   const subtreeHasEffec =
@@ -145,6 +164,9 @@ function commitRoot(root: FiberRootNode) {
   } else {
     root.current = finishedWork;
   }
+
+  rootDoesHasPassiveEffect = false;
+  ensureRootIsSchedule(root);
 }
 
 function workLoop() {
