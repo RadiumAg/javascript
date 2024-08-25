@@ -6,8 +6,10 @@ import {
   insertChildToContainer,
   removeChild,
 } from 'hostConfig';
+import { effect } from 'vue';
 import {
   ChildDeletion,
+  Flags,
   MutationMask,
   NoFlags,
   PassiveEffect,
@@ -21,7 +23,8 @@ import {
   HostRoot,
   HostText,
 } from './workTags';
-import { FCUpdateQueue } from './fiberHooks';
+import { Effect, FCUpdateQueue } from './fiberHooks';
+import { HookHasEffect } from './hookEffectTags';
 let nextEffect: FiberNode | null = null;
 
 export const commitMutationEffect = (
@@ -119,7 +122,38 @@ function commitPassiveEffect(
   }
 }
 
-function commitHookEffectList(flags: Flags) {}
+/**
+ * 执行destory
+ *
+ * @export
+ * @param {Flags} flags
+ * @param {Effect} lastEffect
+ */
+export function commitHookEffectListDesotry(flags: Flags, lastEffect: Effect) {
+  commitHookEffectList(flags, lastEffect, effect => {
+    const desotry = effect.destory;
+    if (typeof desotry === 'function') {
+      desotry();
+    }
+    effect.tag &= ~HookHasEffect;
+  });
+}
+
+function commitHookEffectList(
+  flags: Flags,
+  lastEffect: Effect,
+  callback: (effect: Effect) => void,
+) {
+  let effect = lastEffect.next as Effect;
+
+  do {
+    if ((effect.tag & flags) === flags) {
+      callback(effect);
+    }
+
+    effect = effect.next as Effect;
+  } while (effect !== lastEffect.next);
+}
 
 function recordHostChidlrenToDelete(
   childrenToDelete: FiberNode[],
