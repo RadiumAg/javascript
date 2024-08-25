@@ -129,7 +129,7 @@ function commitPassiveEffect(
  * @param {Flags} flags
  * @param {Effect} lastEffect
  */
-export function commitHookEffectListDesotry(flags: Flags, lastEffect: Effect) {
+export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
   commitHookEffectList(flags, lastEffect, effect => {
     const desotry = effect.destory;
     if (typeof desotry === 'function') {
