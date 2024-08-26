@@ -4,7 +4,12 @@ import {
   unstable_scheduleCallback as scheduleCallback,
 } from 'scheduler';
 import { beginWork } from './beginWork';
-import { commitMutationEffect } from './commitWork';
+import {
+  commitHookEffectListCreate,
+  commitHookEffectListDestory,
+  commitHookEffectListUnmount,
+  commitMutationEffect,
+} from './commitWork';
 import { completeWork } from './completeWork';
 import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
 import {
@@ -23,6 +28,7 @@ import {
   mergeLanes,
 } from './fiberLanes';
 import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
+import { HookHasEffect, Passive } from './hookEffectTags';
 
 let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
@@ -150,19 +156,28 @@ function commitRoot(root: FiberRootNode) {
     // 调度副作用
     scheduleCallback(NormalPriority, () => {
       // 执行副作用
-      flushPassive(root.pendingPassiveEffects);
+      flushPassiveEffects(root.pendingPassiveEffects);
       return;
     });
   }
 
   /**
-   * 执行回调
+   * 执行useEffect
    * @param pendingPassiveEffects
    */
-  function flushPassive(pendingPassiveEffects: PendingPassiveEffects) {
+  function flushPassiveEffects(pendingPassiveEffects: PendingPassiveEffects) {
     pendingPassiveEffects.unmount.forEach(effect => {
-      
+      commitHookEffectListUnmount(Passive, effect);
     });
+    pendingPassiveEffects.unmount = [];
+
+    pendingPassiveEffects.update.forEach(effect => {
+      commitHookEffectListDestory(Passive | HookHasEffect, effect);
+    });
+    pendingPassiveEffects.update.forEach(effect => {
+      commitHookEffectListCreate(Passive | HookHasEffect, effect);
+    });
+    pendingPassiveEffects.update = [];
   }
 
   // 判断是否存在3个子阶段需要执行的操作

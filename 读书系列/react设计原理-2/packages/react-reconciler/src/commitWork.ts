@@ -139,6 +139,39 @@ export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
   });
 }
 
+/**
+ * 执行destory
+ *
+ * @export
+ * @param {Flags} flags
+ * @param {Effect} lastEffect
+ */
+export function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
+  commitHookEffectList(flags, lastEffect, effect => {
+    const desotry = effect.destory;
+    if (typeof desotry === 'function') {
+      desotry();
+    }
+    effect.tag &= ~HookHasEffect;
+  });
+}
+
+/**
+ * 执行destory
+ *
+ * @export
+ * @param {Flags} flags
+ * @param {Effect} lastEffect
+ */
+export function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
+  commitHookEffectList(flags, lastEffect, effect => {
+    const create = effect.create;
+    if (typeof create === 'function') {
+      effect.destory = create();
+    }
+  });
+}
+
 function commitHookEffectList(
   flags: Flags,
   lastEffect: Effect,
