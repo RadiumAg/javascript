@@ -12,7 +12,7 @@ import {
 import { scheduleUpdateOnFiber } from './workLoop';
 import { Lane, NoLane, requestUpdateLanes } from './fiberLanes';
 import { Flags, PassiveEffect } from './fiberFlags';
-import { Passive } from './hookEffectTags';
+import { HookHasEffect, Passive } from './hookEffectTags';
 
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
@@ -47,6 +47,8 @@ export function renderWithHooks(wip: FiberNode, lane: Lane) {
   currentlyRenderingFiber = wip;
   wip.memoizedState = null;
   renderLane = lane;
+  // 重置 effect 链表
+  wip.updateQueue = null;
   const current = wip.alternate;
 
   if (current !== null) {
@@ -80,7 +82,49 @@ const HooksDispatcherOnUpdate: Dispatcher = {
   useEffect: updateEffect,
 };
 
-function updateEffect() {}
+function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
+  const hook = mountWorkInProgressHook();
+  const nextDeps = deps === undefined ? null : deps;
+  let desotry: EffectCallback | void;
+
+  if (currentHook !== null) {
+    const prevEffect = currentHook.memoizedState as Effect;
+    desotry = prevEffect.destory;
+
+    if (nextDeps !== null) {
+      // 浅比较依赖
+      const prevDeps = prevEffect.deps;
+      if (areHookInputsEqual(nextDeps, prevDeps)) {
+        hook.memoizedState = pushEffect(Passive, create, desotry, nextDeps);
+        return;
+      }
+    }
+    // 浅比较后 不相等
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    currentlyRenderingFiber!.flags |= PassiveEffect;
+    hook.memoizedState = pushEffect(
+      Passive | HookHasEffect,
+      create,
+      undefined,
+      nextDeps,
+    );
+  }
+}
+
+function areHookInputsEqual(nextDeps: EffectDeps, prevDeps: EffectDeps) {
+  if (prevDeps === null || nextDeps === null) {
+    return false;
+  }
+
+  for (let i = 0; i < prevDeps.length && i < nextDeps.length; i++) {
+    if (Object.is(prevDeps[i], nextDeps[i])) {
+      continue;
+    }
+    return false;
+  }
+
+  return true;
+}
 
 function mountEffect(create: EffectCallback | void, deps: EffectDeps | void) {
   const hook = mountWorkInProgressHook();

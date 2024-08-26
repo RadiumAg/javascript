@@ -178,6 +178,7 @@ function commitRoot(root: FiberRootNode) {
       commitHookEffectListCreate(Passive | HookHasEffect, effect);
     });
     pendingPassiveEffects.update = [];
+    flushSyncCallbacks();
   }
 
   // 判断是否存在3个子阶段需要执行的操作
