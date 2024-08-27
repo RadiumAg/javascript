@@ -87,8 +87,8 @@ const commitMutationEffectOnFiber = (
 
   if ((flags & PassiveEffect) !== NoFlags) {
     // 收集回调
-    finishedWork.flags & ~PassiveEffect;
     commitPassiveEffect(finishedWork, root, 'update');
+    finishedWork.flags &= ~PassiveEffect;
   }
 };
 
@@ -152,7 +152,6 @@ export function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
     if (typeof desotry === 'function') {
       desotry();
     }
-    effect.tag &= ~HookHasEffect;
   });
 }
 

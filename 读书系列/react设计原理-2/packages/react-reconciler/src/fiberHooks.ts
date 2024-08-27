@@ -83,7 +83,7 @@ const HooksDispatcherOnUpdate: Dispatcher = {
 };
 
 function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
-  const hook = mountWorkInProgressHook();
+  const hook = updateWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
   let desotry: EffectCallback | void;
 
@@ -133,7 +133,7 @@ function mountEffect(create: EffectCallback | void, deps: EffectDeps | void) {
   currentlyRenderingFiber!.flags |= PassiveEffect;
 
   hook.memoizedState = pushEffect(
-    Passive | PassiveEffect,
+    Passive | HookHasEffect,
     create,
     undefined,
     nextDeps,

@@ -1,24 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 const Children = () => {
-  const [count, setCount] = useState(0);
+  useEffect(() => {
+    console.log('child mount');
+    return () => {
+      console.log('child destory');
+    };
+  }, []);
+
+  return <div>child</div>;
+};
+
+const App = () => {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    console.log('parent mount');
+
+    return () => {
+      console.log('parent destory');
+    };
+  }, []);
 
   return (
     <div
       onClick={() => {
-        setCount(count => count + 1);
-        setCount(count => count + 1);
-        setCount(count => count + 1);
+        setVisible(!visible);
       }}
     >
-      {count}
+      button
+      {visible && <Children />}
     </div>
   );
-};
-
-const App = () => {
-  return <Children />;
 };
 
 const root = ReactDOM.createRoot(document.querySelector('#root'));
