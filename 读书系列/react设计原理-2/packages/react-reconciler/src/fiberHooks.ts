@@ -241,6 +241,11 @@ function dispatchSetState<State>(
   scheduleUpdateOnFiber(fiber, lane);
 }
 
+/**
+ * mount时获取当前的hook，根据链表
+ *
+ * @return {*}  {Hook}
+ */
 function mountWorkInProgressHook(): Hook {
   const hook: Hook = {
     memoizedState: null,
@@ -266,6 +271,11 @@ function mountWorkInProgressHook(): Hook {
   return workInProgressHook;
 }
 
+/**
+ * update时获取当前的hook，根据链表
+ *
+ * @return {*}  {Hook}
+ */
 function updateWorkInProgressHook(): Hook {
   // TODO render阶段发生的更新
   let nextCurrentHook: Hook | null = null;
