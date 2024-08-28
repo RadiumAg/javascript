@@ -47,16 +47,6 @@ export const appendInitialChild = (
   parent.children.push(child);
 };
 
-export const createTextInstance = (content: string) => {
-  const instance = {
-    text: content,
-    id: instanceCounter++,
-    parent: -1,
-  };
-
-  return instance;
-};
-
 export const appendChildToContainer = (parent: Container, child: Instance) => {
   const prevParentID = child.parent;
 
