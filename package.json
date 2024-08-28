@@ -12,7 +12,8 @@
   "scripts": {
     "test-promise": "promises-aplus-tests  ./面试题/手写Promise/index.js",
     "lint-fix": "eslint ./**/* --fix ",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "run": "node test.js"
   },
   "dependencies": {
     "esno": "^0.17.0",

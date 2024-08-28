@@ -5,29 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Edge",
-      "request": "launch",
-      "type": "msedge",
-      "url": "http://localhost:5173/",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
       "name": "esno",
       "type": "node",
       "request": "launch",
-      "args": [
-        "./node_modules/esno/esno.js",
-        "${file}"
-      ],
+      "args": ["./node_modules/esno/esno.js", "${file}"],
       "console": "integratedTerminal"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "启动程序",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "node",
       "program": "${file}"
     },
     {
