@@ -1,0 +1,16 @@
+{
+  "name": "react-noop-renderer",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "module": "index.ts",
+  "peerDependencies": {
+    "react": "workspace:*"
+  },
+  "dependencies": {
+    "react-reconciler": "workspace:*",
+    "shared": "workspace:*"
+  }
+}
