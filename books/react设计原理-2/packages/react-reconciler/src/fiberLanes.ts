@@ -22,7 +22,7 @@ export function requestUpdateLanes() {
  * @param {Lanes} lanes
  * @return {*}  {Lane}
  */
-export function getHighesProiorityLane(lanes: Lanes): Lane {
+export function getHighestPriorityLane(lanes: Lanes): Lane {
   return lanes & -lanes;
 }
 

@@ -23,7 +23,7 @@ import {
   Lane,
   NoLane,
   SyncLane,
-  getHighesProiorityLane,
+  getHighestPriorityLane,
   markRootFinished,
   mergeLanes,
 } from './fiberLanes';
@@ -57,7 +57,7 @@ function markRootUpdated(root: FiberRootNode, lane: Lane) {
 }
 
 function ensureRootIsSchedule(root: FiberRootNode) {
-  const updateLane = getHighesProiorityLane(root.pendingLanes);
+  const updateLane = getHighestPriorityLane(root.pendingLanes);
   if (updateLane === NoLane) {
     return;
   }
@@ -90,7 +90,7 @@ function markUpdateFromFiberToRoot(fiber: FiberNode) {
 }
 
 function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
-  const nextLanes = getHighesProiorityLane(root.pendingLanes);
+  const nextLanes = getHighestPriorityLane(root.pendingLanes);
 
   if (nextLanes !== SyncLane) {
     // 其它比SyncLane低的优先级
@@ -183,11 +183,11 @@ function commitRoot(root: FiberRootNode) {
 
   // 判断是否存在3个子阶段需要执行的操作
   // root flags root subtreeFlags
-  const subtreeHasEffec =
+  const subtreeHasEffect =
     (finishedWork.subtreeFlags & MutationMask) !== NoFlags;
   const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags;
 
-  if (subtreeHasEffec || rootHasEffect) {
+  if (subtreeHasEffect || rootHasEffect) {
     // beforeMutation
     // mutation Placement
     commitMutationEffect(finishedWork, root);
