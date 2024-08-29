@@ -85,17 +85,17 @@ const HooksDispatcherOnUpdate: Dispatcher = {
 function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
   const hook = updateWorkInProgressHook();
   const nextDeps = deps === undefined ? null : deps;
-  let desotry: EffectCallback | void;
+  let destory: EffectCallback | void;
 
   if (currentHook !== null) {
     const prevEffect = currentHook.memoizedState as Effect;
-    desotry = prevEffect.destory;
+    destory = prevEffect.destory;
 
     if (nextDeps !== null) {
       // 浅比较依赖
       const prevDeps = prevEffect.deps;
       if (areHookInputsEqual(nextDeps, prevDeps)) {
-        hook.memoizedState = pushEffect(Passive, create, desotry, nextDeps);
+        hook.memoizedState = pushEffect(Passive, create, destory, nextDeps);
         return;
       }
     }
@@ -153,12 +153,12 @@ function pushEffect(
     deps,
     next: null,
   };
-  const filber = currentlyRenderingFiber as FiberNode;
-  const updateQueue = filber.updateQueue as FCUpdateQueue<any>;
+  const fiber = currentlyRenderingFiber as FiberNode;
+  const updateQueue = fiber.updateQueue as FCUpdateQueue<any>;
 
   if (updateQueue === null) {
     const updateQueue = createFCUpdateQueue();
-    filber.updateQueue = updateQueue;
+    fiber.updateQueue = updateQueue;
     effect.next = effect;
     updateQueue.lastEffect = effect;
   } else {
@@ -290,7 +290,7 @@ function updateWorkInProgressHook(): Hook {
       nextCurrentHook = null;
     }
   } else {
-    // 这个FC updage时 后续的hook
+    // 这个FC update时 后续的hook
     nextCurrentHook = currentHook?.next;
   }
 
