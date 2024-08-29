@@ -1,0 +1,16 @@
+{
+  "name": "learn-koa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.15.3"
+  },
+  "repository": "https://github.com/RadiumAg/javascript.git"
+}
