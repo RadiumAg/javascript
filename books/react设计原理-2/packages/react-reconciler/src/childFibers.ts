@@ -6,7 +6,7 @@ import {
   createFiberFromFragement,
   createWorkInProgress,
 } from './fiber';
-import { Fragement, HostText } from './workTags';
+import { Fragment, HostText } from './workTags';
 import { ChildDeletion, Placement } from './fiberFlags';
 
 type existingChildren = Map<string | number, FiberNode>;
@@ -357,7 +357,7 @@ function updateFragement(
 ) {
   let fiber;
 
-  if (!current || current.tag !== Fragement) {
+  if (!current || current.tag !== Fragment) {
     fiber = createFiberFromFragement(elements, key);
   } else {
     existingChildren.delete(key);

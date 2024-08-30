@@ -1,7 +1,7 @@
 import { Key, Props, ReactElement, Ref } from 'shared/ReactTypes';
 import { Container } from 'hostConfig';
 import {
-  Fragement,
+  Fragment,
   FunctionComponent,
   HostComponent,
   WorkTag,
@@ -133,6 +133,6 @@ export function createFiberFromElement(element: ReactElement): FiberNode {
 }
 
 export function createFiberFromFragement(elements: any[], key: Key): FiberNode {
-  const fiber = new FiberNode(Fragement, elements, key);
+  const fiber = new FiberNode(Fragment, elements, key);
   return fiber;
 }
