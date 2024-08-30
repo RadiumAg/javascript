@@ -24,6 +24,7 @@ import {
   NoLane,
   SyncLane,
   getHighestPriorityLane,
+  lanesToSchedulePriority,
   markRootFinished,
   mergeLanes,
 } from './fiberLanes';
@@ -71,7 +72,22 @@ function ensureRootIsSchedule(root: FiberRootNode) {
     scheduleMicorTask(flushSyncCallbacks);
   } else {
     // 其它优先级 用宏任务调度
+    const schedulePriority = lanesToSchedulePriority(updateLane);
+    scheduleCallback(
+      schedulePriority,
+      // @ts-ignore
+      performConcurrentWorkOnRoot.bind(null, root),
+    );
   }
+}
+
+function performConcurrentWorkOnRoot(root: FiberRootNode, didTimeout: boolean) {
+  const lane = getHighestPriorityLane(root.pendingLanes);
+  if (lane === NoLane) {
+    return null;
+  }
+  const needSync = lane === SyncLane || didTimeout;
+  // render 阶段
 }
 
 function markUpdateFromFiberToRoot(fiber: FiberNode) {
@@ -119,6 +135,12 @@ function performSyncWorkOnRoot(root: FiberRootNode, lane: Lane) {
 
   // wip fiberNode树 中的flags
   commitRoot(root);
+}
+
+function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
+  if (__DEV__) {
+    console.log();
+  }
 }
 
 /**
