@@ -248,7 +248,7 @@ function dispatchSetState<State>(
  */
 function mountWorkInProgressHook(): Hook {
   const hook: Hook = {
-    memoizedState: null,
+    memoizedState: null, // useState中保存state信息 | useEffect中保存effect对象信息
     updateQueue: null,
     next: null,
   };
