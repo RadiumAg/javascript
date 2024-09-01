@@ -1,5 +1,6 @@
 import { Key, Props, ReactElement, Ref } from 'shared/ReactTypes';
 import { Container } from 'hostConfig';
+import { CallbackNode } from 'scheduler';
 import {
   Fragment,
   FunctionComponent,
@@ -73,6 +74,9 @@ export class FiberRootNode {
   finishedLane: Lane;
   pendingPassiveEffects: PendingPassiveEffects;
 
+  callbackNode: CallbackNode | null;
+  callbackPriority: Lane;
+
   constructor(container: Container, hostRootFiber: FiberNode) {
     this.container = container;
     this.current = hostRootFiber;
@@ -80,6 +84,10 @@ export class FiberRootNode {
     this.finishedWork = null;
     this.pendingLanes = NoLane;
     this.finishedLane = NoLane;
+
+    this.callbackNode = null;
+    this.callbackPriority = NoLane;
+
     this.pendingPassiveEffects = {
       unmount: [],
       update: [],
