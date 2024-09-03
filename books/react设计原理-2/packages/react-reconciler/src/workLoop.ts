@@ -87,9 +87,12 @@ function ensureRootIsSchedule(root: FiberRootNode) {
   }
 }
 
-function performConcurrentWorkOnRoot(root: FiberRootNode, didTimeout: boolean) {
+function performConcurrentWorkOnRoot(
+  root: FiberRootNode,
+  didTimeout: boolean,
+): any {
   const lane = getHighestPriorityLane(root.pendingLanes);
-  const curCallbackNode = root.callbackNode();
+  const curCallbackNode = root.callbackNode;
 
   if (lane === NoLane) {
     return null;
@@ -98,10 +101,26 @@ function performConcurrentWorkOnRoot(root: FiberRootNode, didTimeout: boolean) {
   // render 阶段
   const exitStatus = renderRoot(root, lane, !needSync);
 
-  ensureRootIsSchedule();
+  ensureRootIsSchedule(root);
+
+  if (exitStatus === RootInComplete) {
+    // 中断
+    // eslint-disable-next-line unicorn/no-lonely-if
+    if (root.callbackNode !== curCallbackNode) {
+      return null;
+    }
+    return performConcurrentWorkOnRoot.bind(null, root);
+  }
 
   if (exitStatus === RootCompleted) {
-    // 中断
+    const finishedWork = root.current.alternate;
+    root.finishedWork = finishedWork;
+    root.finishedLane = lane;
+    wipRootRenderLane = NoLane;
+
+    commitRoot(root);
+  } else if (__DEV__) {
+    console.error('还未实现的并发更新结束状态');
   }
 }
 
