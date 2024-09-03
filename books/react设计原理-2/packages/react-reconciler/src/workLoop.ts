@@ -2,6 +2,7 @@ import { scheduleMicorTask } from 'hostConfig';
 import {
   unstable_NormalPriority as NormalPriority,
   unstable_scheduleCallback as scheduleCallback,
+  unstable_cancelCallback,
   unstable_shouldYield,
 } from 'scheduler';
 import { beginWork } from './beginWork';
@@ -65,7 +66,21 @@ function markRootUpdated(root: FiberRootNode, lane: Lane) {
 
 function ensureRootIsSchedule(root: FiberRootNode) {
   const updateLane = getHighestPriorityLane(root.pendingLanes);
+  const existingCallback = root.callbackNode;
+
   if (updateLane === NoLane) {
+    if (existingCallback !== null) {
+      unstable_cancelCallback(existingCallback);
+    }
+    root.callbackNode = null;
+    root.callbackPriority = NoLane;
+    return;
+  }
+
+  const curPriority = updateLane;
+  const prevPriority = root.callbackPriority;
+
+  if (curPriority === prevPriority) {
     return;
   }
 
