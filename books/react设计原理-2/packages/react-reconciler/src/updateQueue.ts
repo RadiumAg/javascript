@@ -1,6 +1,6 @@
 import { Dispatch } from 'react/src/currentDispatcher';
 import { Action } from 'shared/ReactTypes';
-import { Lane } from './fiberLanes';
+import { Lane, isSubsetOfLanes } from './fiberLanes';
 
 export interface Update<State> {
   action: Action<State>;
@@ -75,7 +75,13 @@ export const processUpdateQueue = <State>(
     do {
       const updateLane = pending?.lane;
 
-      if (updateLane === renderLane) {
+      if (!isSubsetOfLanes(renderLane, updateLane)) {
+        // 优先级不够，被跳过
+        if (__DEV__) {
+          console.error('不应该进入updateLane !== renderLane逻辑');
+          break;
+        }
+      } else {
         const action = pendingUpdate.action;
 
         if (action instanceof Function) {
@@ -85,10 +91,8 @@ export const processUpdateQueue = <State>(
           // baseState 1 update (x) => memoizedState 2
           baseState = action;
         }
-      } else if (__DEV__) {
-        console.error('不应该进入updateLane !== renderLane逻辑');
-        break;
       }
+
       pending = pending?.next as Update<any>;
     } while (pending !== first);
   }
