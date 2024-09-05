@@ -24,3 +24,5 @@
 
 // super关键字的用法
 // super关键字，指向当前对象的原型对象
+
+// AggregateError 错误对象
