@@ -2,9 +2,7 @@
   "env": {
     "jest": true
   },
-  "extends": [
-    "@raag/eslint-config-ts"
-  ],
+  "extends": ["@raag/eslint-config-ts"],
   "rules": {
     "unicorn/number-literal-case": "off"
   }
