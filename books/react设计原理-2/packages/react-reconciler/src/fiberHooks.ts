@@ -3,6 +3,7 @@ import { Dispatch, Dispatcher } from 'react/src/currentDispatcher';
 import { Action } from 'shared/ReactTypes';
 import { FiberNode } from './fiber';
 import {
+  Update,
   UpdateQueue,
   createUpdate,
   createUpdateQueue,
@@ -25,6 +26,8 @@ interface Hook {
   memoizedState: any;
   updateQueue: unknown;
   next: Hook | null;
+  baseState: any;
+  baseQueue: Update<any> | null;
 }
 
 export interface Effect {
@@ -214,7 +217,10 @@ function updateState<State>(): [State, Dispatch<State>] {
 
   // 计算新的state的逻辑
   const queue = hook.updateQueue as UpdateQueue<State>;
+  const baseState = hook.baseState;
   const pending = queue.shared.pending;
+
+  //pending update 保存在current中
 
   if (pending !== null) {
     const { memoizedState } = processUpdateQueue(
