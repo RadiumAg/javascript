@@ -66,7 +66,7 @@ export function lanesToSchedulePriority(lanes: Lanes) {
     return unstable_UserBlockingPriority;
   }
 
-  if ((lane = DefaultLane)) {
+  if (lane === DefaultLane) {
     return unstable_NormalPriority;
   }
 
