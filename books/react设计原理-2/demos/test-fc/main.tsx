@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const Children = () => {
+const Children = ({ children }) => {
+  const now = performance.now();
+  while (performance.now() - now < 4) {}
   useEffect(() => {
     console.log('child mount');
     return () => {
@@ -9,11 +11,12 @@ const Children = () => {
     };
   }, []);
 
-  return <div>child</div>;
+  return <div>{children}</div>;
 };
 
 const App = () => {
   const [visible, setVisible] = useState(true);
+  const [num, update] = useState(100);
 
   useEffect(() => {
     console.log('parent mount');
@@ -31,6 +34,11 @@ const App = () => {
     >
       button
       {visible && <Children />}
+      <ul>
+        {new Array(num).fill(0).map((_, i) => {
+          return <Children key={i}>{i}</Children>;
+        })}
+      </ul>
     </div>
   );
 };
