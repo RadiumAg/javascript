@@ -205,6 +205,7 @@ function updateTransition(): [boolean, (callback: () => void) => void] {
 }
 
 function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
+  // 立即触发isPending，先渲染一次
   setPending(true);
   const prevTransition = currentBatchConfig.transition;
   currentBatchConfig.transition = 1;
