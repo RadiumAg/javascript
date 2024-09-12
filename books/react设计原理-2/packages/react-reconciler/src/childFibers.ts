@@ -3,7 +3,7 @@ import { REACT_ELEMENT_TYPE, REACT_FRAGEMENT_TYPE } from 'shared/ReactSymbols';
 import {
   FiberNode,
   createFiberFromElement,
-  createFiberFromFragement,
+  createFiberFromFragment,
   createWorkInProgress,
 } from './fiber';
 import { Fragment, HostText } from './workTags';
@@ -86,7 +86,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     // 根据element创建fiber
     let fiber;
     if (element.type === REACT_FRAGEMENT_TYPE) {
-      fiber = createFiberFromFragement(element.props.chidlren, key);
+      fiber = createFiberFromFragment(element.props.chidlren, key);
     } else {
       fiber = createFiberFromElement(element);
     }
@@ -358,7 +358,7 @@ function updateFragement(
   let fiber;
 
   if (!current || current.tag !== Fragment) {
-    fiber = createFiberFromFragement(elements, key);
+    fiber = createFiberFromFragment(elements, key);
   } else {
     existingChildren.delete(key);
     fiber = useFiber(current, elements);

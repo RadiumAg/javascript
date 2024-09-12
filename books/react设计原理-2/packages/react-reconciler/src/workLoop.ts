@@ -10,6 +10,7 @@ import {
   commitHookEffectListCreate,
   commitHookEffectListDestory,
   commitHookEffectListUnmount,
+  commitLayoutEffect,
   commitMutationEffect,
 } from './commitWork';
 import { completeWork } from './completeWork';
@@ -283,10 +284,14 @@ function commitRoot(root: FiberRootNode) {
 
   if (subtreeHasEffect || rootHasEffect) {
     // beforeMutation
+
     // mutation Placement
     commitMutationEffect(finishedWork, root);
+
+    // Fiber Tree切换
     root.current = finishedWork;
-    // layout
+    // 阶段3 layout
+    commitLayoutEffect(finishedWork, root);
   } else {
     root.current = finishedWork;
   }

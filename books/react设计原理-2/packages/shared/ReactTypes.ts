@@ -1,10 +1,7 @@
 export type Type = any;
 export type Key = any;
 export type Ref = { current: any } | ((instance: any) => void);
-export type Props = {
-  [key: string]: any;
-  children: any;
-};
+export type Props = any;
 export type ElementType = any;
 
 export interface ReactElement {
