@@ -11,6 +11,7 @@ import {
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
 import { Lane } from './fiberLanes';
+import { Ref } from './fiberFlags';
 
 /**
  * 递归中的递阶段
@@ -69,11 +70,12 @@ function updateHostRoot(wip: FiberNode, renderLane: Lane) {
   return wip.child;
 }
 
-function updateHostComponent(wip: FiberNode) {
-  const nextProps = wip.pendingProps;
+function updateHostComponent(workInProgress: FiberNode) {
+  const nextProps = workInProgress.pendingProps;
   const nextChildren = nextProps.children;
-  reconcileChildren(wip, nextChildren);
-  return wip.child;
+  markRef(workInProgress.alternate, workInProgress);
+  reconcileChildren(workInProgress, nextChildren);
+  return workInProgress.child;
 }
 
 /**
@@ -91,5 +93,24 @@ function reconcileChildren(wip: FiberNode, children: ReactElement) {
   } else {
     // mount
     wip.child = mountChildFibers(wip, null, children);
+  }
+}
+
+/**
+ * 该函数 markRef 用于标记 FiberNode 的引用状态。具体功能如下：
+   比较 current 和 workInProgress 节点的引用（ref）。
+   如果 current 为空且 workInProgress 的引用不为空，或两者引用不同，则标记 workInProgress 的 flags 添加 Ref 标志。
+ *
+ * @param {(FiberNode | null)} current
+ * @param {FiberNode} workInProgress
+ */
+function markRef(current: FiberNode | null, workInProgress: FiberNode) {
+  const ref = workInProgress.ref;
+
+  if (
+    (current === null && ref !== null) ||
+    (current !== null && current.ref !== ref)
+  ) {
+    workInProgress.flags |= Ref;
   }
 }
