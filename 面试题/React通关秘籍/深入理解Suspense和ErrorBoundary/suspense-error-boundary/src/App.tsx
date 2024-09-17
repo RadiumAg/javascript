@@ -15,10 +15,11 @@ const UserName = ()=> {
 }
 
 function App() {
-  console.log(UserName());
 
   return (
+    <Suspense fallback="Loading...">
       <UserName />
+    </Suspense>
    
   );
 }
