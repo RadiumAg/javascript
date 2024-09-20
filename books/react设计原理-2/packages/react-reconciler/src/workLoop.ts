@@ -339,7 +339,7 @@ function workLoopConcurrent() {
   }
 }
 /**
- * 创建执行执行单元
+ * 创建执行执行单元，mount时递归创建子FIber
  *
  * @param {FiberNode} fiber
  */
