@@ -43,7 +43,7 @@ function workLoop(deadline) {
 }
 
 function commitRoot() {
-  deletions.forEach(element => {
+  deletions.forEach((element) => {
     commitWork(element);
   });
   commitWork(wipRoot.child);
@@ -103,7 +103,7 @@ function commitEffectHooks() {
   function run(fiber) {
     if (!fiber) return;
 
-    fiber.effectHooks.forEach((newHook, index) => {
+    fiber.effectHooks?.forEach((newHook, index) => {
       if (!fiber.alternate) {
         newHook.cleanup = newHook.callback();
       }
@@ -187,48 +187,50 @@ function updateHostComponent(fiber) {
 function createDom(fiber) {
   const dom =
     fiber.type === 'TEXT_ELEMENT'
-      ? document.createTextNode('')
+      ? document.createTextNode(fiber.type.nodeValue)
       : document.createElement(fiber.type);
 
   updateDom(dom, {}, fiber.props);
+
+  return dom;
 }
 
-const isEvent = key => key.startsWith('on');
-const isProperty = key => key !== 'children' && !isEvent(key);
-const isNew = (prev, next) => key => prev[key] !== next[key];
-const isGone = (prev, next) => key => !(key in next);
+const isEvent = (key) => key.startsWith('on');
+const isProperty = (key) => key !== 'children' && !isEvent(key);
+const isNew = (prev, next) => (key) => prev[key] !== next[key];
+const isGone = (prev, next) => (key) => !(key in next);
 
 function updateDom(dom, prevProps, nextProps) {
   // Remove old or changed event listeners
   Object.keys(prevProps)
-    .filter(element => isEvent(element))
-    .filter(key => !(key in nextProps) || isNew(prevProps, nextProps)(key))
-    .forEach(name => {
+    .filter((element) => isEvent(element))
+    .filter((key) => !(key in nextProps) || isNew(prevProps, nextProps)(key))
+    .forEach((name) => {
       const eventType = name.toLowerCase().slice(2);
       dom.removeEventListener(eventType, prevProps[name]);
     });
 
   // Revmoe old properties
   Object.keys(prevProps)
-    .filter(element => isProperty(element))
+    .filter((element) => isProperty(element))
     .filter(isGone(prevProps, nextProps))
-    .forEach(name => {
+    .forEach((name) => {
       dom[name] = '';
     });
 
   // Set new or changed properties
   Object.keys(nextProps)
-    .filter(element => isProperty(element))
+    .filter((element) => isProperty(element))
     .filter(isNew(prevProps, nextProps))
-    .forEach(name => {
+    .forEach((name) => {
       dom[name] = nextProps[name];
     });
 
   // Add event listeners
   Object.keys(nextProps)
-    .filter(element => isEvent(element))
+    .filter((element) => isEvent(element))
     .filter(isNew(prevProps, nextProps))
-    .forEach(name => {
+    .forEach((name) => {
       const eventType = name.toLowerCase().slice(2);
       dom.addEventListener(eventType, nextProps[name]);
     });
@@ -244,8 +246,9 @@ function reconcileChildren(wipFiber, elements) {
   let index = 0;
   let oldFiber = wipFiber.alternate?.child;
   let prevSibling = null;
+  debugger
 
-  while (index < elements.length || oldFiber !== null) {
+  while (index < elements.length && oldFiber !== null) {
     const element = elements[index];
     let newFiber = null;
 
@@ -283,7 +286,7 @@ function reconcileChildren(wipFiber, elements) {
     }
 
     if (index === 0) {
-      oldFiber = oldFiber.sibling;
+      wipFiber.child = newFiber;
     } else if (element) {
       prevSibling.sibling = newFiber;
     }
@@ -306,7 +309,7 @@ function createElement(type, props, ...children) {
     type,
     props: {
       ...props,
-      children: children.map(child => {
+      children: children.map((child) => {
         const isTextNode =
           typeof child === 'string' || typeof child === 'number';
         return isTextNode ? createTextNode(child) : child;
@@ -317,7 +320,7 @@ function createElement(type, props, ...children) {
 
 function createTextNode(nodeValue) {
   return {
-    type: 'text',
+    type: 'TEXT_ELEMENT',
     props: {
       nodeValue,
       children: [],
@@ -336,7 +339,7 @@ function useState(initialState) {
   };
 
   // 执行action，拿到了最终的值
-  stateHook.queue.forEach(action => {
+  stateHook.queue.forEach((action) => {
     stateHook.state = action(stateHook.state);
   });
 

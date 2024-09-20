@@ -1,5 +1,7 @@
-const content = (<div>
+const App = (
+  <div>
     <a href="xxx">link</a>
-</div>)
+  </div>
+);
 
-console.log(JSON.stringify(content, null, 2));
+MiniReact.render(App, document.querySelector('#root'));
