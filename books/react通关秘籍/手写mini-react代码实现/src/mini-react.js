@@ -1,6 +1,7 @@
 let nextUnitOfWork = null;
 let wipRoot = null;
 let currentRoot = null;
+let deletions = [];
 
 /**
  * 传入ReactElement结构，并且
@@ -17,6 +18,8 @@ function render(element, container) {
     alternate: currentRoot,
   };
 
+  deletions = [];
+
   nextUnitOfWork = wipRoot;
 }
 
@@ -31,14 +34,48 @@ function workLoop(deadline) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     shouldYield = deadline.timeRemaining() < 1;
   }
+
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot();
+  }
+
   requestIdleCallback(workLoop);
 }
 
+function commitRoot() {
+  deletions.forEach(element => {
+    commitWork(element);
+  });
+  commitWork(wipRoot.child);
+  currentRoot = wipRoot;
+  wipRoot = null;
+  deletions = [];
+}
+
+function commitWork(fiber) {
+  if (!fiber) {
+    return;
+  }
+
+  let domParentFiber = fiber.return;
+  while (!domParentFiber.dom) {
+    domParentFiber = domParentFiber.return;
+  }
+
+  const domParent = domParentFiber.dom;
+  if (fiber.effectTag === 'PLACEMENT' && fiber.dom !== null) {
+    domParent.append(fiber.dom);
+  }
+
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+}
+
 function performUnitOfWork(fiber) {
-  const isFunctionComponent = typeof fiber.type === 'function'
-  if(isFunctionComponent) {
-    updateFunctionComponent(fiber)
-  }else {
+  const isFunctionComponent = typeof fiber.type === 'function';
+  if (isFunctionComponent) {
+    updateFunctionComponent(fiber);
+  } else {
     updateHostComponent(fiber);
   }
 
@@ -58,28 +95,89 @@ function performUnitOfWork(fiber) {
 let wipFiber = null;
 let stateHookIndex = 0;
 
-function updateFunctionComponent(fiber){
-    wipFiber = fiber;
-    stateHookIndex = 0;
-    wipFiber.stateHooks = [];
-    wipFiber.effectHooks = [];
+function updateFunctionComponent(fiber) {
+  wipFiber = fiber;
+  stateHookIndex = 0;
+  wipFiber.stateHooks = [];
+  wipFiber.effectHooks = [];
 
-    const children = [fiber.type(fiber.props)];
-    reconcileChildren(fiber,children);
+  const children = [fiber.type(fiber.props)];
+  reconcileChildren(fiber, children);
 }
 
 function updateHostComponent(fiber) {
-    if(!fiber.dom) {
-     fiber.dom == createDom(fiber);
-    }
-    reconcileChildren(fiber,fiber.props.children);
+  if (!fiber.dom) {
+    fiber.dom == createDom(fiber);
+  }
+  reconcileChildren(fiber, fiber.props.children);
 }
 
-function createDom(fiber){
-    const dom =
-    fiber.type === "TEXT_ELEMENT"? document.createTextNode(""): document.createElement(fiber.type);
+function createDom(fiber) {
+  const dom =
+    fiber.type === 'TEXT_ELEMENT'
+      ? document.createTextNode('')
+      : document.createElement(fiber.type);
 
-    updateDom(dom, {}, fiber.props);
+  updateDom(dom, {}, fiber.props);
+}
+
+/**
+ * 根据children字段创建子fiber
+ *
+ * @param {*} wipFiber
+ * @param {*} elements
+ */
+function reconcileChildren(wipFiber, elements) {
+  let index = 0;
+  let oldFiber = wipFiber.alternate?.child;
+  let prevSibling = null;
+
+  while (index < elements.length || oldFiber !== null) {
+    const element = elements[index];
+    let newFiber = null;
+
+    const sameType = element.type === oldFiber?.type;
+
+    if (sameType) {
+      newFiber = {
+        type: oldFiber.type,
+        props: element.props,
+        dom: oldFiber.dom,
+        return: wipFiber,
+        alternate: oldFiber,
+        effectTag: 'UPDATE',
+      };
+    }
+
+    if (element && !sameType) {
+      newFiber = {
+        type: element.type,
+        props: element.props,
+        dom: null,
+        return: wipFiber,
+        alternate: null,
+        effectTag: 'PLACEMENT',
+      };
+    }
+
+    if (oldFiber && !sameType) {
+      oldFiber.effectTag = 'DELETION';
+      deletions.push(oldFiber);
+    }
+
+    if (oldFiber) {
+      oldFiber = oldFiber.sibling;
+    }
+
+    if (index === 0) {
+      oldFiber = oldFiber.sibling;
+    } else if (element) {
+      prevSibling.sibling = newFiber;
+    }
+
+    prevSibling = newFiber;
+    index++;
+  }
 }
 
 /**
@@ -95,17 +193,10 @@ function createElement(type, props, ...children) {
     type,
     props: {
       ...props,
-      children: children.map((child) => {
+      children: children.map(child => {
         const isTextNode =
           typeof child === 'string' || typeof child === 'number';
-        return isTextNode
-          ? {
-              type: 'text',
-              props: {
-                nodeValue: child,
-              },
-            }
-          : child;
+        return isTextNode ? createTextNode(child) : child;
       }),
     },
   };
@@ -121,9 +212,59 @@ function createTextNode(nodeValue) {
   };
 }
 
+function useState(initialState) {
+  const currentFiber = wipFiber;
+
+  const oldHook = wipFiber.alternate?.stateHooks?.[stateHookIndex];
+
+  const stateHook = {
+    state: oldHook ? oldHook.state : initialState,
+    queue: oldHook ? oldHook.queue : [],
+  };
+
+  // 执行action，拿到了最终的值
+  stateHook.queue.forEach(action => {
+    stateHook.state = action(stateHook.state);
+  });
+
+  // 修改完成重置
+  stateHook.queue = [];
+
+  stateHookIndex++;
+  wipFiber.stateHooks.push(stateHook);
+
+  function setState(action) {
+    const isFunction = typeof action === 'function';
+
+    stateHook.queue.push(isFunction ? action : () => action);
+
+    wipFiber = {
+      ...currentFiber,
+      alternate: currentFiber,
+    };
+
+    nextUnitOfWork = wipRoot;
+  }
+
+  return [stateHook.state, setState];
+}
+
+function useEffect(callback, deps) {
+  const effectHook = {
+    callback,
+    deps,
+    cleanup: undefined,
+  };
+
+  wipFiber.effectHooks.push(effectHook);
+}
+
 requestIdleCallback(workLoop);
 
 const MiniReact = {
+  render,
+  useState,
+  useEffect,
   createElement,
 };
 
