@@ -1,5 +1,5 @@
 import { Key, Props, ReactElement } from 'shared/ReactTypes';
-import { REACT_ELEMENT_TYPE, REACT_FRAGEMENT_TYPE } from 'shared/ReactSymbols';
+import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
 import {
   FiberNode,
   createFiberFromElement,
@@ -59,7 +59,7 @@ function childReconciler(shouldTrackEffects: boolean) {
         if (element.$$typeof === REACT_ELEMENT_TYPE) {
           if (currentFiber.type === element.type) {
             let props = element.props;
-            if (element.type === REACT_FRAGEMENT_TYPE) {
+            if (element.type === REACT_FRAGMENT_TYPE) {
               props = element.props.chidlren;
             }
             // type 相同
@@ -85,7 +85,7 @@ function childReconciler(shouldTrackEffects: boolean) {
 
     // 根据element创建fiber
     let fiber;
-    if (element.type === REACT_FRAGEMENT_TYPE) {
+    if (element.type === REACT_FRAGMENT_TYPE) {
       fiber = createFiberFromFragment(element.props.chidlren, key);
     } else {
       fiber = createFiberFromElement(element);
@@ -132,7 +132,7 @@ function childReconciler(shouldTrackEffects: boolean) {
   }
 
   /**
-   * 处理子节点是数组的情况
+   * 处理子节点是数组的情况，并且打上标记
    *
    * @param {FiberNode} returnFiber
    * @param {(FiberNode | null)} currentFirstChild
@@ -243,7 +243,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     if (typeof element === 'object' && element !== null) {
       switch (element.$$typeof) {
         case REACT_ELEMENT_TYPE:
-          if (element.type === REACT_FRAGEMENT_TYPE) {
+          if (element.type === REACT_FRAGMENT_TYPE) {
             return updateFragement(
               returnFiber,
               before,
@@ -285,13 +285,13 @@ function childReconciler(shouldTrackEffects: boolean) {
     currentFiber: FiberNode | null,
     newChild: ReactElement,
   ) {
-    const isUnkeyedTopLevelFragement =
+    const isUnkeyedTopLevelFragment =
       typeof newChild === 'object' &&
       newChild !== null &&
-      newChild.type === REACT_FRAGEMENT_TYPE &&
+      newChild.type === REACT_FRAGMENT_TYPE &&
       newChild.key === null;
 
-    if (isUnkeyedTopLevelFragement) {
+    if (isUnkeyedTopLevelFragment) {
       newChild = newChild.props.children;
     }
 

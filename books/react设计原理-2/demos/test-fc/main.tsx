@@ -33,12 +33,12 @@ const App = () => {
       }}
     >
       button
-      {visible && <Children />}
-      <ul>
+      {visible && <Children>{num}</Children>}
+      {/* <ul>
         {new Array(num).fill(0).map((_, i) => {
           return <Children key={i}>{i}</Children>;
         })}
-      </ul>
+      </ul> */}
     </div>
   );
 };

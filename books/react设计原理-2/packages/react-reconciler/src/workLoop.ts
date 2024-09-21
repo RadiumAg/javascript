@@ -348,6 +348,7 @@ function performUnitOfWork(fiber: FiberNode) {
   fiber.memoizedProps = fiber.pendingProps;
 
   if (next === null) {
+    // 最终是子Fiber
     completeUnitOfWork(fiber);
   } else {
     workInProgress = next;
@@ -355,7 +356,7 @@ function performUnitOfWork(fiber: FiberNode) {
 }
 
 /**
- * 遍历兄弟节点
+ * 每次构造一条链，然后处理completeWork
  * @param fiber
  */
 function completeUnitOfWork(fiber: FiberNode) {
@@ -370,6 +371,7 @@ function completeUnitOfWork(fiber: FiberNode) {
       return;
     }
     node = node.return;
+    // 再次赋值，遵从child, sibling, return 的顺序
     workInProgress = node;
   } while (node !== null);
 }

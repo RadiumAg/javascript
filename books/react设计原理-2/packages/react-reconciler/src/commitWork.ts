@@ -44,6 +44,7 @@ export const commitEffect = (
 ) => {
   return (finishedWork: FiberNode, root: FiberRootNode) => {
     nextEffect = finishedWork;
+    debugger;
 
     while (nextEffect !== null) {
       // 向下遍历

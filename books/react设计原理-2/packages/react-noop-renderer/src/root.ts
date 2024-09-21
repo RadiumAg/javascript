@@ -4,7 +4,7 @@ import {
   updateContainer,
 } from 'react-reconciler/src/fiberReconciler';
 import { ReactElement } from 'shared/ReactTypes';
-import { REACT_ELEMENT_TYPE, REACT_FRAGEMENT_TYPE } from 'shared/ReactSymbols';
+import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
 import { Container, Instance } from './hostConfig';
 
 let idCounter = 0;
@@ -37,7 +37,7 @@ function getChildrenAsJSX(root: Container) {
   if (Array.isArray(children)) {
     return {
       $$typeof: REACT_ELEMENT_TYPE,
-      type: REACT_FRAGEMENT_TYPE,
+      type: REACT_FRAGMENT_TYPE,
       key: null,
       ref: null,
       prop: { children },

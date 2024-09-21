@@ -112,6 +112,7 @@ function appendAllChildren(parent: Container, workInProgress: FiberNode) {
 function bubbleProperties(workInProgress: FiberNode) {
   let subtreeFlags = NoFlags;
   let child = workInProgress.child;
+  console.log(workInProgress);
 
   while (child !== null) {
     subtreeFlags |= child.subtreeFlags;
