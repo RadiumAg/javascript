@@ -144,6 +144,7 @@ function isDeepsEqual(deps, newDeps) {
 }
 
 function performUnitOfWork(fiber) {
+  debugger
   const isFunctionComponent = typeof fiber.type === 'function';
   if (isFunctionComponent) {
     updateFunctionComponent(fiber);
@@ -151,6 +152,7 @@ function performUnitOfWork(fiber) {
     updateHostComponent(fiber);
   }
 
+  debugger
   if (fiber.child) {
     return fiber.child;
   }
@@ -246,13 +248,12 @@ function reconcileChildren(wipFiber, elements) {
   let index = 0;
   let oldFiber = wipFiber.alternate?.child;
   let prevSibling = null;
-  debugger
 
   while (index < elements.length && oldFiber !== null) {
     const element = elements[index];
     let newFiber = null;
 
-    const sameType = element.type === oldFiber?.type;
+    const sameType = element.type == oldFiber?.type;
 
     if (sameType) {
       newFiber = {
@@ -354,7 +355,7 @@ function useState(initialState) {
 
     stateHook.queue.push(isFunction ? action : () => action);
 
-    wipFiber = {
+     wipRoot = {
       ...currentFiber,
       alternate: currentFiber,
     };

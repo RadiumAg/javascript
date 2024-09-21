@@ -1,7 +1,16 @@
-const App = (
-  <div>
-    <a href="xxx">link</a>
-  </div>
-);
+const App = () => {
+  const [state, setState] = MiniReact.useState(2);
+  console.log(state);
 
-MiniReact.render(App, document.querySelector('#root'));
+  return (
+    <div
+      onClick={() => {
+        setState(state + 1);
+      }}
+    >
+      {state}
+    </div>
+  );
+};
+
+MiniReact.render(<App></App>, document.querySelector('#root'));
