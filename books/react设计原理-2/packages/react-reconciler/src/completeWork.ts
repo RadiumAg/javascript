@@ -109,6 +109,11 @@ function appendAllChildren(parent: Container, workInProgress: FiberNode) {
   }
 }
 
+/**
+ * 把下一层的flags冒泡到上一层
+ *
+ * @param {FiberNode} workInProgress
+ */
 function bubbleProperties(workInProgress: FiberNode) {
   let subtreeFlags = NoFlags;
   let child = workInProgress.child;
@@ -120,6 +125,5 @@ function bubbleProperties(workInProgress: FiberNode) {
     child.return = workInProgress;
     child = child.sibling;
   }
-  if (subtreeFlags === 8) debugger;
   workInProgress.subtreeFlags |= subtreeFlags;
 }
