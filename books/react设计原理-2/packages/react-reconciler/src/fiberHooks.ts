@@ -295,7 +295,7 @@ function updateState<State>(): [State, Dispatch<State>] {
     } = processUpdateQueue(baseState, baseQueue, renderLane);
     hook.memoizedState = memoizedState;
     hook.baseState = newBaseState;
-    hook.baseState = newBaseQueue;
+    hook.baseQueue = newBaseQueue;
   }
   return [hook.memoizedState, queue.dispatch as Dispatch<State>];
 }

@@ -26,7 +26,7 @@ export class FiberNode {
 
   // 最终确定状态
   memoizedProps: Props | null;
-  memoizedState: any;
+  memoizedState: any; // 用在hook
   alternate: FiberNode | null;
   flags: Flags;
   subtreeFlags: Flags;

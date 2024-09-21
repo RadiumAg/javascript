@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
 const Children = ({ children }) => {
-  const now = performance.now();
-  while (performance.now() - now < 4) {}
-  useEffect(() => {
-    console.log('child mount');
-    return () => {
-      console.log('child destory');
-    };
-  }, []);
+  const [state, setState] = useState(1);
 
-  return <div>{children}</div>;
+  console.log('children udpate');
+
+  return <div onClick={() => setState(state + 1)}>{state}</div>;
 };
 
 const App = () => {
-  const [visible, setVisible] = useState(true);
-  const [num, update] = useState(100);
-
+  console.log('parent udpate');
   // useEffect(() => {
   //   console.log('parent mount');
 
@@ -27,13 +20,8 @@ const App = () => {
   // }, []);
 
   return (
-    <div
-      onClick={() => {
-        // setVisible(!visible);
-        update(num + 1);
-      }}
-    >
-      {num}
+    <div>
+      <Children></Children>
       {/* {visible && <Children>{num}</Children>} */}
       {/* <ul>
         {new Array(num).fill(0).map((_, i) => {

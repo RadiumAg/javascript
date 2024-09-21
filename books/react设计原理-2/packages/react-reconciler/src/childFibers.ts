@@ -60,7 +60,7 @@ function childReconciler(shouldTrackEffects: boolean) {
           if (currentFiber.type === element.type) {
             let props = element.props;
             if (element.type === REACT_FRAGMENT_TYPE) {
-              props = element.props.chidlren;
+              props = element.props.children;
             }
             // type 相同
             const existing = useFiber(currentFiber, props);
@@ -86,7 +86,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     // 根据element创建fiber
     let fiber;
     if (element.type === REACT_FRAGMENT_TYPE) {
-      fiber = createFiberFromFragment(element.props.chidlren, key);
+      fiber = createFiberFromFragment(element.props.children, key);
     } else {
       fiber = createFiberFromElement(element);
     }
