@@ -7,9 +7,10 @@ const App = () => {
             console.log('parent delected');
         };
     }, []);
+    console.log('parent update');
     return (MiniReact.createElement("div", { onClick: () => {
-            setVisible(!visible);
-            setState(state + 1);
+            // setVisible(!visible);
+            // setState(state + 1);
         } },
         state,
         visible && MiniReact.createElement(Children, null)));
@@ -22,6 +23,9 @@ const Children = () => {
             console.log('children delected');
         };
     }, []);
-    return MiniReact.createElement("div", null, state);
+    console.log('children update');
+    return (MiniReact.createElement("div", { onClick: () => {
+            setState(state + 1);
+        } }, state));
 };
 MiniReact.render(MiniReact.createElement(App, null), document.querySelector('#root'));

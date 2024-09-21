@@ -10,15 +10,17 @@ const App = () => {
     };
   }, []);
 
+  console.log('parent update');
+
   return (
     <div
       onClick={() => {
-        setVisible(!visible)
-        setState(state + 1);
+        // setVisible(!visible);
+        // setState(state + 1);
       }}
     >
       {state}
-      {visible && <Children/> } 
+      {visible && <Children />}
     </div>
   );
 };
@@ -34,7 +36,17 @@ const Children = () => {
     };
   }, []);
 
-  return <div>{state}</div>;
+  console.log('children update');
+
+  return (
+    <div
+      onClick={() => {
+        setState(state + 1);
+      }}
+    >
+      {state}
+    </div>
+  );
 };
 
 MiniReact.render(<App></App>, document.querySelector('#root'));

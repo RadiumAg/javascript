@@ -6,7 +6,6 @@ import {
   insertChildToContainer,
   removeChild,
 } from 'hostConfig';
-import { effect } from 'vue';
 import {
   ChildDeletion,
   Flags,
@@ -30,6 +29,14 @@ import { Effect, FCUpdateQueue } from './fiberHooks';
 import { HookHasEffect } from './hookEffectTags';
 let nextEffect: FiberNode | null = null;
 
+/**
+ * mount和update阶段更新
+ *
+ * @param {string} phrase
+ * @param {Flags} mask
+ * @param {(fiber: FiberNode, root: FiberRootNode) => void} callback
+ * @return {*}
+ */
 export const commitEffect = (
   phrase: 'mutation' | 'layout',
   mask: Flags,
@@ -94,7 +101,7 @@ const commitMutationEffectOnFiber = (
     finishedWork.flags &= ~PassiveEffect;
   }
 
-  if ((flags & Ref) !== NoFlags && tag === HostComponent) {
+  if ((flags & Ref) !== NoFlags && finishedWork.tag === HostComponent) {
     safelyDetachRef(finishedWork);
   }
 };
@@ -185,9 +192,9 @@ function commitPassiveEffect(
  */
 export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
   commitHookEffectList(flags, lastEffect, effect => {
-    const desotry = effect.destory;
-    if (typeof desotry === 'function') {
-      desotry();
+    const destory = effect.destory;
+    if (typeof destory === 'function') {
+      destory();
     }
     effect.tag &= ~HookHasEffect;
   });
@@ -202,9 +209,9 @@ export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
  */
 export function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
   commitHookEffectList(flags, lastEffect, effect => {
-    const desotry = effect.destory;
-    if (typeof desotry === 'function') {
-      desotry();
+    const destory = effect.destory;
+    if (typeof destory === 'function') {
+      destory();
     }
   });
 }

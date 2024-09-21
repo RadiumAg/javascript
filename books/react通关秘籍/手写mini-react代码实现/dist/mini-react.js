@@ -298,6 +298,7 @@ function useState(initialState) {
     function setState(action) {
         const isFunction = typeof action === 'function';
         stateHook.queue.push(isFunction ? action : () => action);
+        // 标记当前的wipRoot为当前fiber，父级不刷新
         wipRoot = {
             ...currentFiber,
             alternate: currentFiber,

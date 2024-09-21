@@ -78,7 +78,7 @@ function commitWork(fiber) {
 }
 
 function commitDeletion(fiber, domParent) {
-  debugger
+  debugger;
   if (fiber.dom) {
     domParent.removeChild(fiber.dom);
   } else {
@@ -355,7 +355,8 @@ function useState(initialState) {
 
     stateHook.queue.push(isFunction ? action : () => action);
 
-     wipRoot = {
+    // 标记当前的wipRoot为当前fiber，父级不刷新
+    wipRoot = {
       ...currentFiber,
       alternate: currentFiber,
     };
