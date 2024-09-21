@@ -64,11 +64,12 @@ function commitWork(fiber) {
   }
 
   const domParent = domParentFiber.dom;
-  if (fiber.effectTag === 'PLACEMENT' && fiber.dom !== null) {
+
+  if (fiber.effectTag === 'PLACEMENT' && fiber.dom != null) {
     domParent.append(fiber.dom);
-  } else if (fiber.effectTag === 'UPDATE' && fiber.dom !== null) {
+  } else if (fiber.effectTag === 'UPDATE' && fiber.dom != null) {
     updateDom(fiber.dom, fiber.alternate.props, fiber.props);
-  } else if (fiber.effectTag === ' DELETION') {
+  } else if (fiber.effectTag === 'DELETION') {
     commitDeletion(fiber, domParent);
   }
 
@@ -77,8 +78,9 @@ function commitWork(fiber) {
 }
 
 function commitDeletion(fiber, domParent) {
+  debugger
   if (fiber.dom) {
-    fiber.dom.remove();
+    domParent.removeChild(fiber.dom);
   } else {
     commitDeletion(fiber.child, domParent);
   }
@@ -144,7 +146,6 @@ function isDeepsEqual(deps, newDeps) {
 }
 
 function performUnitOfWork(fiber) {
-  debugger
   const isFunctionComponent = typeof fiber.type === 'function';
   if (isFunctionComponent) {
     updateFunctionComponent(fiber);
@@ -152,7 +153,6 @@ function performUnitOfWork(fiber) {
     updateHostComponent(fiber);
   }
 
-  debugger
   if (fiber.child) {
     return fiber.child;
   }
