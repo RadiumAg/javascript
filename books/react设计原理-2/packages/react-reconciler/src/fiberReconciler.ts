@@ -12,6 +12,7 @@ import { scheduleUpdateOnFiber } from './workLoop';
 import { requestUpdateLanes } from './fiberLanes';
 
 export function createContainer(container: Container) {
+  // App组件
   const hostRootFiber = new FiberNode(HostRoot, {}, null);
   const root = new FiberRootNode(container, hostRootFiber);
   hostRootFiber.updateQueue = createUpdateQueue();

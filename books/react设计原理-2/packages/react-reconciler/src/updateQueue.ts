@@ -75,6 +75,7 @@ export const processUpdateQueue = <State>(
     baseQueue: null,
   };
   if (pendingUpdate !== null) {
+    debugger;
     const first = pendingUpdate.next;
     let pending = pendingUpdate.next as Update<any>;
 
