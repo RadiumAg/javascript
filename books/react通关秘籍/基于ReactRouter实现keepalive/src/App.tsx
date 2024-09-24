@@ -2,18 +2,19 @@ import { useState } from 'react';
 import {
   createBrowserRouter,
   Link,
-  Outlet,
   RouterProvider,
   useLocation,
 } from 'react-router-dom';
+import KeepAliveLayout, { useKeepOutlet } from './components/keep-alive';
 
 const Layout = () => {
   const { pathname } = useLocation();
+  const element = useKeepOutlet();
 
   return (
     <div>
       <div>当前路由：{pathname}</div>
-      <Outlet />
+      {element}
     </div>
   );
 };
@@ -60,7 +61,7 @@ const Ccc = () => {
 const routes = [
   {
     path: '/',
-    element: <Layout></Layout>,
+    element: <Layout />,
     children: [
       {
         path: '/',
@@ -81,7 +82,11 @@ const routes = [
 const router = createBrowserRouter(routes);
 
 const App = () => {
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <KeepAliveLayout keepPaths={[/bbb/]}>
+      <RouterProvider router={router}></RouterProvider>
+    </KeepAliveLayout>
+  );
 };
 
 export default App;
