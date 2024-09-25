@@ -11,13 +11,18 @@ import { Flags, NoFlags } from './fiberFlags';
 import { Lane, Lanes, NoLane } from './fiberLanes';
 import { Effect } from './fiberHooks';
 
+export interface PendingPassiveEffects {
+  unmount: Effect[];
+  update: Effect[];
+}
+
 export class FiberNode {
   type: any;
   tag: WorkTag;
   pendingProps: Props;
   key: Key;
   stateNode: any;
-  ref: Ref;
+  ref: Ref | null;
 
   return: FiberNode | null;
   sibling: FiberNode | null;
@@ -59,11 +64,6 @@ export class FiberNode {
     this.subtreeFlags = NoFlags;
     this.deletions = null;
   }
-}
-
-export interface PendingPassiveEffects {
-  unmount: Effect[];
-  update: Effect[];
 }
 
 export class FiberRootNode {

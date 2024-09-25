@@ -11,6 +11,13 @@ import {
 import { scheduleUpdateOnFiber } from './workLoop';
 import { requestUpdateLanes } from './fiberLanes';
 
+/**
+ * 创建FiberRootNode
+ *
+ * @export
+ * @param {Container} container
+ * @return {*}
+ */
 export function createContainer(container: Container) {
   // App组件
   const hostRootFiber = new FiberNode(HostRoot, {}, null);
@@ -19,6 +26,14 @@ export function createContainer(container: Container) {
   return root;
 }
 
+/**
+ * 创建更新队列
+ *
+ * @export
+ * @param {(ReactElement | null)} element
+ * @param {FiberRootNode} root
+ * @return {*}
+ */
 export function updateContainer(
   element: ReactElement | null,
   root: FiberRootNode,
