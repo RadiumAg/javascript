@@ -241,6 +241,7 @@ function mountState<State>(
   } else {
     memoizedState = initialState;
   }
+  // 创建queue结构
   const queue = createUpdateQueue<State>();
   hook.updateQueue = queue;
   hook.memoizedState = memoizedState;
@@ -266,6 +267,8 @@ function updateState<State>(): [State, Dispatch<State>] {
   const pending = queue.shared.pending;
   const current = currentHook as Hook;
   let baseQueue = current.baseQueue;
+
+  debugger;
 
   //pending update 保存在current中
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const Children = ({ children }) => {
+const Children = () => {
   const [state, setState] = useState(1);
 
   console.log('children udpate');
