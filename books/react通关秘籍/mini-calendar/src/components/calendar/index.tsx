@@ -1,8 +1,23 @@
-import React from 'react';
-import './index.css';
+import React, { useImperativeHandle } from 'react';
 
-const Calendar: React.FC = () => {
-  const [date, setDate] = React.useState(new Date());
+import './index.css';
+import { useControllableValue } from 'ahooks';
+
+type CalendarProps = {
+  defaultValue?: Date;
+  onChange?: (date: Date) => void;
+};
+
+type CalendarRef = {
+  getDate: () => Date;
+  setDate: (date: Date) => void;
+};
+
+const Calendar = React.forwardRef<CalendarRef, CalendarProps>((props, ref) => {
+  const { onChange } = props;
+  const [date, setDate] = useControllableValue(props, {
+    defaultValue: new Date(),
+  });
   const monthNames = [
     '一月',
     '二月',
@@ -17,7 +32,6 @@ const Calendar: React.FC = () => {
     '十一月',
     '十二月',
   ];
-
   const handlePrevMonth = () => {
     setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1));
   };
@@ -45,15 +59,37 @@ const Calendar: React.FC = () => {
     }
 
     for (let i = 1; i <= daysCount; i++) {
-      days.push(
-        <div key={i} className="day">
-          {i}
-        </div>
-      );
+      const handleClick = () => {
+        const curDate = new Date(date.getFullYear(), date.getMonth(), i);
+        setDate(curDate);
+        onChange?.(curDate);
+      };
+
+      if (i === date.getDate()) {
+        days.push(
+          <div key={i} className="day selected" onClick={handleClick}>
+            {i}
+          </div>
+        );
+      } else {
+        days.push(
+          <div key={i} className="day" onClick={handleClick}>
+            {i}
+          </div>
+        );
+      }
     }
 
     return days;
   };
+
+  useImperativeHandle(ref, () => ({
+    getDate: () => date,
+    setDate: (date: Date) => {
+      setDate(date);
+      onChange?.(date);
+    },
+  }));
 
   return (
     <div className="calendar">
@@ -76,6 +112,6 @@ const Calendar: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Calendar;
