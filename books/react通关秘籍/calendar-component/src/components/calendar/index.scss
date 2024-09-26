@@ -23,4 +23,65 @@
       flex: 1;
     }
   }
+
+  &-body {
+    &-row {
+      height: 100px;
+      display: flex;
+    }
+    &-cell {
+      flex: 1;
+      border: 1px solid #eee;
+      padding: 10px;
+    }
+  }
+}
+
+.calendar-header {
+  &-left {
+    display: flex;
+    align-items: center;
+
+    height: 28px;
+    line-height: 28px;
+  }
+
+  &-value {
+    font-size: 20px;
+  }
+
+  &-btn {
+    background: #eee;
+    cursor: pointer;
+    border: 0;
+    padding: 0 15px;
+    line-height: 28px;
+
+    &:hover {
+      background: #ccc;
+    }
+  }
+
+  &-icon {
+    width: 28px;
+    height: 28px;
+
+    line-height: 28px;
+
+    border-radius: 50%;
+    text-align: center;
+    font-size: 12px;
+
+    user-select: none;
+    cursor: pointer;
+
+    margin-right: 12px;
+    &:not(:first-child) {
+      margin: 0 12px;
+    }
+
+    &:hover {
+      background: #ccc;
+    }
+  }
 }
