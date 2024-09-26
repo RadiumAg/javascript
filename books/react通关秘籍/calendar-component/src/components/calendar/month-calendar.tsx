@@ -33,7 +33,11 @@ function getAllDays(date: Dayjs | undefined) {
   return daysInfo;
 }
 
-function renderDays(days: { date: Dayjs; currentMonth: boolean }[]) {
+function renderDays(
+  days: { date: Dayjs; currentMonth: boolean }[],
+  dateRender: MonthCalendarProps['dateRender'],
+  dateInnerContent: MonthCalendarProps['dateInnerContent']
+) {
   const rows: React.ReactElement<any>[][] = [];
   for (let i = 0; i < 6; i++) {
     const row: React.ReactElement[] = [];
@@ -41,7 +45,20 @@ function renderDays(days: { date: Dayjs; currentMonth: boolean }[]) {
     for (let j = 0; j < 7; j++) {
       const item = days[i * 7 + j];
       row[j] = (
-        <div className="calendar-month-body-cell">{item.date.date()}</div>
+        <div className="calendar-month-body-cell">
+          {dateRender ? (
+            dateRender(item.date)
+          ) : (
+            <div className="calendar-month-body-cell-date">
+              <div className="calendar-month-body-cell-date-value">
+                {item.date.date()}
+              </div>
+              <div className="calendar-month-body-cell-date-content">
+                {dateInnerContent?.(item.date)}
+              </div>
+            </div>
+          )}
+        </div>
       );
     }
     rows.push(row);
@@ -53,6 +70,7 @@ function renderDays(days: { date: Dayjs; currentMonth: boolean }[]) {
 }
 
 const MonthCalendar: React.FC<MonthCalendarProps> = (props) => {
+  const { dateRender, dateInnerContent } = props;
   const weekList = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
   const allDays = getAllDays(props.value);
@@ -68,7 +86,9 @@ const MonthCalendar: React.FC<MonthCalendarProps> = (props) => {
         ))}
       </div>
 
-      <div className="calendar-month-body">{renderDays(allDays)}</div>
+      <div className="calendar-month-body">
+        {renderDays(allDays, dateRender, dateInnerContent)}
+      </div>
     </div>
   );
 };

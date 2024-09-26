@@ -16,6 +16,7 @@
     "run": "node test.js"
   },
   "dependencies": {
+    "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
     "esno": "^0.17.0",
     "mocha": "^10.2.0",
