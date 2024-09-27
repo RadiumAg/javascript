@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { CalendarProps } from '.';
 import dayjs, { Dayjs } from 'dayjs';
-import Header from './header';
 import classNames from 'classnames';
 import LocaleContext from './locale-context.';
 import allLocales from './locale';
 
 type MonthCalendarProps = CalendarProps & {
   value: Dayjs;
+  curMonth: Dayjs;
   onSelect: (date: Dayjs) => void;
 };
 
@@ -92,7 +92,7 @@ function renderDays(
 const MonthCalendar: React.FC<MonthCalendarProps> = (props) => {
   const localeContext = useContext(LocaleContext);
 
-  const { value, onSelect, dateRender, dateInnerContent } = props;
+  const { value, curMonth, onSelect, dateRender, dateInnerContent } = props;
 
   const CalendarLocale = allLocales[localeContext.locale];
 
@@ -106,7 +106,7 @@ const MonthCalendar: React.FC<MonthCalendarProps> = (props) => {
     'saturday',
   ];
 
-  const allDays = getAllDays(props.value);
+  const allDays = getAllDays(curMonth);
 
   return (
     <div className="calendar-month">

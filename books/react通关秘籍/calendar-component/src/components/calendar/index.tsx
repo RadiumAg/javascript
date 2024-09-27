@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import './index.scss';
 import dayjs, { Dayjs } from 'dayjs';
 import MonthCalendar from './month-calendar';
@@ -25,7 +25,7 @@ const Calendar: React.FC<CalendarProps> = (props) => {
   const [value, setValue] = useControllableValue(props, {
     defaultValue: dayjs(),
   });
-
+  const [curMonth, setCurrentMonth] = useState(value);
   const classNames = cls('calendar', className);
 
   const handleSelect = (date: Dayjs) => {
@@ -33,13 +33,35 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     props.onChange?.(date);
   };
 
+  const handlePrevMonth = () => {
+    setCurrentMonth(curMonth.subtract(1, 'month'));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(curMonth.add(1, 'month'));
+  };
+
+  const handleToday = () => {
+    const date = dayjs(Date.now());
+
+    setValue(date);
+    setCurrentMonth(date);
+    props.onChange?.(date);
+  };
+
   return (
     <LocaleContext.Provider value={{ locale: locale || navigator.language }}>
       <div className={classNames} style={style}>
-        <Header></Header>
+        <Header
+          curMonth={curMonth}
+          onToday={handleToday}
+          onNextMonth={handleNextMonth}
+          onPrevMonth={handlePrevMonth}
+        />
         <MonthCalendar
           {...props}
           value={value}
+          curMonth={curMonth}
           onSelect={handleSelect}
         ></MonthCalendar>
       </div>
