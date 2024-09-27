@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { CalendarProps } from '.';
 import dayjs, { Dayjs } from 'dayjs';
 import Header from './header';
+import classNames from 'classnames';
+import LocaleContext from './locale-context.';
+import allLocales from './locale';
 
-type MonthCalendarProps = CalendarProps & {};
+type MonthCalendarProps = CalendarProps & {
+  value: Dayjs;
+  onSelect: (date: Dayjs) => void;
+};
 
 function getAllDays(date: Dayjs | undefined) {
   date ||= dayjs();
@@ -36,7 +42,9 @@ function getAllDays(date: Dayjs | undefined) {
 function renderDays(
   days: { date: Dayjs; currentMonth: boolean }[],
   dateRender: MonthCalendarProps['dateRender'],
-  dateInnerContent: MonthCalendarProps['dateInnerContent']
+  dateInnerContent: MonthCalendarProps['dateInnerContent'],
+  value: Dayjs,
+  onSelect: MonthCalendarProps['onSelect']
 ) {
   const rows: React.ReactElement<any>[][] = [];
   for (let i = 0; i < 6; i++) {
@@ -45,12 +53,24 @@ function renderDays(
     for (let j = 0; j < 7; j++) {
       const item = days[i * 7 + j];
       row[j] = (
-        <div className="calendar-month-body-cell">
+        <div
+          className={classNames('calendar-month-body-cell', {
+            'calendar-month-body-cell-current': item.currentMonth,
+          })}
+          onClick={() => onSelect(item.date)}
+        >
           {dateRender ? (
             dateRender(item.date)
           ) : (
             <div className="calendar-month-body-cell-date">
-              <div className="calendar-month-body-cell-date-value">
+              <div
+                className={classNames(
+                  'calendar-month-body-cell-date-value',
+                  value.format('YYYY-MM-DD') === item.date.format('YYYY-MM-DD')
+                    ? 'calendar-month-body-cell-date-selected'
+                    : ''
+                )}
+              >
                 {item.date.date()}
               </div>
               <div className="calendar-month-body-cell-date-content">
@@ -70,24 +90,36 @@ function renderDays(
 }
 
 const MonthCalendar: React.FC<MonthCalendarProps> = (props) => {
-  const { dateRender, dateInnerContent } = props;
-  const weekList = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const localeContext = useContext(LocaleContext);
+
+  const { value, onSelect, dateRender, dateInnerContent } = props;
+
+  const CalendarLocale = allLocales[localeContext.locale];
+
+  const weekList = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+  ];
 
   const allDays = getAllDays(props.value);
 
   return (
     <div className="calendar-month">
-      <Header></Header>
       <div className="calendar-month-week-list">
         {weekList.map((week) => (
           <div className="calendar-month-week-list-item" key={week}>
-            {week}
+            {CalendarLocale.week[week]}
           </div>
         ))}
       </div>
 
       <div className="calendar-month-body">
-        {renderDays(allDays, dateRender, dateInnerContent)}
+        {renderDays(allDays, dateRender, dateInnerContent, value, onSelect)}
       </div>
     </div>
   );

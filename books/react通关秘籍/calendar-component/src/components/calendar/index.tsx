@@ -1,9 +1,11 @@
 import React, { CSSProperties } from 'react';
 import './index.scss';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import MonthCalendar from './month-calendar';
 import Header from './header';
 import cls from 'classnames';
+import { useControllableValue } from 'ahooks';
+import LocaleContext from './locale-context.';
 
 export type CalendarProps = {
   value?: Dayjs;
@@ -19,15 +21,29 @@ export type CalendarProps = {
 };
 
 const Calendar: React.FC<CalendarProps> = (props) => {
-  const { style, className } = props;
+  const { style, locale, className } = props;
+  const [value, setValue] = useControllableValue(props, {
+    defaultValue: dayjs(),
+  });
 
   const classNames = cls('calendar', className);
 
+  const handleSelect = (date: Dayjs) => {
+    setValue(date);
+    props.onChange?.(date);
+  };
+
   return (
-    <div className={classNames} style={style}>
-      <Header></Header>
-      <MonthCalendar {...props}></MonthCalendar>
-    </div>
+    <LocaleContext.Provider value={{ locale: locale || navigator.language }}>
+      <div className={classNames} style={style}>
+        <Header></Header>
+        <MonthCalendar
+          {...props}
+          value={value}
+          onSelect={handleSelect}
+        ></MonthCalendar>
+      </div>
+    </LocaleContext.Provider>
   );
 };
 
