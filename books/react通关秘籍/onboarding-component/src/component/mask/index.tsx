@@ -1,9 +1,10 @@
 import React from 'react';
+import './index.scss';
 
 interface MaskProps {
-  element: HTMLElement;
+  element?: HTMLElement;
   container?: HTMLElement;
-  renderMaskContent?: (element: HTMLElement) => React.ReactNode;
+  renderMaskContent?: (element: React.ReactNode) => React.ReactNode;
 }
 
 const Mask: React.FC<MaskProps> = (props) => {
@@ -21,7 +22,10 @@ const Mask: React.FC<MaskProps> = (props) => {
       inline: 'center',
     });
 
-    const style = getMaskStyle(element, container);
+    const style = getMaskStyle(
+      element,
+      container! || document.documentElement!
+    );
 
     setStyle(style);
   }, [element, container]);
@@ -55,6 +59,21 @@ function getMaskStyle(element: HTMLElement, container: HTMLElement) {
 
   const elementTopWithScroll = container.scrollTop + top;
   const elementLeftWithScroll = container.scrollLeft + left;
+
+  return {
+    width: container.scrollWidth,
+    height: container.scrollHeight,
+    borderTopWidth: Math.max(elementLeftWithScroll, 0),
+    borderLeftWidth: Math.max(elementTopWithScroll, 0),
+    borderBottomWidth: Math.max(
+      container.scrollHeight - height - elementTopWithScroll,
+      0
+    ),
+    borderRightWidth: Math.max(
+      container.scrollWidth - width - elementLeftWithScroll,
+      0
+    ),
+  };
 }
 
 export default Mask;
