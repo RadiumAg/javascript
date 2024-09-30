@@ -1,0 +1,15 @@
+.onboarding-operation {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+
+  .back {
+    margin-right: 12px;
+    min-width: 80px;
+  }
+
+  .forward {
+    min-width: 80px;
+  }
+}

@@ -50,6 +50,13 @@ const Mask: React.FC<MaskProps> = (props) => {
   );
 };
 
+/**
+ * 获取container的信息
+ *
+ * @param {HTMLElement} element target element
+ * @param {HTMLElement} container
+ * @return {*}
+ */
 function getMaskStyle(element: HTMLElement, container: HTMLElement) {
   if (!element) {
     return {};
@@ -60,11 +67,13 @@ function getMaskStyle(element: HTMLElement, container: HTMLElement) {
   const elementTopWithScroll = container.scrollTop + top;
   const elementLeftWithScroll = container.scrollLeft + left;
 
+  console.log(height, top);
+
   return {
     width: container.scrollWidth,
     height: container.scrollHeight,
-    borderTopWidth: Math.max(elementLeftWithScroll, 0),
-    borderLeftWidth: Math.max(elementTopWithScroll, 0),
+    borderTopWidth: Math.max(elementTopWithScroll, 0),
+    borderLeftWidth: Math.max(elementLeftWithScroll, 0),
     borderBottomWidth: Math.max(
       container.scrollHeight - height - elementTopWithScroll,
       0
