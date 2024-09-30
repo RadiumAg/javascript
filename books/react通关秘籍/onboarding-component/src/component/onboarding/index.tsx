@@ -21,8 +21,9 @@ export interface OnBoardingProps {
 }
 
 const OnBoarding: React.FC<OnBoardingProps> = (props) => {
-  const { step, steps, getContainer, onStepsEnd } = props;
+  const { step = 0, steps, getContainer, onStepsEnd } = props;
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [done, setDone] = React.useState(false);
   const currentSelectedElement = steps[currentStep]?.selector();
   const currentContainerElement = getContainer?.() || document.documentElement;
 
@@ -43,6 +44,7 @@ const OnBoarding: React.FC<OnBoardingProps> = (props) => {
   const forward = async () => {
     if (currentStep === steps.length - 1) {
       await onStepsEnd?.();
+      setDone(true);
       return;
     }
 
@@ -100,7 +102,9 @@ const OnBoarding: React.FC<OnBoardingProps> = (props) => {
     setRenderTick(1);
   }, []);
 
-  if (!currentSelectedElement) {
+  console.log(!currentSelectedElement);
+
+  if (!currentSelectedElement || done) {
     return null;
   }
 
