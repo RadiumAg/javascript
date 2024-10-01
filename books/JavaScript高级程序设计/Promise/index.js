@@ -140,3 +140,20 @@ const { readSync } = require('fs');
 
   qux().then(console.log);
 })();
+
+(() => {
+  const p1 = Promise.reject('foo');
+  // 调用then()时不传处理程序则原样向后传
+  const p2 = p1.then();
+  // Uncaught (in promise) foo
+  setTimeout(console.log, 0, p2);
+  // Promise <rejected>: foo
+  // 这些都一样
+  const p3 = p1.then(null, () => undefined);
+  const p4 = p1.then(null, () => {});
+  const p5 = p1.then(null, () => Promise.resolve());
+  setTimeout(console.log, 0, p3);
+  // promise <resolved>: undefined
+  setTimeout(console.log, 0, p4);
+  // promise <resolved>: undefined
+})();

@@ -24,6 +24,7 @@ const OnBoarding: React.FC<OnBoardingProps> = (props) => {
   const { step = 0, steps, getContainer, onStepsEnd } = props;
   const [currentStep, setCurrentStep] = React.useState(0);
   const [done, setDone] = React.useState(false);
+  const [isMaskMoving, setIsMaskMoving] = React.useState<boolean>(false);
   const currentSelectedElement = steps[currentStep]?.selector();
   const currentContainerElement = getContainer?.() || document.documentElement;
 
@@ -80,7 +81,9 @@ const OnBoarding: React.FC<OnBoardingProps> = (props) => {
       </div>
     );
 
-    return (
+    return isMaskMoving ? (
+      wrapper
+    ) : (
       <Popover
         content={
           <div>
@@ -102,14 +105,18 @@ const OnBoarding: React.FC<OnBoardingProps> = (props) => {
     setRenderTick(1);
   }, []);
 
-  console.log(!currentSelectedElement);
-
   if (!currentSelectedElement || done) {
     return null;
   }
 
   const mask = (
     <Mask
+      onAnimationStart={() => {
+        setIsMaskMoving(true);
+      }}
+      onAnimationEnd={() => {
+        setIsMaskMoving(false);
+      }}
       element={currentSelectedElement}
       container={currentContainerElement}
       renderMaskContent={(wrapper) => renderPopover(wrapper)}

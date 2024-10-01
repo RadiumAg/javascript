@@ -5,10 +5,18 @@ interface MaskProps {
   element?: HTMLElement;
   container?: HTMLElement;
   renderMaskContent?: (element: React.ReactNode) => React.ReactNode;
+  onAnimationStart?: () => void;
+  onAnimationEnd?: () => void;
 }
 
 const Mask: React.FC<MaskProps> = (props) => {
-  const { element, renderMaskContent, container } = props;
+  const {
+    element,
+    renderMaskContent,
+    container,
+    onAnimationStart,
+    onAnimationEnd,
+  } = props;
 
   const [style, setStyle] = React.useState<React.CSSProperties>({});
 
@@ -29,6 +37,32 @@ const Mask: React.FC<MaskProps> = (props) => {
 
     setStyle(style);
   }, [element, container]);
+
+  React.useEffect(() => {
+    if (!element) return;
+
+    const observer = new ResizeObserver(() => {
+      const style = getMaskStyle(
+        element,
+        container || document.documentElement
+      );
+
+      setStyle(style);
+    });
+
+    observer.observe(container || document.documentElement);
+  }, []);
+
+  React.useEffect(() => {
+    onAnimationStart?.();
+    const timer = setTimeout(() => {
+      onAnimationEnd?.();
+    }, 200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [element]);
 
   const getContent = () => {
     if (!renderMaskContent) {
@@ -66,8 +100,6 @@ function getMaskStyle(element: HTMLElement, container: HTMLElement) {
 
   const elementTopWithScroll = container.scrollTop + top;
   const elementLeftWithScroll = container.scrollLeft + left;
-
-  console.log(height, top);
 
   return {
     width: container.scrollWidth,
