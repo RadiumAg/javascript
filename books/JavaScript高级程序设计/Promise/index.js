@@ -156,4 +156,19 @@ const { readSync } = require('fs');
   // promise <resolved>: undefined
   setTimeout(console.log, 0, p4);
   // promise <resolved>: undefined
+  const p6 = p1.then(null, () => 'bar');
+  const p7 = p1.then(null, () => Promise.resolve('bar'));
+  setTimeout(console.log, 0, p6); // Promise <resolved>: bar
+  setTimeout(console.log, 0, p7);
+  // Uncaught (in promise): undefined
+  const p8 = p1.then(null, () => new Promise(() => {}));
+  // Promise <rejected> : undefined
+  const p9 = p1.then(null, () => Promise.reject());
+  const p10 = p1.then(null, () => {
+    throw 'baz';
+  });
+  // Uncaught (in promise): baz
+  setTimeout(console.log, 0, p8);
+  const p11 = p1.then(null, () => new Error('qux'));
+  setTimeout(console.log, 0, p11);
 })();
