@@ -172,3 +172,11 @@ const { readSync } = require('fs');
   const p11 = p1.then(null, () => new Error('qux'));
   setTimeout(console.log, 0, p11);
 })();
+
+// onFinally被设计为一个状态无关的方法，所以大多数情况下它将表现为父期约的传递
+(() => {
+  const p1 = Promise.resolve('foo');
+  // 这里都会原样后传
+  const p2 = p1.finally();
+  const p3 = p1.finally(() => undefined);
+})();
