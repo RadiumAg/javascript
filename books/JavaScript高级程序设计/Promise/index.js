@@ -179,4 +179,9 @@ const { readSync } = require('fs');
   // 这里都会原样后传
   const p2 = p1.finally();
   const p3 = p1.finally(() => undefined);
+  const p4 = p1.finally(() => {});
+  const p5 = p1.finally(() => Promise.resolve());
+  const p6 = p1.finally(() => 'bar');
+  const p7 = p1.finally(() => Promise.resolve('bar'));
+  const p8 = p1.finally(() => new Error('quex'));
 })();
