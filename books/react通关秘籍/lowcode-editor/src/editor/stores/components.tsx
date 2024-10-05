@@ -4,7 +4,7 @@ export interface Component {
   id: number;
   name: string;
   props: any;
-  desc: string;
+  desc?: string;
   children?: Component[];
   parentId?: number;
 }
@@ -14,8 +14,8 @@ interface State {
 }
 
 interface Action {
-  addComponent: () => void;
   deleteComponent: (id: number) => void;
+  addComponent: (component: Component, parentId?: number) => void;
   updateComponentProps: (componentId: number, props: any) => void;
 }
 
@@ -28,7 +28,7 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       desc: '页面',
     },
   ],
-  addComponent: (component, parentId) =>
+  addComponent: (component, parentId) => {
     set((state) => {
       if (parentId) {
         const parentComponent = getComponentById(parentId, state.components);
@@ -46,7 +46,8 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       }
 
       return { components: [...state.components, component] };
-    }),
+    });
+  },
   deleteComponent: (componentId) => {
     if (!componentId) return;
 
@@ -66,6 +67,18 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       }
     }
   },
+  updateComponentProps(componentId, props) {
+    set((state) => {
+      const component = getComponentById(componentId, state.components);
+      if (component) {
+        component.props = { ...component.props, ...props };
+
+        return { components: [...state.components] };
+      }
+
+      return { components: [...state.components] };
+    });
+  },
 }));
 
 function getComponentById(
@@ -79,7 +92,7 @@ function getComponentById(
 
     if (component.children && component.children.length > 0) {
       const result = getComponentById(id, component.children);
-      if (result) return result;
+      if (result !== null) return result;
     }
   }
 }
