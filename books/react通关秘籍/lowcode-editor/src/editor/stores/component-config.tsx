@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import Container from '../materials/container';
 import Button from '../materials/button';
+import Page from '../materials/page';
 
 export interface ComponentConfig {
   name: string;
   desc?: string;
   props?: any;
+  component: React.FC<any>;
+  defaultProps: Record<string, any>;
 }
 
 interface State {
@@ -30,6 +33,11 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
         text: '按钮',
       },
       component: Button,
+    },
+    Page: {
+      name: 'Page',
+      defaultProps: {},
+      component: Page,
     },
   },
 

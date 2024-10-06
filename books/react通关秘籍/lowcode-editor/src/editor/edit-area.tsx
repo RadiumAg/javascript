@@ -1,25 +1,41 @@
-import React, { Component } from 'react';
-import { useComponentsStore } from './stores/components';
+import React from 'react';
+import { Component, useComponentsStore } from './stores/components';
+import { useComponentConfigStore } from './stores/component-config';
 
 const EditorArea: React.FC = () => {
-  const { components, addComponent } = useComponentsStore();
+  const { components } = useComponentsStore();
+  const { componentConfig } = useComponentConfigStore();
 
-  React.useEffect(() => {
-    addComponent({
-      id: 222,
-      name: 'Container',
-      props: {},
-      children: [],
+  function renderComponent(components: Component[]): React.ReactNode[] {
+    const componentMap = components.map<React.ReactNode>((component) => {
+      const config = componentConfig?.[component.name];
+
+      if (!config?.component) {
+        return null;
+      }
+
+      return React.createElement(
+        config.component,
+        {
+          key: component.id,
+          id: component.id,
+          name: component.name,
+          ...config.defaultProps,
+          ...config.props,
+        },
+        renderComponent(component.children || [])
+      ) as React.ReactNode;
     });
-  }, []);
+
+    return componentMap;
+  }
 
   return (
-    <div>
-      <pre>{JSON.stringify(components, null, 2)}</pre>
+    <div className="h-[100%]">
+      {/* <pre>{JSON.stringify(components, null, 2)}</pre> */}
+      {renderComponent(components)}
     </div>
   );
 };
-
-function renderComponent(components: Component[]) {}
 
 export default EditorArea;
