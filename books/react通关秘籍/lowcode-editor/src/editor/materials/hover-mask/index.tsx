@@ -34,8 +34,12 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
     const { left, top, width, height } = node.getBoundingClientRect();
     const { top: containerTop, left: containerLeft } =
       container.getBoundingClientRect();
-    const labelTop = top - containerTop + container.scrollTop;
-    const labelLeft = left - containerLeft + container.scrollLeft;
+    const labelLeft = left - containerLeft + width;
+    let labelTop = top - containerTop + container.scrollTop;
+
+    if (labelTop <= 0) {
+      labelTop -= -20;
+    }
 
     setPosition({
       left: left - containerLeft + container.scrollLeft,
@@ -64,8 +68,6 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
     return getComponentById(componentId, components);
   }, [componentId]);
 
-  console.log(el);
-
   return createPortal(
     <div
       style={{
@@ -84,26 +86,30 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
     >
       <div
         style={{
-          position: 'absolute',
-          left: position.labelLeft,
-          top: position.labelTop,
-          fontSize: '14px',
           zIndex: 13,
+          fontSize: '14px',
+          position: 'absolute',
+          top: position.labelTop,
+          left: position.labelLeft,
+          transform: 'translate(-100%, -100%)',
           display: !position.width || position.width < 10 ? 'none' : 'inline',
         }}
-      ></div>
-      <div
-        style={{
-          padding: '0 8px',
-          backgroundColor: 'blue',
-          borderRadius: 4,
-          color: '#fff',
-          cursor: 'pointer',
-          whiteSpace: 'nowrap',
-        }}
       >
-        {curComponent?.name}
+        <div
+          style={{
+            color: '#fff',
+            padding: '0 8px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            backgroundColor: 'blue',
+          }}
+        >
+          {curComponent?.name}
+        </div>
       </div>
+
+      <div className="portal-wrapper"></div>
     </div>,
     el
   );
