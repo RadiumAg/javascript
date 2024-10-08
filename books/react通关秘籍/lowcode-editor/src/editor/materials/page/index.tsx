@@ -11,6 +11,7 @@ const Page: React.FC<React.PropsWithChildren<CommonComponentProps>> = (
   return (
     <div
       ref={drop}
+      data-component-id={id}
       style={{ border: canDrop ? '2px solid blue' : 'none' }}
       className="p-[20px] h-[100%] box-border"
     >
