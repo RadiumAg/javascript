@@ -7,6 +7,7 @@ const EditorArea: React.FC = () => {
   const [hoverComponentId, setHoverComponentId] = React.useState<number>();
   const { components } = useComponentsStore();
   const { componentConfig } = useComponentConfigStore();
+  window.setHoverComponentId = setHoverComponentId;
 
   const handleMouseOver: React.MouseEventHandler<HTMLDivElement> = (e) => {
     const path = e.nativeEvent.composedPath();
@@ -58,10 +59,12 @@ const EditorArea: React.FC = () => {
       {renderComponent(components)}
       {hoverComponentId && (
         <HoverMask
+          portalWrapperClassName="portal-wrapper"
           containerClassName="edit-area"
           componentId={hoverComponentId}
         />
       )}
+      <div className="portal-wrapper"></div>
     </div>
   );
 };

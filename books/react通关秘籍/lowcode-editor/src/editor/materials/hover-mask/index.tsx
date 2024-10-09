@@ -3,12 +3,13 @@ import { createPortal } from 'react-dom';
 import { getComponentById, useComponentsStore } from '../../stores/components';
 
 interface HoverMaskProps {
-  containerClassName?: string;
   componentId: number;
+  containerClassName?: string;
+  portalWrapperClassName: string;
 }
 
 const HoverMask: React.FC<HoverMaskProps> = (props) => {
-  const { containerClassName, componentId } = props;
+  const { containerClassName, portalWrapperClassName, componentId } = props;
   const { components } = useComponentsStore();
 
   const [position, setPosition] = React.useState({
@@ -34,20 +35,21 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
     const { left, top, width, height } = node.getBoundingClientRect();
     const { top: containerTop, left: containerLeft } =
       container.getBoundingClientRect();
-    const labelLeft = left - containerLeft + width;
+
     let labelTop = top - containerTop + container.scrollTop;
+    const labelLeft = left - containerLeft + width;
 
     if (labelTop <= 0) {
       labelTop -= -20;
     }
 
     setPosition({
-      left: left - containerLeft + container.scrollLeft,
-      top: top - containerTop + container.scrollTop,
       width,
       height,
       labelLeft,
       labelTop,
+      top: top - containerTop + container.scrollTop,
+      left: left - containerLeft + container.scrollLeft,
     });
   }
 
@@ -56,12 +58,7 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
   }, [componentId]);
 
   const el = React.useMemo(() => {
-    const el = document.createElement('div');
-    el.className = 'wrapper';
-
-    const container = document.querySelector(`.${containerClassName}`);
-    container?.appendChild(el);
-    return el;
+    return document.querySelector(`.${portalWrapperClassName}`)!;
   }, []);
 
   const curComponent = React.useMemo(() => {
@@ -69,21 +66,22 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
   }, [componentId]);
 
   return createPortal(
-    <div
-      style={{
-        position: 'absolute',
-        backgroundColor: 'rgba(0, 0, 255, 0.1)',
-        border: '1px dashed blue',
-        pointerEvents: 'none',
-        left: position.left,
-        top: position.top,
-        width: position.width,
-        height: position.height,
-        zIndex: 12,
-        borderRadius: 4,
-        boxSizing: 'border-box',
-      }}
-    >
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          backgroundColor: 'rgba(0, 0, 255, 0.1)',
+          border: '1px dashed blue',
+          pointerEvents: 'none',
+          left: position.left,
+          top: position.top,
+          width: position.width,
+          height: position.height,
+          zIndex: 12,
+          borderRadius: 4,
+          boxSizing: 'border-box',
+        }}
+      ></div>
       <div
         style={{
           zIndex: 13,
@@ -101,6 +99,7 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
             padding: '0 8px',
             borderRadius: 4,
             cursor: 'pointer',
+            width: 'min-content',
             whiteSpace: 'nowrap',
             backgroundColor: 'blue',
           }}
@@ -108,9 +107,7 @@ const HoverMask: React.FC<HoverMaskProps> = (props) => {
           {curComponent?.name}
         </div>
       </div>
-
-      <div className="portal-wrapper"></div>
-    </div>,
+    </>,
     el
   );
 };
