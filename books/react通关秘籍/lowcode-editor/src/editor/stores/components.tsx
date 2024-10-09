@@ -11,12 +11,15 @@ export interface Component {
 
 interface State {
   components: Component[];
+  currentComponentId: number | null;
+  curComponent: Component | null;
 }
 
 interface Action {
   deleteComponent: (id: number) => void;
   addComponent: (component: Component, parentId?: number) => void;
   updateComponentProps: (componentId: number, props: any) => void;
+  setCurComponentId: (componentId: number | null) => void;
 }
 
 export const useComponentsStore = create<State & Action>((set, get) => ({
@@ -78,6 +81,14 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
 
       return { components: [...state.components] };
     });
+  },
+  currentComponentId: null,
+  curComponent: null,
+  setCurComponentId: (componentId) => {
+    set((state) => ({
+      curComponentId: componentId,
+      curComponent: getComponentById(componentId!, state.components),
+    }));
   },
 }));
 
