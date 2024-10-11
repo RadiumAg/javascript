@@ -3,11 +3,19 @@ import Container from '../materials/container';
 import Button from '../materials/button';
 import Page from '../materials/page';
 
+export interface ComponentSetter {
+  name: string;
+  label: string;
+  type: string;
+  [key: string]: any;
+}
+
 export interface ComponentConfig {
   props?: any;
   name: string;
   desc?: string;
   component: React.FC<any>;
+  setter?: ComponentSetter[];
   defaultProps: Record<string, any>;
 }
 
@@ -29,6 +37,28 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
     },
     Button: {
       name: 'Button',
+      setter: [
+        {
+          name: 'type',
+          label: '按钮类型',
+          type: 'select',
+          options: [
+            {
+              label: '主按钮',
+              value: 'primary',
+            },
+            {
+              label: '次按钮按',
+              value: 'default',
+            },
+          ],
+        },
+        {
+          name: 'text',
+          label: '文本',
+          type: 'input',
+        },
+      ],
       defaultProps: {
         type: 'primary',
         text: '按钮',
