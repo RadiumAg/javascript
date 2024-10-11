@@ -20,6 +20,7 @@ const EditorArea: React.FC = () => {
       const ele = path[i] as HTMLElement;
 
       const componentId = ele?.dataset?.componentId;
+      console.log(componentId);
       if (componentId) {
         setHoverComponentId(+componentId);
         return;
@@ -34,6 +35,7 @@ const EditorArea: React.FC = () => {
       const ele = path[i] as HTMLElement;
 
       const componentId = ele?.dataset?.componentId;
+      console.log(componentId);
       if (componentId) {
         setCurComponentId(+componentId);
         return;

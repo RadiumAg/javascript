@@ -32,7 +32,7 @@ const SelectedMask: React.FC<SelectedMaskProps> = (props) => {
 
     while (component?.parentId) {
       component = getComponentById(component.parentId, components);
-      parentComponents.push(component);
+      parentComponents.push(component!);
     }
 
     return parentComponents;
@@ -40,7 +40,7 @@ const SelectedMask: React.FC<SelectedMaskProps> = (props) => {
 
   React.useEffect(() => {
     updatePosition();
-  }, [components]);
+  }, [curComponent, components]);
 
   function updatePosition() {
     if (!componentId) return;
@@ -118,6 +118,7 @@ const SelectedMask: React.FC<SelectedMaskProps> = (props) => {
               })),
               onClick: (event) => {
                 const { key } = event;
+                console.log(key);
                 setCurComponentId(+key);
               },
             }}
