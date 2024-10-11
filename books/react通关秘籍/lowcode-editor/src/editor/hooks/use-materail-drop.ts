@@ -10,7 +10,7 @@ const useMaterailDrop = (accept: string[], id: number) => {
     accept: ['Button', 'Container'],
     drop: (item: { type: string }, monitor) => {
       const didDrop = monitor.didDrop();
-      const props = componentConfig[item.type].defaultProps;
+      const config = componentConfig[item.type];
 
       if (didDrop) return;
 
@@ -18,8 +18,8 @@ const useMaterailDrop = (accept: string[], id: number) => {
         {
           id: new Date().getTime(),
           name: item.type,
-          props,
-          desc: componentConfig[item.type].desc,
+          desc: config.desc,
+          props: config.defaultProps,
         },
         id
       );

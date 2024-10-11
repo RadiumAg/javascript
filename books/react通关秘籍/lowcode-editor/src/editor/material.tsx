@@ -4,10 +4,11 @@ import { useDrag } from 'react-dnd';
 
 interface MaterialItemProps {
   name: string;
+  desc: string;
 }
 
 const MaterialItem: React.FC<MaterialItemProps> = (props) => {
-  const { name } = props;
+  const { name, desc } = props;
   const [_, drag] = useDrag({
     type: name,
     item: {
@@ -30,7 +31,7 @@ const MaterialItem: React.FC<MaterialItemProps> = (props) => {
             hover:bg-[#ccc]
             "
     >
-      {name}
+      {desc}
     </div>
   );
 };
@@ -39,14 +40,20 @@ const Materials: React.FC = () => {
   const { componentConfig } = useComponentConfigStore();
 
   const components = React.useMemo(() => {
-    return Object.values(componentConfig);
+    return Object.values(componentConfig).filter(
+      (item) => item.name !== 'Page'
+    );
   }, [componentConfig]);
 
   return (
     <div>
       {components.map((item, index) => {
         return (
-          <MaterialItem name={item.name} key={item.name + index}></MaterialItem>
+          <MaterialItem
+            name={item.name}
+            desc={item.desc}
+            key={item.name + index}
+          ></MaterialItem>
         );
       })}
     </div>

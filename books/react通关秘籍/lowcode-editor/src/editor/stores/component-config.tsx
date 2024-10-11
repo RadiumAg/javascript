@@ -4,9 +4,9 @@ import Button from '../materials/button';
 import Page from '../materials/page';
 
 export interface ComponentConfig {
+  props?: any;
   name: string;
   desc?: string;
-  props?: any;
   component: React.FC<any>;
   defaultProps: Record<string, any>;
 }
@@ -24,6 +24,7 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
     Container: {
       name: 'Container',
       defaultProps: {},
+      desc: '容器',
       component: Container,
     },
     Button: {
@@ -32,11 +33,13 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
         type: 'primary',
         text: '按钮',
       },
+      desc: '按钮',
       component: Button,
     },
     Page: {
       name: 'Page',
       defaultProps: {},
+      desc: '页面',
       component: Page,
     },
   },

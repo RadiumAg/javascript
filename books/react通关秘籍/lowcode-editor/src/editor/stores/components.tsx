@@ -11,7 +11,7 @@ export interface Component {
 
 interface State {
   components: Component[];
-  currentComponentId: number | null;
+  curComponentId: number | null;
   curComponent: Component | null;
 }
 
@@ -82,7 +82,7 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       return { components: [...state.components] };
     });
   },
-  currentComponentId: null,
+  curComponentId: null,
   curComponent: null,
   setCurComponentId: (componentId) => {
     set((state) => ({
