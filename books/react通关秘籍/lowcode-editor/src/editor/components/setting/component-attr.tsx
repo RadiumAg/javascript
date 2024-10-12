@@ -16,6 +16,7 @@ const ComponentAttr: React.FC = () => {
 
   React.useEffect(() => {
     const data = form.getFieldsValue();
+    form.setFieldsValue({ ...data, ...curComponent?.props });
   }, [curComponent]);
 
   if (!curComponentId || !curComponent) return null;

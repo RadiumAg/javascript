@@ -20,7 +20,6 @@ const EditorArea: React.FC = () => {
       const ele = path[i] as HTMLElement;
 
       const componentId = ele?.dataset?.componentId;
-      console.log(componentId);
       if (componentId) {
         setHoverComponentId(+componentId);
         return;
@@ -51,6 +50,8 @@ const EditorArea: React.FC = () => {
         return null;
       }
 
+      console.log(config);
+
       return React.createElement(
         config.component,
         {
@@ -66,6 +67,8 @@ const EditorArea: React.FC = () => {
 
     return componentMap;
   }
+
+  console.log(components);
 
   return (
     <div

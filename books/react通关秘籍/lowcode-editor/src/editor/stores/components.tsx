@@ -75,7 +75,6 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       const component = getComponentById(componentId, state.components);
       if (component) {
         component.props = { ...component.props, ...props };
-
         return { components: [...state.components] };
       }
 
