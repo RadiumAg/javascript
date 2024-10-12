@@ -9,11 +9,10 @@ const {
 const app = express();
 
 const proxyMiddleware = createProxyMiddleware({
-  target: 'https://pre-seoadmin-arise.alibaba-inc.com/metatag/dataList',
+  target: 'https://pre-seoadmin-arise.alibaba-inc.com/metatag',
   changeOrigin: true,
   cookiePathRewrite: true,
   cookieDomainRewrite: true,
-  async pathRewrite(path, req) {},
   // headers: {
   //   host: 'seoadmin-arise.alibaba-inc.com',
   //   Origin: 'https://seoadmin-arise.alibaba-inc.com',
@@ -47,6 +46,6 @@ const proxyMiddleware = createProxyMiddleware({
   secure: false,
 });
 
-app.use('/metatag/dataList', proxyMiddleware);
+app.use('/metatag', proxyMiddleware);
 
 app.listen(4000);
