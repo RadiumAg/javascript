@@ -18,8 +18,7 @@ const Setting: React.FC = () => {
         options={['属性', '样式', '事件']}
       ></Segmented>
 
-      <div>{
-         key === '属性' && <ComponentAttr<}</div>
+      <div>{key === '属性' && <ComponentAttr />}</div>
     </div>
   );
 };
