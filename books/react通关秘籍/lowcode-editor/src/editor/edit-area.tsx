@@ -34,7 +34,6 @@ const EditorArea: React.FC = () => {
       const ele = path[i] as HTMLElement;
 
       const componentId = ele?.dataset?.componentId;
-      console.log(componentId);
       if (componentId) {
         setCurComponentId(+componentId);
         return;
@@ -50,16 +49,15 @@ const EditorArea: React.FC = () => {
         return null;
       }
 
-      console.log(config);
-
       return React.createElement(
         config.component,
         {
           key: component.id,
           id: component.id,
           name: component.name,
+          styles: component.styles,
           ...config.defaultProps,
-          ...config.props,
+          ...component.props,
         },
         renderComponent(component.children || [])
       ) as React.ReactNode;

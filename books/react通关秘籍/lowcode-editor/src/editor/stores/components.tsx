@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import { create } from 'zustand';
 
 export interface Component {
@@ -5,6 +6,7 @@ export interface Component {
   name: string;
   props: any;
   desc?: string;
+  styles: CSSProperties;
   children?: Component[];
   parentId?: number;
 }
@@ -20,6 +22,7 @@ interface Action {
   addComponent: (component: Component, parentId?: number) => void;
   updateComponentProps: (componentId: number, props: any) => void;
   setCurComponentId: (componentId: number | null) => void;
+  updateComponentStyles: (componentId: number, styles: CSSProperties) => void;
 }
 
 export const useComponentsStore = create<State & Action>((set, get) => ({
@@ -28,6 +31,7 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       id: 1,
       name: 'Page',
       props: {},
+      styles: {},
       desc: '页面',
     },
   ],
@@ -89,6 +93,17 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       curComponent: getComponentById(componentId!, state.components),
     }));
   },
+  updateComponentStyles: (componentId, styles) =>
+    set((state) => {
+      const component = getComponentById(componentId, state.components);
+      if (component) {
+        component.styles = { ...component.styles, ...styles };
+
+        return { components: [...state.components] };
+      }
+
+      return { components: [...state.components] };
+    }),
 }));
 
 export function getComponentById(

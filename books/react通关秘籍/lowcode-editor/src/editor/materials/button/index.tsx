@@ -9,10 +9,10 @@ export interface ButtonProps {
 }
 
 const Button: React.FC<CommonComponentProps> = (props) => {
-  const { id, type, text } = props;
+  const { id, type, text, styles } = props;
 
   return (
-    <AntButton data-component-id={id} type={type}>
+    <AntButton data-component-id={id} type={type} style={styles}>
       {text}
     </AntButton>
   );

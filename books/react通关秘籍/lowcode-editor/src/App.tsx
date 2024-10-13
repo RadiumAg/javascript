@@ -2,7 +2,7 @@ import './App.css';
 import LowcodeEditor from './editor';
 
 function App() {
-  return <LowcodeEditor></LowcodeEditor>;
+  return <LowcodeEditor />;
 }
 
 export default App;
