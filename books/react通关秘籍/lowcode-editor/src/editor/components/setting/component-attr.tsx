@@ -1,4 +1,4 @@
-import { Form, Input, Select } from 'antd';
+import { Form, Input, InputNumber, Select } from 'antd';
 import React from 'react';
 import { useComponentsStore } from '../../stores/components';
 import {
@@ -28,6 +28,8 @@ const ComponentAttr: React.FC = () => {
       return <Select options={options} />;
     } else if (type === 'input') {
       return <Input />;
+    } else if (type === 'inputNumber') {
+      return <InputNumber />;
     }
   }
 

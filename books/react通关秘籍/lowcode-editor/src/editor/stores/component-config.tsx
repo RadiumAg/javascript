@@ -16,6 +16,7 @@ export interface ComponentConfig {
   desc?: string;
   component: React.FC<any>;
   setter?: ComponentSetter[];
+  styleSetter?: ComponentSetter[];
   defaultProps: Record<string, any>;
 }
 
@@ -65,6 +66,18 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
       },
       desc: '按钮',
       component: Button,
+      styleSetter: [
+        {
+          name: 'width',
+          label: '宽度',
+          type: 'inputNumber',
+        },
+        {
+          name: 'height',
+          label: '高度',
+          type: 'inputNumber',
+        },
+      ],
     },
     Page: {
       name: 'Page',
