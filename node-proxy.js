@@ -46,6 +46,45 @@ const proxyMiddleware = createProxyMiddleware({
   secure: false,
 });
 
+const proxyMiddleware1 = createProxyMiddleware({
+  target: 'https://seoadmin-arise.alibaba-inc.com/permissionAccess',
+  changeOrigin: true,
+  cookiePathRewrite: true,
+  cookieDomainRewrite: true,
+  // headers: {
+  //   host: 'seoadmin-arise.alibaba-inc.com',
+  //   Origin: 'https://seoadmin-arise.alibaba-inc.com',
+  //   Referer: 'https://seoadmin-arise.alibaba-inc.com',
+  // },
+  on: {
+    proxyReq: (proxyReq, req, res) => {
+      /* handle proxyReq */
+      proxyReq.setHeader('Host', 'seoadmin-arise.alibaba-inc.com');
+      proxyReq.setHeader('Origin', 'https://workstation.miravia.net');
+      proxyReq.setHeader('Referer', 'https://workstation.miravia.net');
+
+      req.headers.host = 'seoadmin-arise.alibaba-inc.com';
+      req.headers.origin = 'https://workstation.miravia.net';
+      req.headers.referer = 'https://workstation.miravia.net';
+    },
+    proxyRes: (proxyRes, req, res) => {
+      /* handle proxyRes */
+      proxyRes.headers['access-control-allow-origin'] = '*';
+      res.headers = {
+        'access-control-allow-origin': '*',
+      };
+    },
+    error: (err, req, res) => {
+      console.log(err);
+      /* handle error */
+    },
+  },
+  logger: console,
+  plugins: [loggerPlugin],
+  secure: false,
+});
+
 app.use('/metatag', proxyMiddleware);
+app.use('/permissionAccess', proxyMiddleware1);
 
 app.listen(4000);
