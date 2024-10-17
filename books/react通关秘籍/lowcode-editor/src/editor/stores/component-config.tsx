@@ -35,6 +35,18 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
       defaultProps: {},
       desc: '容器',
       component: Container,
+      styleSetter: [
+        {
+          name: 'width',
+          label: '宽度',
+          type: 'inputNumber',
+        },
+        {
+          name: 'height',
+          label: '高度',
+          type: 'inputNumber',
+        },
+      ],
     },
     Button: {
       name: 'Button',

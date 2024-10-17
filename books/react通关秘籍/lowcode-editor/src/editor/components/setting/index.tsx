@@ -2,6 +2,7 @@ import React from 'react';
 import { useComponentsStore } from '../../stores/components';
 import { Segmented } from 'antd';
 import ComponentAttr from './component-attr';
+import ComponentStyle from './component-style';
 
 const Setting: React.FC = () => {
   const { curComponentId } = useComponentsStore();
@@ -19,6 +20,7 @@ const Setting: React.FC = () => {
       ></Segmented>
 
       <div className="pt-[20px]">{key === '属性' && <ComponentAttr />}</div>
+      <div className="pt-[20px]">{key === '样式' && <ComponentStyle />}</div>
     </div>
   );
 };

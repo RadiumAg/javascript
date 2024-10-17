@@ -3,8 +3,8 @@ import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 import Header from './header';
 import EditorArea from './edit-area';
-import Material from './material';
 import Setting from './components/setting';
+import MaterialWrapper from './components/material-wrapper';
 
 const LowcodeEditor: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ const LowcodeEditor: React.FC = () => {
 
       <Allotment>
         <Allotment.Pane preferredSize={240} maxSize={300} minSize={200}>
-          <Material />
+          <MaterialWrapper />
         </Allotment.Pane>
 
         <Allotment.Pane>

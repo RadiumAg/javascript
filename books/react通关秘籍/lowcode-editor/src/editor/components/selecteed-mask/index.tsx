@@ -39,7 +39,9 @@ const SelectedMask: React.FC<SelectedMaskProps> = (props) => {
   }, [curComponent]);
 
   React.useEffect(() => {
-    updatePosition();
+    setTimeout(() => {
+      updatePosition();
+    }, 200);
   }, [curComponent, components]);
 
   function updatePosition() {

@@ -18,20 +18,36 @@ const ComponentStyle: React.FC = () => {
 
   React.useEffect(() => {
     const data = form.getFieldsValue();
+
+    if (!curComponent?.styles) return;
+
     form.setFieldsValue({ ...data, ...curComponent?.styles });
+
+    setCss(toCSSStr(curComponent?.styles));
   }, [curComponent]);
 
   if (!curComponentId || !curComponent) return null;
 
-  function toCSSStr(css:Record<<string,any>) {
-     const str = '.comp {\n';
-     for(let key in css){
-      let value = css[key];
-      if(!value) {
+  function toCSSStr(css: CSSProperties) {
+    let str = '.comp {\n';
+    for (const key in css) {
+      let value = css[key as keyof CSSProperties];
+      if (!value) {
         continue;
       }
-      
-     }
+
+      if (
+        ['width', 'height'].includes(key) &&
+        !value.toString().endsWith('px')
+      ) {
+        value += 'px';
+      }
+
+      str += `\t${key}: ${value};\n`;
+    }
+
+    str += '}';
+    return str;
   }
 
   function renderFormElememt(setting: ComponentSetter) {
@@ -88,10 +104,7 @@ const ComponentStyle: React.FC = () => {
       ))}
 
       <div className="h-[200px] border-[1px] border-[#ccc]">
-        <CssEditor
-          value=".comp{\n\n}"
-          onChange={handleEditorChange}
-        ></CssEditor>
+        <CssEditor value={css} onChange={handleEditorChange}></CssEditor>
       </div>
     </Form>
   );
