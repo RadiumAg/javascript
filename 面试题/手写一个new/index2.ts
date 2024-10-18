@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow-callback */
 // new
 interface Func {
   new (...args: any[]): any;
@@ -11,3 +12,7 @@ function create1(fun: Func, ...params: any[]) {
     ? result
     : target;
 }
+
+const p1 = create1(function a() {}, 1212, 12121);
+
+console.log(p1);
