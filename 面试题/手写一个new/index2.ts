@@ -11,9 +11,3 @@ function create1(fun: Func, ...params: any[]) {
     ? result
     : target;
 }
-
-console.log(
-  create1(function a() {
-    this.b = 1;
-  }, 111),
-);
