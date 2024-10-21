@@ -45,12 +45,12 @@ const EditorArea: React.FC = () => {
     const componentMap = components.map<React.ReactNode>((component) => {
       const config = componentConfig?.[component.name];
 
-      if (!config?.component) {
+      if (!config?.dev) {
         return null;
       }
 
       return React.createElement(
-        config.component,
+        config.dev,
         {
           key: component.id,
           id: component.id,

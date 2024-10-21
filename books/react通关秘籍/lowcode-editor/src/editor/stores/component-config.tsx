@@ -1,7 +1,10 @@
 import { create } from 'zustand';
-import Container from '../materials/container';
-import Button from '../materials/button';
-import Page from '../materials/page';
+import ContainerDev from '../materials/container/dev';
+import ContainerProd from '../materials/container/prod';
+import ButtonDev from '../materials/button/dev';
+import ButtonProd from '../materials/button/prod';
+import PageProd from '../materials/page/prod';
+import PageDev from '../materials/page/dev';
 
 export interface ComponentSetter {
   name: string;
@@ -14,7 +17,6 @@ export interface ComponentConfig {
   props?: any;
   name: string;
   desc?: string;
-  component: React.FC<any>;
   setter?: ComponentSetter[];
   styleSetter?: ComponentSetter[];
   defaultProps: Record<string, any>;
@@ -36,7 +38,8 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
       name: 'Container',
       defaultProps: {},
       desc: '容器',
-      component: Container,
+      dev: ContainerDev,
+      prod: ContainerProd,
       styleSetter: [
         {
           name: 'width',
@@ -79,7 +82,8 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
         text: '按钮',
       },
       desc: '按钮',
-      component: Button,
+      dev: ButtonDev,
+      prod: ButtonProd,
       styleSetter: [
         {
           name: 'width',
@@ -97,7 +101,8 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
       name: 'Page',
       defaultProps: {},
       desc: '页面',
-      component: Page,
+      prod: PageProd,
+      dev: PageDev,
     },
   },
 
