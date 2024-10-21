@@ -1,3 +1,4 @@
+import { Store } from 'antd/es/form/interface';
 import { CSSProperties } from 'react';
 import { create } from 'zustand';
 
@@ -13,6 +14,7 @@ export interface Component {
 
 interface State {
   components: Component[];
+  mode: 'edit' | 'preview';
   curComponentId: number | null;
   curComponent: Component | null;
 }
@@ -23,6 +25,7 @@ interface Action {
   updateComponentProps: (componentId: number, props: any) => void;
   setCurComponentId: (componentId: number | null) => void;
   updateComponentStyles: (componentId: number, styles: CSSProperties) => void;
+  setMode: (mode: Store['mode']) => void;
 }
 
 export const useComponentsStore = create<State & Action>((set, get) => ({
@@ -35,6 +38,8 @@ export const useComponentsStore = create<State & Action>((set, get) => ({
       desc: '页面',
     },
   ],
+  mode: 'edit',
+  setMode: (mode) => set({ mode }),
   addComponent: (component, parentId) => {
     set((state) => {
       if (parentId) {
