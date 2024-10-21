@@ -18,6 +18,8 @@ export interface ComponentConfig {
   setter?: ComponentSetter[];
   styleSetter?: ComponentSetter[];
   defaultProps: Record<string, any>;
+  dev: any;
+  prod: any;
 }
 
 interface State {
