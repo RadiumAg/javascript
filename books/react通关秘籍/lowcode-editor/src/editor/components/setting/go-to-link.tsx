@@ -39,3 +39,5 @@ const GoToLink: React.FC<GoToLinkProps> = (props) => {
     </div>
   );
 };
+
+export default GoToLink;
