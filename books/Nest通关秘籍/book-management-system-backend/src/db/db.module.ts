@@ -5,9 +5,7 @@ export interface DbModuleOptions {
   path: string;
 }
 
-@Module({
-  providers: [DbService],
-})
+@Module({})
 export class DbModule {
   static register(options: DbModuleOptions): DynamicModule {
     return {

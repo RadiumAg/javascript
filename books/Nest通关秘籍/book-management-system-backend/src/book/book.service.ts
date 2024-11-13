@@ -10,7 +10,7 @@ function randomNum() {
 
 @Injectable()
 export class BookService {
-  @Inject()
+  @Inject(DbService)
   dbService: DbService;
 
   async list() {
