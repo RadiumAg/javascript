@@ -1,58 +1,28 @@
-const https = require('http2');
-const fs = require('fs');
-const path = require('path');
+const cookie = `lark_oapi_csrf_token=0PX2enw0XBlmUQ28ioXh4CNckMdXmQf/byMSgWrHgQI=; open_locale=zh-CN; _ga=GA1.3.218488402.1730722959; deviceId=cm33018ua00003j6xw2rtbu50; _gid=GA1.3.981001546.1731223151; __tea__ug__uid=3488331730722956176; Hm_lvt_a79616d9322d81f12a92402ac6ae32ea=1730722956,1731223231,1731240921,1731422892; _gcl_au=1.1.1362015446.1731507419; _gid=GA1.2.1476036992.1731507420; passport_trace_id=7437100281067929603; i18n_locale=zh-CN; landing_url=https://ae.feishu.cn/hc/zh-CN/articles/829761733100; _uetsid=2466f490a10511ef8c33897fb20dbb53; _uetvid=7baea8a09aa711efab560d9cebefddd0; msToken=81IBKtjwZqtFAge4Os6LCWpXe2Y07IQlN27Jd6jPPZRKdx6PvQZNk1MfM7P2yoJUIP3b6awb9HVLpTi_zhO2qRMCPpbZbZYX4052HVk0iraru5t_FPKEJ2k0oZ38DyEtj2OILgW6mb0G87LLYvPI7hbxvN2wTwYTLq87y1mGO2Pe; _ga=GA1.1.11229210.1731507420; swp_csrf_token=e3f4de99-0325-418a-a691-1c35555ed110; _ga_VPYRHN104D=GS1.1.1731592484.4.1.1731593023.50.0.0`;
 
-const filePath = 'https://cn.textboostsms.com/assets/video/textboostsms.mp4';
-const outputFile = path.resolve(__dirname, 'output.mp4');
-
-const client = https.connect(filePath, {
-  headers: {
-    accept: '*/*',
-    'accept-encoding': 'gzip, deflate, br, zstd',
-    'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-    'cache-control': 'no-cache',
-    cookie:
-      '_gcl_au=1.1.46215287.1722232025.1618641042.1722232298.1722232310;crisp-client%2Fsession%2F626fd71a-2d19-4952-be33-f8b657590b6a=session_d936043f-9b78-4240-91a8-5dcc803a213f',
-    pragma: 'no-cache',
-    priority: 'u=1, i',
-    referer: 'https://cn.textboostsms.com/assets/video/textboostsms.mp4',
-    path: '/assets/video/textboostsms.mp4',
-    'sec-ch-ua':
-      'Chromium";v="128", "Not;A=Brand";v="24", "Microsoft Edge";v="128',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': 'macOS',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'user-agent':
-      ' Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0',
-  },
-});
-
-const req = client.request({
-  ':method': 'GET',
-  ':path': new URL(filePath).pathname,
-  ':scheme': 'https',
-});
-
-req.on('response', (headers, flags) => {
-  if (headers[':status'] !== 200) {
-    console.error(`Download failed with status ${headers[':status']}`);
-    client.close();
-    return;
+function getCookie(name) {
+  const nameEQ = `${name}=`;
+  const ca = cookie.split(';');
+  for (let c of ca) {
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
   }
+  return null;
+}
 
-  const fileStream = fs.createWriteStream(outputFile);
+function setCookie(name, value, days) {
+  let expires = '';
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = `; expires=${date.toUTCString()}`;
+  }
+  document.cookie = `${name}=${value || ''}${expires}; path=/`;
+}
 
-  req.on('data', chunk => {
-    fileStream.write(chunk);
+cookie
+  .split(';')
+  .map(_ => _.split('='))
+  .forEach(_ => {
+    setCookie(_[0], getCookie(_[0]), 365);
   });
-
-  req.on('end', () => {
-    console.log('Download completed');
-    fileStream.end();
-    client.close();
-  });
-});
-
-req.end();
