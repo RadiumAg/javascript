@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { authPlugins } from 'mysql2';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
 
@@ -13,7 +12,7 @@ import { User } from './user/entities/user.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'guang',
+      password: '123456',
       database: 'login_test',
       synchronize: true,
       logging: true,
