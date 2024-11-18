@@ -16,13 +16,9 @@ export class UserService {
   private userRepository: Repository<User>;
 
   private logger = new Logger();
-
-  @InjectRepository(User)
-  private userRepository: Repository<User>;
-
   async register(user: RegisterDto) {
     const foundUser = await this.userRepository.findOneBy({
-      username: user.usrname,
+      username: user.username,
     });
 
     if (foundUser) {
@@ -30,7 +26,7 @@ export class UserService {
     }
 
     const newUser = new User();
-    newUser.username = user.usrname;
+    newUser.username = user.username;
     newUser.password = md5(user.password);
 
     try {

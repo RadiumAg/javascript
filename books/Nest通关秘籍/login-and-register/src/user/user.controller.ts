@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ServerResponse } from 'http';
 
 @Controller('user')
 export class UserController {
@@ -14,7 +15,7 @@ export class UserController {
   @Post('login')
   async login(
     @Body() user: LoginDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: ServerResponse,
   ) {
     const foundUser = await this.userService.login(user);
 
@@ -26,7 +27,7 @@ export class UserController {
         },
       });
 
-      res.headers.set('token', token);
+      res.setHeader('token', token);
       return 'login success';
     } else {
       return 'login failed';
@@ -36,5 +37,9 @@ export class UserController {
   @Post('register')
   async register(@Body() user: RegisterDto) {
     return await this.userService.register(user);
+  }
+
+  aaa() {
+    return 'aaa';
   }
 }
