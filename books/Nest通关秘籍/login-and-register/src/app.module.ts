@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { User } from './user/entities/user.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '123456',
+      password: '12345678',
       database: 'login_test',
       synchronize: true,
       logging: true,
@@ -22,6 +23,11 @@ import { User } from './user/entities/user.entity';
       extra: {
         authPlugins: 'sha256_password',
       },
+    }),
+    JwtModule.register({
+      global: true,
+      secret: 'radium',
+      signOptions: { expiresIn: '7d' },
     }),
     UserModule,
   ],
