@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Permission } from './entities/permission.entity';
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
 import { User } from './entities/user.entity';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
@@ -65,23 +66,19 @@ export class UserService {
     await this.entityManager.save([user1, user2]);
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  async login(loginUserDto: LoginUserDto) {
+    const user = await this.entityManager.findOneBy(User, {
+      username: loginUserDto.username,
+    });
 
-  findAll() {
-    return `This action returns all user`;
-  }
+    if (!user) {
+      throw new HttpException('用户不存在', HttpStatus.ACCEPTED);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    if (user.password !== loginUserDto.password) {
+      throw new HttpException('密码错误', HttpStatus.ACCEPTED);
+    }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return user;
   }
 }
