@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Permission } from './entities/permission.entity';
 
 @Injectable()
 export class UserService {
+  async initData() {
+    const permission1 = new Permission();
+  }
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }

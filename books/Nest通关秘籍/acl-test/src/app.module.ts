@@ -13,7 +13,7 @@ import { Permission } from './user/entities/permission.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '123455678',
+      password: '12345678',
       database: 'acl_test',
       synchronize: true,
       logging: true,
