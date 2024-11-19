@@ -17,7 +17,7 @@ export class Permission {
   name: string;
 
   @Column({ length: 100, nullable: true })
-  dec: string;
+  desc: string;
 
   @CreateDateColumn()
   createTime: Date;
