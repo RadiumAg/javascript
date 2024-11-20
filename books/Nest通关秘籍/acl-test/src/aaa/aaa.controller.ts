@@ -12,6 +12,7 @@ import { AaaService } from './aaa.service';
 import { CreateAaaDto } from './dto/create-aaa.dto';
 import { UpdateAaaDto } from './dto/update-aaa.dto';
 import { LoginGuard } from 'src/login.guard';
+import { PermissionGuard } from 'src/permission.guard';
 
 @Controller('aaa')
 export class AaaController {
@@ -23,7 +24,7 @@ export class AaaController {
     return this.aaaService.create(createAaaDto);
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(LoginGuard, PermissionGuard)
   @Get()
   findAll() {
     return this.aaaService.findAll();
