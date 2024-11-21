@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  SetMetadata,
 } from '@nestjs/common';
 import { AaaService } from './aaa.service';
 import { CreateAaaDto } from './dto/create-aaa.dto';
@@ -24,8 +25,9 @@ export class AaaController {
     return this.aaaService.create(createAaaDto);
   }
 
-  @UseGuards(LoginGuard, PermissionGuard)
   @Get()
+  @UseGuards(LoginGuard, PermissionGuard)
+  @SetMetadata('permission', 'query_aaa')
   findAll() {
     return this.aaaService.findAll();
   }
