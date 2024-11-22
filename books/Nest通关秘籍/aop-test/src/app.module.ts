@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { LogMiddleware } from './log.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
+import { Role } from './user/entities/role.entity';
+import { Permission } from './user/entities/permission.entity';
 
 @Module({
   imports: [
@@ -16,7 +19,7 @@ import { UserModule } from './user/user.module';
       database: 'rbac_test',
       synchronize: true,
       logging: true,
-      entities: [],
+      entities: [User, Role, Permission],
       poolSize: 10,
       connectorPackage: 'mysql2',
       extra: {
