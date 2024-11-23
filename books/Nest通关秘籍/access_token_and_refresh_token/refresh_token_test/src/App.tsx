@@ -7,9 +7,23 @@ function App() {
   const [aaa, setAaa] = React.useState();
   const [bbb, setBbb] = React.useState();
 
+  async function login() {
+    const res = await axios.post('http://localhost:3000/user/login', {
+      username: 'guang1',
+      password: '123456',
+    });
+
+    localStorage.setItem('access_token', res.data.access_token);
+    localStorage.setItem('refresh_token', res.data.refresh_token);
+  }
+
   async function query() {
     const { data: aaaData } = await axios.get('http://localhost:3000/aaa');
-    const { data: bbbData } = await axios.get('http://localhost:3000/bbb');
+    const { data: bbbData } = await axios.get('http://localhost:3000/bbb', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    });
 
     setAaa(aaaData);
     setBbb(bbbData);
@@ -21,20 +35,8 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <p>{aaa}</p>
+      <p>{bbb}</p>
     </div>
   );
 }
