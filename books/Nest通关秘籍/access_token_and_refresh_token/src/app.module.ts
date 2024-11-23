@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -23,6 +24,13 @@ import { User } from './user/entities/user.entity';
       extra: {
         authPlugin: 'sha256_password',
       },
+    }),
+    JwtModule.register({
+      global: true,
+      signOptions: {
+        expiresIn: '30m',
+      },
+      secret: 'radium',
     }),
   ],
   controllers: [AppController],
