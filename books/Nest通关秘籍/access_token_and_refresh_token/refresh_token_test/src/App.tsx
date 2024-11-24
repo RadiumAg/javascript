@@ -60,6 +60,10 @@ function App() {
   }
 
   async function query() {
+    if (!localStorage.getItem('access_token')) {
+      await login();
+    }
+
     const { data: aaaData } = await axios.get('http://localhost:3000/aaa');
     const { data: bbbData } = await axios.get('http://localhost:3000/bbb', {
       headers: {
