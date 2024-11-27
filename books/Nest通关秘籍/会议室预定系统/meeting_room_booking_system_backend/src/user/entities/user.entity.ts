@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Role } from './role.entity';
 
 @Entity({
   name: 'users',
@@ -27,7 +28,7 @@ export class User {
   @Column({ comment: '邮箱', length: 50 })
   email: string;
 
-  @Column({ comment: '头像', length: 100, nullabl: true })
+  @Column({ comment: '头像', length: 100, nullable: true })
   headPic: string;
 
   @Column({
