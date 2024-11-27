@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -51,6 +52,6 @@ export class User {
   updateTime: Date;
 
   @ManyToMany(() => Role)
-  @JoinColumn({ name: 'user_roles' })
+  @JoinTable({ name: 'user_roles' })
   roles: Role[];
 }
