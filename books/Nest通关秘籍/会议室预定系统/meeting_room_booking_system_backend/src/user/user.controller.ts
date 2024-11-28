@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { EmailService } from 'src/email/email.service';
 import { RedisService } from 'src/redis/redis.service';
+import { LoginUserDto } from './dto/login-user.dto';
 @Controller('user')
 export class UserController {
   constructor(
@@ -25,5 +26,25 @@ export class UserController {
       subject: '注册验证码',
       html: `您的验证码是${code}`,
     });
+  }
+
+  @Post('login')
+  async login(@Body() loginUser: LoginUserDto) {
+    const vo = await this.userService.login(loginUser, true);
+
+    return vo;
+  }
+
+  @Post('admin/login')
+  async adminLogin(@Body() loginUser: LoginUserDto) {
+    const vo = await this.userService.login(loginUser, true);
+
+    return vo;
+  }
+
+  @Get('init-data')
+  async initData() {
+    await this.userService.initData();
+    return 'done';
   }
 }
