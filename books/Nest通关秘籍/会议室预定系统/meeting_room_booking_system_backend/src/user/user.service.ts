@@ -4,14 +4,15 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { md5 } from 'src/utils';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger();
 
   constructor(
-    private userRepository: Repository<User>,
     private redisService: RedisService,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   async register(user: RegisterUserDto) {
