@@ -9,6 +9,8 @@ import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUserVo } from './vo/login-user.vo';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -61,6 +63,8 @@ export class UserService {
     private permissionRepository: Repository<User>,
     @InjectRepository(Role)
     private roleRepository: Repository<User>,
+    private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async register(user: RegisterUserDto) {
@@ -115,6 +119,28 @@ export class UserService {
     }
 
     const vo = new LoginUserVo();
+    vo.accessToken = this.jwtService.sign(
+      {
+        userId: vo.userInfo.id,
+        username: vo.userInfo.username,
+        roles: vo.userInfo.roles,
+        permissions: vo.userInfo.permissions,
+      },
+      {
+        expiresIn:
+          this.configService.get('jwt_access_token_expires_time') || '30m',
+      },
+    );
+
+    vo.refreshToken = this.jwtService.sign(
+      {
+        userId: vo.userInfo.id,
+      },
+      {
+        expiresIn:
+          this.configService.get('jwt_refresh_token_expres_time') || '7d',
+      },
+    );
     vo.userInfo = {
       id: user.id,
       username: user.username,
