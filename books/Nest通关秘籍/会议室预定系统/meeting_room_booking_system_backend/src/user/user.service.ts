@@ -9,6 +9,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RedisService } from 'src/redis/redis.service';
+import { md5 } from 'src/utils';
 
 @Injectable()
 export class UserService {
@@ -40,11 +41,16 @@ export class UserService {
 
     const newUser = new User();
     newUser.username = user.username;
-    newUser.password = user.password;
+    newUser.password = md5(user.password);
     newUser.email = user.email;
     newUser.nickName = user.nickName;
 
     try {
-    } catch (e) {}
+      await this.userRepository.save(newUser);
+      return '注册成功';
+    } catch (e) {
+      this.logger.error(e);
+      return '注册失败';
+    }
   }
 }
