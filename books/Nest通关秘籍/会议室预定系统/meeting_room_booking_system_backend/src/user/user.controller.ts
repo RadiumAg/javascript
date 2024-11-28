@@ -4,6 +4,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { EmailService } from 'src/email/email.service';
 import { RedisService } from 'src/redis/redis.service';
 import { LoginUserDto } from './dto/login-user.dto';
+
 @Controller('user')
 export class UserController {
   constructor(
@@ -30,7 +31,7 @@ export class UserController {
 
   @Post('login')
   async login(@Body() loginUser: LoginUserDto) {
-    const vo = await this.userService.login(loginUser, true);
+    const vo = await this.userService.login(loginUser, false);
 
     return vo;
   }
