@@ -8,7 +8,7 @@ import { Role } from './user/entities/role.entity';
 import { Permission } from './user/entities/permission.entity';
 import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
-import { EmailModule } from './email/email.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -27,6 +27,10 @@ import { EmailModule } from './email/email.module';
       extra: {
         authPlugin: 'sha256_password',
       },
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: 'src/.env',
     }),
     UserModule,
     RedisModule,

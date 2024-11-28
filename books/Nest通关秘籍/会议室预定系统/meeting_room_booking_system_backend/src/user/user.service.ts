@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -13,12 +7,12 @@ import { md5 } from 'src/utils';
 
 @Injectable()
 export class UserService {
-  @Inject(RedisService)
-  private redisService: RedisService;
-
   private readonly logger = new Logger();
 
-  constructor(private userRepository: Repository<User>) {}
+  constructor(
+    private userRepository: Repository<User>,
+    private redisService: RedisService,
+  ) {}
 
   async register(user: RegisterUserDto) {
     const captcha = await this.redisService.get(`captcha_${user.email}`);

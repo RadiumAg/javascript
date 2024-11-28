@@ -1,12 +1,14 @@
 import { Global, Module } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import { createClient } from 'redis';
+import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
   providers: [
     RedisService,
     {
+      inject: [ConfigService],
       provide: 'REDIS_CLIENT',
       async useFactory() {
         const client = createClient({
@@ -21,5 +23,6 @@ import { createClient } from 'redis';
       },
     },
   ],
+  exports: [RedisService],
 })
 export class RedisModule {}
