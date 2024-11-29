@@ -34,6 +34,21 @@ export class UserController {
     private readonly configService: ConfigService,
   ) {}
 
+  @Get('update/captcha')
+  async updateCaptcha(@Query('address') address) {
+    const code = Math.random().toString().slice(2, 8);
+    await this.redisService.set(
+      `update_user_captcha_${address}`,
+      code,
+      10 * 60,
+    );
+    await this.emailService.sendMail({
+      to: address,
+      subject: '注册验证码',
+      html: `您的验证码是${code}`,
+    });
+  }
+
   @Get('refresh')
   async refresh(@Query('refreshToken') refreshToken: string) {
     try {
