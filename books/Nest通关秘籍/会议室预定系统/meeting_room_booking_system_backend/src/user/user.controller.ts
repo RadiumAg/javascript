@@ -5,6 +5,7 @@ import {
   Get,
   Query,
   UnauthorizedException,
+  SetMetadata,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -126,6 +127,12 @@ export class UserController {
     const vo = await this.userService.login(loginUser, true);
 
     return vo;
+  }
+
+  @Get('aaa')
+  @SetMetadata('require-login', true)
+  async aaa() {
+    return 'aaa';
   }
 
   @Get('init-data')
