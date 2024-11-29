@@ -47,6 +47,8 @@ export class UserController {
       subject: '注册验证码',
       html: `您的验证码是${code}`,
     });
+
+    return '发送成功';
   }
 
   @Get('refresh')
