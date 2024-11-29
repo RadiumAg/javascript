@@ -67,6 +67,16 @@ export class UserService {
     private configService: ConfigService,
   ) {}
 
+  async findUserDetailById(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    return user;
+  }
+
   async findUserById(userId: number, isAdmin: boolean) {
     const user = await this.userRepository.findOne({
       where: { id: userId, isAdmin },
@@ -141,6 +151,28 @@ export class UserService {
     }
 
     const vo = new LoginUserVo();
+
+    vo.userInfo = {
+      id: user.id,
+      username: user.username,
+      nickName: user.nickName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      headPic: user.headPic,
+      createTime: user.createTime.getTime(),
+      isFrozen: user.isFrozen,
+      isAdmin: user.isAdmin,
+      roles: user.roles.map((item) => item.name),
+      permissions: user.roles.reduce((arr, item) => {
+        item.permissions.forEach((permission) => {
+          if (arr.indexOf(permission) === -1) {
+            arr.push(permission);
+          }
+        });
+        return arr;
+      }, []),
+    };
+
     vo.accessToken = this.jwtService.sign(
       {
         userId: vo.userInfo.id,
@@ -163,26 +195,6 @@ export class UserService {
           this.configService.get('jwt_refresh_token_expres_time') || '7d',
       },
     );
-    vo.userInfo = {
-      id: user.id,
-      username: user.username,
-      nickName: user.nickName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      headPic: user.headPic,
-      createTime: user.createTime.getTime(),
-      isFrozen: user.isFrozen,
-      isAdmin: user.isAdmin,
-      roles: user.roles.map((item) => item.name),
-      permissions: user.roles.reduce((arr, item) => {
-        item.permissions.forEach((permission) => {
-          if (arr.indexOf(permission) === -1) {
-            arr.push(permission);
-          }
-        });
-        return arr;
-      }, []),
-    };
 
     return vo;
   }

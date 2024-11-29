@@ -16,6 +16,7 @@ import { LoginGuard } from './login.guard';
 @Module({
   imports: [
     JwtModule.registerAsync({
+      inject: [ConfigService],
       global: true,
       useFactory(configService) {
         return {

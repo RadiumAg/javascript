@@ -15,12 +15,13 @@ import { RedisService } from 'src/redis/redis.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { SettlementSignal } from '@nestjs/core/injector/settlement-signal';
 import {
   RequireLogin,
   RequirePermission,
   UserInfo,
 } from 'src/custom.decorator';
+import { UserDetailVo } from './vo/user-info.vo';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -144,6 +145,34 @@ export class UserController {
     console.log(userInfo);
 
     return 'aaa';
+  }
+
+  @Get('info')
+  @RequireLogin()
+  async info(@UserInfo('userId') userId: number) {
+    const user = await this.userService.findUserDetailById(userId);
+
+    const vo = new UserDetailVo();
+    vo.id = user.id;
+    vo.email = user.email;
+    vo.username = user.username;
+    vo.headPic = user.headPic;
+    vo.phoneNumber = user.phoneNumber;
+    vo.nickName = user.nickName;
+    vo.createTime = user.createTime;
+    vo.isFrozen = user.isFrozen;
+
+    return vo;
+  }
+
+  @Post(['update_password', 'admin/update_password'])
+  @RequireLogin()
+  async updatePassword(
+    @Body() userId: number,
+    @Body() passwordDto: UpdateUserDto,
+  ) {
+    console.log(passwordDto);
+    return 'success';
   }
 
   @Get('init-data')
