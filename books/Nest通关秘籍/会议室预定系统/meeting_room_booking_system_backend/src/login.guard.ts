@@ -64,7 +64,7 @@ export class LoginGuard implements CanActivate {
       };
       return true;
     } catch {
-      throw new UnloginFilter('token 已失效，请重新登陆');
+      throw new UnloginFilter();
     }
   }
 }
