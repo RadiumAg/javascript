@@ -69,6 +69,30 @@ export class UserService {
     private configService: ConfigService,
   ) {}
 
+  async findUsersByPage(pageNo: number, pageSize: number) {
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      skip: skipCount,
+      take: pageSize,
+    });
+
+    return {
+      users,
+      totalCount,
+    };
+  }
+
+  async freezeUserById(id: number) {
+    const user = await this.userRepository.findOneBy({
+      id,
+    });
+
+    user.isFrozen = true;
+
+    return this.userRepository.save(user);
+  }
+
   async update(userId: number, updateUserDto: UpdateUserDto) {
     const captcha = await this.redisService.get(
       `update_user_captcha_${updateUserDto.email}`,

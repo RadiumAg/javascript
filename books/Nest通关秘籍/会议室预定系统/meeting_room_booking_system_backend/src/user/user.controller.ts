@@ -7,6 +7,8 @@ import {
   UnauthorizedException,
   SetMetadata,
   Req,
+  ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -33,6 +35,34 @@ export class UserController {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  @Get('list')
+  async list(
+    @Query(
+      'pageNo',
+      new ParseIntPipe({
+        exceptionFactory() {
+          throw new BadRequestException('pageNo 应该传数字');
+        },
+      }),
+    )
+    pageNo: number,
+    @Query(
+      'pageSize',
+      new ParseIntPipe({
+        exceptionFactory() {
+          throw new BadRequestException('pageSize 应该传数字');
+        },
+      }),
+    )
+    pageSize: number,
+  ) {
+    return await this.userService.findUsersByPage(pageNo, pageSize);
+  }
+  @Get('freeze')
+  async freeze(@Query('userId') userId: number) {
+    return await this.userService.freezeUserById(userId);
+  }
 
   @Get('update/captcha')
   async updateCaptcha(@Query('address') address) {
