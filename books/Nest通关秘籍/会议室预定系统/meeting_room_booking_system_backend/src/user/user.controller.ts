@@ -6,6 +6,7 @@ import {
   Query,
   UnauthorizedException,
   SetMetadata,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -14,6 +15,12 @@ import { RedisService } from 'src/redis/redis.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { SettlementSignal } from '@nestjs/core/injector/settlement-signal';
+import {
+  RequireLogin,
+  RequirePermission,
+  UserInfo,
+} from 'src/custom.decorator';
 
 @Controller('user')
 export class UserController {
@@ -130,8 +137,12 @@ export class UserController {
   }
 
   @Get('aaa')
-  @SetMetadata('require-login', true)
-  async aaa() {
+  @RequireLogin()
+  @RequirePermission('ddd')
+  async aaa(@UserInfo('username') username: string, @UserInfo() userInfo) {
+    console.log(username);
+    console.log(userInfo);
+
     return 'aaa';
   }
 
