@@ -22,6 +22,7 @@ import {
 } from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -168,11 +169,17 @@ export class UserController {
   @Post(['update_password', 'admin/update_password'])
   @RequireLogin()
   async updatePassword(
-    @Body() userId: number,
-    @Body() passwordDto: UpdateUserDto,
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdateUserPasswordDto,
   ) {
-    console.log(passwordDto);
-    return 'success';
+    return await this.userService.updatePassword(userId, passwordDto);
+  }
+
+  async update(
+    @UserInfo('userId') userId: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.update(userId, updateUserDto);
   }
 
   @Get('init-data')

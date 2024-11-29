@@ -23,5 +23,5 @@ export class UpdateUserPasswordDto {
   @IsNotEmpty({
     message: '验证码不能为空',
   })
-  code: string;
+  captcha: string;
 }
