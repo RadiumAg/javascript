@@ -5,10 +5,6 @@ import {
   Get,
   Query,
   UnauthorizedException,
-  SetMetadata,
-  Req,
-  ParseIntPipe,
-  BadRequestException,
   DefaultValuePipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -27,7 +23,9 @@ import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { generateParseIntPip } from 'src/utils';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('用户管理模块')
 @Controller('user')
 export class UserController {
   constructor(
