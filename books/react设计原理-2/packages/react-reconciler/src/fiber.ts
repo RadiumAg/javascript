@@ -33,10 +33,16 @@ export class FiberNode {
 
   // 最终确定状态, 已经生效的属性
   memoizedProps: Props | null;
-  memoizedState: any; // 用在hook
+  // 每个fiber还有自己的状态，用在hook上
+  // 每一种fiber的状态类型不一样
+  // 类组件的状态对应的fiber 存的就是类的实例状态，HostRoot村的就是要渲染的元素
+  memoizedState: any;
   alternate: FiberNode | null;
+  // fiber自身的副作用
   flags: Flags;
+  // 子节点的副作用，一个优化，如果没值，代表子节点没有更新
   subtreeFlags: Flags;
+  // 每个fiber身上还有更新队列，例如setState产生的更新
   updateQueue: unknown;
   deletions: FiberNode[] | null;
 
