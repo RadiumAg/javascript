@@ -19,8 +19,10 @@ export interface PendingPassiveEffects {
 export class FiberNode {
   type: any;
   tag: WorkTag;
+  // 新属性，等待处理
   pendingProps: Props;
   key: Key;
+  // 真实dom
   stateNode: any;
   ref: Ref | null;
 
@@ -29,7 +31,7 @@ export class FiberNode {
   child: FiberNode | null;
   index: number;
 
-  // 最终确定状态
+  // 最终确定状态, 已经生效的属性
   memoizedProps: Props | null;
   memoizedState: any; // 用在hook
   alternate: FiberNode | null;
@@ -97,7 +99,7 @@ export class FiberRootNode {
 
 export const createWorkInProgress = (
   current: FiberNode,
-  pendingProps: Props,
+  pendingProps: Props
 ): FiberNode => {
   let wip = current.alternate;
 
