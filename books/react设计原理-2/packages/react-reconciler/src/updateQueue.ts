@@ -51,6 +51,8 @@ export const enqueueUpdate = <State>(
   update: Update<State>,
 ) => {
   const pending = updateQueue.shared.pending;
+
+  debugger;
   if (pending === null) {
     update.next = update;
   } else {

@@ -6,7 +6,20 @@ const Children = () => {
 
   console.log('children udpate');
 
-  return <div onClick={() => setState(state + 1)}>{state}</div>;
+  return (
+    <div
+      onClick={() => {
+        setState(state + 1);
+        setState(state + 2);
+        setState(state + 3);
+        setState(state + 4);
+        setState(state + 5);
+        setState(state + 6);
+      }}
+    >
+      {state}
+    </div>
+  );
 };
 
 const App = () => {
