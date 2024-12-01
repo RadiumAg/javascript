@@ -4,6 +4,12 @@
   },
   "extends": ["@raag/eslint-config-ts"],
   "rules": {
-    "unicorn/number-literal-case": "off"
+    "unicorn/number-literal-case": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
   }
 }

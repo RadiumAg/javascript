@@ -6,6 +6,7 @@ import {
   Query,
   UnauthorizedException,
   DefaultValuePipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -23,7 +24,7 @@ import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { generateParseIntPip } from 'src/utils';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -150,11 +151,33 @@ export class UserController {
     }
   }
 
+  @ApiBody({ type: RegisterUserDto })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '验证码失效/验证码不正确/用户已存在',
+    type: String,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '注册成功',
+    type: String,
+  })
   @Post('register')
   register(@Body() registerUser: RegisterUserDto) {
     return this.userService.register(registerUser);
   }
 
+  @ApiQuery({
+    name: 'address',
+    type: String,
+    description: '邮箱地址',
+    required: true,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '发送成功',
+    type: String,
+  })
   @Get('register-captcha')
   async captcha(@Query('address') address) {
     const code = Math.random().toString().slice(2, 8);
@@ -166,6 +189,17 @@ export class UserController {
     });
   }
 
+  @ApiBody({ type: LoginUserDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '用户信息和token',
+    type: UserDetailVo,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '用户不存在/密码错误',
+    type: String,
+  })
   @Post('login')
   async login(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, false);
