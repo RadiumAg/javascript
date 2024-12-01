@@ -25,6 +25,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { generateParseIntPip } from 'src/utils';
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginUserVo } from './vo/login-user.vo';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -193,7 +194,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '用户信息和token',
-    type: UserDetailVo,
+    type: LoginUserVo,
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -207,6 +208,17 @@ export class UserController {
     return vo;
   }
 
+  @ApiBody({ type: LoginUserDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '用户信息和token',
+    type: LoginUserVo,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '用户不存在/密码错误',
+    type: String,
+  })
   @Post('admin/login')
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
