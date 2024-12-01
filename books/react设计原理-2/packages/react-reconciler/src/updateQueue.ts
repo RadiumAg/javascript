@@ -15,6 +15,12 @@ export interface UpdateQueue<State> {
   dispatch: Dispatch<State> | null;
 }
 
+/**
+ * 创建更新队列
+ * @param action
+ * @param lane
+ * @returns
+ */
 export const createUpdate = <State>(
   action: Action<State>,
   lane: Lane,
@@ -48,7 +54,13 @@ export const enqueueUpdate = <State>(
   if (pending === null) {
     update.next = update;
   } else {
+    // pending 是最后一个update
+    // update.next指向第一个update
+    // 如果更新队列不为空的话，去除第一个更新 pending.next
     update.next = pending.next;
+    // 然后让原来队列的最后一个upcate指向新的update
+    // 新的update就变成了最后一个update
+    // pending.next指向第一个update
     pending.next = update;
   }
   updateQueue.shared.pending = update;
