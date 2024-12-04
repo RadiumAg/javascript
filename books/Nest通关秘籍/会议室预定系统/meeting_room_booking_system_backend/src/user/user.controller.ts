@@ -33,6 +33,7 @@ import {
 } from '@nestjs/swagger';
 import { LoginUserVo } from './vo/login-user.vo';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
+import { UserListVo } from './vo/user-list.vo';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -45,6 +46,35 @@ export class UserController {
     private readonly configService: ConfigService,
   ) {}
 
+  @ApiQuery({
+    name: 'pageNo',
+    description: '第几页',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    description: '每页多少条',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'username',
+    description: '用户名',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'nickname',
+    description: '昵称',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'email',
+    description: '邮箱地址',
+    type: Number,
+  })
+  @ApiResponse({
+    description: '用户列表',
+    type: UserListVo,
+  })
   @Get('list')
   async list(
     @Query('pageNo', new DefaultValuePipe(1), generateParseIntPip('pageNo'))
@@ -63,6 +93,18 @@ export class UserController {
       pageSize,
     );
   }
+
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'id',
+    description: 'userId',
+    type: Number,
+  })
+  @ApiResponse({
+    type: String,
+    description: 'success',
+  })
+  @RequireLogin()
   @Get('freeze')
   async freeze(@Query('userId') userId: number) {
     return await this.userService.freezeUserById(userId);
@@ -304,8 +346,45 @@ export class UserController {
     return await this.userService.updatePassword(userId, passwordDto);
   }
 
-  async updatePasswordCaptcha() {}
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'address',
+    description: '邮箱地址',
+    type: String,
+  })
+  @ApiResponse({
+    type: String,
+    description: '发送成功',
+  })
+  @RequireLogin()
+  async updatePasswordCaptcha(@Query('address') address: string) {
+    const code = Math.random().toString().slice(2, 8);
+    await this.redisService.set(`update_password_captcha_${address}`, code);
 
+    await this.emailService.sendMail({
+      to: address,
+      subject: '更改密码验证码',
+      html: `<p>你的更改密码验证码是 ${code}`,
+    });
+
+    return '发送成功';
+  }
+
+  @ApiBearerAuth()
+  @ApiBody({
+    type: UpdateUserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: '验证码已失效/不正确',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '更新成功',
+    type: String,
+  })
+  @Post(['update', 'admin/update'])
+  @RequireLogin()
   async update(
     @UserInfo('userId') userId: number,
     @Body() updateUserDto: UpdateUserDto,
