@@ -2,6 +2,16 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+function Aaa() {
+  return <div>aaa</div>;
+}
+
+function Bbb() {
+  return <div>bbb</div>;
+}
+
+function Layout() {}
+
 function App() {
   return (
     <div className="App">
