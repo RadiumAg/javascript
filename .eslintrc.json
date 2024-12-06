@@ -5,10 +5,12 @@
   "extends": ["@raag/eslint-config-ts"],
   "rules": {
     "unicorn/number-literal-case": "off",
+    "comma-dangle":"off",
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "auto"
+        "endOfLine": "auto",
+        "arrowParens": "avoid"
       }
     ]
   }

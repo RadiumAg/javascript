@@ -33,8 +33,8 @@ class MyPromise {
     if (value === this) {
       this.reject(
         new TypeError(
-          'Circular reference detected: promise and x are the same object',
-        ),
+          'Circular reference detected: promise and x are the same object'
+        )
       );
 
       return false;
@@ -50,7 +50,7 @@ class MyPromise {
             if (called) return;
             called = true;
             this.reject(y);
-          },
+          }
         );
         return false;
       } catch (e) {
@@ -74,7 +74,7 @@ class MyPromise {
                 if (called) return;
                 called = true;
                 this.reject(y);
-              },
+              }
             );
             return false;
           } catch (e) {
@@ -106,7 +106,7 @@ class MyPromise {
                 if (called) return;
                 called = true;
                 this.reject(y);
-              },
+              }
             );
             return false;
           } catch (e) {
