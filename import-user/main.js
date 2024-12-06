@@ -115,7 +115,7 @@ const getAllUers = async () => {
       `);
 
       const result = await executeQuery(
-        `Select * from userinfo where user_Name='${name}'`,
+        `Select * from userinfo where user_Name='${name}'`
       );
 
       result.forEach(_ => {
@@ -148,7 +148,7 @@ WHERE
   for (const re of result) {
     try {
       await executeQuery(
-        `ALTER TABLE \`${re.TABLE_NAME}\` DROP FOREIGN KEY \`${re.CONSTRAINT_NAME}\``,
+        `ALTER TABLE \`${re.TABLE_NAME}\` DROP FOREIGN KEY \`${re.CONSTRAINT_NAME}\``
       );
     } catch (e) {
       console.log(e);
