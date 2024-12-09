@@ -1,13 +1,16 @@
 import { Button, Form, Input } from 'antd';
 import './login.css';
+import { login } from '../../utils/interface.';
 
 interface LoginUser {
   username: string;
   password: string;
 }
 
-const onFinish = (values: LoginUser) => {
-  console.log(values);
+const onFinish = async (values: LoginUser) => {
+  const res = await login(values.username, values.password);
+  if (res) {
+  }
 };
 
 const layout1 = {
