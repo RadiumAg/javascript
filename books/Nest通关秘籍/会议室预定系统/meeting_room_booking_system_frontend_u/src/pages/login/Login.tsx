@@ -1,14 +1,11 @@
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import './login.css';
+import { login } from '../../utils/interface.';
 
 interface LoginUser {
   username: string;
   password: string;
 }
-
-const onFinish = (values: LoginUser) => {
-  console.log(values);
-};
 
 const layout1 = {
   labelCol: { span: 4 },
@@ -21,10 +18,22 @@ const layout2 = {
 };
 
 export function Login() {
+  const onFinsih = async (values: LoginUser) => {
+    const res = await login(values.username, values.password);
+
+    if (res.status === 201 || res.status === 200) {
+      message.success('登录成功');
+
+      console.log(res.data);
+    } else {
+      message.error(res.data.data || '系统繁忙，请稍后再试');
+    }
+  };
+
   return (
     <div id="login-container">
       <h1>会议室预订系统</h1>
-      <Form {...layout1} onFinish={onFinish} colon={false} autoComplete="off">
+      <Form {...layout1} onFinish={onFinsih} colon={false} autoComplete="off">
         <Form.Item
           label="用户名"
           name="username"
