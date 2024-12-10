@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { Login } from './pages/login/Login';
-import { Register } from './pages/Register';
+import { Register } from './pages/register/Register';
 import { UpdatePassword } from './pages/UpdatePasswoord';
 import { ErrorPage } from './pages/ErrorPage';
 

@@ -27,7 +27,6 @@ import { LoginGuard } from './login.guard';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
