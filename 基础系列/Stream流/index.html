@@ -86,5 +86,20 @@
       await readableStream.pipeTo(writableStream);
       console.log('[finished]');
     })();
+
+    (() => {
+      const TransformStream = new TransformStream({});
+    })();
+
+    (() => {
+      const transfoormStream = new TransformStream({
+        transform(chunk, controller) {
+          console.log('[transform]', chunk);
+          // 将小写字母变成大写
+          controller.enqueue(chunk.toUpperCase());
+        }
+        flush(controller){},
+      });
+    })();
   </script>
 </html>
