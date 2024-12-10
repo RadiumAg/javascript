@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+
+  <script>
+    // 创建一个可写流
+    (async () => {
+      const writablleStream = new WritableStream({
+        start(controller) {
+          console.log('start');
+        },
+
+        async write(chunk, controller) {
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+              console.log('[write]', chunk);
+            }, 1000);
+          });
+        },
+
+        close() {
+          console.log('[close]');
+        },
+
+        abort(reason) {
+          console.log('[abort]', reason);
+        },
+      });
+
+      const writer = writablleStream.getWriter();
+      const start = Date.now();
+      for (const char of 'abbbbsdfwerwerwerwer') {
+        await writer.ready;
+        console.log('[ready]', Date.now() - start, 'ms');
+        writer.write(char);
+      }
+    })();
+
+    // 可读流可以通过pipTo建立一条管道将数据传到可写流
+    (async () => {
+      const readableStream = new ReadableStream({
+        start(controller) {
+          controller.enqueue('a');
+          controller.enqueue('b');
+          controller.enqueue('c');
+        },
+
+        pull(controller) {
+          // 当controller缓冲队列为空时调用
+          console.log('[pull]');
+          controller.enqueue('data');
+          controller.close();
+        },
+
+        cancel(reason) {
+          // 流传输被取消时调用
+          console.log('[cancel]', reason);
+        },
+      });
+
+      // 可写流实例
+      const writableStream = new WritableStream({
+        start(controller) {
+          console.log('[write]');
+        },
+
+        // 当读取器调用write()时触发
+        async write(chunk, controller) {
+          await new Promise(() => {
+            setTimeout(() => {
+              console.log('[write]', chunk);
+            });
+          });
+        },
+        abort(reason) {
+          console.log('[abort]', reason);
+        },
+      });
+
+      await readableStream.pipeTo(writableStream);
+      console.log('[finished]');
+    })();
+  </script>
+</html>
