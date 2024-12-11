@@ -9,7 +9,7 @@
 
   <script>
     // 创建一个可写流
-    (async () => {
+    async () => {
       const writablleStream = new WritableStream({
         start(controller) {
           console.log('start');
@@ -40,10 +40,10 @@
         console.log('[ready]', Date.now() - start, 'ms');
         writer.write(char);
       }
-    })();
+    };
 
     // 可读流可以通过pipTo建立一条管道将数据传到可写流
-    (async () => {
+    async () => {
       const readableStream = new ReadableStream({
         start(controller) {
           controller.enqueue('a');
@@ -85,21 +85,86 @@
 
       await readableStream.pipeTo(writableStream);
       console.log('[finished]');
-    })();
+    };
 
-    (() => {
+    () => {
       const TransformStream = new TransformStream({});
-    })();
+    };
 
-    (() => {
-      const transfoormStream = new TransformStream({
+    () => {
+      const transformStream = new TransformStream({
         transform(chunk, controller) {
           console.log('[transform]', chunk);
           // 将小写字母变成大写
           controller.enqueue(chunk.toUpperCase());
-        }
-        flush(controller){},
+        },
+        flush(controller) {
+          console.log('[flush]');
+          // 终止转换，转换结束
+          controller.terminate();
+        },
       });
+
+      // 可读流实例，这与上面的例子一样
+      const readableStream = new ReadableStream({
+        start(controller) {
+          // 预先填入一些数据
+          console.log('[start]');
+          controller.enqueue('a');
+          controller.enqueue('b');
+          controller.enqueue('c');
+        },
+
+        pull(controller) {
+          console.log('[pull]');
+          controller.enqueue('data');
+          controller.close();
+        },
+        cancel(reason) {
+          console.log('[cancel]', reason);
+        },
+      });
+
+      // 在控制台环境下允许可以使用IIFE
+      // 这里使用IIFE的原因是在await目前不能在顶层被调用
+      (async () => {
+        const reader = readableStream.pipeThrough(transformStream).getReader();
+        for (
+          let result = await reader.read();
+          !result.done;
+          result = await reader.read()
+        ) {
+          console.log('[value]', result.value);
+        }
+      })();
+    };
+
+    (() => {
+      // 返回一个转换流对象，用于将每个字母进行大写转换
+      function upperCaseStream() {
+        return new TransformStream({
+          transform(chunk, controller) {
+            controller.enqueue(chunk.toUpperCase());
+          },
+        });
+      }
+
+      // 返回一个可写流，用于将数据渲染到dom上
+      function appendToDOMStream(el) {
+        return new WritableStream({
+          write(chunk) {
+            el.append(chunk);
+          },
+        });
+      }
+      // 请求一段文本数据
+      fetch('./text.txt').then((response) =>
+        response.body
+          // 默认是utf8编码，中文要转成'gb2312'
+          .pipeThrough(new TextDecoderStream('gb2312'))
+          .pipeThrough(upperCaseStream())
+          .pipeTo(appendToDOMStream(document.body))
+      );
     })();
   </script>
 </html>
