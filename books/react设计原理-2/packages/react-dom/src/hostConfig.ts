@@ -14,7 +14,7 @@ export const createInstance = (type: string, props: any): Instance => {
 
 export const appendInitialChild = (
   parent: Instance | Container,
-  child: Instance,
+  child: Instance
 ) => {
   parent.append(child);
 };
@@ -47,7 +47,7 @@ export function commitTextUpdate(textInstance: TextInstance, content: string) {
 
 export function removeChild(
   child: Instance | TextInstance,
-  container: Container,
+  container: Container
 ) {
   // eslint-disable-next-line unicorn/prefer-dom-node-remove
   container.removeChild(child);
@@ -56,7 +56,7 @@ export function removeChild(
 export function insertChildToContainer(
   child: Instance,
   cotnainer: Container,
-  before: Instance,
+  before: Instance
 ) {
   before.before(child);
 }

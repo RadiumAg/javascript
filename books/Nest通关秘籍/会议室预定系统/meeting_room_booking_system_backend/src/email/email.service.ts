@@ -20,7 +20,10 @@ export class EmailService {
 
   async sendMail({ to, subject, html }) {
     await this.transporter.sendMail({
-      from: { name: '会议预定系统', address: '你的邮箱地址' },
+      from: {
+        name: '会议预定系统',
+        address: this.configService.get('nodemailer_auth_user'),
+      },
       to,
       subject,
       html,
