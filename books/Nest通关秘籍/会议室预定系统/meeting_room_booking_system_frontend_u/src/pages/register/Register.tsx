@@ -1,7 +1,9 @@
 import { Button, Form, Input, message } from 'antd';
 import './register.css';
 import { useForm } from 'antd/es/form/Form';
-import { registerCaptcha } from '../../utils/interface.';
+import { register, registerCaptcha } from '../../utils/interface.';
+import { useNavigate } from 'react-router';
+import { useCallback } from 'react';
 
 export interface RegisterUser {
   username: string;
@@ -28,6 +30,7 @@ const layout2 = {
 
 export function Register() {
   const [form] = useForm();
+  const navigate = useNavigate();
 
   async function sendCaptcha() {
     const address = form.getFieldValue('email');
@@ -42,6 +45,22 @@ export function Register() {
       message.error(res.data.data || '系统繁忙，请稍后再试');
     }
   }
+
+  const onFinish = useCallback(async (values: RegisterUser) => {
+    if (values.password !== values.confirmPassword) {
+      return message.error('两次密码不一致');
+    }
+    const res = await register(values);
+
+    if (res.status === 201 || res.status === 200) {
+      message.success('注册成功');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    } else {
+      message.error(res.data.data || '系统繁忙，请稍后再试');
+    }
+  }, []);
 
   return (
     <div id="register-container">
