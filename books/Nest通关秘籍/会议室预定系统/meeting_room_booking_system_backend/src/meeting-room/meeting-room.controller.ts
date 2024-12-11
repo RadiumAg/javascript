@@ -1,17 +1,13 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, DefaultValuePipe, Query } from '@nestjs/common';
 import { MeetingRoomService } from './meeting-room.service';
-import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
-import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
+import { generateParseIntPip } from 'src/utils';
 
 @Controller('meeting-room')
 export class MeetingRoomController {
   constructor(private readonly meetingRoomService: MeetingRoomService) {}
+
+  async list(
+    @Query('page', new DefaultValuePipe(1), generateParseIntPip('pageNoo'))
+    pageNo: number,
+  ) {}
 }
