@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { MeetingRoom } from './entities/meeting-room.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class MeetingRoomService {
-  constructor(private repository: Repository<MeetingRoom>) {}
+  constructor(
+    @InjectRepository(MeetingRoom)
+    private repository: Repository<MeetingRoom>,
+  ) {}
 
   initData() {
     const room1 = new MeetingRoom();
