@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 const Children = () => {
   const [state, setState] = useState(1);
 
-  console.log('children udpate');
+  console.log('children update');
 
   return (
     <div
@@ -23,7 +23,7 @@ const Children = () => {
 };
 
 const App = () => {
-  console.log('parent udpate');
+  console.log('parent update');
   // useEffect(() => {
   //   console.log('parent mount');
 

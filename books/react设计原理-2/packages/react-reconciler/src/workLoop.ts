@@ -101,7 +101,7 @@ function ensureRootIsSchedule(root: FiberRootNode) {
   if (__DEV__) {
     console.log(
       `在${updateLane === SyncLane ? '微' : '宏'}任务中调度，优先级`,
-      updateLane,
+      updateLane
     );
   }
 
@@ -116,7 +116,7 @@ function ensureRootIsSchedule(root: FiberRootNode) {
     scheduleCallback(
       schedulePriority,
       // @ts-ignore
-      performConcurrentWorkOnRoot.bind(null, root),
+      performConcurrentWorkOnRoot.bind(null, root)
     );
   }
 
@@ -126,7 +126,7 @@ function ensureRootIsSchedule(root: FiberRootNode) {
 
 function performConcurrentWorkOnRoot(
   root: FiberRootNode,
-  didTimeout: boolean,
+  didTimeout: boolean
 ): any {
   //  保证useEffect回调执行
   const curCallback = root.callbackNode;
@@ -321,7 +321,7 @@ function commitRoot(root: FiberRootNode) {
  * @param pendingPassiveEffects
  */
 export function flushPassiveEffects(
-  pendingPassiveEffects: PendingPassiveEffects,
+  pendingPassiveEffects: PendingPassiveEffects
 ) {
   let didFlushPassiveEffect = false;
   pendingPassiveEffects.unmount.forEach(effect => {
