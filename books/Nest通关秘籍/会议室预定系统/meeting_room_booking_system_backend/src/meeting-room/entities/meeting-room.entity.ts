@@ -1,10 +1,12 @@
 import {
   Column,
   CreateDateColumn,
+  Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+@Entity({ name: 'meetingroom' })
 export class MeetingRoom {
   @PrimaryGeneratedColumn({ comment: '会议室Id' })
   id: number;
@@ -16,7 +18,6 @@ export class MeetingRoom {
   name: string;
 
   @Column({
-    length: 50,
     comment: '会议室名字',
   })
   capacity: number;

@@ -5,10 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class MeetingRoomService {
-  constructor(
-    @InjectRepository(MeetingRoom)
-    private repository: Repository<MeetingRoom>,
-  ) {}
+  @InjectRepository(MeetingRoom)
+  private repository: Repository<MeetingRoom>;
+
+  constructor() {}
 
   initData() {
     const room1 = new MeetingRoom();
