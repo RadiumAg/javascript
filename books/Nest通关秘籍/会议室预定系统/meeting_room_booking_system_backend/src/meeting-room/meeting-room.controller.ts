@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, Query } from '@nestjs/common';
+import { Controller, DefaultValuePipe, Get, Query } from '@nestjs/common';
 import { MeetingRoomService } from './meeting-room.service';
 import { generateParseIntPip } from 'src/utils';
 
@@ -6,8 +6,13 @@ import { generateParseIntPip } from 'src/utils';
 export class MeetingRoomController {
   constructor(private readonly meetingRoomService: MeetingRoomService) {}
 
+  @Get('list')
   async list(
-    @Query('page', new DefaultValuePipe(1), generateParseIntPip('pageNoo'))
+    @Query('pageNo', new DefaultValuePipe(1), generateParseIntPip('pageNo'))
     pageNo: number,
-  ) {}
+    @Query('paeSize', new DefaultValuePipe(2), generateParseIntPip('pageSize'))
+    pageSize: number,
+  ) {
+    return await this.meetingRoomService.find(pageNo, pageSize);
+  }
 }
