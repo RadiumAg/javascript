@@ -64,7 +64,7 @@ function childToJSX(child: any): any {
 
     if (
       children.every(
-        child => typeof child === 'string' || typeof child === 'number',
+        child => typeof child === 'string' || typeof child === 'number'
       )
     ) {
       return children.join('');
