@@ -19,3 +19,21 @@
 
   console.log(pow(2, 3));
 })();
+
+/**
+ * Rest参数与Spread语法
+ */
+(() => {
+  function sumAll(...args) {
+    let sum = 0;
+
+    for (const arg of args) sum += arg;
+
+    return sum;
+  }
+
+  console.log(sumAll(1, 2, 3, 4));
+
+  const arr = [3, 5, 1];
+  console.log(Math.max(...arr));
+})();
