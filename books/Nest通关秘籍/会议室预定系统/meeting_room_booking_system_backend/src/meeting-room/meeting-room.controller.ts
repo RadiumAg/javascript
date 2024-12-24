@@ -4,11 +4,13 @@ import {
   DefaultValuePipe,
   Get,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { MeetingRoomService } from './meeting-room.service';
 import { generateParseIntPip } from 'src/utils';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
+import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
 
 @Controller('meeting-room')
 export class MeetingRoomController {
@@ -27,5 +29,10 @@ export class MeetingRoomController {
   @Post('create')
   async create(@Body() meetingRoomDto: CreateMeetingRoomDto) {
     return await this.meetingRoomService.create(meetingRoomDto);
+  }
+
+  @Put('update')
+  async update(@Body() meetingRoomDto: UpdateMeetingRoomDto) {
+    return await this.meetingRoomService.update(meetingRoomDto);
   }
 }
