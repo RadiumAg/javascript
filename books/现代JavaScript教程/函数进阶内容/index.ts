@@ -71,17 +71,22 @@
     },
   };
 
+  function hash(args: { [Symbol.iterator]: any }) {
+    return [...args].join(',');
+  }
+
   function cachingDecorator(func) {
     const cache = new Map();
 
     return function (x) {
+      const key = hash(arguments);
       if (cache.has(x)) {
         return cache.get(x);
       }
 
-      const result = func.call(this, x); // 现在 “this“ 被正确的传递了
+      const result = func.call(this, ...arguments); // 现在 “this“ 被正确的传递了
 
-      cache.set(x, result);
+      cache.set(key, result);
       return result;
     };
   }
