@@ -60,10 +60,16 @@
  * 装饰器模式和转发，call/apply
  */
 (() => {
-  function slow(x) {
-    console.log('Called with ${x');
-    return x;
-  }
+  const worker = {
+    someMethod() {
+      return 1;
+    },
+
+    slow(x) {
+      alert(`Called with ${x}`);
+      return x * this.someMethod(); // (*)
+    },
+  };
 
   function cachingDecorator(func) {
     const cache = new Map();
@@ -73,13 +79,13 @@
         return cache.get(x);
       }
 
-      const result = func(x);
+      const result = func.call(this, x); // 现在 “this“ 被正确的传递了
 
       cache.set(x, result);
       return result;
     };
   }
 
-  const slowD = cachingDecorator(slow);
-  console.log(slowD(1));
+  worker.slow = cachingDecorator(worker.slow);
+  console.log(worker.slow(1));
 })();
