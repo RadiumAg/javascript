@@ -55,4 +55,16 @@
 })();
 
 // 单行道 configurable
-(() => {})();
+// 为false时，不能删除，不能修改
+(() => {
+  const user = {
+    name: 'John',
+  };
+
+  Object.defineProperty(user, 'name', { configurable: false });
+
+  // 不能修改 user...name 或其它保镖之
+  user.name = 'Pete';
+  delete user.name;
+  Object.defineProperty(user, 'name', { value: 'Pete' });
+})();
