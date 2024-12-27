@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { MeetingRoom } from './entities/meeting-room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
@@ -9,6 +9,9 @@ import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
 export class MeetingRoomService {
   @InjectRepository(MeetingRoom)
   private repository: Repository<MeetingRoom>;
+
+  @InjectRepository(EntityManager)
+  private entityManager: Repository<EntityManager>;
 
   constructor() {}
 
@@ -89,5 +92,17 @@ export class MeetingRoomService {
     );
 
     return 'success';
+  }
+
+  async findById(id: number) {
+    return this.repository.findOneBy({ id });
+  }
+
+  async delete(id: number) {
+    const boookings = await this.entityManager.findBy(Booking, {
+      room: {
+        id,
+      },
+    });
   }
 }
