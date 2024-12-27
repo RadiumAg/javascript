@@ -38,23 +38,6 @@ export class MeetingRoomService {
     this.repository.save([room1, room2, room3]);
   }
 
-  async find(pageNo: number, pageSize: number) {
-    if (pageNo < 1) {
-      throw new BadRequestException('页码最小为1');
-    }
-    const skipCount = (pageNo - 1) * pageSize;
-
-    const [mettingRooms, totalCount] = await this.repository.findAndCount({
-      skip: skipCount,
-      take: pageSize,
-    });
-
-    return {
-      mettingRooms,
-      totalCount,
-    };
-  }
-
   async create(meetingRoomDto: CreateMeetingRoomDto) {
     const room = await this.repository.findOneBy({ name: meetingRoomDto.name });
 
