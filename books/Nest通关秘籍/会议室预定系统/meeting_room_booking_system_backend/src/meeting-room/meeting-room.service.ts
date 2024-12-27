@@ -1,17 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Like, Repository } from 'typeorm';
 import { MeetingRoom } from './entities/meeting-room.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
 import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
+import { Booking } from 'src/booking/entities/booking.entity';
 
 @Injectable()
 export class MeetingRoomService {
   @InjectRepository(MeetingRoom)
   private repository: Repository<MeetingRoom>;
 
-  @InjectRepository(EntityManager)
-  private entityManager: Repository<EntityManager>;
+  @InjectEntityManager()
+  private entityManager: EntityManager;
 
   constructor() {}
 
@@ -99,10 +100,53 @@ export class MeetingRoomService {
   }
 
   async delete(id: number) {
-    const boookings = await this.entityManager.findBy(Booking, {
+    const bookings = await this.entityManager.findBy(Booking, {
       room: {
         id,
       },
     });
+
+    for (let i = 0; i < bookings.length; i++) {
+      this.entityManager.delete(Booking, bookings[i].id);
+    }
+
+    await this.repository.delete(id);
+    return 'success';
+  }
+
+  async find(
+    pageNo: number,
+    pageSize: number,
+    name: string,
+    capacity: number,
+    equipment: string,
+  ) {
+    if (pageNo < 1) {
+      throw new BadRequestException('页码最小为 1');
+    }
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const condition: Record<string, any> = {};
+
+    if (name) {
+      condition.name = Like(`%${name}%`);
+    }
+    if (equipment) {
+      condition.equipment = Like(`%${equipment}%`);
+    }
+    if (capacity) {
+      condition.capacity = capacity;
+    }
+
+    const [meetingRooms, totalCount] = await this.repository.findAndCount({
+      skip: skipCount,
+      take: pageSize,
+      where: condition,
+    });
+
+    return {
+      meetingRooms,
+      totalCount,
+    };
   }
 }

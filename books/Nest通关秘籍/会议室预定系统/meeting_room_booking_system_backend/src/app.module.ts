@@ -15,6 +15,7 @@ import { LoginGuard } from './login.guard';
 import { MeetingRoomModule } from './meeting-room/meeting-room.module';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
 import { BookingModule } from './booking/booking.module';
+import { Booking } from './booking/entities/booking.entity';
 
 @Module({
   imports: [
@@ -41,7 +42,7 @@ import { BookingModule } from './booking/booking.module';
           username: configService.get('mysql_server_username'),
           password: configService.get('mysql_server_password'),
           database: configService.get('mysql_server_database'),
-          entities: [User, Role, MeetingRoom, Permission],
+          entities: [User, Role, MeetingRoom, Permission, Booking],
           synchronize: true,
           logging: true,
           poolSize: 10,

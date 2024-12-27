@@ -1,4 +1,5 @@
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,6 +12,11 @@ import {
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    comment: '会议结束时间',
+  })
+  endTime: Date;
 
   @Column({
     comment: '会议开始时间',
@@ -29,6 +35,9 @@ export class Booking {
 
   @ManyToOne(() => MeetingRoom)
   room: MeetingRoom;
+
+  @ManyToOne(() => User)
+  user: User;
 
   @CreateDateColumn({
     comment: '创建时间',
