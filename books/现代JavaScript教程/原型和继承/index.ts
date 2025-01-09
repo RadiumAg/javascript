@@ -133,4 +133,19 @@
   })();
 })();
 
-// slice
+(() => {
+  /**
+ *
+ * let obj = {};
+
+let key = prompt("What's the key?", "__proto__");
+obj[key] = "some value";
+
+alert(obj[key]); // [object Object]，并不是 "some value"！
+ *
+ *
+ */
+  const obj = Object.create(null);
+  obj['__proto__'] = 'some value';
+  console.log(obj['__proto__']);
+})();
