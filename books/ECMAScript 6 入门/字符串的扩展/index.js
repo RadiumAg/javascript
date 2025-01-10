@@ -114,8 +114,40 @@ $$：指代美元符号$。
   s.length; // 2
   s.charAt(0); // ''
   s.charAt(1); // ''
-  s.charCodeAt(0); // 55362
-  s.charCodeAt(1); // 57271
+  console.log(s.charCodeAt(0)); // 55362
+  console.log(s.charCodeAt(1)); // 57271
+
+  console.log(s.codePointAt(0)); // 134071
+  console.log(s.codePointAt(1)); // 57271
+
+  console.log(s.codePointAt(2)); // 97
+
+  function is32Bit(c = '') {
+    return c.codePointAt(0) > 0xffff;
+  }
 })();
 
-// ES6 提供了codePointAt()方法，能够正确处理4个字节存储的字符，返回一个字符的麻点
+// 实例方法normalize
+// 许多欧洲语言有语调符号和重音符号。为了表示它们，
+// Unicode 提供了两种方法。一种是直接提供带重音符号的字符
+// 比如Ǒ（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，
+// 两个字符合成一个字符，比如O（\u004F）和ˇ（\u030C）合成Ǒ（\u004F\u030C）。
+
+(() => {
+  '\u01D1'.normalize() === '\u004F\u030C'.normalize();
+  // 示例1：NFC (规范化组合字符)
+  const str1 = 'e\u0301'; // 'e' 加上重音符（U+0301）
+  console.log(str1); // 输出: 'é' (e 和  ́的组合)
+  console.log(str1.normalize('NFC')); // 输出: 'é' (已组合的形式)
+
+  const str2 = 'é'; // 直接的 "é" 字符
+  console.log(str2.normalize('NFC')); // 输出: 'é'
+
+  // 示例2：NFD (规范化分解字符)
+  console.log(str1.normalize('NFD')); // 输出: 'é' (分解为 'e' 和 ' ́')
+
+  // 示例3：NFKC 和 NFKD
+  const str3 = 'ℵ'; // 赫尔希尔字符 (U+2135)
+  console.log(str3.normalize('NFKC')); // 转换为兼容形式（可能会变为 'A' 等）
+  console.log(str3.normalize('NFKD')); // 可能会返回一个更基础的形态
+})();
