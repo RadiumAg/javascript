@@ -152,9 +152,9 @@ $$：指代美元符号$。
 };
 
 // 实例方法：replaceAll
-(() => {
+() => {
   console.log('aabbcc'.replaceAll('b', '_'));
-})();
+};
 
 // 实例方法toWellFormed()
 (() => {})();
