@@ -109,7 +109,7 @@ $$：指代美元符号$。
 // 实例方法: codePointAt
 // JavaScript内部，字符以UTF-16的格式存储，每个字符固定2个字节，对于那些
 // 需要4个字符存储的字符（unIcode码点大于0xFFFF的字符），JavaScript会认为他们是两个字符
-(() => {
+() => {
   const s = '𠮷';
   s.length; // 2
   s.charAt(0); // ''
@@ -125,15 +125,14 @@ $$：指代美元符号$。
   function is32Bit(c = '') {
     return c.codePointAt(0) > 0xffff;
   }
-})();
+};
 
 // 实例方法normalize
 // 许多欧洲语言有语调符号和重音符号。为了表示它们，
 // Unicode 提供了两种方法。一种是直接提供带重音符号的字符
 // 比如Ǒ（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，
 // 两个字符合成一个字符，比如O（\u004F）和ˇ（\u030C）合成Ǒ（\u004F\u030C）。
-
-(() => {
+() => {
   '\u01D1'.normalize() === '\u004F\u030C'.normalize();
   // 示例1：NFC (规范化组合字符)
   const str1 = 'e\u0301'; // 'e' 加上重音符（U+0301）
@@ -150,4 +149,12 @@ $$：指代美元符号$。
   const str3 = 'ℵ'; // 赫尔希尔字符 (U+2135)
   console.log(str3.normalize('NFKC')); // 转换为兼容形式（可能会变为 'A' 等）
   console.log(str3.normalize('NFKD')); // 可能会返回一个更基础的形态
+};
+
+// 实例方法：replaceAll
+(() => {
+  console.log('aabbcc'.replaceAll('b', '_'));
 })();
+
+// 实例方法toWellFormed()
+(() => {})();
