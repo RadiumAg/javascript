@@ -201,13 +201,24 @@
 // U+000D 回车符（\r）
 // U+2028 行分隔符（line separator）
 // U+2029 段分隔符（paragraph separator）
-(() => {
+() => {
   console.log(/foo.bar/.test('foo\nbar'));
   console.log(/foo.bar/s.test('foo\nbar'));
-})();
+};
 
 // Unicode 属性类
 () => {
   const regexGreekSymbol = /p{ Script=Greek}/u;
   regexGreekSymbol.test('π'); // true
 };
+
+// u修饰符，
+// ES6 对正则表达式添加了u修饰符，含义为“Unicode 模式”，用来正确处理大于\uFFFF的 Unicode 字符。也就是说，会正确处理四个字节的 UTF-16 编码。
+(() => {
+  /^\uD83D/u.test('\uD83D\uDC2A'); // false
+  /^\uD83D/.test('\uD83D\uDC2A'); // true
+
+  //. 字符
+  /^.$/.test('𠮷'); // false
+  /^.$/u.test('𠮷'); // true
+})();
