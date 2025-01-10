@@ -109,4 +109,13 @@ $$：指代美元符号$。
 // 实例方法: codePointAt
 // JavaScript内部，字符以UTF-16的格式存储，每个字符固定2个字节，对于那些
 // 需要4个字符存储的字符（unIcode码点大于0xFFFF的字符），JavaScript会认为他们是两个字符
-(() => {})();
+(() => {
+  const s = '𠮷';
+  s.length; // 2
+  s.charAt(0); // ''
+  s.charAt(1); // ''
+  s.charCodeAt(0); // 55362
+  s.charCodeAt(1); // 57271
+})();
+
+// ES6 提供了codePointAt()方法，能够正确处理4个字节存储的字符，返回一个字符的麻点
