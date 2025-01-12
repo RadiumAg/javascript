@@ -11,7 +11,11 @@
         navigation: auto;
       }
 
-      html::view-transition-new(avatar2) {
+      img {
+        view-transition-name: avatar1;
+      }
+
+      /* html::view-transition-new(avatar2) {
         animation-name: fadeIn;
       }
 
@@ -27,7 +31,7 @@
         to {
           width: 200px;
         }
-      }
+      } */
     </style>
   </head>
   <body>
@@ -40,7 +44,7 @@
   </body>
 
   <script>
-    window.addEventListener('pageswap', (e) => {
+    /* window.addEventListener('pageswap', (e) => {
       if (e.viewTransition) {
         document.querySelector(`img`).style.viewTransitionName = 'avatar1';
         e.viewTransition.finished.then(() => {
@@ -57,6 +61,6 @@
           document.querySelector(`img`).style.viewTransitionName = 'none';
         });
       }
-    });
+    }); */
   </script>
 </html>
