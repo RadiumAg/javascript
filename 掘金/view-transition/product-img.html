@@ -11,10 +11,14 @@
       }
 
       html::view-transition-old(avatar1) {
-        animation-name: fadeOut;
+        animation-name: fadeIn;
       }
 
-      @keyframes fadeOut {
+      html::view-transition-new(avatar2) {
+        animation-name: fadeIn;
+      }
+
+      @keyframes fadeIn {
         from {
           width: 200px;
         }
@@ -36,7 +40,17 @@
   <script>
     window.addEventListener('pageswap', (e) => {
       if (e.viewTransition) {
+        document.querySelector(`img`).style.viewTransitionName = 'avatar1';
+        e.viewTransition.finished.then(() => {
+          document.querySelector(`img`).style.viewTransitionName = 'none';
+        });
+      }
+    });
+
+    window.addEventListener('pagereveal', (e) => {
+      if (e.viewTransition) {
         document.querySelector(`img`).style.viewTransitionName = 'avatar2';
+
         e.viewTransition.finished.then(() => {
           document.querySelector(`img`).style.viewTransitionName = 'none';
         });
