@@ -10,10 +10,24 @@
       @view-transition {
         navigation: auto;
       }
+
+      html::view-transition-old(avatar2) {
+        animation-name: fadeIn;
+      }
+
+      @keyframes fadeIn {
+        from {
+          width: 100px;
+        }
+
+        to {
+          width: 200px;
+        }
+      }
     </style>
   </head>
   <body>
-    <a href="./product-img.html" id="img1">
+    <a href="./product-img.html">
       <img
         height="200px"
         src="https://img2.miravia.es/g/fb/kf/E84e0d6c1ba7048c2909d70065f1a3ecdT.jpg_270x270q75.avif"
@@ -23,27 +37,10 @@
 
   <script>
     window.addEventListener('pageswap', (e) => {
-      /* 判断是否支持 */
       if (e.viewTransition) {
-        /* //添加视图转换名称 */
-        document.querySelector(`#img1 img`).style.viewTransitionName =
-          'avatar1';
-        /* 完成后删除对应名称 */
+        document.querySelector(`img`).style.viewTransitionName = 'avatar1';
         e.viewTransition.finished.then(() => {
-          document.querySelector(`#img1 img`).style.viewTransitionName = 'none';
-        });
-      }
-    }); /* // 新页面逻辑 */
-
-    window.addEventListener('pagereveal', (e) => {
-      /* 判断是否支持 */
-      if (e.viewTransition) {
-        /* //添加视图转换名称 */
-        document.querySelector(`#img1 img`).style.viewTransitionName =
-          'avatar2';
-        /* 完成后删除对应名称 */
-        e.viewTransition.ready.then(() => {
-          document.querySelector(`#img1 img`).style.viewTransitionName = 'none';
+          document.querySelector(`img`).style.viewTransitionName = 'none';
         });
       }
     });
