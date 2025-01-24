@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Post": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "published": {
+          "type": "boolean",
+          "default": false
+        },
+        "User": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "Post": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Post"
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "post": {
+      "$ref": "#/definitions/Post"
+    },
+    "user": {
+      "$ref": "#/definitions/User"
+    }
+  }
+}

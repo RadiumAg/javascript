@@ -13,6 +13,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "../generated/docs"
+}
+
+generator json {
+  provider = "prisma-json-schema-generator"
+  output   = "../generated/json"
+}
+
 model Post {
   id        Int     @id @default(autoincrement())
   title     String
