@@ -47,6 +47,23 @@
           }
         }
       }
+    },
+    "Test": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "aaa": {
+          "type": "string"
+        },
+        "bbb": {
+          "type": "integer"
+        },
+        "ccc": {
+          "type": "string"
+        }
+      }
     }
   },
   "type": "object",
@@ -56,6 +73,9 @@
     },
     "user": {
       "$ref": "#/definitions/User"
+    },
+    "test": {
+      "$ref": "#/definitions/Test"
     }
   }
 }

@@ -40,3 +40,13 @@ model User {
   name  String?
   Post  Post[]
 }
+
+model Test {
+  id  Int    @id @default(autoincrement())
+  aaa String @db.Text
+  bbb Int    @map("bbb2") @db.TinyInt
+  ccc String @unique @db.VarChar(50)
+
+  @@index([bbb, ccc])
+  @@map("test_test")
+}
