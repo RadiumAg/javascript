@@ -10,7 +10,7 @@ dependencies:
     version: 5.5.1(react-dom@18.3.1)(react@18.3.1)
   '@monaco-editor/react':
     specifier: ^4.6.0
-    version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.3.1)(react@18.3.1)
+    version: 4.6.0(monaco-editor@0.52.2)(react-dom@18.3.1)(react@18.3.1)
   allotment:
     specifier: ^1.20.2
     version: 1.20.2(react-dom@18.3.1)(react@18.3.1)
@@ -66,7 +66,7 @@ devDependencies:
     version: 5.1.0-rc-fb9a90fa48-20240614(eslint@9.12.0)
   eslint-plugin-react-refresh:
     specifier: ^0.4.9
-    version: 0.4.12(eslint@9.12.0)
+    version: 0.4.19(eslint@9.12.0)
   globals:
     specifier: ^15.9.0
     version: 15.10.0
@@ -729,24 +729,24 @@ packages:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
     dev: false
 
-  /@monaco-editor/loader@1.4.0(monaco-editor@0.52.0):
+  /@monaco-editor/loader@1.4.0(monaco-editor@0.52.2):
     resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}
     peerDependencies:
       monaco-editor: '>= 0.21.0 < 1'
     dependencies:
-      monaco-editor: 0.52.0
+      monaco-editor: 0.52.2
       state-local: 1.0.7
     dev: false
 
-  /@monaco-editor/react@4.6.0(monaco-editor@0.52.0)(react-dom@18.3.1)(react@18.3.1):
+  /@monaco-editor/react@4.6.0(monaco-editor@0.52.2)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-RFkU9/i7cN2bsq/iTkurMWOEErmYcY6JiQI3Jn+WeR/FGISH8JbHERjpS9oRuSOPvDMJI0Z8nJeKkbOs9sBYQw==}
     peerDependencies:
       monaco-editor: '>= 0.25.0 < 1'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@monaco-editor/loader': 1.4.0(monaco-editor@0.52.0)
-      monaco-editor: 0.52.0
+      '@monaco-editor/loader': 1.4.0(monaco-editor@0.52.2)
+      monaco-editor: 0.52.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     dev: false
@@ -1674,10 +1674,10 @@ packages:
       eslint: 9.12.0
     dev: true
 
-  /eslint-plugin-react-refresh@0.4.12(eslint@9.12.0):
-    resolution: {integrity: sha512-9neVjoGv20FwYtCP6CB1dzR1vr57ZDNOXst21wd2xJ/cTlM2xLq0GWVlSNTdMn/4BtP6cHYBMCSp1wFBJ9jBsg==}
+  /eslint-plugin-react-refresh@0.4.19(eslint@9.12.0):
+    resolution: {integrity: sha512-eyy8pcr/YxSYjBoqIFSrlbn9i/xvxUFa8CjzAYo9cFjgGXqq1hyjihcpZvxRLalpaWmueWR81xn7vuKmAFijDQ==}
     peerDependencies:
-      eslint: '>=7'
+      eslint: '>=8.40'
     dependencies:
       eslint: 9.12.0
     dev: true
@@ -2163,8 +2163,8 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dev: true
 
-  /monaco-editor@0.52.0:
-    resolution: {integrity: sha512-OeWhNpABLCeTqubfqLMXGsqf6OmPU6pHM85kF3dhy6kq5hnhuVS1p3VrEW/XhWHc71P2tHyS5JFySD8mgs1crw==}
+  /monaco-editor@0.52.2:
+    resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
     dev: false
 
   /ms@2.1.3:
