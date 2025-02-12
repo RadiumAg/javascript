@@ -6,7 +6,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
  */
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: {
+    bundle: './src/index.js',
+  },
   devtool: 'source-map',
 
   output: {
@@ -15,7 +17,24 @@ module.exports = {
   },
 
   module: {
-    rules: [{}],
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|svg|)$/,
+        type:'asset',
+        parser:{
+         dataUrlCondition:{
+            maxSize: 8 * 1024
+         }
+        },
+        generator:{
+          filename:'images/[name].[hash:6][ext]'
+        }
+      },
+    ],
   },
 
   plugins: [
