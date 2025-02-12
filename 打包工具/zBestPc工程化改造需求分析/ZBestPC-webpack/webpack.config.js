@@ -24,15 +24,15 @@ module.exports = {
       },
       {
         test: /\.(png|svg|)$/,
-        type:'asset',
-        parser:{
-         dataUrlCondition:{
-            maxSize: 8 * 1024
-         }
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024,
+          },
         },
-        generator:{
-          filename:'images/[name].[hash:6][ext]'
-        }
+        generator: {
+          filename: 'images/[name].[hash:6][ext]',
+        },
       },
     ],
   },
@@ -40,6 +40,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
+      template: './src/index.html',
     }),
   ],
 };
