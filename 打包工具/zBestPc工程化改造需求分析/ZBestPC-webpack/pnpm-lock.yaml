@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      flexslider:
+        specifier: ^2.7.2
+        version: 2.7.2
+      jquery:
+        specifier: ^3.7.1
+        version: 3.7.1
     devDependencies:
       css-loader:
         specifier: ^7.1.2
@@ -331,6 +338,9 @@ packages:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
 
+  flexslider@2.7.2:
+    resolution: {integrity: sha512-ayzD+g+zYPG+sM+LXyXbfm4gS4unLB0PGsjwIu03TeRNZ+JLQTtbV3J42VO9ooRZ9idmuWgR5s3r4hw6shS1tQ==}
+
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
@@ -405,6 +415,9 @@ packages:
   jest-worker@27.5.1:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
+
+  jquery@3.7.1:
+    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
@@ -1033,6 +1046,10 @@ snapshots:
 
   flat@5.0.2: {}
 
+  flexslider@2.7.2:
+    dependencies:
+      jquery: 3.7.1
+
   function-bind@1.1.2: {}
 
   glob-to-regexp@0.4.1: {}
@@ -1102,6 +1119,8 @@ snapshots:
       '@types/node': 22.13.1
       merge-stream: 2.0.0
       supports-color: 8.1.1
+
+  jquery@3.7.1: {}
 
   json-parse-even-better-errors@2.3.1: {}
 
