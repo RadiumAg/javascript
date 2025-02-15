@@ -3,6 +3,8 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 /**
  * @type {import('webpack').Configuration}
@@ -78,4 +80,11 @@ module.exports = {
       chunkFilename: 'css/[name].chunk.css',
     }),
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new UglifyJsPlugin({ sourceMap: true }),
+      new CssMinimizerPlugin(),
+    ],
+  },
 };
