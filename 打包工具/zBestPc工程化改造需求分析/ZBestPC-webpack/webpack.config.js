@@ -8,7 +8,8 @@ const webpack = require('webpack');
 module.exports = {
   mode: 'development',
   entry: {
-    bundle: './src/index.js',
+    index: './src/index.js',
+    login: './src/login.js',
   },
   devtool: 'source-map',
 
@@ -42,11 +43,13 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './src/index.html',
+      chunks: ['index'],
     }),
 
     new HtmlWebpackPlugin({
       filename: 'login.html',
       template: './src/login.html',
+      chunks: ['login'],
     }),
 
     new webpack.ProvidePlugin({
