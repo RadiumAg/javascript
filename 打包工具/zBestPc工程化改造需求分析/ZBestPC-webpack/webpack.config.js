@@ -87,7 +87,21 @@ module.exports = {
       new CssMinimizerPlugin(),
     ],
     splitChunks: {
+      minSize: 30 * 1024,
       chunks: 'all',
+      name: 'common',
+      cacheGroups: {
+        jquery: {
+          name: 'jquery',
+          test: /jquery/,
+          chunks: 'all',
+        },
+        'lodash-es': {
+          name: 'lodash-es',
+          test: /lodash-es/,
+          chunks: 'all',
+        },
+      },
     },
   },
 };
