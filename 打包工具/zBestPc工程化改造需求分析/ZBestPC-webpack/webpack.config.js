@@ -86,5 +86,8 @@ module.exports = {
       new UglifyJsPlugin({ sourceMap: true }),
       new CssMinimizerPlugin(),
     ],
+    splitChunks: {
+      chunks: 'all',
+    },
   },
 };
