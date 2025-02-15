@@ -11,13 +11,19 @@ module.exports = {
     index: './src/index.js',
     login: './src/login.js',
   },
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
+    compress: true,
+    port: 9000,
+    hot: true,
+  },
   devtool: 'source-map',
-
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, './dist'),
   },
-
   module: {
     rules: [
       {
@@ -38,7 +44,6 @@ module.exports = {
       },
     ],
   },
-
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
