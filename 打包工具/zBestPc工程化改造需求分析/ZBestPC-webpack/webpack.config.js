@@ -46,6 +46,13 @@ module.exports = {
           filename: 'images/[name].[hash:6][ext]',
         },
       },
+      {
+        test: /\.ejs/,
+        loader: 'ejs-loader',
+        options: {
+          esModule: false,
+        },
+      },
     ],
   },
   plugins: [
@@ -74,7 +81,7 @@ module.exports = {
         },
       ],
     }),
-b v  
+
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
       chunkFilename: 'css/[name].chunk.css',
