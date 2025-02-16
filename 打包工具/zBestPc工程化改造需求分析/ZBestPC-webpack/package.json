@@ -13,9 +13,11 @@
   "dependencies": {
     "flexslider": "^2.7.2",
     "jquery": "^3.7.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@vue/compiler-sfc": "^3.5.13",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
@@ -25,6 +27,8 @@
     "mini-css-extract-plugin": "^2.9.2",
     "style-loader": "^4.0.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
+    "vue-loader": "^17.4.2",
+    "vue-template-compiler": "^2.7.16",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.0"
