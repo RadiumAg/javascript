@@ -1,9 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 /**
@@ -86,6 +87,8 @@ module.exports = {
       filename: 'css/[name].css',
       chunkFilename: 'css/[name].chunk.css',
     }),
+
+    new CleanWebpackPlugin(),
   ],
   optimization: {
     minimize: true,
