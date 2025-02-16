@@ -13,8 +13,8 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 module.exports = {
   mode: 'development',
   entry: {
-    index: './src/index.js',
-    login: './src/login.js',
+    index: path.resolve(__dirname, '../src/index.js'),
+    login: path.resolve(__dirname, '../src/login.js'),
   },
   devServer: {
     static: {
@@ -26,8 +26,8 @@ module.exports = {
   },
   devtool: 'source-map',
   output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, './dist'),
+    filename: 'js/[name].js',
+    path: path.resolve(__dirname, '../dist'),
   },
   module: {
     rules: [
@@ -77,8 +77,8 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'src/img'),
-          to: path.resolve(__dirname, './dist/img'),
+          from: path.resolve(__dirname, '../src/img'),
+          to: path.resolve(__dirname, '../dist/img'),
         },
       ],
     }),
