@@ -1,5 +1,5 @@
 // 基础类型
-(() => {
+() => {
   //  undefined是由null值派生而来的，因此表面上相等
   () => {
     console.log(null == undefined); // true
@@ -14,7 +14,7 @@
     console.log(+null);
     console.log(+undefined);
   })();
-})();
+};
 
 // number 类型
 (() => {
@@ -84,3 +84,10 @@
   // 只操作一个值的叫一元操作符
   (() => {})();
 };
+
+// undefined类型
+(() => {
+  let message;
+  console.log(typeof message);
+  console.log(typeof age);
+})();
