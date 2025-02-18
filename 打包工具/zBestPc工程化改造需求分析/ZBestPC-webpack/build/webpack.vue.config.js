@@ -1,12 +1,16 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 
 /**
  * @type {import('webpack').Configuration}
  */
 const config = {
-  mode: 'dev',
-  entry: path.resolve(__dirname, '../src/index.js'),
+  mode: 'development',
+  entry: path.resolve(__dirname, '../src/main.js'),
   output: {
     filename: 'js/[name].js',
     path: path.resolve(__dirname, '../dist'),
@@ -19,7 +23,55 @@ const config = {
     port: 9000,
     hot: true,
   },
-  plugins: [new CleanWebpackPlugin()],
+  module: {
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+      },
+      {
+        test: /\.css$/,
+        use: ['vue-style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|svg|)$/,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024,
+          },
+        },
+        generator: {
+          filename: 'images/[name].[hash:6][ext]',
+        },
+      },
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: path.resolve(__dirname, '../public/index.html'),
+      chunks: ['index'],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, '../src/img'),
+          to: path.resolve(__dirname, '../dist/img'),
+        },
+      ],
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].css',
+      chunkFilename: 'css/[name].chunk.css',
+    }),
+    new CleanWebpackPlugin(),
+    new VueLoaderPlugin(),
+  ],
 };
 
 module.exports = config;
