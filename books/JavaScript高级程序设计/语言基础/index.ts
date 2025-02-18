@@ -17,7 +17,7 @@
 };
 
 // number 类型
-(() => {
+() => {
   () => {
     const num = 1;
     const num2 = ~num;
@@ -76,7 +76,7 @@
   (() => {
     console.log(Number.NaN === Number.NaN);
   })();
-})();
+};
 
 // 操作符
 
@@ -86,8 +86,34 @@
 };
 
 // undefined类型
-(() => {
+() => {
   let message;
   console.log(typeof message);
   console.log(typeof age);
+};
+
+// Number.parseInt("1q  w")
+// 如果字符串以"0x"开头，就会被解释为16进制
+() => {
+  const num1 = Number.parseInt('1234blue'); // 1234
+  console.log(num1);
+  const num2 = Number.parseInt(''); // NaN
+  console.log(num2);
+  const num3 = Number.parseInt('0xA'); // 10，解释为十六进制
+  console.log(num3);
+  const num4 = Number.parseInt(22.5); // 22
+  console.log(num4);
+  const num5 = Number.parseInt('070'); // 70，解释为10进制
+  console.log(num5);
+  const num6 = Number.parseInt('0xf'); // 15，解释为16进制
+  console.log(num6);
+};
+
+(() => {
+  let num = 10;
+  console.log(num.toString()); // "10"
+  console.log(num.toString(2)); // "1010"
+  console.log(num.toString(8)); // "12"
+  console.log(num.toString(10)); // "10"
+  console.log(num.toString(16)); // "a"
 })();
