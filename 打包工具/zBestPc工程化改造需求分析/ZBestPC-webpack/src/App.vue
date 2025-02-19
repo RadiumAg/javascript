@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import Home from './Home.vue'
+
 export default {
   data() {
     console.log('data')
