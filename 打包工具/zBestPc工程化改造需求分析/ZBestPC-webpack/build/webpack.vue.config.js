@@ -79,10 +79,7 @@ const config = {
 
   optimization: {
     minimize: true,
-    minimizer: [
-      new UglifyJsPlugin({ sourceMap: true }),
-      new CssMinimizerPlugin(),
-    ],
+    minimizer: [new UglifyJsPlugin(), new CssMinimizerPlugin()],
     splitChunks: {
       minSize: 30 * 1024,
       chunks: 'all',
