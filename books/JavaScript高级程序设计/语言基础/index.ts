@@ -109,11 +109,47 @@
   console.log(num6);
 };
 
-(() => {
+() => {
   let num = 10;
   console.log(num.toString()); // "10"
   console.log(num.toString(2)); // "1010"
   console.log(num.toString(8)); // "12"
   console.log(num.toString(10)); // "10"
   console.log(num.toString(16)); // "a"
+};
+
+// String类型
+// 字符串插值
+// 所有插入的值都会使用toString()方法转换为字符串
+() => {
+  const foo = { toString: () => 'World' };
+  console.log(`Hello, ${foo}!`);
+};
+
+// Symbol.asyncIterator
+(() => {
+  class Emitter {
+    asyncIdx = 0;
+    max = 0;
+
+    constructor(max: number) {
+      this.max = max;
+      this.asyncIdx = 0;
+    }
+
+    async *[Symbol.asyncIterator]() {
+      while (this.asyncIdx < this.max) {
+        yield new Promise((resolve) => resolve(this.asyncIdx++));
+      }
+    }
+  }
+
+  async function asyncCount() {
+    const emitter = new Emitter(5);
+    for await (const x of emitter) {
+      console.log(x);
+    }
+  }
+
+  asyncCount()
 })();
