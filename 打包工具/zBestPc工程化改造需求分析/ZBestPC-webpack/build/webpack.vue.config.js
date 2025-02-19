@@ -4,13 +4,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
-
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 /**
  * @type {import('webpack').Configuration}
  */
 const config = {
   mode: 'development',
-  entry: path.resolve(__dirname, '../src/main.js'),
+  devtool: 'source-map',
+  entry: {
+    index: path.resolve(__dirname, '../src/main.js'),
+  },
   output: {
     filename: 'js/[name].js',
     path: path.resolve(__dirname, '../dist'),
@@ -72,6 +76,17 @@ const config = {
     new CleanWebpackPlugin(),
     new VueLoaderPlugin(),
   ],
+
+  optimization: {
+    minimize: true,
+    minimizer: [new UglifyJsPlugin(), new CssMinimizerPlugin()],
+    splitChunks: {
+      minSize: 30 * 1024,
+      chunks: 'all',
+      name: 'common',
+      cacheGroups: {},
+    },
+  },
 };
 
 module.exports = config;
