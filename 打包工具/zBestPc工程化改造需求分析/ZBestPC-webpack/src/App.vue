@@ -1,18 +1,13 @@
 <template>
-  <div>{{ message }}</div>
+  <Home />
 </template>
 
 <script>
-import Home from './Home.vue'
+import Home from './Home.vue';
 
 export default {
-  data() {
-    console.log('data')
-    return {
-      message: 'Hello Vue!',
-    };
-  },
+  components: { Home },
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css"></style>
