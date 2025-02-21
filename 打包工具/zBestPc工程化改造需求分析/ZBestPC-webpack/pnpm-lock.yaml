@@ -20,6 +20,9 @@ importers:
       vue:
         specifier: ^2.6.14
         version: 2.7.16
+      vue-router:
+        specifier: ^4.5.0
+        version: 4.5.0(vue@2.7.16)
     devDependencies:
       '@vue/compiler-sfc':
         specifier: ^3.5.13
@@ -57,6 +60,9 @@ importers:
       vue-loader:
         specifier: ^15.11.1
         version: 15.11.1(@vue/compiler-sfc@3.5.13)(css-loader@7.1.2(webpack@5.97.1))(lodash@4.17.21)(vue-template-compiler@2.7.16)(webpack@5.97.1)
+      vue-style-loader:
+        specifier: ^4.1.3
+        version: 4.1.3
       vue-template-compiler:
         specifier: ^2.7.16
         version: 2.7.16
@@ -329,6 +335,9 @@ packages:
 
   '@vue/component-compiler-utils@3.3.0':
     resolution: {integrity: sha512-97sfH2mYNU+2PzGrmK2haqffDpVASuib9/w2/noxiFi31Z54hW+q3izKQXXQZSNhtiUpAI36uSuYepeBe4wpHQ==}
+
+  '@vue/devtools-api@6.6.4':
+    resolution: {integrity: sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==}
 
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
@@ -2486,6 +2495,11 @@ packages:
       vue-template-compiler:
         optional: true
 
+  vue-router@4.5.0:
+    resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
+    peerDependencies:
+      vue: ^3.2.0
+
   vue-style-loader@4.1.3:
     resolution: {integrity: sha512-sFuh0xfbtpRlKfm39ss/ikqs9AbKCoXZBpHeVZ8Tx650o0k0q/YCM7FRvigtxpACezfq6af+a7JeqVTWvncqDg==}
 
@@ -3019,6 +3033,8 @@ snapshots:
       - velocityjs
       - walrus
       - whiskers
+
+  '@vue/devtools-api@6.6.4': {}
 
   '@vue/shared@3.5.13': {}
 
@@ -5115,6 +5131,11 @@ snapshots:
       - velocityjs
       - walrus
       - whiskers
+
+  vue-router@4.5.0(vue@2.7.16):
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 2.7.16
 
   vue-style-loader@4.1.3:
     dependencies:
