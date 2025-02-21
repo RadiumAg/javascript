@@ -127,7 +127,7 @@
 };
 
 // Symbol.asyncIterator
-(() => {
+() => {
   class Emitter {
     asyncIdx = 0;
     max = 0;
@@ -152,4 +152,21 @@
   }
 
   asyncCount();
+};
+
+// Symbol.hasInstance
+(() => {
+  class Bar {}
+  class Baz extends Bar {
+    static [Symbol.hasInstance]() {
+      return false;
+    }
+  }
+
+  const b = new Baz();
+  console.log(Bar[Symbol.hasInstance](b));
+  console.log(b instanceof Bar);
+
+  console.log(Baz[Symbol.hasInstance](b));
+  console.log(b instanceof Baz);
 })();
