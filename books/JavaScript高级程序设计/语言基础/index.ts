@@ -155,7 +155,7 @@
 };
 
 // Symbol.hasInstance
-(() => {
+() => {
   class Bar {}
   class Baz extends Bar {
     static [Symbol.hasInstance]() {
@@ -169,4 +169,15 @@
 
   console.log(Baz[Symbol.hasInstance](b));
   console.log(b instanceof Baz);
+};
+
+// FalseLy的值
+// null ,undefined, "", NaN, false, 0
+(() => {
+  console.log(!false);
+  console.log(!'blue');
+  console.log(!0);
+  console.log(!NaN);
+  console.log(!'');
+  console.log(!1234);
 })();
