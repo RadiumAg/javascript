@@ -173,11 +173,11 @@
 
 // FalseLy的值
 // null ,undefined, "", NaN, false, 0
-(() => {
+() => {
   console.log(!false);
   console.log(!'blue');
   console.log(!0);
   console.log(!NaN);
   console.log(!'');
   console.log(!1234);
-})();
+};
