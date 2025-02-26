@@ -44,4 +44,11 @@
 //（URL），以便传给浏览器。有效的URL不能包括某些字符，比如空格。
 // 使用URL编码方法来编码URL可以让浏览器能够理解它们
 
-() => {};
+// 如果想让整个对象不能修改，可以使用Object.freeze()
+() => {
+  const o3 = Object.freeze({
+    name: '',
+  });
+  o3.name = 'Jake';
+  console.log(o3.name);
+};
