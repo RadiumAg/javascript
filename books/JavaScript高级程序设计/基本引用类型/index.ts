@@ -20,7 +20,7 @@
   })();
 };
 
-(() => {
+() => {
   () => {
     let text = 'cat, bat, sat, fat';
     let pattern = /.at/;
@@ -59,5 +59,28 @@
     console.log(matches.index); // 5
     console.log(matches[0]); // bat
     console.log(pattern.lastIndex); // 8
+  })();
+};
+
+// Number
+(() => {
+  // toExponential
+  // toExponential()也接收一个参数，表示结果中小数的位数
+  (() => {
+    const num = 10;
+    console.log(num.toExponential(1));
+    console.log(num.toExponential(2));
+    console.log(num.toExponential(3));
+  })();
+
+  // toPrecision()
+  // 会根据情况返回最合理的输出结果
+  (() => {})();
+
+  // isInterger()
+  (() => {
+    console.log(Number.isInteger(1));
+    console.log(Number.isInteger(1.0));
+    console.log(Number.isInteger(1.01));
   })();
 })();
