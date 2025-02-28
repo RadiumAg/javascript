@@ -66,16 +66,21 @@
 (() => {
   // toExponential
   // toExponential()也接收一个参数，表示结果中小数的位数
-  (() => {
+  () => {
     const num = 10;
     console.log(num.toExponential(1));
     console.log(num.toExponential(2));
     console.log(num.toExponential(3));
-  })();
+  };
 
   // toPrecision()
   // 会根据情况返回最合理的输出结果
-  (() => {})();
+  (() => {
+    let num = 99;
+    console.log(num.toPrecision(1)); //"1e+2"
+    console.log(num.toPrecision(2)); //"99"
+    console.log(num.toPrecision(3)); //"99.0"
+  })();
 
   // isInterger()
   (() => {
