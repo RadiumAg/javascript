@@ -1,13 +1,9 @@
-function Render(obj, root) {
-  const el = document.createElement(obj.tag);
-  if (typeof obj.children === 'string') {
-    const text = document.createTextNode(obj.children);
-    el.append(text);
-  } else if (obj.children) {
-    obj.children.forEach(child => {
-      Render(child, el);
-    });
-  }
+function renderer(vnode, container) {
+  const el = document.createElement(vnode.tag);
 
-  root.append(el);
+  for (const key in vnode.props) {
+    if (/&on/.test(key)) {
+      el.addEventListener(key.slice(3).toLowerCase(), vnode.props[key]);
+    }
+  }
 }
