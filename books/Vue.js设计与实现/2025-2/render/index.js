@@ -50,19 +50,22 @@ function mountFunctionComponent(vnode, container) {
   renderer(subtree, container);
 }
 
-const MyComponent = function () {
-  return {
+// tag是普通的标签
+() => {
+  const vnode = {
     tag: 'div',
     props: {
       onClick: () => alert('hello'),
     },
     children: 'click me',
   };
+
+  renderer(vnode, document.querySelector('#app'));
 };
 
-// MyComponent 是一个对象
-const MyComponent1 = {
-  render() {
+// tag 是纯函数
+() => {
+  const MyComponent = function () {
     return {
       tag: 'div',
       props: {
@@ -70,33 +73,30 @@ const MyComponent1 = {
       },
       children: 'click me',
     };
-  },
+  };
+
+  const vnode = {
+    tag: MyComponent,
+  };
+  renderer(vnode, document.querySelector('#app'));
 };
 
-const vnode = {
-  tag: 'div',
-  props: {
-    onClick: () => alert('hello'),
-  },
-  children: 'click me',
-};
-
-const vnode2 = {
-  tag: MyComponent,
-};
-
-const vnode3 = {
-  tag: MyComponent1,
-};
-
-() => {
-  renderer(vnode1, document.querySelector('#app'));
-};
-
-() => {
-  renderer(vnode2, document.querySelector('#app'));
-};
-
+// tag 是对象
 (() => {
-  renderer(vnode3, document.querySelector('#app'));
+  const MyComponent = {
+    render() {
+      return {
+        tag: 'div',
+        props: {
+          onClick: () => alert('hello'),
+        },
+        children: 'click me',
+      };
+    },
+  };
+
+  const vnode = {
+    tag: MyComponent,
+  };
+  renderer(vnode, document.querySelector('#app'));
 })();
