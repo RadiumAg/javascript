@@ -11,6 +11,11 @@ function renderer(vnode, container) {
   }
 }
 
+/**
+ * 挂载 普通标签
+ * @param {*} vnode
+ * @param {*} container
+ */
 function mountElement(vnode, container) {
   // 使用 vnode.tag 作为标签名称创建 DOM 元素
   const el = document.createElement(vnode.tag);
@@ -36,6 +41,11 @@ function mountElement(vnode, container) {
   container.append(el);
 }
 
+/**
+ * 挂载 component 标签
+ * @param {*} vnode
+ * @param {*} container
+ */
 function mountComponent(vnode, container) {
   // 调用组件函数，获取组件要渲染的内容（虚拟 DOM）
   const subtree = vnode.tag.render();
@@ -43,6 +53,11 @@ function mountComponent(vnode, container) {
   renderer(subtree, container);
 }
 
+/**
+ * 挂载 function component 标签
+ * @param {*} vnode
+ * @param {*} container
+ */
 function mountFunctionComponent(vnode, container) {
   // 调用组件函数，获取组件要渲染的内容（虚拟 DOM）
   const subtree = vnode.tag.render();
