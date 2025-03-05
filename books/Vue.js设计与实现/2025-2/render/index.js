@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+
 function renderer(vnode, container) {
   if (typeof vnode.tag === 'string') {
     mountElement(vnode, container);
@@ -13,8 +15,6 @@ function mountElement(vnode, container) {
   // 使用 vnode.tag 作为标签名称创建 DOM 元素
   const el = document.createElement(vnode.tag);
   // 遍历 vnode.props，将属性添加到 DOM 元素
-
-  // eslint-disable-next-line no-restricted-syntax
   for (const key in vnode.props) {
     if (key.startsWith('on')) {
       el.addEventListener(key.slice(2).toLowerCase(), vnode.props[key]); // 事件处理函数
