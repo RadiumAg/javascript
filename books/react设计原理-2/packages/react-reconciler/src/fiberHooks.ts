@@ -113,7 +113,7 @@ function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
       Passive | HookHasEffect,
       create,
       undefined,
-      nextDeps,
+      nextDeps
     );
   }
 }
@@ -155,7 +155,7 @@ function mountEffect(create: EffectCallback | void, deps: EffectDeps | void) {
     Passive | HookHasEffect,
     create,
     undefined,
-    nextDeps,
+    nextDeps
   );
 }
 
@@ -163,7 +163,7 @@ function pushEffect(
   hooksFlags: Flags,
   create: EffectCallback | void,
   destory: EffectCallback | void,
-  deps: EffectDeps,
+  deps: EffectDeps
 ): Effect {
   const effect: Effect = {
     tag: hooksFlags,
@@ -230,7 +230,7 @@ function startTransition(setPending: Dispatch<boolean>, callback: () => void) {
 }
 
 function mountState<State>(
-  initialState: (() => State) | State,
+  initialState: (() => State) | State
 ): [State, Dispatch<State>] {
   // 找到当前useState对应的hook数据
   const hook = mountWorkInProgressHook();
@@ -250,7 +250,7 @@ function mountState<State>(
   const dispatch = dispatchSetState.bind(
     null,
     currentlyRenderingFiber as any,
-    queue as any,
+    queue as any
   );
   queue.dispatch = dispatch;
   return [memoizedState, dispatch];
@@ -268,10 +268,7 @@ function updateState<State>(): [State, Dispatch<State>] {
   const current = currentHook as Hook;
   let baseQueue = current.baseQueue;
 
-  debugger;
-
   //pending update 保存在current中
-
   if (pending !== null) {
     if (baseQueue !== null) {
       // baseQueue b2 -> b0 -> b1 -> b2
@@ -306,7 +303,7 @@ function updateState<State>(): [State, Dispatch<State>] {
 function dispatchSetState<State>(
   fiber: FiberNode,
   updateQueue: UpdateQueue<State>,
-  action: Action<State>,
+  action: Action<State>
 ) {
   const lane = requestUpdateLanes();
   const update = createUpdate(action, lane);
@@ -372,7 +369,7 @@ function updateWorkInProgressHook(): Hook {
   if (nextCurrentHook === null) {
     // mount/update u1 u2 u3
     throw new Error(
-      `组件${currentlyRenderingFiber?.type}本次执行的hook比上次执行的多`,
+      `组件${currentlyRenderingFiber?.type}本次执行的hook比上次执行的多`
     );
   }
 
