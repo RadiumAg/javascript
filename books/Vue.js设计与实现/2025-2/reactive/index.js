@@ -20,6 +20,7 @@ function effect(fn) {
       if (activeEffect) {
         bucket.add(activeEffect);
       }
+
       return target[key];
     },
 
