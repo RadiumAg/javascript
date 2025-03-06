@@ -224,10 +224,11 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
   }
 
   if (wipRootRenderLane !== lane) {
-    // 初始化
+    // 初始化第一个workInProgress
     prepareFreshStack(root, lane);
   }
 
+  // 第一个循环
   do {
     try {
       shouldTimeSlice ? workLoopConcurrent() : workLoopSync();
@@ -238,7 +239,7 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
     }
   } while (true);
 
-  // 并发更新中断执行，没有只想完，时间到了
+  // 并发更新中断执行，没有执行完，时间到了
   if (shouldTimeSlice && workInProgress !== null) {
     return RootInComplete;
   }
@@ -324,17 +325,17 @@ export function flushPassiveEffects(
   pendingPassiveEffects: PendingPassiveEffects
 ) {
   let didFlushPassiveEffect = false;
-  pendingPassiveEffects.unmount.forEach(effect => {
+  pendingPassiveEffects.unmount.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListUnmount(Passive, effect);
   });
   pendingPassiveEffects.unmount = [];
 
-  pendingPassiveEffects.update.forEach(effect => {
+  pendingPassiveEffects.update.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListDestory(Passive | HookHasEffect, effect);
   });
-  pendingPassiveEffects.update.forEach(effect => {
+  pendingPassiveEffects.update.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListCreate(Passive | HookHasEffect, effect);
   });
@@ -358,6 +359,7 @@ function workLoopConcurrent() {
     performUnitOfWork(workInProgress);
   }
 }
+
 /**
  * 创建执行执行单元，mount时递归创建子FIber
  *
@@ -377,6 +379,7 @@ function performUnitOfWork(fiber: FiberNode) {
 
 /**
  * 每次构造一条链，然后处理completeWork
+ *
  * @param fiber
  */
 function completeUnitOfWork(fiber: FiberNode) {

@@ -57,6 +57,13 @@ function updateFunctionComponent(wip: FiberNode, renderLane: Lane) {
   return wip.child;
 }
 
+/**
+ * 更新FiberRootNode
+ *
+ * @param wip
+ * @param renderLane
+ * @returns
+ */
 function updateHostRoot(wip: FiberNode, renderLane: Lane) {
   const baseState = wip.memoizedState;
   const updateQueue = wip.updateQueue as UpdateQueue<Element>;
@@ -70,6 +77,12 @@ function updateHostRoot(wip: FiberNode, renderLane: Lane) {
   return wip.child;
 }
 
+/**
+ * 更新HostComponent
+ *
+ * @param workInProgress
+ * @returns
+ */
 function updateHostComponent(workInProgress: FiberNode) {
   const nextProps = workInProgress.pendingProps;
   const nextChildren = nextProps.children;
