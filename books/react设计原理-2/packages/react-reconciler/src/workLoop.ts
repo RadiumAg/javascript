@@ -302,7 +302,8 @@ function commitRoot(root: FiberRootNode) {
   if (subtreeHasEffect || rootHasEffect) {
     // beforeMutation
 
-    // mutation Placement
+    // mutation
+    // 更新 dom
     commitMutationEffect(finishedWork, root);
 
     // Fiber Tree切换
