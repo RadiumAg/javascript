@@ -6,9 +6,14 @@ const bucket = new WeakMap();
 const data = { text: 'hello' };
 
 function effect(fn) {
-  activeEffect = fn;
-  // 执行副作用函数
-  fn();
+  const effectFn = () => {
+    // 当 effectFn 执行时，将其设置为当前激活的副作用函数
+    activeEffect = effectFn;
+    fn();
+  };
+
+  effectFn.deps = [];
+  effectFn();
 }
 
 // 在 get 拦截函数内调用 track 函数追踪变化
@@ -66,6 +71,7 @@ const obj = new Proxy(data, {
   },
 });
 
+// 副作用函数
 () => {
   effect(() => {
     document.body.textContent = obj.text;
@@ -79,4 +85,8 @@ const obj = new Proxy(data, {
 // 分支切换与cleanup
 (() => {
   const data = { ok: true, text: 'hello world' };
+
+  effect(() => {
+    document.body.textContent = data.ok ? data.text : 'nothing';
+  });
 })();
