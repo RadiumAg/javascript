@@ -46,27 +46,27 @@ function trigger(target, key) {
   effects && effects.forEach(effect => effect());
 }
 
-(() => {
-  // 对原始数据的代理
-  const obj = new Proxy(data, {
-    // 拦截读取操作
-    get(target, key) {
-      // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
-      track(target, key);
-      // 返回属性值
-      return target[key];
-    },
+// 对原始数据的代理
+const obj = new Proxy(data, {
+  // 拦截读取操作
+  get(target, key) {
+    // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
+    track(target, key);
+    // 返回属性值
+    return target[key];
+  },
 
-    // 拦截设置操作
-    set(target, key, newVal) {
-      // 设置属性值
-      target[key] = newVal;
-      // 把副作用函数从桶中取出来并执行
-      trigger(trigger, key);
-      return true;
-    },
-  });
+  // 拦截设置操作
+  set(target, key, newVal) {
+    // 设置属性值
+    target[key] = newVal;
+    // 把副作用函数从桶中取出来并执行
+    trigger(trigger, key);
+    return true;
+  },
+});
 
+() => {
   effect(() => {
     document.body.textContent = obj.text;
   });
@@ -74,4 +74,9 @@ function trigger(target, key) {
   setTimeout(() => {
     obj.text = 'world';
   }, 1000);
+};
+
+// 分支切换与cleanup
+(() => {
+  const data = { ok: true, text: 'hello world' };
 })();
