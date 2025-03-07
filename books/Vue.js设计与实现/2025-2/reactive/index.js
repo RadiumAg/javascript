@@ -5,6 +5,8 @@ const bucket = new WeakMap();
 // 原始数据
 const data = { text: 'hello' };
 
+function cleanup(effect) {}
+
 function effect(fn) {
   const effectFn = () => {
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
@@ -19,7 +21,7 @@ function effect(fn) {
 // 在 get 拦截函数内调用 track 函数追踪变化
 function track(target, key) {
   // 没有 activeEffect，直接 return
-  if (!activeEffect) return target[key];
+  if (!activeEffect) return;
   // 根据 target 从""桶""中取出 depsMap, 它也是一个 Map 类型：k --> effect
   let depsMap = bucket.get(target);
   // 如果不存在 depsMap， 那么新建一个 Map 并与 target 关联
@@ -35,9 +37,12 @@ function track(target, key) {
     deps = new Set();
     depsMap.set(key, deps);
   }
-
   // 最后将当前激活的副作用函数添加到 桶 中
   deps.add(activeEffect);
+
+  // deps 就是一个当前副作用函数存在联系的依赖集合
+  // 将其添加到 activeEffect.deps 中
+  activeEffect.deps.push(deps);
 }
 
 // 在 set 拦截函数内调用 trigger 函数触发变化
