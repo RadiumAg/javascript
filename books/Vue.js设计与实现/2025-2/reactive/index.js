@@ -5,11 +5,24 @@ const bucket = new WeakMap();
 // 原始数据
 const data = { text: 'hello' };
 
-function cleanup(effect) {}
+function cleanup(effect) {
+  // 遍历 effectFn.deps 数组
+  for (const deps of effect.deps) {
+    // 遍历 deps
+    for (const dep of deps) {
+      // 删除 dep 中的 effectFn
+      dep.delete(effect);
+    }
+  }
+
+  // 最后需要重置 effect.deps 数组
+  effect.deps.length = 0;
+}
 
 function effect(fn) {
   const effectFn = () => {
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
+    cleanup(effectFn);
     activeEffect = effectFn;
     fn();
   };
