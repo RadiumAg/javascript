@@ -87,7 +87,15 @@ function trigger(target, key) {
   // 根据 key 取得所有副作用函数 effects
   const effects = depsMap.get(key);
 
-  const effectsToRun = new Set(effects);
+  const effectsToRun = new Set();
+
+  effects &&
+    effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn);
+      }
+    });
+
   // 执行副作用函数
   effectsToRun.forEach(effectFn => effectFn());
   // effects && effects.forEach(effect => effect());
@@ -134,7 +142,7 @@ const obj = new Proxy(data, {
 };
 
 // 嵌套副作用函数
-(() => {
+() => {
   // 全局变量
   let temp1, temp2;
 
@@ -153,4 +161,11 @@ const obj = new Proxy(data, {
   });
 
   obj.bar = 'foo';
+};
+
+// 无限嵌套
+(() => {
+  effect(() => {
+    obj.foo = obj.foo + 1;
+  });
 })();
