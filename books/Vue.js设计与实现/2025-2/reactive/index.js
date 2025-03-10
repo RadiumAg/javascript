@@ -5,6 +5,11 @@ const bucket = new WeakMap();
 // 原始数据
 const data = { text: 'hello' };
 
+/**
+ * 清理副作用函数
+ *
+ * @param {*} effect
+ */
 function cleanup(effect) {
   // 遍历 effectFn.deps 数组
   for (const deps of effect.deps) {
@@ -19,6 +24,11 @@ function cleanup(effect) {
   effect.deps.length = 0;
 }
 
+/**
+ * 包装副作用函数
+ *
+ * @param {*} fn
+ */
 function effect(fn) {
   const effectFn = () => {
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
@@ -31,7 +41,13 @@ function effect(fn) {
   effectFn();
 }
 
-// 在 get 拦截函数内调用 track 函数追踪变化
+/**
+ * 在 get 拦截函数内调用 track 函数追踪变化
+ *
+ * @param {*} target
+ * @param {*} key
+ * @returns
+ */
 function track(target, key) {
   // 没有 activeEffect，直接 return
   if (!activeEffect) return;
