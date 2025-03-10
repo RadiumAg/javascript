@@ -32,9 +32,10 @@ function effect(fn) {
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
     cleanup(effectFn);
 
+    activeEffect = effectFn;
+    // 在调用副作用函数之前将当前副作用函数压入栈中
     effectStack.push(effectFn);
 
-    activeEffect = effectFn;
     fn();
     // 在当前副作用按时执行完毕后，将其从 effectStack 中移除
     effectStack.pop();
@@ -146,6 +147,7 @@ const obj = new Proxy(data, {
       // 在 effectFn2 中读取 obj.bar 属性
       temp2 = obj.bar;
     });
+
     // 在 effectFn1 中读取 obj.foo 属性
     temp1 = obj.foo;
   });
