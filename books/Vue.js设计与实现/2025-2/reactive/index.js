@@ -13,11 +13,8 @@ const data = { text: 'hello' };
 function cleanup(effect) {
   // 遍历 effectFn.deps 数组
   for (const deps of effect.deps) {
-    // 遍历 deps
-    for (const dep of deps) {
-      // 删除 dep 中的 effectFn
-      dep.delete(effect);
-    }
+    // 删除 dep 中的 effectFn
+    deps.delete(effect);
   }
 
   // 最后需要重置 effect.deps 数组
@@ -81,8 +78,11 @@ function trigger(target, key) {
   if (!depsMap) return;
   // 根据 key 取得所有副作用函数 effects
   const effects = depsMap.get(key);
+
+  const effectsToRun = new Set(effects);
   // 执行副作用函数
-  effects && effects.forEach(effect => effect());
+  effectsToRun.forEach(effectFn => effectFn());
+  // effects && effects.forEach(effect => effect());
 }
 
 // 对原始数据的代理
@@ -100,7 +100,7 @@ const obj = new Proxy(data, {
     // 设置属性值
     target[key] = newVal;
     // 把副作用函数从桶中取出来并执行
-    trigger(trigger, key);
+    trigger(target, key);
     return true;
   },
 });
@@ -117,10 +117,31 @@ const obj = new Proxy(data, {
 };
 
 // 分支切换与cleanup
-(() => {
+() => {
   const data = { ok: true, text: 'hello world' };
 
   effect(() => {
     document.body.textContent = data.ok ? data.text : 'nothing';
   });
+};
+
+// 嵌套副作用函数
+(() => {
+  // 全局变量
+  let temp1, temp2;
+
+  // effectFn1 嵌套了 effectFn2
+  effect(() => {
+    console.log('effectFn1 执行');
+
+    effect(() => {
+      console.log('effectFn2 执行');
+      // 在 effectFn2 中读取 obj.bar 属性
+      temp2 = obj.bar;
+    });
+    // 在 effectFn1 中读取 obj.foo 属性
+    temp1 = obj.foo;
+  });
+
+  obj.foo = 'foo';
 })();
