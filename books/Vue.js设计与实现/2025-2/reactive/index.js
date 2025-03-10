@@ -1,7 +1,8 @@
 let activeEffect = null;
 // 存储副作用函数的桶
 const bucket = new WeakMap();
-
+// effect 栈
+const effectStack = [];
 // 原始数据
 const data = { text: 'hello' };
 
@@ -30,8 +31,14 @@ function effect(fn) {
   const effectFn = () => {
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
     cleanup(effectFn);
+
+    effectStack.push(effectFn);
+
     activeEffect = effectFn;
     fn();
+    // 在当前副作用按时执行完毕后，将其从 effectStack 中移除
+    effectStack.pop();
+    activeEffect = effectStack[effectStack.length - 1];
   };
 
   effectFn.deps = [];
@@ -143,5 +150,5 @@ const obj = new Proxy(data, {
     temp1 = obj.foo;
   });
 
-  obj.foo = 'foo';
+  obj.bar = 'foo';
 })();
