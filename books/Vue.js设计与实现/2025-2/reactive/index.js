@@ -1,3 +1,5 @@
+const { get } = require('express/lib/response');
+
 let activeEffect = null;
 // 存储副作用函数的桶
 const bucket = new WeakMap();
@@ -57,10 +59,12 @@ function effect(fn, options = {}) {
     // 在调用副作用函数之前将当前副作用函数压入栈中
     effectStack.push(effectFn);
 
-    fn();
+    const res = fn();
     // 在当前副作用按时执行完毕后，将其从 effectStack 中移除
     effectStack.pop();
     activeEffect = effectStack[effectStack.length - 1];
+    // 将 res 作为 effectFn 的返回值
+    return res;
   };
 
   // 将 options 挂载到 effectFn 上
@@ -133,6 +137,19 @@ function trigger(target, key) {
       effectFn();
     }
   });
+}
+
+function computed(getter) {
+  const effectFn = effect(getter, { lazy: true });
+
+  const obj = {
+    // 读取 value 时才执行 effectFn
+    get value() {
+      return effectFn();
+    },
+  };
+
+  return obj;
 }
 
 // 对原始数据的代理
@@ -224,3 +241,15 @@ const obj = new Proxy(data, {
   obj.foo++;
   obj.foo++;
 };
+
+// 计算属性 computed 与 lazy
+(() => {
+  effect(
+    () => {
+      console.log(obj.foo);
+    },
+    {
+      lazy: true,
+    }
+  );
+})();
