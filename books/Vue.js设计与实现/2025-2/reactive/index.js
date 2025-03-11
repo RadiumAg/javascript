@@ -179,6 +179,35 @@ function computed(getter) {
   return obj;
 }
 
+function traverse(value, seen = new Set()) {
+  // 如果要要读取的是原始值，或者已经被读取过了，那么什么都不做
+  if (typeof value !== 'object' || value === null || seen.has(value)) return;
+
+  // 将数据添加到seen中，，代表遍历地读取过了，避免循环引用引起的死循环
+  seen.add(value);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const k in value) {
+    traverse(value[k], seen);
+  }
+
+  return value;
+}
+
+/**
+ * watch 函数接收两个参数
+ *
+ * @param {*} source
+ * @param {*} cb
+ */
+function watch(source, cb) {
+  effect(() => traverse(source.foo), {
+    scheduler() {
+      cb();
+    },
+  });
+}
+
 // 对原始数据的代理
 const obj = new Proxy(data, {
   // 拦截读取操作
@@ -282,7 +311,7 @@ const obj = new Proxy(data, {
 };
 
 // 计算属性 computed
-(() => {
+() => {
   const sumsRes = computed(() => obj.foo + obj.bar);
 
   effect(() => {
@@ -290,4 +319,4 @@ const obj = new Proxy(data, {
   });
 
   obj.foo++;
-})();
+};
