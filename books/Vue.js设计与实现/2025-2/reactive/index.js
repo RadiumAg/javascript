@@ -3,6 +3,11 @@ let activeEffect = null;
 const bucket = new WeakMap();
 // effect 栈
 const effectStack = [];
+// 定义一个任务队列
+const jobQueue = new Set();
+// 使用 Promise.resolve() 创建一个 promise 实例，，我们用它将一个任务添加到微任务队列
+const p = Promise.resolve();
+// 一个标志，代表是否正在刷新队列
 // 原始数据
 const data = { text: 'hello' };
 
@@ -26,8 +31,9 @@ function cleanup(effect) {
  * 包装副作用函数
  *
  * @param {*} fn
+ * @param {*} options
  */
-function effect(fn) {
+function effect(fn, options = {}) {
   const effectFn = () => {
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
     cleanup(effectFn);
@@ -42,7 +48,10 @@ function effect(fn) {
     activeEffect = effectStack[effectStack.length - 1];
   };
 
+  // 将 options 挂载到 effectFn 上
+  effectFn.options = options;
   effectFn.deps = [];
+  // 执行副作用函数
   effectFn();
 }
 
@@ -97,8 +106,14 @@ function trigger(target, key) {
     });
 
   // 执行副作用函数
-  effectsToRun.forEach(effectFn => effectFn());
-  // effects && effects.forEach(effect => effect());
+  effectsToRun.forEach(effectFn => {
+    if (effectFn.options.scheduler) {
+      effectFn.options.scheduler(effectFn);
+    } else {
+      // 否则直接执行副作用函数
+      effectFn();
+    }
+  });
 }
 
 // 对原始数据的代理
