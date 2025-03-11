@@ -18,7 +18,6 @@ function flushJobs() {
   isFlushing = true;
   // 在微任务队列中刷新 jobQueue 队列
   p.then(() => {
-    debugger;
     for (const job of jobQueue) {
       job();
     }
@@ -67,8 +66,12 @@ function effect(fn, options = {}) {
   // 将 options 挂载到 effectFn 上
   effectFn.options = options;
   effectFn.deps = [];
-  // 执行副作用函数
-  effectFn();
+  // 只有非 lazy 的时候，才执行
+  if (!options.lazy) {
+    // 执行副作用函数
+    effectFn();
+  }
+  return effectFn;
 }
 
 /**
@@ -201,7 +204,8 @@ const obj = new Proxy(data, {
   });
 };
 
-(() => {
+// 调度器
+() => {
   effect(
     () => {
       console.log(obj.foo);
@@ -219,4 +223,4 @@ const obj = new Proxy(data, {
   obj.foo++;
   obj.foo++;
   obj.foo++;
-})();
+};
