@@ -12,6 +12,8 @@ let isFlushing = false;
 // 原始数据
 const data = { text: 'hello', foo: 1, bar: 1 };
 
+window.bucket = bucket;
+
 function flushJobs() {
   // 如果正在刷新队列，直接 return
   if (isFlushing) return;
