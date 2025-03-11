@@ -1,5 +1,3 @@
-const { get } = require('express/lib/response');
-
 let activeEffect = null;
 // 存储副作用函数的桶
 const bucket = new WeakMap();
@@ -12,7 +10,7 @@ const p = Promise.resolve();
 // 一个标志，代表是否正在刷新队列
 let isFlushing = false;
 // 原始数据
-const data = { text: 'hello', foo: 1 };
+const data = { text: 'hello', foo: 1, bar: 1 };
 
 function flushJobs() {
   // 如果正在刷新队列，直接 return
@@ -149,7 +147,17 @@ function computed(getter) {
   let value;
   // dirty 标志，用来标志是否需要重新计算值，为 true 时需要重新计算
   let dirty = true;
-  const effectFn = effect(getter, { lazy: true });
+
+  const effectFn = effect(getter, {
+    lazy: true,
+    scheduler() {
+      if (!dirty) {
+        dirty = true;
+        // 当计算属性依赖的响应式数据发生变化的时候，手动调用 trigger 函数触发响应
+        trigger(obj, 'value');
+      }
+    },
+  });
 
   const obj = {
     // 读取 value 时才执行 effectFn
@@ -160,6 +168,8 @@ function computed(getter) {
         dirty = false;
       }
 
+      // 当读取 value 时，手动调用 track 函数进行追踪
+      track(obj, 'value');
       return value;
     },
   };
@@ -276,5 +286,6 @@ const obj = new Proxy(data, {
   effect(() => {
     console.log(sumsRes.value);
   });
-  console.log(obj.foo++);
+
+  obj.foo++;
 })();
