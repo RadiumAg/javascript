@@ -139,13 +139,28 @@ function trigger(target, key) {
   });
 }
 
+/**
+ * 计算属性
+ *
+ * @param {*} getter
+ * @returns
+ */
 function computed(getter) {
+  let value;
+  // dirty 标志，用来标志是否需要重新计算值，为 true 时需要重新计算
+  let dirty = true;
   const effectFn = effect(getter, { lazy: true });
 
   const obj = {
     // 读取 value 时才执行 effectFn
     get value() {
-      return effectFn();
+      // 只有 脏 时才计算值，并将得到的值缓存到value 中
+      if (dirty) {
+        value = effectFn();
+        dirty = false;
+      }
+
+      return value;
     },
   };
 
@@ -243,7 +258,7 @@ const obj = new Proxy(data, {
 };
 
 // 计算属性 computed 与 lazy
-(() => {
+() => {
   effect(
     () => {
       console.log(obj.foo);
@@ -252,4 +267,10 @@ const obj = new Proxy(data, {
       lazy: true,
     }
   );
+};
+
+// 计算属性 computed
+(() => {
+  const sumsRes = computed(() => obj.foo + obj.bar);
+  console.log(sumsRes.value);
 })();
