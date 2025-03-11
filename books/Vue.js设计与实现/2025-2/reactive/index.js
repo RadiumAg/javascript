@@ -8,8 +8,24 @@ const jobQueue = new Set();
 // 使用 Promise.resolve() 创建一个 promise 实例，，我们用它将一个任务添加到微任务队列
 const p = Promise.resolve();
 // 一个标志，代表是否正在刷新队列
+let isFlushing = false;
 // 原始数据
-const data = { text: 'hello' };
+const data = { text: 'hello', foo: 1 };
+
+function flushJobs() {
+  // 如果正在刷新队列，直接 return
+  if (isFlushing) return;
+  isFlushing = true;
+  // 在微任务队列中刷新 jobQueue 队列
+  p.then(() => {
+    debugger;
+    for (const job of jobQueue) {
+      job();
+    }
+  }).finally(() => {
+    isFlushing = false;
+  });
+}
 
 /**
  * 清理副作用函数
@@ -179,8 +195,28 @@ const obj = new Proxy(data, {
 };
 
 // 无限嵌套
-(() => {
+() => {
   effect(() => {
     obj.foo = obj.foo + 1;
   });
+};
+
+(() => {
+  effect(
+    () => {
+      console.log(obj.foo);
+    },
+    {
+      scheduler: effect => {
+        // 每次调度时，将副作用函数添加到 jobQueue 中
+        jobQueue.add(effect);
+        // 调用flushJob 刷新队列
+        flushJobs();
+      },
+    }
+  );
+
+  obj.foo++;
+  obj.foo++;
+  obj.foo++;
 })();
