@@ -272,5 +272,9 @@ const obj = new Proxy(data, {
 // 计算属性 computed
 (() => {
   const sumsRes = computed(() => obj.foo + obj.bar);
-  console.log(sumsRes.value);
+
+  effect(() => {
+    console.log(sumsRes.value);
+  });
+  console.log(obj.foo++);
 })();
