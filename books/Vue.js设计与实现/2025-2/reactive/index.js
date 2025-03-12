@@ -256,11 +256,12 @@ function watch(source, cb, options = {}) {
 // 对原始数据的代理
 const obj = new Proxy(data, {
   // 拦截读取操作
-  get(target, key) {
+  get(target, key, receiver) {
     // 将副作用函数 activeEffect 添加到存储副作用函数的桶中
     track(target, key);
     // 返回属性值
-    return target[key];
+    // receiver 主要解决 get属性值这种的this 问题
+    return Reflect.get(target, key, receiver);
   },
 
   // 拦截设置操作
