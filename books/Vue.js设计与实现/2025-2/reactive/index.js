@@ -200,7 +200,7 @@ function traverse(value, seen = new Set()) {
  * @param {*} source
  * @param {*} cb
  */
-function watch(source, cb) {
+function watch(source, cb, options = {}) {
   // 定义 getter
   let getter;
 
@@ -213,17 +213,32 @@ function watch(source, cb) {
   // 定义旧值和新值
   let oldValue, newValue;
   // 使用 effect 注册副作用函数时，开启 lazy 选项，并把返回值存储到 effectFn 中以便后续手动调用
+  // 提取 scheduler 调度函数作为一个独立的job函数
+  const job = () => {
+    newValue = effectFn();
+    // 将旧值和新
+    cb(newValue, oldValue);
+    // 更新旧值，不然下次会得到错误的值
+    oldValue = newValue;
+  };
 
   const effectFn = effect(() => getter(), {
     lazy: true,
-    scheduler() {
-      newValue = effectFn();
-      // 将旧值和新
-      cb(newValue, oldValue);
-      // 更新旧值，不然下次会得到错误的值
-      oldValue = newValue;
+    scheduler: () => {
+      if (options.flush === 'post') {
+        const p = Promise.resolve();
+        p.then(job);
+      } else {
+        job();
+      }
     },
   });
+
+  if (options.immediate) {
+    job();
+  } else {
+    oldValue = effectFn();
+  }
 }
 
 // 对原始数据的代理
@@ -338,3 +353,5 @@ const obj = new Proxy(data, {
 
   obj.foo++;
 };
+
+export { watch };
