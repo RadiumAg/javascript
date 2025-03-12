@@ -201,7 +201,17 @@ function traverse(value, seen = new Set()) {
  * @param {*} cb
  */
 function watch(source, cb) {
-  effect(() => traverse(source.foo), {
+  // 定义 getter
+  let getter;
+  // 如果 source 是函数，说明用户传递的是 getter，所以直接把 source 赋值给 getter
+
+  if (typeof source === 'function') {
+    getter = source;
+  } else {
+    getter = () => traverse(source);
+  }
+
+  effect(() => getter(), {
     scheduler() {
       cb();
     },
