@@ -203,17 +203,25 @@ function traverse(value, seen = new Set()) {
 function watch(source, cb) {
   // 定义 getter
   let getter;
-  // 如果 source 是函数，说明用户传递的是 getter，所以直接把 source 赋值给 getter
 
   if (typeof source === 'function') {
     getter = source;
   } else {
     getter = () => traverse(source);
   }
+  // 如果 source 是函数，说明用户传递的是 getter，所以直接把 source 赋值给 getter
+  // 定义旧值和新值
+  let oldValue, newValue;
+  // 使用 effect 注册副作用函数时，开启 lazy 选项，并把返回值存储到 effectFn 中以便后续手动调用
 
-  effect(() => getter(), {
+  const effectFn = effect(() => getter(), {
+    lazy: true,
     scheduler() {
-      cb();
+      newValue = effectFn();
+      // 将旧值和新
+      cb(newValue, oldValue);
+      // 更新旧值，不然下次会得到错误的值
+      oldValue = newValue;
     },
   });
 }
