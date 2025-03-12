@@ -214,10 +214,22 @@ function watch(source, cb, options = {}) {
   let oldValue, newValue;
   // 使用 effect 注册副作用函数时，开启 lazy 选项，并把返回值存储到 effectFn 中以便后续手动调用
   // 提取 scheduler 调度函数作为一个独立的job函数
+  let cleanup;
+
+  // 定义 onInvalidate
+  function onInvalidate(fn) {
+    cleanup = fn;
+  }
+
   const job = () => {
     newValue = effectFn();
+    // 在调用回调函数 cb 之前，先调用过期回调
+    if (cleanup) {
+      cleanup();
+    }
+
     // 将旧值和新
-    cb(newValue, oldValue);
+    cb(newValue, oldValue, onInvalidate);
     // 更新旧值，不然下次会得到错误的值
     oldValue = newValue;
   };
@@ -354,4 +366,4 @@ const obj = new Proxy(data, {
   obj.foo++;
 };
 
-export { watch };
+export { watch, computed };
