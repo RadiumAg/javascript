@@ -13,6 +13,11 @@
   <script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
   <script type="module">
     import { createRenderer } from './render-plus.js';
-    const renderer = createRenderer();
+
+    const renderer = createRenderer({
+      createElement(tag) {
+        return document.createElement(tag);
+      },
+    });
   </script>
 </html>

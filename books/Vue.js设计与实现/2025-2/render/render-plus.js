@@ -26,7 +26,7 @@ function mountElement(vnode, container) {
   container.append(el);
 }
 
-function createRenderer() {
+function createRenderer(options) {
   function render(vnode, container) {
     if (vnode) {
       // 新 vnode 存在，将其与旧 vnode 一起传递给 patch 函数，进行打补丁
