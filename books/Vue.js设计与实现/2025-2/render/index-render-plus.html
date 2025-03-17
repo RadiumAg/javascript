@@ -38,8 +38,12 @@
       },
 
       patchProps(el, key, prevValue, nextValue) {
+        // 对 class 进行特殊处理
+        if (key === 'class') {
+          el.className = nextValue || '';
+        }
         // 使用 shouldSetAsProps 函数判断是否应该作为 DOM Properties 设置
-        if (shouldSetAsProps(el, key, nextValue)) {
+        else if (shouldSetAsProps(el, key, nextValue)) {
           const type = typeof el[key];
           // 如果是布尔类型，并且 value 是空字符串，则将值矫正为 true
           if (type === 'boolean' && nextValue === '') {
