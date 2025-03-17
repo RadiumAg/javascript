@@ -28,5 +28,10 @@
         parent.insertBefore(el, anchor);
       },
     });
+
+    renderer.render(
+      { type: 'h1', children: 'helloo' },
+      document.querySelector('#app')
+    );
   </script>
 </html>

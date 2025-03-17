@@ -7,7 +7,7 @@
 function patch(oldVnode, newVnode, container) {
   // 如果 n1 不存在，意味着挂载，则调用 mountElemnet 函数完成挂载
   if (!oldVnode) {
-    mountElement(oldVnode, container);
+    mountElement(newVnode, container);
   } else {
     // n1 存在，意味着打补丁
   }
