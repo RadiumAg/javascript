@@ -25,12 +25,19 @@
 
       // 用于在给定的 parent 下添加指定元素
       insert(el, parent, anchor = null) {
+        // eslint-disable-next-line unicorn/prefer-modern-dom-apis
         parent.insertBefore(el, anchor);
       },
     });
 
     renderer.render(
-      { type: 'h1', children: 'helloo' },
+      {
+        type: 'h1',
+        props: {
+          id: 'foo',
+        },
+        children: [{ type: 'p', children: 'hello' }],
+      },
       document.querySelector('#app')
     );
   </script>
