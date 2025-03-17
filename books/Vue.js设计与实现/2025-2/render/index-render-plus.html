@@ -14,6 +14,14 @@
   <script type="module">
     import { createRenderer } from './render-plus.js';
 
+    function shouldSetAsProps(el, key, value) {
+      // 特殊处理
+      if (key === 'form' && el.tagName === 'INPUT') return false;
+
+      // 兜底
+      return key in el;
+    }
+
     const renderer = createRenderer({
       createElement(tag) {
         return document.createElement(tag);
@@ -27,6 +35,22 @@
       insert(el, parent, anchor = null) {
         // eslint-disable-next-line unicorn/prefer-modern-dom-apis
         parent.insertBefore(el, anchor);
+      },
+
+      patchProps(el, key, prevValue, nextValue) {
+        // 使用 shouldSetAsProps 函数判断是否应该作为 DOM Properties 设置
+        if (shouldSetAsProps(el, key, nextValue)) {
+          const type = typeof el[key];
+          // 如果是布尔类型，并且 value 是空字符串，则将值矫正为 true
+          if (type === 'boolean' && nextValue === '') {
+            el[key] = true;
+          } else {
+            el[key] = nextValue;
+          }
+        } else {
+          // 调用 setAttribbute 将属性设置到元素上
+          el.setAttribute(key, nextValue);
+        }
       },
     });
 

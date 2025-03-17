@@ -29,20 +29,9 @@ function createRenderer(options) {
       // eslint-disable-next-line no-restricted-syntax
       for (const key in vnode.props) {
         // 获取该 DOM Properties 的类型
-        const type = typeof el[key];
         const value = vnode.props[key];
-        // 如果是布尔类型，并且 value 是空字符串，则将值矫正为 truue
-        if (type === 'boolean' && value === '') {
-          el[key] = true;
-        } else {
-          el[key] = value;
-        }
-        // 调用 setAttribbute 将属性设置到元素上
-        el.setAttribute(key, vnode.props[key]);
+        options.patchProps(el, key, null, value);
       }
-    } else {
-      // 如果要设置的属性没有对应的 DOM Properties,则使用setAttribute 函数设置属性
-      el.setAttribute(key, vnode.props[key]);
     }
 
     // 将元素添加到容器中
