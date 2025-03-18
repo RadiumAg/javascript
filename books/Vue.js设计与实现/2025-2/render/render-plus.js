@@ -54,12 +54,31 @@ function createRenderer(options) {
       if (!oldVnode) {
         mountElement(newVnode, container);
       } else {
-        // patchElement(oldVnode, newVnode);
+        patchElement(oldVnode, newVnode);
       }
     } else if (typeof type === 'object') {
     }
   }
 
+  function patchElement(oldVnode, newVnode) {
+    const el = oldVnode.el;
+    // 如果 vnode.props 存在才处理下
+    if (oldVnode.props) {
+      // 遍历 vnode.props
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in newVnode.props) {
+        // 获取该 DOM Properties 的类型
+        const value = newVnode.props[key];
+        options.patchProps(el, key, null, value);
+      }
+    }
+  }
+
+  /**
+   * 挂载组件
+   * @param {*} vnode
+   * @param {*} container
+   */
   function mountElement(vnode, container) {
     // 创建 DOM 元素
     const el = document.createElement(vnode.type);

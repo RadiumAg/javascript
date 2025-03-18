@@ -101,11 +101,22 @@
           props: bol.value
             ? {
                 onClick: () => {
+                  debugger;
                   alert('父元素 clicked');
                 },
               }
             : {},
-          children: [{ type: 'p', children: 'hello' }],
+          children: [
+            {
+              type: 'p',
+              children: 'hello',
+              props: {
+                onClick: () => {
+                  bol.value = true;
+                },
+              },
+            },
+          ],
         },
         document.querySelector('#app')
       );
