@@ -1,3 +1,36 @@
+/**
+ * 处理 class 样式
+ * @param {*} cls
+ * @returns
+ */
+function normalizeClass(cls) {
+  let result = '';
+
+  const normalizeObj = cls => {
+    for (const [className, sign] of Object.entries(cls)) {
+      if (sign) {
+        result += ` ${className}`;
+      }
+    }
+  };
+
+  if (typeof cls === 'string') {
+    result = cls;
+  } else if (Array.isArray(cls)) {
+    for (const clsObj of cls) {
+      if (typeof clsObj === 'string') {
+        result += ` ${clsObj}`;
+      } else if (typeof clsObj === 'object' && clsObj !== null) {
+        normalizeObj(cls);
+      }
+    }
+  } else {
+    normalizeObj(cls);
+  }
+
+  return result.trim();
+}
+
 function createRenderer(options) {
   /**
    *
@@ -84,39 +117,6 @@ function createRenderer(options) {
     render,
     hydrate,
   };
-}
-
-/**
- * 处理 class 样式
- * @param {*} cls
- * @returns
- */
-function normalizeClass(cls) {
-  let result = '';
-
-  const normalizeObj = cls => {
-    for (const [className, sign] of Object.entries(cls)) {
-      if (sign) {
-        result += ` ${className}`;
-      }
-    }
-  };
-
-  if (typeof cls === 'string') {
-    result = cls;
-  } else if (Array.isArray(cls)) {
-    for (const clsObj of cls) {
-      if (typeof clsObj === 'string') {
-        result += ` ${clsObj}`;
-      } else if (typeof clsObj === 'object' && clsObj !== null) {
-        normalizeObj(cls);
-      }
-    }
-  } else {
-    normalizeObj(cls);
-  }
-
-  return result.trim();
 }
 
 export { createRenderer, normalizeClass };
