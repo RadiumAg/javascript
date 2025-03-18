@@ -38,8 +38,35 @@
       },
 
       patchProps(el, key, prevValue, nextValue) {
-        // 对 class 进行特殊处理
-        if (key === 'class') {
+        // 匹配 on 开头的属性，视其为事件
+        // eslint-disable-next-line unicorn/prefer-string-starts-ends-with
+        if (/^on/.test(key)) {
+          // 根据属性名称得到对应的事件名称，例如 onClick ----> click
+          const name = key.slice(2).toLowerCase();
+          let invoker = el._vei;
+          if (nextValue) {
+            // eslint-disable-next-line unicorn/no-lonely-if
+            if (!invoker) {
+              // 如果没有 invoker，则将一个伪造的 invoker 缓存到 ell.vei 中
+              // vei 是 vue event invoker 的首字母缩写
+
+              invoker = el._vei = (e) => {
+                // 当伪造的事件处理函数执行时，会执行真正的事件处理函数
+                invoker.value(e);
+              };
+              // 将真正的事件处理函数赋值给 invoker.value
+              invoker.value = nextValue;
+              // 绑定 invoker 作为时间处理函数
+              el.addEventListener(name, invoker);
+            } else {
+              // 如果 invoker 存在，意味着更新，并且只需要更新 invoker.value的值即可
+              invoker.value = nextValue;
+            }
+          } else if (invoker) {
+            // 新的事件绑定函数不存在，且之前绑定的 invoker 存在， 则移除绑定
+            el.removeEventListener(name, invoker);
+          }
+        } else if (key === 'class') {
           el.className = nextValue || '';
         }
         // 使用 shouldSetAsProps 函数判断是否应该作为 DOM Properties 设置
