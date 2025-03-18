@@ -88,6 +88,10 @@ function createRenderer(options) {
     options.insert(el, container);
   }
 
+  /**
+   * 卸载组件
+   * @param {*} vnode
+   */
   function unmount(vnode) {
     const parent = vnode.el.parentNode;
     if (parent) {
