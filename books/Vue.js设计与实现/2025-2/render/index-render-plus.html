@@ -13,6 +13,8 @@
   <script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
   <script type="module">
     import { createRenderer } from './render-plus.js';
+    const { effect, ref } = VueReactivity;
+    const bol = ref(false);
 
     function shouldSetAsProps(el, key, value) {
       // 特殊处理
@@ -92,15 +94,21 @@
       },
     });
 
-    renderer.render(
-      {
-        type: 'h1',
-        props: {
-          id: 'foo',
+    effect(() => {
+      renderer.render(
+        {
+          type: 'h1',
+          props: bol.value
+            ? {
+                onClick: () => {
+                  alert('父元素 clicked');
+                },
+              }
+            : {},
+          children: [{ type: 'p', children: 'hello' }],
         },
-        children: [{ type: 'p', children: 'hello' }],
-      },
-      document.querySelector('#app')
-    );
+        document.querySelector('#app')
+      );
+    });
   </script>
 </html>

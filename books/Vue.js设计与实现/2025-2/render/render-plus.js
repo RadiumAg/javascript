@@ -54,7 +54,7 @@ function createRenderer(options) {
       if (!oldVnode) {
         mountElement(newVnode, container);
       } else {
-        patchElement(oldVnode, newVnode);
+        // patchElement(oldVnode, newVnode);
       }
     } else if (typeof type === 'object') {
     }
