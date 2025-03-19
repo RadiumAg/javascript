@@ -60,6 +60,12 @@ function createRenderer(options) {
     }
   }
 
+  /**
+   * 更新子节点
+   *
+   * @param {*} oldVnode
+   * @param {*} newVnode
+   */
   function patchElement(oldVnode, newVnode) {
     const el = (newVnode.el = oldVnode.el);
     const oldProps = oldVnode.props;
