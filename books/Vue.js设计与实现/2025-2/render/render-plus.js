@@ -61,16 +61,41 @@ function createRenderer(options) {
   }
 
   function patchElement(oldVnode, newVnode) {
-    const el = oldVnode.el;
-    // 如果 vnode.props 存在才处理下
+    const el = (newVnode.el = oldVnode.el);
+    const oldProps = oldVnode.props;
+    const newProps = newVnode.props;
+    // 第一步：更新 props
     if (oldVnode.props) {
       // 遍历 vnode.props
       // eslint-disable-next-line no-restricted-syntax
       for (const key in newVnode.props) {
-        // 获取该 DOM Properties 的类型
-        const value = newVnode.props[key];
-        options.patchProps(el, key, null, value);
+        if (newProps[key] !== oldProps[key]) {
+          options.patchProps(el, key, oldProps[key], null);
+        }
       }
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in oldProps) {
+        if (!(key in newProps)) {
+          options.patchProps(el, key, oldProps[key], null);
+        }
+      }
+    }
+
+    patchChildren(oldVnode, newVnode, el);
+  }
+
+  function patchChildren(oldVnode, newVnode, container) {
+    // 判断新子节点的类型是否是文本节点
+    if (typeof newVnode.children === 'string') {
+      // 旧子节点的类型有三种可能：没有子节点，文本子节点以及一组组子节点
+      // 只有当旧子节点为一组子节点时，才需要个卸载，其他情况下什么都不需要做
+      if (Array.isArray(oldVnode.children)) {
+        oldVnode.children.forEach(c => unmount(c));
+      }
+
+      // 最后将新的文本节点内容设置给容器元素
+      options.setElementText(container, newVnode.children);
     }
   }
 
