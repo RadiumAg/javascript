@@ -71,23 +71,21 @@ function createRenderer(options) {
     const oldProps = oldVnode.props;
     const newProps = newVnode.props;
     // 第一步：更新 props
-    if (oldVnode.props) {
-      // 遍历 vnode.props
-      // eslint-disable-next-line no-restricted-syntax
-      for (const key in newVnode.props) {
-        if (newProps[key] !== oldProps[key]) {
-          options.patchProps(el, key, oldProps[key], null);
-        }
-      }
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const key in oldProps) {
-        if (!(key in newProps)) {
-          options.patchProps(el, key, oldProps[key], null);
-        }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in newVnode.props) {
+      if (newProps[key] !== oldProps[key]) {
+        options.patchProps(el, key, oldProps[key], null);
       }
     }
 
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        options.patchProps(el, key, oldProps[key], null);
+      }
+    }
+
+    // 第二步，更新 children
     patchChildren(oldVnode, newVnode, el);
   }
 
@@ -113,6 +111,7 @@ function createRenderer(options) {
   function mountElement(vnode, container) {
     // 创建 DOM 元素
     const el = document.createElement(vnode.type);
+    vnode.el = el;
     // 处理子节点，，如果子节点是字符串，代表元素具有文本节点
 
     if (typeof vnode.children === 'string') {
