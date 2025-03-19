@@ -43,7 +43,10 @@
         // 匹配 on 开头的属性，视其为事件
         // eslint-disable-next-line unicorn/prefer-string-starts-ends-with
         if (/^on/.test(key)) {
-          const invokers = el._vei || (el._vei = {});
+          if (el._vei == null) {
+            el._vei = {};
+          }
+          const invokers = el._vei;
           // 根据属性名称得到对应的事件名称，例如 onClick ----> click
           let invoker = invokers[key];
           const name = key.slice(2).toLowerCase();
@@ -111,6 +114,7 @@
               children: 'hello',
               props: {
                 onClick: () => {
+                  console.log('点击p节点');
                   bol.value = true;
                 },
               },

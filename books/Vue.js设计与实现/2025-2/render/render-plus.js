@@ -33,6 +33,7 @@ function normalizeClass(cls) {
 
 function createRenderer(options) {
   /**
+   * 更新节点
    *
    * @param {*} oldVnode 旧 vnode
    * @param {*} newVnode 新 vnode
@@ -70,9 +71,10 @@ function createRenderer(options) {
     const el = (newVnode.el = oldVnode.el);
     const oldProps = oldVnode.props;
     const newProps = newVnode.props;
+
     // 第一步：更新 props
     // eslint-disable-next-line no-restricted-syntax
-    for (const key in newVnode.props) {
+    for (const key in newProps) {
       if (newProps[key] !== oldProps[key]) {
         options.patchProps(el, key, oldProps[key], null);
       }
@@ -89,6 +91,13 @@ function createRenderer(options) {
     patchChildren(oldVnode, newVnode, el);
   }
 
+  /**
+   * 更新子节点
+   *
+   * @param {*} oldVnode
+   * @param {*} newVnode
+   * @param {*} container
+   */
   function patchChildren(oldVnode, newVnode, container) {
     // 判断新子节点的类型是否是文本节点
     if (typeof newVnode.children === 'string') {
