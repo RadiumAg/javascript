@@ -105,9 +105,20 @@ function createRenderer(options) {
       if (Array.isArray(oldVnode.children)) {
         oldVnode.children.forEach(c => unmount(c));
       }
-
       // 最后将新的文本节点内容设置给容器元素
       options.setElementText(container, newVnode.children);
+    } else if (Array.isArray(newVnode.children)) {
+      if (Array.isArray(oldVnode.children)) {
+        // 此时
+        // 旧子节点要么是文本子节点，要么不存在
+        // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的 Diff 算法
+        oldVnode.children.forEach(c => unmount(c));
+        // 再将新的一组子节点全部挂载到容器中
+        oldVnode.children.forEach(c => patch(null, c, container));
+      } else {
+        options.setElementText(container, '');
+        newVnode.children.forEach(c => patch(null, c, container));
+      }
     }
   }
 
