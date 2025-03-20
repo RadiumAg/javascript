@@ -122,8 +122,12 @@ function createRenderer(options) {
     } else {
       // 代码运行到这里，说明新子节点不存在
       // 旧子节点是一组子节点，只需要逐个卸载即可
+      // eslint-disable-next-line no-lonely-if
       if (Array.isArray(newVnode.children)) {
         oldVnode.children.forEach(c => unmount(c));
+      } else if (typeof oldVnode.children === 'string') {
+        // 旧子节点是文本子节点，清空内容即可
+        options.setElementText(container, '');
       }
     }
   }
