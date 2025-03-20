@@ -1,5 +1,6 @@
 const Text = Symbol();
 const Comment = Symbol();
+const Fragment = Symbol();
 
 /* eslint-disable no-restricted-syntax */
 /**
@@ -90,6 +91,11 @@ function createRenderer(options) {
         if (newVnode.children !== oldVnode.children) {
           options.setComment(el, newVnode.children);
         }
+      }
+    } else if (type === Fragment) {
+      if (!oldVnode) {
+        // 如果旧 vnode 不存在， 则只需要将 Fragement 的 children 逐个挂载即可
+        newVnode.children.forEach(c => patch(null, c, container));
       }
     } else if (typeof type === 'object') {
     }
@@ -234,4 +240,4 @@ function createRenderer(options) {
   };
 }
 
-export { Text, Comment, createRenderer, normalizeClass };
+export { Text, Comment, Fragment, createRenderer, normalizeClass };
