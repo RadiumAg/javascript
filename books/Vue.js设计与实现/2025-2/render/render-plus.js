@@ -114,7 +114,7 @@ function createRenderer(options) {
         // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的 Diff 算法
         oldVnode.children.forEach(c => unmount(c));
         // 再将新的一组子节点全部挂载到容器中
-        oldVnode.children.forEach(c => patch(null, c, container));
+        newVnode.children.forEach(c => patch(null, c, container));
       } else {
         options.setElementText(container, '');
         newVnode.children.forEach(c => patch(null, c, container));
