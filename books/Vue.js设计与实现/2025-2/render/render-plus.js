@@ -96,6 +96,9 @@ function createRenderer(options) {
       if (!oldVnode) {
         // 如果旧 vnode 不存在， 则只需要将 Fragement 的 children 逐个挂载即可
         newVnode.children.forEach(c => patch(null, c, container));
+      } else {
+        // 如果旧 vnode 存在，则只需要更新 Fragement 的 children 即可
+        patchChildren(newVnode, oldVnode, container);
       }
     } else if (typeof type === 'object') {
     }
