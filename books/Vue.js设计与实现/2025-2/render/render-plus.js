@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /**
  * 处理 class 样式
  * @param {*} cls
@@ -73,14 +74,12 @@ function createRenderer(options) {
     const newProps = newVnode.props;
 
     // 第一步：更新 props
-    // eslint-disable-next-line no-restricted-syntax
     for (const key in newProps) {
       if (newProps[key] !== oldProps[key]) {
-        options.patchProps(el, key, null, newProps[key]);
+        options.patchProps(el, key, oldVnode[key], newProps[key]);
       }
     }
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const key in oldProps) {
       if (!(key in newProps)) {
         options.patchProps(el, key, oldProps[key], null);
