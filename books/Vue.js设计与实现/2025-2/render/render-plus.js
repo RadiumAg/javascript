@@ -105,7 +105,7 @@ function createRenderer(options) {
   }
 
   /**
-   * 更新子节点
+   * 更新节点
    *
    * @param {*} oldVnode
    * @param {*} newVnode
@@ -175,7 +175,8 @@ function createRenderer(options) {
   }
 
   /**
-   * 挂载组件
+   * 挂载节点
+   *
    * @param {*} vnode
    * @param {*} container
    */

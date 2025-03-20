@@ -166,10 +166,45 @@
               props: {
                 onClick: () => {
                   console.log('点击p节点');
-                  bol.value = true;
+                  bol.value = !bol.value;
                 },
               },
             },
+            bol.value
+              ? {
+                  type: 'div',
+                  children: [
+                    {
+                      type: 'p',
+                      children: '1',
+                    },
+                    {
+                      type: 'p',
+                      children: '2',
+                    },
+                    {
+                      type: 'p',
+                      children: '3',
+                    },
+                  ],
+                }
+              : {
+                  type: 'div',
+                  children: [
+                    {
+                      type: 'p',
+                      children: '4',
+                    },
+                    {
+                      type: 'p',
+                      children: '5',
+                    },
+                    {
+                      type: 'p',
+                      children: '6',
+                    },
+                  ],
+                },
           ],
         },
         document.querySelector('#app')
