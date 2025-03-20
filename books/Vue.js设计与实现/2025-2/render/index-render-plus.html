@@ -71,12 +71,14 @@
               invoker.value = nextValue;
               // 绑定 invoker 作为时间处理函数
               invoker.attached = performance.now();
+              console.log(`${el.tagName} 绑定了事件`, name);
               el.addEventListener(name, invoker);
             } else {
               // 如果 invoker 存在，意味着更新，并且只需要更新 invoker.value的值即可
               invoker.value = nextValue;
             }
           } else if (invoker) {
+            console.log(`${el.tagName} 移除了事件`, name);
             // 新的事件绑定函数不存在，且之前绑定的 invoker 存在， 则移除绑定
             el.removeEventListener(name, invoker);
           }
