@@ -62,13 +62,13 @@
                 if (Array.isArray(invoker.value)) {
                   invoker.value.forEach((fn) => fn(e));
                 } else {
-                  // 否则直接作为函数调用
                   invoker.value(e);
                 }
               };
               // 将真正的事件处理函数赋值给 invoker.value
               invoker.value = nextValue;
               // 绑定 invoker 作为时间处理函数
+              console.count(el.tagName, 'count');
               el.addEventListener(name, invoker);
             } else {
               // 如果 invoker 存在，意味着更新，并且只需要更新 invoker.value的值即可

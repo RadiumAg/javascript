@@ -76,7 +76,7 @@ function createRenderer(options) {
     // eslint-disable-next-line no-restricted-syntax
     for (const key in newProps) {
       if (newProps[key] !== oldProps[key]) {
-        options.patchProps(el, key, oldProps[key], null);
+        options.patchProps(el, key, null, newProps[key]);
       }
     }
 
