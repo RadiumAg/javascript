@@ -98,7 +98,7 @@ function createRenderer(options) {
         newVnode.children.forEach(c => patch(null, c, container));
       } else {
         // 如果旧 vnode 存在，则只需要更新 Fragement 的 children 即可
-        patchChildren(newVnode, oldVnode, container);
+        patchChildren(oldVnode, newVnode, container);
       }
     } else if (typeof type === 'object') {
     }
@@ -210,9 +210,16 @@ function createRenderer(options) {
 
   /**
    * 卸载组件
-   * @param {*} vnode
+   *
+   * @param {*} vnode 组件虚拟dom
    */
   function unmount(vnode) {
+    // 在卸载时，如果卸载的 vnode 类型为 Fragement,则需要卸载其 children
+    if (vnode.type === Fragment) {
+      vnode.children.forEach(c => unmount(c));
+      return;
+    }
+
     const parent = vnode.el.parentNode;
     if (parent) {
       // eslint-disable-next-line unicorn/prefer-dom-node-remove
