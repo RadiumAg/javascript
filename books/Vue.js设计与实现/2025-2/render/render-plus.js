@@ -119,6 +119,12 @@ function createRenderer(options) {
         options.setElementText(container, '');
         newVnode.children.forEach(c => patch(null, c, container));
       }
+    } else {
+      // 代码运行到这里，说明新子节点不存在
+      // 旧子节点是一组子节点，只需要逐个卸载即可
+      if (Array.isArray(newVnode.children)) {
+        oldVnode.children.forEach(c => unmount(c));
+      }
     }
   }
 
