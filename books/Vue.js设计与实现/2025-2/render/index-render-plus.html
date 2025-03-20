@@ -12,7 +12,7 @@
 
   <script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
   <script type="module">
-    import { createRenderer } from './render-plus.js';
+    import { createRenderer, Text, Comment } from './render-plus.js';
     const { effect, ref } = VueReactivity;
     const bol = ref(false);
 
@@ -25,6 +25,22 @@
     }
 
     const renderer = createRenderer({
+      setComment(el, comment) {
+        el.textContent = comment;
+      },
+
+      createComment(text) {
+        return document.createComment(text);
+      },
+
+      createText(text) {
+        return document.createTextNode(text);
+      },
+
+      setText(el, text) {
+        el.nodeValue = text;
+      },
+
       createElement(tag) {
         return document.createElement(tag);
       },
@@ -43,7 +59,7 @@
         // 匹配 on 开头的属性，视其为事件
         // eslint-disable-next-line unicorn/prefer-string-starts-ends-with
         if (/^on/.test(key)) {
-          if (el._vei == null) {
+          if (el._vei === null || el._vei === undefined) {
             el._vei = {};
           }
           const invokers = el._vei;
@@ -114,6 +130,14 @@
               }
             : {},
           children: [
+            {
+              type: Comment,
+              children: '我是注释内容',
+            },
+            {
+              type: Text,
+              children: '我是文本内容',
+            },
             {
               type: 'p',
               children: 'hello',

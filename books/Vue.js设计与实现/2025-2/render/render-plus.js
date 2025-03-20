@@ -1,3 +1,6 @@
+const Text = Symbol();
+const Comment = Symbol();
+
 /* eslint-disable no-restricted-syntax */
 /**
  * 处理 class 样式
@@ -57,6 +60,36 @@ function createRenderer(options) {
         mountElement(newVnode, container);
       } else {
         patchElement(oldVnode, newVnode);
+      }
+    } else if (type === Text) {
+      // 如果新 vnode 的类型是 Text，则说明该 vnode 描述的是文本节点
+      // 如果没有旧节点，则进行挂载
+      if (!oldVnode) {
+        // 使用 createTextNode 创建文本节点
+        const el = (newVnode.el = options.createText(newVnode.children));
+        // 将文本节点插入到容器中
+        options.insert(el, container);
+      } else {
+        // 如果旧 vnode 存在，只需要使用新文本节点的文本内容更新旧文本节点即可
+        const el = (newVnode.el = oldVnode.el);
+        if (newVnode.children !== oldVnode.children) {
+          options.setText(el, newVnode.children);
+        }
+      }
+    } else if (type === Comment) {
+      // 如果新 vnode 的类型是 Text，则说明该 vnode 描述的是文本节点
+      // 如果没有旧节点，则进行挂载
+      if (!oldVnode) {
+        // 使用 createTextNode 创建文本节点
+        const el = (newVnode.el = options.createComment(newVnode.children));
+        // 将注释节点插入到容器中
+        options.insert(el, container);
+      } else {
+        // 如果旧 vnode 存在，只需要使用新文本节点的文本内容更新旧文本节点即可
+        const el = (newVnode.el = oldVnode.el);
+        if (newVnode.children !== oldVnode.children) {
+          options.setComment(el, newVnode.children);
+        }
       }
     } else if (typeof type === 'object') {
     }
@@ -201,4 +234,4 @@ function createRenderer(options) {
   };
 }
 
-export { createRenderer, normalizeClass };
+export { Text, Comment, createRenderer, normalizeClass };
