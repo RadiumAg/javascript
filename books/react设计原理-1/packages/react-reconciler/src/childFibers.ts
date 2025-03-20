@@ -1,5 +1,8 @@
-import { Key, Props, ReactElement } from 'shared/ReactTypes';
-import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
+import { Key, Props, ReactElement } from '../../shared/ReactTypes';
+import {
+  REACT_ELEMENT_TYPE,
+  REACT_FRAGMENT_TYPE,
+} from '../../shared/ReactSymbols';
 import {
   FiberNode,
   createFiberFromElement,
@@ -202,7 +205,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     }
 
     // 4.将Map中剩下的标记为删除
-    existingChildren.forEach(fiber => {
+    existingChildren.forEach((fiber) => {
       deleteChild(returnFiber, fiber);
     });
 

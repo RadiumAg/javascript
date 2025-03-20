@@ -1,6 +1,6 @@
-import { FiberNode } from 'react-reconciler/src/fiber';
-import { HostText } from 'react-reconciler/src/workTags';
-import { Props } from 'shared/ReactTypes';
+import { FiberNode } from '../../react-reconciler/src/fiber';
+import { HostText } from '../../react-reconciler/src/workTags';
+import { Props } from '../../shared/ReactTypes';
 
 export interface Container {
   rootID: number;
@@ -35,7 +35,7 @@ export const createInstance = (type: string, props: any): Instance => {
 
 export const appendInitialChild = (
   parent: Instance | Container,
-  child: Instance,
+  child: Instance
 ) => {
   const prevParentID = child.parent;
   const parentID = 'rootID' in parent ? parent.rootID : parent.id;
@@ -89,7 +89,7 @@ export function commitTextUpdate(textInstance: TextInstance, content: string) {
 
 export function removeChild(
   child: Instance | TextInstance,
-  container: Container,
+  container: Container
 ) {
   const index = container.children.indexOf(child);
 
@@ -103,7 +103,7 @@ export function removeChild(
 export function insertChildToContainer(
   child: Instance,
   container: Container,
-  before: Instance,
+  before: Instance
 ) {
   const beforeIndex = container.children.indexOf(before);
   if (beforeIndex === -1) {

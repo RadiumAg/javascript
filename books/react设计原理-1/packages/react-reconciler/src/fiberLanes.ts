@@ -5,7 +5,7 @@ import {
   unstable_UserBlockingPriority,
   unstable_getCurrentPriorityLevel,
 } from 'scheduler';
-import ReactCurrentBatchConfig from 'react/src/currentBatchConfig';
+import ReactCurrentBatchConfig from '../../react/src/currentBatchConfig';
 import { FiberRootNode } from './fiber';
 
 export type Lane = number;

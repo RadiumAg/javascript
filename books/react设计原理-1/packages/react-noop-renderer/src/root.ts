@@ -2,9 +2,12 @@
 import {
   createContainer,
   updateContainer,
-} from 'react-reconciler/src/fiberReconciler';
-import { ReactElement } from 'shared/ReactTypes';
-import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
+} from '../../react-reconciler/src/fiberReconciler';
+import { ReactElement } from '../../shared/ReactTypes';
+import {
+  REACT_ELEMENT_TYPE,
+  REACT_FRAGMENT_TYPE,
+} from '../../shared/ReactSymbols';
 import { Container, Instance } from './hostConfig';
 
 let idCounter = 0;
@@ -60,11 +63,11 @@ function childToJSX(child: any): any {
       return childToJSX(child[0]);
     }
 
-    const children = child.map(element => childToJSX(element));
+    const children = child.map((element) => childToJSX(element));
 
     if (
       children.every(
-        child => typeof child === 'string' || typeof child === 'number'
+        (child) => typeof child === 'string' || typeof child === 'number'
       )
     ) {
       return children.join('');

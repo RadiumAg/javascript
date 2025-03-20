@@ -1,7 +1,10 @@
 // ReactElement
 
-import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
-import { ElementType, Key, Props, Ref, Type } from 'shared/ReactTypes';
+import {
+  REACT_ELEMENT_TYPE,
+  REACT_FRAGMENT_TYPE,
+} from '../../shared/ReactSymbols';
+import { ElementType, Key, Props, Ref, Type } from '../../shared/ReactTypes';
 
 const ReactElement = function (type: Type, key: Key, ref: Ref, props: Props) {
   const element = {
@@ -21,7 +24,7 @@ export const Fragment = REACT_FRAGMENT_TYPE;
 export const jsx = function (
   type: ElementType,
   config: Record<string, any>,
-  key: string | number | null = null,
+  key: string | number | null = null
   // ...maybechildren: any[]
 ) {
   const props: Props = {};

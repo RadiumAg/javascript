@@ -1,5 +1,5 @@
-import { FiberNode } from 'react-reconciler/src/fiber';
-import { HostText } from 'react-reconciler/src/workTags';
+import { FiberNode } from '../../react-reconciler/src/fiber';
+import { HostText } from '../../react-reconciler/src/workTags';
 import { DOMElement, updateFiberProps } from './SyntheticEvent';
 
 export type Container = Element;

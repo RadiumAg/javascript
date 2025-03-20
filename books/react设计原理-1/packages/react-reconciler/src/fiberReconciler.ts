@@ -1,5 +1,5 @@
 import { Container } from 'hostConfig';
-import { ReactElement } from 'shared/ReactTypes';
+import { ReactElement } from '../../shared/ReactTypes';
 import { FiberNode, FiberRootNode } from './fiber';
 import { HostRoot } from './workTags';
 import {

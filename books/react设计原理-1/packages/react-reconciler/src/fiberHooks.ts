@@ -1,6 +1,6 @@
-import internals from 'shared/internals';
-import { Dispatch, Dispatcher } from 'react/src/currentDispatcher';
-import { Action } from 'shared/ReactTypes';
+import internals from '../../shared/internals';
+import { Dispatch, Dispatcher } from '../../react/src/currentDispatcher';
+import { Action } from '../../shared/ReactTypes';
 import { FiberNode } from './fiber';
 import {
   Update,

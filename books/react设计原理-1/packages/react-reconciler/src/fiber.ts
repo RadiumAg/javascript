@@ -1,4 +1,4 @@
-import { Key, Props, ReactElement, Ref } from 'shared/ReactTypes';
+import { Key, Props, ReactElement, Ref } from '../../shared/ReactTypes';
 import { Container } from 'hostConfig';
 import { CallbackNode } from 'scheduler';
 import {

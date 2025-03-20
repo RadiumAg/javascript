@@ -1,5 +1,5 @@
-import { Dispatch } from 'react/src/currentDispatcher';
-import { Action } from 'shared/ReactTypes';
+import { Dispatch } from '../../react/src/currentDispatcher';
+import { Action } from '../../shared/ReactTypes';
 import { Lane, NoLane, isSubsetOfLanes } from './fiberLanes';
 
 export interface Update<State> {
@@ -23,7 +23,7 @@ export interface UpdateQueue<State> {
  */
 export const createUpdate = <State>(
   action: Action<State>,
-  lane: Lane,
+  lane: Lane
 ): Update<State> => {
   return {
     lane,
@@ -48,7 +48,7 @@ export const createUpdateQueue = <State>() => {
 
 export const enqueueUpdate = <State>(
   updateQueue: UpdateQueue<State>,
-  update: Update<State>,
+  update: Update<State>
 ) => {
   const pending = updateQueue.shared.pending;
 
@@ -76,7 +76,7 @@ export const enqueueUpdate = <State>(
 export const processUpdateQueue = <State>(
   baseState: State,
   pendingUpdate: Update<State> | null,
-  renderLane: Lane,
+  renderLane: Lane
 ): {
   memoizedState: State;
   baseState: State;

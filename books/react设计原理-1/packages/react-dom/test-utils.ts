@@ -1,4 +1,4 @@
-import { ReactElement } from 'shared/ReactTypes';
+import { ReactElement } from '../shared/ReactTypes';
 import ReactDOM from 'react-dom';
 
 function renderIntoDocument(element: ReactElement) {

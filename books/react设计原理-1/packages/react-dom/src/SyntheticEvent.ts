@@ -1,11 +1,11 @@
-import { Container } from 'hostConfig';
+import { Container } from './hostConfig';
 import {
   unstable_ImmediatePriority,
   unstable_NormalPriority,
   unstable_UserBlockingPriority,
   unstable_runWithPriority,
 } from 'scheduler';
-import { Props } from 'shared/ReactTypes';
+import { Props } from '../../shared/ReactTypes';
 
 export const elementPropsKey = '__props';
 
@@ -40,7 +40,7 @@ export function initEvent(container: Container, eventType: string) {
     console.log('初始化事件：', eventType);
   }
 
-  container.addEventListener(eventType, e => {
+  container.addEventListener(eventType, (e) => {
     dispatchEvent(container, eventType, e);
   });
 }
@@ -56,7 +56,7 @@ function dispatchEvent(container: Container, eventType: string, e: Event) {
   const { bubble, capture } = collectPaths(
     targetElement as DOMElement,
     container,
-    eventType,
+    eventType
   );
   //2. 构建合成事件
   const se = createSyntheticEvent(e);
@@ -97,7 +97,7 @@ function createSyntheticEvent(e: Event) {
 }
 
 function getEventCallbackNameFromEventType(
-  eventType: string,
+  eventType: string
 ): string[] | undefined {
   return {
     click: ['onClickCapture', 'onClick'],
@@ -107,7 +107,7 @@ function getEventCallbackNameFromEventType(
 function collectPaths(
   targetElement: DOMElement,
   container: Container,
-  eventType: string,
+  eventType: string
 ) {
   const paths: Paths = {
     capture: [],

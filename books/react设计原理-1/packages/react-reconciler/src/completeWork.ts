@@ -4,7 +4,7 @@ import {
   createInstance,
   createTextInstance,
 } from 'hostConfig';
-import { updateFiberProps } from 'react-dom/src/SyntheticEvent';
+import { updateFiberProps } from '../../react-dom/src/SyntheticEvent';
 import { FiberNode } from './fiber';
 import {
   Fragment,

@@ -1,4 +1,4 @@
-import { Action } from 'shared/ReactTypes';
+import { Action } from '../../shared/ReactTypes';
 
 export interface Dispatcher {
   useState: <T>(initialState: (() => T) | T) => [T, Dispatch<T>];
