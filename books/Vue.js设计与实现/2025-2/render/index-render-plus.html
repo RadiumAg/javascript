@@ -57,8 +57,6 @@
               // 如果没有 invoker，则将一个伪造的 invoker 缓存到 ell.vei 中
               // vei 是 vue event invoker 的首字母缩写
               invoker = el._vei[key] = (e) => {
-                // 当伪造的事件处理函数执行时，会执行真正的事件处理函数
-                invoker.value(e);
                 // 如果时间发生的事件早于处理函数绑定的时间，则不执行事件处理函数
                 if (e.timeStamp < invoker.attached) return;
                 if (Array.isArray(invoker.value)) {
@@ -85,6 +83,7 @@
         } else if (key === 'class') {
           el.className = nextValue || '';
         }
+
         // 使用 shouldSetAsProps 函数判断是否应该作为 DOM Properties 设置
         else if (shouldSetAsProps(el, key, nextValue)) {
           const type = typeof el[key];
@@ -119,7 +118,7 @@
               props: {
                 onClick: () => {
                   console.log('点击p节点');
-                  bol.value = true;
+                  bol.value = !bol.value;
                 },
               },
             },
