@@ -59,6 +59,7 @@
               invoker = el._vei[key] = (e) => {
                 // 如果时间发生的事件早于处理函数绑定的时间，则不执行事件处理函数
                 if (e.timeStamp < invoker.attached) return;
+
                 if (Array.isArray(invoker.value)) {
                   invoker.value.forEach((fn) => fn(e));
                 } else {
@@ -67,7 +68,8 @@
               };
               // 将真正的事件处理函数赋值给 invoker.value
               invoker.value = nextValue;
-              // 绑定 invoker 作为时间处理函数
+
+              // 记录 invoker 函数的绑定时间
               invoker.attached = performance.now();
               console.log(`${el.tagName} 绑定了事件`, name);
               el.addEventListener(name, invoker);
@@ -118,7 +120,7 @@
               props: {
                 onClick: () => {
                   console.log('点击p节点');
-                  bol.value = !bol.value;
+                  bol.value = true;
                 },
               },
             },
