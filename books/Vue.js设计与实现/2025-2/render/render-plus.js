@@ -150,17 +150,65 @@ function createRenderer(options) {
       // 最后将新的文本节点内容设置给容器元素
       options.setElementText(container, newVnode.children);
     } else if (Array.isArray(newVnode.children)) {
-      if (Array.isArray(oldVnode.children)) {
-        // 此时
-        // 旧子节点要么是文本子节点，要么不存在
-        // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的 Diff 算法
-        oldVnode.children.forEach(c => unmount(c));
-        // 再将新的一组子节点全部挂载到容器中
-        newVnode.children.forEach(c => patch(null, c, container));
-      } else {
-        options.setElementText(container, '');
-        newVnode.children.forEach(c => patch(null, c, container));
+      // if (Array.isArray(oldVnode.children)) {
+      //   // 此时
+      //   // 旧子节点要么是文本子节点，要么不存在
+      //   // 代码运行到这里，则说明新旧子节点都是一组子节点，这里涉及核心的 Diff 算法
+      //   oldVnode.children.forEach(c => unmount(c));
+      //   // 再将新的一组子节点全部挂载到容器中
+      //   newVnode.children.forEach(c => patch(null, c, container));
+      // } else {
+      //   options.setElementText(container, '');
+      //   newVnode.children.forEach(c => patch(null, c, container));
+      // }
+      const oldChildren = oldVnode.children;
+      const newChildren = newVnode.children;
+      // // 旧的一组子节点的长度
+      // const oldLen = oldChildren.length;
+      // // 新的一组子节点的长度
+      // const newLen = newChildren.length;
+      // // 两组子节点的公共长度，即两者中较短的那一组子节点的长度
+      // const commonLength = Math.min(oldLen, newLen);
+
+      // 遍历新的 children
+      let lastIndex = 0;
+      // eslint-disable-next-line unicorn/no-for-loop
+      for (let i = 0; i < newChildren.length; i++) {
+        const newVnode = newChildren[i];
+        // 遍历旧的 children
+        // eslint-disable-next-line unicorn/no-for-loop
+        for (let j = 0; j < oldChildren.length; j++) {
+          const oldVnode = oldChildren[j];
+          if (newVnode.key === oldVnode.key) {
+            patch(oldVnode, newVnode, container);
+            if (j < lastIndex) {
+              // 如果当前找到的节点在 旧 children 中的索引小于最大索引值 lastIndex
+              // 说明该节点对应的真实 DOM 需要移动了
+            } else {
+              // 如果当前找到的节点在旧 children 中的索引不小于最大索引值
+              lastIndex = j;
+            }
+
+            break;
+          }
+        }
       }
+
+      // // 遍历 commonLength 次
+      // for (let i = 0; i < commonLength; i++) {
+      //   patch(oldChildren[i], newChildren[i], container);
+      // }
+
+      // if (newLen > oldLen) {
+      //   for (let i = commonLength; i < newLen; i++) {
+      //     patch(null, newChildren[i], container);
+      //   }
+      // } else if (oldLen > newLen) {
+      //   // 如果 oldLen > newLen，说明旧子节点需要卸载
+      //   for (let i = commonLength; i < oldLen; i++) {
+      //     unmount(oldChildren[i]);
+      //   }
+      // }
     } else {
       // 代码运行到这里，说明新子节点不存在
       // 旧子节点是一组子节点，只需要逐个卸载即可
