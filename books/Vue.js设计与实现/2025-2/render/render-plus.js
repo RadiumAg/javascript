@@ -184,6 +184,12 @@ function createRenderer(options) {
             if (j < lastIndex) {
               // 如果当前找到的节点在 旧 children 中的索引小于最大索引值 lastIndex
               // 说明该节点对应的真实 DOM 需要移动了
+              const prevVnode = newChildren[i - 1];
+              // 如果 prevVnode 不存在，则说明当前 newVnode 是第一个节点，它不需要移动
+              if (prevVnode) {
+                const anchor = prevVnode.el.nextSibling;
+                options.insert(newVnode.el, container, anchor);
+              }
             } else {
               // 如果当前找到的节点在旧 children 中的索引不小于最大索引值
               lastIndex = j;
