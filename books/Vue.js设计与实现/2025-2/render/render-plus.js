@@ -181,8 +181,17 @@ function createRenderer(options) {
         let find = false;
         // 遍历旧的 children
         // eslint-disable-next-line unicorn/no-for-loop
+
         for (j = 0; j < oldChildren.length; j++) {
           const oldVnode = oldChildren[j];
+
+          const has = newChildren.find(vnode => vnode.key === oldVnode.key);
+          if (!has) {
+            // 如果没有找到具有相同 key 值的节点，则说明要删除该节点
+            // 调用 unmount 函数将其卸载
+            unmount(oldVnode);
+          }
+
           if (newVnode.key === oldVnode.key) {
             // 一旦找到可复用的节点，则将变量 find 值设置为 true
             find = true;
