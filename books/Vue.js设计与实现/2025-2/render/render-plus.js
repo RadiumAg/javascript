@@ -217,6 +217,7 @@ function createRenderer(options) {
           // 首先获取当前 newVNode 的前一个vnode节点
           const prevVNode = newChildren[i - 1];
           let anchor = null;
+
           if (prevVNode) {
             anchor = prevVNode.el.nextSibling;
           } else {
