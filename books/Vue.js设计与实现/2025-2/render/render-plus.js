@@ -201,6 +201,10 @@ function createRenderer(options) {
             break;
           }
         }
+
+        // 如果代码运行到这里，find 仍然为 false
+        // 说明当前 neVnode 没有在旧的一组子节点中找到客服用的节点
+        // 也就是说，当前 newVNode是新增节点，需要挂载
       }
 
       // // 遍历 commonLength 次
