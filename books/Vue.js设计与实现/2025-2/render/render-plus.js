@@ -187,7 +187,10 @@ function createRenderer(options) {
               const prevVnode = newChildren[i - 1];
               // 如果 prevVnode 不存在，则说明当前 newVnode 是第一个节点，它不需要移动
               if (prevVnode) {
+                // 由于我们需要将 newVNode 对应的真实 DOM 移动到 prevVNode 所对应真实 DOM 后面
+                // 所以我们需要获取 prevVNode 所赌赢真实 DOM 下的一个兄弟节点，并将其作为锚点
                 const anchor = prevVnode.el.nextSibling;
+                // 也就是 prevVNODE 对应这真实 DOM 的后面
                 options.insert(newVnode.el, container, anchor);
               }
             } else {
