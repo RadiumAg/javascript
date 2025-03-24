@@ -44,7 +44,7 @@ function createRenderer(options) {
    * @param {*} newVnode 新 vnode
    * @param {*} container 容器
    */
-  function patch(oldVnode, newVnode, container) {
+  function patch(oldVnode, newVnode, container, anchor) {
     // 如果 oldVnode 存在， 则对比 oldVnode 和 newVnode 的类型
     if (oldVnode && oldVnode.type !== newVnode.type) {
       // 如果新旧 vnode 的类型不同，则直接将旧 vnode 卸载
@@ -58,7 +58,8 @@ function createRenderer(options) {
     if (typeof type === 'string') {
       // 如果 oldVnode 不存在，意味着挂载，则调用 mountElemnet 函数完成挂载
       if (!oldVnode) {
-        mountElement(newVnode, container);
+        // 挂载时2将锚点元素作为第三个参数传递给 mountElement 函数
+        mountElement(newVnode, container, anchor);
       } else {
         patchElement(oldVnode, newVnode);
       }
@@ -175,11 +176,15 @@ function createRenderer(options) {
       // eslint-disable-next-line unicorn/no-for-loop
       for (let i = 0; i < newChildren.length; i++) {
         const newVnode = newChildren[i];
+        let j;
+        let find = false;
         // 遍历旧的 children
         // eslint-disable-next-line unicorn/no-for-loop
-        for (let j = 0; j < oldChildren.length; j++) {
+        for (j = 0; j < oldChildren.length; j++) {
           const oldVnode = oldChildren[j];
           if (newVnode.key === oldVnode.key) {
+            // 一旦找到可复用的节点，则将变量 find 值设置为 truuee
+            find = true;
             patch(oldVnode, newVnode, container);
             if (j < lastIndex) {
               // 如果当前找到的节点在 旧 children 中的索引小于最大索引值 lastIndex
@@ -205,6 +210,21 @@ function createRenderer(options) {
         // 如果代码运行到这里，find 仍然为 false
         // 说明当前 neVnode 没有在旧的一组子节点中找到客服用的节点
         // 也就是说，当前 newVNode是新增节点，需要挂载
+        if (!find) {
+          // 为了将节点挂载到正确位置，我们需要先获取锚点元素
+          // 首先获取当前 newVNode 的前一个vnode节点
+          const prevVNode = newChildren[i - 1];
+          let anchor = null;
+          if (prevVNode) {
+            anchor = prevVNode.el.nextSibling;
+          } else {
+            // 如果没有前一个 vnode  节点，说明即将挂载的新节点是第一个子节点
+            // 这时我们使用容器元素的 firstChild 作为锚点
+            anchor = container.firstChild;
+          }
+          // 挂载 newVnode
+          patch(null, newVnode, container, anchor);
+        }
       }
 
       // // 遍历 commonLength 次
@@ -241,7 +261,7 @@ function createRenderer(options) {
    * @param {*} vnode
    * @param {*} container
    */
-  function mountElement(vnode, container) {
+  function mountElement(vnode, container, anchor) {
     // 创建 DOM 元素
     const el = document.createElement(vnode.type);
     vnode.el = el;
@@ -267,7 +287,7 @@ function createRenderer(options) {
     }
 
     // 将元素添加到容器中
-    options.insert(el, container);
+    options.insert(el, container, anchor);
   }
 
   /**
