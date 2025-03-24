@@ -66,6 +66,7 @@ function createRenderer(options) {
     } else if (type === Text) {
       // 如果新 vnode 的类型是 Text，则说明该 vnode 描述的是文本节点
       // 如果没有旧节点，则进行挂载
+
       if (!oldVnode) {
         // 使用 createTextNode 创建文本节点
         const el = (newVnode.el = options.createText(newVnode.children));
