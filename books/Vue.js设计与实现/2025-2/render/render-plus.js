@@ -71,7 +71,7 @@ function createRenderer(options) {
         // 使用 createTextNode 创建文本节点
         const el = (newVnode.el = options.createText(newVnode.children));
         // 将文本节点插入到容器中
-        options.insert(el, container);
+        options.insert(el, container, anchor);
       } else {
         // 如果旧 vnode 存在，只需要使用新文本节点的文本内容更新旧文本节点即可
         const el = (newVnode.el = oldVnode.el);
@@ -86,7 +86,7 @@ function createRenderer(options) {
         // 使用 createTextNode 创建文本节点
         const el = (newVnode.el = options.createComment(newVnode.children));
         // 将注释节点插入到容器中
-        options.insert(el, container);
+        options.insert(el, container, anchor);
       } else {
         // 如果旧 vnode 存在，只需要使用新文本节点的文本内容更新旧文本节点即可
         const el = (newVnode.el = oldVnode.el);
@@ -184,7 +184,7 @@ function createRenderer(options) {
         for (j = 0; j < oldChildren.length; j++) {
           const oldVnode = oldChildren[j];
           if (newVnode.key === oldVnode.key) {
-            // 一旦找到可复用的节点，则将变量 find 值设置为 truuee
+            // 一旦找到可复用的节点，则将变量 find 值设置为 true
             find = true;
             patch(oldVnode, newVnode, container);
 
