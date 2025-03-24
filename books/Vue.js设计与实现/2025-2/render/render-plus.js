@@ -173,6 +173,13 @@ function createRenderer(options) {
     }
   }
 
+  /**
+   * 简单diff
+   *
+   * @param {*} oldVnode
+   * @param {*} newVnode
+   * @param {*} container
+   */
   function sampleDiff(oldVnode, newVnode, container) {
     const oldChildren = oldVnode.children;
     const newChildren = newVnode.children;
@@ -245,7 +252,47 @@ function createRenderer(options) {
     }
   }
 
-  function BidirectionalDiff(oldVnode, newVnode, container) {}
+  /**
+   * 双端 diff
+   *
+   * @param {*} oldVnode
+   * @param {*} newVnode
+   * @param {*} container
+   */
+  function BidirectionalDiff(oldVnode, newVnode, container) {
+    const oldChildren = oldVnode.children;
+    const newChildren = newVnode.children;
+
+    // 四个索引
+    const oldStartIdx = 0;
+    let oldEndIdx = oldChildren.length - 1;
+    let newStartIdx = 0;
+    const newEndIdx = newChildren.length - 1;
+    // 四个索引指向的 vnode 节点
+    const oldStartVNode = oldChildren[oldStartIdx];
+    let oldEndVNode = oldChildren[oldEndIdx];
+    let newStartVNode = newChildren[newStartIdx];
+    const newEndVNode = newChildren[newEndIdx];
+
+    if (oldStartVNode.key === newStartVNode.key) {
+      // 第一步：oldStartVNode 和 newStartVNode 比较
+    } else if (oldEndVNode.key === newEndVNode.key) {
+      // 第二步：oldEndVNode 和 newEndVNode 比较
+    } else if (oldStartVNode.key === newEndVNode.key) {
+      // 第三步：oldStartVNode 和 newEndVNode 比较
+    } else if (oldEndVNode.key === newStartVNode.key) {
+      // 第四步： oldEndVNode和newStartVNode 比较
+      // 仍然需要调用 patch 函数进行补丁
+      patch(oldEndVNode, newStartVNode, container);
+      // 移动 DOM 操作
+      // oldEndVNode.el 移动到 oldStartVNode.el 前面
+      options.insert(oldEndVNode.el, container, oldStartVNode.el);
+
+      // 移动 DOM 完成后，更新索引值，并指向下一个位置
+      oldEndVNode = oldChildren[--oldEndIdx];
+      newStartVNode = newChildren[++newStartIdx];
+    }
+  }
 
   /**
    * 更新子节点
@@ -265,7 +312,7 @@ function createRenderer(options) {
       // 最后将新的文本节点内容设置给容器元素
       options.setElementText(container, newVnode.children);
     } else if (Array.isArray(newVnode.children)) {
-      sampleDiff(oldVnode, newVnode, container);
+      BidirectionalDiff(oldVnode, newVnode, container);
     } else {
       // 代码运行到这里，说明新子节点不存在
       // 旧子节点是一组子节点，只需要逐个卸载即可
