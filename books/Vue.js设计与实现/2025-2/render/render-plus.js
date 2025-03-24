@@ -186,6 +186,7 @@ function createRenderer(options) {
             // 一旦找到可复用的节点，则将变量 find 值设置为 truuee
             find = true;
             patch(oldVnode, newVnode, container);
+
             if (j < lastIndex) {
               // 如果当前找到的节点在 旧 children 中的索引小于最大索引值 lastIndex
               // 说明该节点对应的真实 DOM 需要移动了
