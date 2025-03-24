@@ -132,35 +132,43 @@
           children: [
             {
               type: Fragment,
+              key: 1,
               children: [
                 bol.value
                   ? {
+                      key: 1,
                       type: 'li',
                       children: '1',
                     }
                   : {
+                      key: 1,
                       type: 'li',
                       children: '88888',
                     },
                 {
+                  key: 3,
                   type: 'li',
                   children: '2',
                 },
                 {
+                  key: 4,
                   type: 'li',
                   children: '3',
                 },
               ],
             },
             {
+              key: 2,
               type: Comment,
               children: '我是注释内容',
             },
             {
+              key: 3,
               type: Text,
               children: '我是文本内容',
             },
             {
+              key: 4,
               type: 'p',
               children: 'hello',
               props: {
@@ -172,6 +180,7 @@
             },
             bol.value
               ? {
+                  key: 5,
                   type: 'div',
                   children: [
                     {
@@ -189,6 +198,7 @@
                   ],
                 }
               : {
+                  key: 5,
                   type: 'div',
                   children: [
                     {
@@ -207,6 +217,7 @@
                 },
             bol.value
               ? {
+                  key: 6,
                   type: 'div',
                   children: [
                     {
@@ -227,6 +238,7 @@
                   ],
                 }
               : {
+                  key: 6,
                   type: 'div',
                   children: [
                     {
