@@ -1,10 +1,32 @@
 const { effect, reactive } = VueReactivity;
 
+// 任务缓存队列，用一个 Set 数据及结构表示，这样就可以自动对任务进行去重
 const queue = new Set();
+// 一个标志，表示是否正在刷新任务队列
+// 创建一个立即 resolve 的Promise 实例
+const p = Promise.resolve();
+let isFlusing = false;
 const Text = Symbol();
 const Comment = Symbol();
 const Fragment = Symbol();
 
+function queueJob(job) {
+  queue.add(job);
+  // 如果还没有开始刷新队列，则刷新
+  if (!isFlusing) {
+    isFlusing = true;
+    // 在微任务中刷新缓冲队列
+    p.then(() => {
+      try {
+        queue.forEach(job => job());
+      } finally {
+        // 重置状态
+        isFlusing = false;
+        queue.clear();
+      }
+    });
+  }
+}
 /* eslint-disable no-restricted-syntax */
 /**
  * 处理 class 样式
@@ -54,12 +76,17 @@ function createRenderer(options) {
     const { render, data } = componentOptions;
     const state = reactive(data());
 
-    effect(() => {
-      // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM
-      const subTree = render.call(state, state);
-      // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
-      patch(null, subTree, container, anchor);
-    });
+    effect(
+      () => {
+        // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM
+        const subTree = render.call(state, state);
+        // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
+        patch(null, subTree, container, anchor);
+      },
+      {
+        scheduler: queueJob,
+      }
+    );
   }
 
   function patchComponent() {}
