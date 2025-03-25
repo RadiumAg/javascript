@@ -76,6 +76,12 @@ function createRenderer(options) {
     const { render, data } = componentOptions;
     const state = reactive(data());
 
+    const instance = {
+      state,
+      isMounted: false,
+      subTree: null,
+    };
+
     effect(
       () => {
         // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM

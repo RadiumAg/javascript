@@ -328,17 +328,17 @@ export function flushPassiveEffects(
   pendingPassiveEffects: PendingPassiveEffects
 ) {
   let didFlushPassiveEffect = false;
-  pendingPassiveEffects.unmount.forEach(effect => {
+  pendingPassiveEffects.unmount.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListUnmount(Passive, effect);
   });
   pendingPassiveEffects.unmount = [];
 
-  pendingPassiveEffects.update.forEach(effect => {
+  pendingPassiveEffects.update.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListDestory(Passive | HookHasEffect, effect);
   });
-  pendingPassiveEffects.update.forEach(effect => {
+  pendingPassiveEffects.update.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListCreate(Passive | HookHasEffect, effect);
   });
