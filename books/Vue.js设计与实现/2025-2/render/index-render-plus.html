@@ -259,12 +259,25 @@
                   ],
                 },
             {
-              name: 'MyComponent',
-              render() {
-                return {
-                  type: 'div',
-                  children: `我是文本内容`,
-                };
+              key: 100,
+              type: {
+                name: 'MyComponent',
+                data() {
+                  return {
+                    foo: 'hello world',
+                  };
+                },
+                render() {
+                  return {
+                    type: 'div',
+                    props: {
+                      onClick: () => {
+                        this.foo = this.foo + 1;
+                      },
+                    },
+                    children: `foo 的值是：${this.foo}`,
+                  };
+                },
               },
             },
           ],
