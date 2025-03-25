@@ -37,6 +37,19 @@ function normalizeClass(cls) {
 }
 
 function createRenderer(options) {
+  function mountComponent(vnode, container, anchor) {
+    // 通过 vnode 获取组件的选项对象，即 vnode.type
+    const componentOptions = vnode.type;
+    // 获取组件的渲染函数 render
+    const { render } = componentOptions;
+    // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM
+    const subTree = render();
+    // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
+    patch(null, subTree, container, anchor);
+  }
+
+  function patchComponent() {}
+
   /**
    * 更新节点
    *
@@ -103,6 +116,13 @@ function createRenderer(options) {
         patchChildren(oldVnode, newVnode, container);
       }
     } else if (typeof type === 'object') {
+      // vnode.type 的值是选项对象，作为组件来来来处理
+      if (!oldVnode) {
+        // 挂载组件
+        mountComponent(newVnode, container, anchor);
+      } else {
+        patchComponent(oldVnode, newVnode, anchor);
+      }
     }
   }
 
