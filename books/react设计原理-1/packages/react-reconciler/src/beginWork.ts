@@ -14,7 +14,7 @@ import { Lane } from './fiberLanes';
 import { Ref } from './fiberFlags';
 
 /**
- * 递归中的递阶段
+ * 递归中的递阶段，创建Fiber树
  * @param wip
  * @returns
  */

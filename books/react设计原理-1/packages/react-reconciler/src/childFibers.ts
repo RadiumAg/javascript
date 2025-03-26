@@ -158,6 +158,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     const existingChildren: existingChildren = new Map();
 
     let current = currentFirstChild;
+    // 老的FiberNode
     while (current !== null) {
       const keyToUse = current.key !== null ? current.key : current.index;
       existingChildren.set(keyToUse, current);
@@ -189,6 +190,12 @@ function childReconciler(shouldTrackEffects: boolean) {
 
       const current = newFiber.alternate;
       if (current !== null) {
+        console.log(
+          'currentIndex',
+          current.index,
+          'lastPlacedIndex',
+          lastPlacedIndex
+        );
         const oldIndex = current.index;
         if (oldIndex < lastPlacedIndex) {
           // 移动
@@ -204,8 +211,9 @@ function childReconciler(shouldTrackEffects: boolean) {
       }
     }
 
+    // 将移动的标记为移动
     // 4.将Map中剩下的标记为删除
-    existingChildren.forEach((fiber) => {
+    existingChildren.forEach(fiber => {
       deleteChild(returnFiber, fiber);
     });
 

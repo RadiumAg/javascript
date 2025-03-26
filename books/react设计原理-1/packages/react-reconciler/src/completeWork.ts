@@ -23,6 +23,12 @@ function markRef(fiber: FiberNode) {
   fiber.flags |= Ref;
 }
 
+/**
+ * 创建node并下一层
+ *
+ * @param workInProgress
+ * @returns
+ */
 export const completeWork = (workInProgress: FiberNode) => {
   // 递归中的归
   const newProps = workInProgress.pendingProps;
