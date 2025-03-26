@@ -1,4 +1,4 @@
-const { effect, reactive } = VueReactivity;
+const { effect, reactive, shallowReactive } = VueReactivity;
 
 // 任务缓存队列，用一个 Set 数据及结构表示，这样就可以自动对任务进行去重
 const queue = new Set();
@@ -61,6 +61,30 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
+/**
+ * resolveProps 函数用于解析组件 props 和 attrs 数据
+ *
+ * @param {*} options
+ * @param {*} propsData
+ */
+function resolveProps(options, propsData) {
+  const props = {};
+  const attrs = {};
+
+  for (const key in propsData) {
+    if (key in options) {
+      // 如果为组件传递的 props 数据在组件自身的 props 选项中有定义，则即将其视为合法的 props
+      props[key] = propsData[key];
+    } else {
+      // 否则将其作为 attrs
+      attrs[key] = propsData[key];
+    }
+  }
+
+  // 最后返回 props 与 attrs 数据
+  return { props, attrs };
+}
+
 function createRenderer(options) {
   /**
    * 挂载组件
@@ -80,12 +104,15 @@ function createRenderer(options) {
       beforeMounted,
       mounted,
       beforeUpdate,
+      props: porpsOption,
       updated,
     } = componentOptions;
     const state = reactive(data());
+    const [props, attrs] = resolveProps(porpsOption, vnode.props);
 
     const instance = {
       state,
+      props: shallowReactive(props),
       isMounted: false,
       subTree: null,
     };
