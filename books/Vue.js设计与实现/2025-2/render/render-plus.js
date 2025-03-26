@@ -73,7 +73,15 @@ function createRenderer(options) {
     // 通过 vnode 获取组件的选项对象，即 vnode.type
     const componentOptions = vnode.type;
     // 获取组件的渲染函数 render
-    const { render, data } = componentOptions;
+    const {
+      render,
+      data,
+      created,
+      beforeMounted,
+      mounted,
+      beforeUpdate,
+      updated,
+    } = componentOptions;
     const state = reactive(data());
 
     const instance = {
@@ -82,12 +90,31 @@ function createRenderer(options) {
       subTree: null,
     };
 
+    vnode.component = instance;
+
+    // 在这里调用create钩子
+    created && created.call(state);
+
     effect(
       () => {
         // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM
         const subTree = render.call(state, state);
         // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
-        patch(null, subTree, container, anchor);
+
+        if (!instance.isMounted) {
+          beforeMounted && beforeMounted.call(state);
+          patch(null, subTree, container, anchor);
+          instance.isMounted = true;
+          // 在这里调用 mounted 钩子
+          mounted && mounted.call(state);
+        } else {
+          // 在这里调用 beforeUpdate 钩子
+          beforeUpdate && beforeUpdate.call(state);
+          patch(instance.subTree, subTree, container, anchor);
+          // 在这里调用 updated 钩子
+        }
+
+        instance.subTree = subTree;
       },
       {
         scheduler: queueJob,
