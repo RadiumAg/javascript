@@ -283,6 +283,32 @@
                 },
               },
             },
+            {
+              type: {
+                setup() {
+                  return {
+                    type: 'div',
+                    children: 'hello world',
+                  };
+                },
+              },
+            },
+            {
+              type: {
+                setup() {
+                  const count = ref(0);
+                  return {
+                    count,
+                  };
+                },
+                redner() {
+                  return {
+                    type: 'div',
+                    children: `count is : ${this.count}`,
+                  };
+                },
+              },
+            },
           ],
         },
         document.querySelector('#app')

@@ -136,8 +136,38 @@ function createRenderer(options) {
 
     vnode.component = instance;
 
+    const renderContexxt = new Proxy(instance, {
+      get(target, key, receive) {
+        // 取得组件自身状态与 props 数据
+        const { state, props } = target;
+        // 想尝试读取自身状态数据
+        if (state && key in state) {
+          return state[key];
+        } else if (key in props) {
+          return props[key];
+        } else {
+          console.error('不存在');
+        }
+      },
+
+      set(target, key, value, receive) {
+        const { state, props } = target;
+
+        // props 是只读的，不能直接修改
+        if (state && key in state) {
+          state[key] = value;
+        } else if (key in props) {
+          console.warn(
+            `Attempting to mutate prop "${key}". Props are readonly.`
+          );
+        } else {
+          console.error('不存在');
+        }
+      },
+    });
+
     // 在这里调用create钩子
-    created && created.call(state);
+    created && created.call(renderContexxt);
 
     effect(
       () => {
