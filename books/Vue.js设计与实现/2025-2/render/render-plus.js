@@ -85,6 +85,23 @@ function resolveProps(options, propsData) {
   return { props, attrs };
 }
 
+function hasPropsChanged(prevProps, nextProps) {
+  const nextKeys = Object.keys(nextProps);
+  // 如果新旧 props 的长度不一致，则说明 props 已经发生了变化
+  if (nextKeys.length !== Object.keys(prevProps).length) {
+    return true;
+  }
+
+  for (const key of nextKeys) {
+    // 如果新旧 props 的值不一致，则说明 props 已经发生了变化
+    if (prevProps[key] !== nextProps[key]) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function createRenderer(options) {
   /**
    * 挂载组件
@@ -108,7 +125,7 @@ function createRenderer(options) {
       updated,
     } = componentOptions;
     const state = reactive(data());
-    const [props, attrs] = resolveProps(porpsOption, vnode.props);
+    const { props, attrs } = resolveProps(porpsOption, vnode.props);
 
     const instance = {
       state,
@@ -149,7 +166,31 @@ function createRenderer(options) {
     );
   }
 
-  function patchComponent() {}
+  function patchComponent(oldVnode, newVnode, anchor) {
+    // 获取组件实例，即 n1.commponent，同时让新的组件虚拟节点 n2.component 也指向组件实例
+    const instance = (newVnode.component = oldVnode.component);
+    // 获取当前 props 数据
+    const { props } = instance;
+    // 调用 resolveProps 函数，获取新的 props 数据
+    if (hasPropsChanged(oldVnode.props, newVnode.props)) {
+      const { props: newProps } = resolveProps(
+        newVnode.type.props,
+        newVnode.props
+      );
+
+      // 更新 props
+      for (const key in newProps) {
+        props[key] = newProps[key];
+      }
+
+      // 删除不存在的 props
+      for (const key in props) {
+        if (!(key in newProps)) {
+          delete props[key];
+        }
+      }
+    }
+  }
 
   /**
    * 更新节点
