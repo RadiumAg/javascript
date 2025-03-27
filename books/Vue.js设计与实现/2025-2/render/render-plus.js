@@ -1,4 +1,4 @@
-const { effect, reactive, shallowReactive } = VueReactivity;
+const { effect, reactive, shallowReactive, shallowReadonly } = VueReactivity;
 
 // 任务缓存队列，用一个 Set 数据及结构表示，这样就可以自动对任务进行去重
 const queue = new Set();
@@ -114,9 +114,10 @@ function createRenderer(options) {
     // 通过 vnode 获取组件的选项对象，即 vnode.type
     const componentOptions = vnode.type;
     // 获取组件的渲染函数 render
+    let { render } = componentOptions;
     const {
-      render,
       data,
+      setup,
       created,
       beforeMounted,
       mounted,
@@ -124,7 +125,7 @@ function createRenderer(options) {
       props: porpsOption,
       updated,
     } = componentOptions;
-    const state = reactive(data());
+    const state = data ? reactive(data()) : null;
     const { props, attrs } = resolveProps(porpsOption, vnode.props);
 
     const instance = {
@@ -134,6 +135,23 @@ function createRenderer(options) {
       subTree: null,
     };
 
+    const steupContext = { attrs };
+    const setupResult = setup
+      ? setup.call(shallowReadonly(props), steupContext)
+      : null;
+    // 如果 setup 函数的返回值是函数，则将其作为 render 函数
+    let setupState = null;
+
+    if (typeof setupResult === 'function') {
+      // 报告冲突
+      if (render) {
+        console.error('render 函数和 setup 函数不能同时存在');
+      }
+      // 将 setupResult 作为渲染函数
+      render = setupResult;
+    } else {
+      setupState = setupResult;
+    }
     vnode.component = instance;
 
     const renderContexxt = new Proxy(instance, {
@@ -145,6 +163,9 @@ function createRenderer(options) {
           return state[key];
         } else if (key in props) {
           return props[key];
+        } else if (setupState && key in setupState) {
+          // 渲染上下文中尝试读取 setup 函数返回的数据
+          return setupState[key];
         } else {
           console.error('不存在');
         }
@@ -160,6 +181,8 @@ function createRenderer(options) {
           console.warn(
             `Attempting to mutate prop "${key}". Props are readonly.`
           );
+        } else if (setupState && key in setupState) {
+          setupState[key] = value;
         } else {
           console.error('不存在');
         }
@@ -172,18 +195,18 @@ function createRenderer(options) {
     effect(
       () => {
         // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM
-        const subTree = render.call(state, state);
+        const subTree = render.call(renderContexxt, renderContexxt);
         // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
 
         if (!instance.isMounted) {
-          beforeMounted && beforeMounted.call(state);
+          beforeMounted && beforeMounted.call(instance.state);
           patch(null, subTree, container, anchor);
           instance.isMounted = true;
           // 在这里调用 mounted 钩子
-          mounted && mounted.call(state);
+          mounted && mounted.call(instance.state);
         } else {
           // 在这里调用 beforeUpdate 钩子
-          beforeUpdate && beforeUpdate.call(state);
+          beforeUpdate && beforeUpdate.call(instance.state);
           patch(instance.subTree, subTree, container, anchor);
           // 在这里调用 updated 钩子
         }

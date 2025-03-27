@@ -264,6 +264,9 @@
                 name: 'MyComponent',
                 props: {
                   title: String,
+                  onChange() {
+                    console.log('change');
+                  },
                 },
                 data() {
                   return {
@@ -286,10 +289,10 @@
             {
               type: {
                 setup() {
-                  return {
+                  return () => ({
                     type: 'div',
                     children: 'hello world',
-                  };
+                  });
                 },
               },
             },
@@ -301,10 +304,10 @@
                     count,
                   };
                 },
-                redner() {
+                render() {
                   return {
                     type: 'div',
-                    children: `count is : ${this.count}`,
+                    children: `count is : ${this.count.value}`,
                   };
                 },
               },
