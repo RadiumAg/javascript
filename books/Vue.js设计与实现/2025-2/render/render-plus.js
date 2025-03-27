@@ -189,6 +189,10 @@ function createRenderer(options) {
       },
     });
 
+    function emit(event, ...playload) {
+      // 根据约定对事件名进行处理，例如 change => onChange
+    }
+
     // 在这里调用create钩子
     created && created.call(renderContexxt);
 
