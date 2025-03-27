@@ -135,7 +135,7 @@ function createRenderer(options) {
       subTree: null,
     };
 
-    const steupContext = { attrs };
+    const steupContext = { attrs, emit };
     const setupResult = setup
       ? setup.call(shallowReadonly(props), steupContext)
       : null;
@@ -191,6 +191,14 @@ function createRenderer(options) {
 
     function emit(event, ...playload) {
       // 根据约定对事件名进行处理，例如 change => onChange
+      const eventName = `on ${event[0].toUpperCase()}${event.slice(1)}`;
+      const handler = instance.props[eventName];
+      if (handler) {
+        // 调用事件处理函数并传递参数
+        handler(...playload);
+      } else {
+        console.error('事件不存在');
+      }
     }
 
     // 在这里调用create钩子
