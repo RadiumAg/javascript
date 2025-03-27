@@ -89,7 +89,7 @@ function ensureRootIsScheduled(root: FiberRootNode) {
     const schedulePriority = lanesToSchedulePriority(updateLane);
     newCallbackNode = scheduleCallback(
       schedulePriority,
-      performConcurrentWorkOnRoot.bind(null, root),
+      performConcurrentWorkOnRoot.bind(null, root)
     );
   }
   root.callbackNode = newCallbackNode;
@@ -98,7 +98,7 @@ function ensureRootIsScheduled(root: FiberRootNode) {
 
 function performConcurrentWorkOnRoot(
   root: FiberRootNode,
-  didTimeout: boolean,
+  didTimeout: boolean
 ): any {
   // 保证useEffect已经执行
   const curCallback = root.callbackNode;
@@ -261,7 +261,7 @@ function commitRoot(root: FiberRootNode) {
 function commitHookEffectList(
   flags: Flags,
   lastEffect: Effect,
-  callback: (effect: Effect) => void,
+  callback: (effect: Effect) => void
 ) {
   let effect = lastEffect.next as Effect;
 
@@ -275,7 +275,7 @@ function commitHookEffectList(
 }
 
 function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
-  commitHookEffectList(flags, lastEffect, effect => {
+  commitHookEffectList(flags, lastEffect, (effect) => {
     const destory = effect.destory;
 
     if (typeof destory === 'function') {
@@ -287,7 +287,7 @@ function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
 }
 
 function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
-  commitHookEffectList(flags, lastEffect, effect => {
+  commitHookEffectList(flags, lastEffect, (effect) => {
     const destory = effect.destory;
 
     if (typeof destory === 'function') {
@@ -297,7 +297,7 @@ function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
 }
 
 function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
-  commitHookEffectList(flags, lastEffect, effect => {
+  commitHookEffectList(flags, lastEffect, (effect) => {
     const create = effect.create;
 
     if (typeof create === 'function') {
@@ -309,18 +309,18 @@ function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
 function flushPassiveEffect(pendingPassiveEffects: PendingPassiveEffects) {
   let didFlushPassiveEffect = false;
 
-  pendingPassiveEffects.unmount.forEach(effect => {
+  pendingPassiveEffects.unmount.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListUnmount(Passive, effect);
   });
   pendingPassiveEffects.unmount = [];
 
-  pendingPassiveEffects.update.forEach(effect => {
+  pendingPassiveEffects.update.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListDestory(Passive | HookHasEffect, effect);
   });
 
-  pendingPassiveEffects.update.forEach(effect => {
+  pendingPassiveEffects.update.forEach((effect) => {
     didFlushPassiveEffect = true;
     commitHookEffectListCreate(Passive | HookHasEffect, effect);
   });

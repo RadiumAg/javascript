@@ -4,17 +4,10 @@ import ReactDOM from 'react-dom';
 const Children = () => {
   const [state, setState] = useState(1);
 
-  console.log('children update');
-
   return (
     <div
       onClick={() => {
         setState(state + 1);
-        setState(state + 2);
-        setState(state + 3);
-        setState(state + 4);
-        setState(state + 5);
-        setState(state + 6);
       }}
     >
       {state}
@@ -23,11 +16,20 @@ const Children = () => {
 };
 
 const App = () => {
-  console.log('parent update');
+  const [state, setState] = useState(false);
+
+  const children = state
+    ? [<div key={1}>1</div>, <div key={2}>2</div>, <div key={3}>3</div>]
+    : [<div key={3}>3</div>, <div key={2}>2</div>, <div key={1}>1</div>];
 
   return (
-    <div>
-      <Children />
+    <div
+      onClick={() => {
+        setState(!state);
+      }}
+    >
+      {/* <Children /> */}
+      {children}
     </div>
   );
 };

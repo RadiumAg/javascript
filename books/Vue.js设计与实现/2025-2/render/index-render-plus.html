@@ -262,6 +262,12 @@
               key: 100,
               type: {
                 name: 'MyComponent',
+                props: {
+                  title: String,
+                  onChange() {
+                    console.log('change');
+                  },
+                },
                 data() {
                   return {
                     foo: 'hello world',
@@ -276,6 +282,32 @@
                       },
                     },
                     children: `foo 的值是：${this.foo}`,
+                  };
+                },
+              },
+            },
+            {
+              type: {
+                setup() {
+                  return () => ({
+                    type: 'div',
+                    children: 'hello world',
+                  });
+                },
+              },
+            },
+            {
+              type: {
+                setup() {
+                  const count = ref(0);
+                  return {
+                    count,
+                  };
+                },
+                render() {
+                  return {
+                    type: 'div',
+                    children: `count is : ${this.count.value}`,
                   };
                 },
               },

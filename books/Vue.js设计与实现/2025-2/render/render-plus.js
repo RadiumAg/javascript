@@ -1,4 +1,4 @@
-const { effect, reactive } = VueReactivity;
+const { effect, reactive, shallowReactive, shallowReadonly } = VueReactivity;
 
 // 任务缓存队列，用一个 Set 数据及结构表示，这样就可以自动对任务进行去重
 const queue = new Set();
@@ -61,6 +61,47 @@ function normalizeClass(cls) {
   return result.trim();
 }
 
+/**
+ * resolveProps 函数用于解析组件 props 和 attrs 数据
+ *
+ * @param {*} options
+ * @param {*} propsData
+ */
+function resolveProps(options, propsData) {
+  const props = {};
+  const attrs = {};
+
+  for (const key in propsData) {
+    if (key in options) {
+      // 如果为组件传递的 props 数据在组件自身的 props 选项中有定义，则即将其视为合法的 props
+      props[key] = propsData[key];
+    } else {
+      // 否则将其作为 attrs
+      attrs[key] = propsData[key];
+    }
+  }
+
+  // 最后返回 props 与 attrs 数据
+  return { props, attrs };
+}
+
+function hasPropsChanged(prevProps, nextProps) {
+  const nextKeys = Object.keys(nextProps);
+  // 如果新旧 props 的长度不一致，则说明 props 已经发生了变化
+  if (nextKeys.length !== Object.keys(prevProps).length) {
+    return true;
+  }
+
+  for (const key of nextKeys) {
+    // 如果新旧 props 的值不一致，则说明 props 已经发生了变化
+    if (prevProps[key] !== nextProps[key]) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function createRenderer(options) {
   /**
    * 挂载组件
@@ -73,21 +114,104 @@ function createRenderer(options) {
     // 通过 vnode 获取组件的选项对象，即 vnode.type
     const componentOptions = vnode.type;
     // 获取组件的渲染函数 render
-    const { render, data } = componentOptions;
-    const state = reactive(data());
+    let { render } = componentOptions;
+    const {
+      data,
+      setup,
+      created,
+      beforeMounted,
+      mounted,
+      beforeUpdate,
+      props: porpsOption,
+      updated,
+    } = componentOptions;
+    const state = data ? reactive(data()) : null;
+    const { props, attrs } = resolveProps(porpsOption, vnode.props);
 
     const instance = {
       state,
+      props: shallowReactive(props),
       isMounted: false,
       subTree: null,
     };
 
+    const steupContext = { attrs };
+    const setupResult = setup
+      ? setup.call(shallowReadonly(props), steupContext)
+      : null;
+    // 如果 setup 函数的返回值是函数，则将其作为 render 函数
+    let setupState = null;
+
+    if (typeof setupResult === 'function') {
+      // 报告冲突
+      if (render) {
+        console.error('render 函数和 setup 函数不能同时存在');
+      }
+      // 将 setupResult 作为渲染函数
+      render = setupResult;
+    } else {
+      setupState = setupResult;
+    }
+    vnode.component = instance;
+
+    const renderContexxt = new Proxy(instance, {
+      get(target, key, receive) {
+        // 取得组件自身状态与 props 数据
+        const { state, props } = target;
+        // 想尝试读取自身状态数据
+        if (state && key in state) {
+          return state[key];
+        } else if (key in props) {
+          return props[key];
+        } else if (setupState && key in setupState) {
+          // 渲染上下文中尝试读取 setup 函数返回的数据
+          return setupState[key];
+        } else {
+          console.error('不存在');
+        }
+      },
+
+      set(target, key, value, receive) {
+        const { state, props } = target;
+
+        // props 是只读的，不能直接修改
+        if (state && key in state) {
+          state[key] = value;
+        } else if (key in props) {
+          console.warn(
+            `Attempting to mutate prop "${key}". Props are readonly.`
+          );
+        } else if (setupState && key in setupState) {
+          setupState[key] = value;
+        } else {
+          console.error('不存在');
+        }
+      },
+    });
+
+    // 在这里调用create钩子
+    created && created.call(renderContexxt);
+
     effect(
       () => {
         // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回的虚拟DOM
-        const subTree = render.call(state, state);
+        const subTree = render.call(renderContexxt, renderContexxt);
         // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
-        patch(null, subTree, container, anchor);
+
+        if (!instance.isMounted) {
+          beforeMounted && beforeMounted.call(instance.state);
+          patch(null, subTree, container, anchor);
+          instance.isMounted = true;
+          // 在这里调用 mounted 钩子
+          mounted && mounted.call(instance.state);
+        } else {
+          // 在这里调用 beforeUpdate 钩子
+          beforeUpdate && beforeUpdate.call(instance.state);
+          patch(instance.subTree, subTree, container, anchor);
+          // 在这里调用 updated 钩子
+        }
+
+        instance.subTree = subTree;
       },
       {
         scheduler: queueJob,
@@ -95,7 +219,31 @@ function createRenderer(options) {
     );
   }
 
-  function patchComponent() {}
+  function patchComponent(oldVnode, newVnode, anchor) {
+    // 获取组件实例，即 n1.commponent，同时让新的组件虚拟节点 n2.component 也指向组件实例
+    const instance = (newVnode.component = oldVnode.component);
+    // 获取当前 props 数据
+    const { props } = instance;
+    // 调用 resolveProps 函数，获取新的 props 数据
+    if (hasPropsChanged(oldVnode.props, newVnode.props)) {
+      const { props: newProps } = resolveProps(
+        newVnode.type.props,
+        newVnode.props
+      );
+
+      // 更新 props
+      for (const key in newProps) {
+        props[key] = newProps[key];
+      }
+
+      // 删除不存在的 props
+      for (const key in props) {
+        if (!(key in newProps)) {
+          delete props[key];
+        }
+      }
+    }
+  }
 
   /**
    * 更新节点
