@@ -9,6 +9,18 @@ let isFlusing = false;
 const Text = Symbol();
 const Comment = Symbol();
 const Fragment = Symbol();
+let currentInstance = null;
+function setCurrentInstance(instance) {
+  currentInstance = instance;
+}
+
+function onMounted(fn) {
+  if (currentInstance) {
+    currentInstance.mounted.push(fn);
+  } else {
+    console.error('onMOunted 只能在 setup 函数中使用');
+  }
+}
 
 function queueJob(job) {
   queue.add(job);
@@ -125,6 +137,8 @@ function createRenderer(options) {
       props: porpsOption,
       updated,
     } = componentOptions;
+    // 直接使用编译好的 vnode.children 作为 slots 对象即可
+    const slots = vnode.children || {};
     const state = data ? reactive(data()) : null;
     const { props, attrs } = resolveProps(porpsOption, vnode.props);
 
@@ -135,7 +149,9 @@ function createRenderer(options) {
       subTree: null,
     };
 
-    const steupContext = { attrs, emit };
+    const steupContext = { attrs, emit, slots };
+    // 在调用 setup 函数时，设置当前组件实例
+    setCurrentInstance(instance);
     const setupResult = setup
       ? setup.call(shallowReadonly(props), steupContext)
       : null;
@@ -157,7 +173,10 @@ function createRenderer(options) {
     const renderContexxt = new Proxy(instance, {
       get(target, key, receive) {
         // 取得组件自身状态与 props 数据
-        const { state, props } = target;
+        const { state, props, slots } = target;
+        // 当 k 的值为 $slots 时，返回 slots 对象
+        if (key === '$slots') return slots;
+
         // 想尝试读取自身状态数据
         if (state && key in state) {
           return state[key];
@@ -211,6 +230,9 @@ function createRenderer(options) {
         // 最后调用 patch 函数来挂载组件所描述的内容，即 subTree
 
         if (!instance.isMounted) {
+          // 遍历 instance.mounted数组并逐个执行
+          instance.mounted &&
+            instance.mounted.forEach(fn => fn.call(renderContexxt));
           beforeMounted && beforeMounted.call(instance.state);
           patch(null, subTree, container, anchor);
           instance.isMounted = true;
