@@ -72,7 +72,7 @@ function resolveProps(options, propsData) {
   const attrs = {};
 
   for (const key in propsData) {
-    if (key in options) {
+    if (key in options || key.startsWith('on')) {
       // 如果为组件传递的 props 数据在组件自身的 props 选项中有定义，则即将其视为合法的 props
       props[key] = propsData[key];
     } else {
