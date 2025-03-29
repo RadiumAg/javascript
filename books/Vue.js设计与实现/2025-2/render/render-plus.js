@@ -1,4 +1,5 @@
-const { effect, reactive, shallowReactive, shallowReadonly } = VueReactivity;
+const { effect, reactive, ref, shallowReactive, shallowReadonly } =
+  VueReactivity;
 
 // 任务缓存队列，用一个 Set 数据及结构表示，这样就可以自动对任务进行去重
 const queue = new Set();
@@ -205,6 +206,7 @@ function createRenderer(options) {
         } else {
           console.error('不存在');
         }
+        return true;
       },
     });
 
@@ -671,4 +673,35 @@ function createRenderer(options) {
   };
 }
 
-export { Text, Comment, Fragment, createRenderer, normalizeClass };
+function defineAsyncComponent(loader) {
+  let InnerComp = null;
+
+  return {
+    name: 'AsyncComponentWrapper',
+    setup() {
+      const loaded = ref(false);
+      // 执行加载函数，返回一个 Promise 实例
+      // 加载成功后，讲加载成功的组件赋值给 InnerComp， 并将 loaded 标记为 true，代表加载成功
+      loader().then(c => {
+        InnerComp = c;
+        loaded.value = true;
+      });
+
+      return () => {
+        // 如果异步组件加载成功，则渲染该组件，否则渲染一个占位内容
+        return loaded.value
+          ? { type: InnerComp }
+          : { Type: Text, children: '' };
+      };
+    },
+  };
+}
+
+export {
+  Text,
+  Comment,
+  Fragment,
+  createRenderer,
+  normalizeClass,
+  defineAsyncComponent,
+};
