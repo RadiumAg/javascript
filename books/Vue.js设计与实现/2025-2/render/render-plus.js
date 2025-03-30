@@ -145,6 +145,7 @@ function createRenderer(options) {
 
     const instance = {
       state,
+      mounted: [],
       props: shallowReactive(props),
       isMounted: false,
       subTree: null,
