@@ -15,6 +15,10 @@ function setCurrentInstance(instance) {
   currentInstance = instance;
 }
 
+const KeepAlive = {
+  __IsKeepAlive: true,
+};
+
 function onMounted(fn) {
   if (currentInstance) {
     currentInstance.mounted.push(fn);
