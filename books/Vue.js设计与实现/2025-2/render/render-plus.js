@@ -15,19 +15,6 @@ function setCurrentInstance(instance) {
   currentInstance = instance;
 }
 
-const KeepAlive = {
-  __isKeepAlive: true,
-  setup(porps, { slots }) {
-    // 创建一个缓存对象
-    // key: vnode.typ
-    // value: vnode
-    const cache = new Map();
-    // 当前 KeepAlive 组件的实例
-    const instance = currentInstance;
-    // 对于KeepAlive 组件来说，它的实例上存在特殊的 KeepAliveCtx 对象，
-  },
-};
-
 function onMounted(fn) {
   if (currentInstance) {
     currentInstance.mounted.push(fn);
@@ -129,6 +116,21 @@ function hasPropsChanged(prevProps, nextProps) {
 }
 
 function createRenderer(options) {
+  const KeepAlive = {
+    __isKeepAlive: true,
+    setup(porps, { slots }) {
+      // 创建一个缓存对象
+      // key: vnode.typ
+      // value: vnode
+      const cache = new Map();
+      // 当前 KeepAlive 组件的实例
+      const instance = currentInstance;
+      // 对于KeepAlive 组件来说，它的实例上存在特殊的 KeepAliveCtx 对象
+      // 创建隐藏容器
+      const storageContainer = options.createElement('div');
+    },
+  };
+
   /**
    * 挂载组件
    *
