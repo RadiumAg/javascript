@@ -128,6 +128,8 @@ function createRenderer(options) {
       // 对于KeepAlive 组件来说，它的实例上存在特殊的 KeepAliveCtx 对象
       // 创建隐藏容器
       const storageContainer = options.createElement('div');
+
+      return () => {};
     },
   };
 
