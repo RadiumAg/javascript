@@ -125,11 +125,45 @@ function createRenderer(options) {
       const cache = new Map();
       // 当前 KeepAlive 组件的实例
       const instance = currentInstance;
+      const { move, createElement } = instance.keepAliveInstance;
       // 对于KeepAlive 组件来说，它的实例上存在特殊的 KeepAliveCtx 对象
       // 创建隐藏容器
       const storageContainer = options.createElement('div');
 
-      return () => {};
+      instance._deActive = vnode => {
+        move(vnode, storageContainer);
+      };
+
+      instance._activate = (vnode, container, anchor) => {
+        move(vnode, container, anchor);
+      };
+
+      return () => {
+        // KeepAlive 的默认
+        const rawVNode = slots.default();
+        // 如果不是组件，直接渲染即可，因为非组件的虚拟节点无法被KeepAlive
+        if (typeof rawVNode.type !== 'object') {
+          return rawVNode;
+        }
+
+        // 在挂载时先获取缓存的组件 vnode
+        const cachedVnode = cache.get(rawVNode.type);
+
+        if (cachedVnode) {
+          // 如果有缓存的内容，则说明不应该
+          // 继承组件实例
+          rawVNode.component = cachedVnode.get(rawVNode.type);
+          rawVNode.keptAlive = true;
+        } else {
+          cache.set(rawVNode.type, rawVNode);
+        }
+
+        // 在组件 vnode 上添加 shouldKeepAlive 属性，并标记为 true，比肩渲染器真的将组件卸载
+        rawVNode.shouldKeepAlive = true;
+        rawVNode.keepAliveInstance = instance;
+
+        return rawVNode;
+      };
     },
   };
 
@@ -166,6 +200,8 @@ function createRenderer(options) {
       props: shallowReactive(props),
       isMounted: false,
       subTree: null,
+      // 只有 KeepAlive 组件下的实例下会有 KeepAliveCtx 属性
+      keepAliveInstance: null,
     };
 
     const steupContext = { attrs, emit, slots };
@@ -242,6 +278,17 @@ function createRenderer(options) {
 
     // 在这里调用create钩子
     created && created.call(renderContexxt);
+
+    const isKeepAlive = vnode.type.__isKeepAlive;
+    if (isKeepAlive) {
+      // 在 KeepAlive 组件实例上添加 KeepAliveCtx 对象
+      instance.keepAliveInstance = {
+        move(vnode, container, anchor) {
+          options.insert(vnode.component.subTree.el, container, anchor);
+        },
+        createElement: options.createElement,
+      };
+    }
 
     effect(
       () => {
@@ -364,11 +411,15 @@ function createRenderer(options) {
         // 如果旧 vnode 存在，则只需要更新 Fragement 的 children 即可
         patchChildren(oldVnode, newVnode, container);
       }
-    } else if (typeof type === 'object') {
+    } else if (typeof type === 'object' || typeof type === 'function') {
       // vnode.type 的值是选项对象，作为组件来来来处理
       if (!oldVnode) {
         // 挂载组件
-        mountComponent(newVnode, container, anchor);
+        if (newVnode.keptAlive) {
+          newVnode.keepAliveInstance._activate(newVnode, container, anchor);
+        } else {
+          mountComponent(newVnode, container, anchor);
+        }
       } else {
         patchComponent(oldVnode, newVnode, anchor);
       }
@@ -659,6 +710,15 @@ function createRenderer(options) {
     if (vnode.type === Fragment) {
       vnode.children.forEach(c => unmount(c));
       return;
+    } else if (typeof vnode.type === 'object') {
+      // vnode.shouldKeepAlive 是一个布尔值，用来标识该组件是否吧被KeepAlive
+      if (vnode.shouldKeepAlive) {
+        vnode.keepAliveInstance._deActive(vnode);
+      } else {
+        unmount(vnode.component.subTree);
+      }
+
+      return;
     }
 
     const parent = vnode.el.parentNode;
@@ -719,6 +779,7 @@ export {
   Text,
   Comment,
   Fragment,
+  onMounted,
   createRenderer,
   normalizeClass,
   defineAsyncComponent,
