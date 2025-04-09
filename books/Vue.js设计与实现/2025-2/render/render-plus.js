@@ -128,9 +128,9 @@ function createRenderer(options) {
       const { move, createElement } = instance.keepAliveInstance;
       // 对于KeepAlive 组件来说，它的实例上存在特殊的 KeepAliveCtx 对象
       // 创建隐藏容器
-      const storageContainer = options.createElement('div');
+      const storageContainer = createElement('div');
 
-      instance._deActive = vnode => {
+      instance._deActivate = vnode => {
         move(vnode, storageContainer);
       };
 
@@ -713,7 +713,8 @@ function createRenderer(options) {
     } else if (typeof vnode.type === 'object') {
       // vnode.shouldKeepAlive 是一个布尔值，用来标识该组件是否吧被KeepAlive
       if (vnode.shouldKeepAlive) {
-        vnode.keepAliveInstance._deActive(vnode);
+        // 对于需要被 KeepAlive 的组件，我们不应该真的卸载它，而应该
+        vnode.keepAliveInstance._deActivate(vnode);
       } else {
         unmount(vnode.component.subTree);
       }
