@@ -3,6 +3,7 @@ const { effect, reactive, ref, shallowReactive, shallowReadonly } =
 
 // 任务缓存队列，用一个 Set 数据及结构表示，这样就可以自动对任务进行去重
 const queue = new Set();
+const _cache = new Map();
 // 一个标志，表示是否正在刷新任务队列
 // 创建一个立即 resolve 的Promise 实例
 const p = Promise.resolve();
