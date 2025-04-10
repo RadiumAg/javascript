@@ -19,7 +19,7 @@ const Teleport = {
   __isTeleport: true,
   process(oldVnode, newVnode, container, anchor, interfaces) {
     // 通过 internals 参数取得渲染器的内部方法
-    const { patch } = interfaces;
+    const { patch, patchChildren, move } = interfaces;
 
     // 如果旧 Vnode n1 不存在，则是全新的挂载，否则执行更新
     if (!oldVnode) {
@@ -31,6 +31,18 @@ const Teleport = {
           : newVnode.props.to;
 
       newVnode.children.forEach(c => patch(null, c, target, anchor));
+    } else {
+      patchChildren(oldVnode, newVnode, container);
+      // 如果新旧 to 参数的值不同，则需要对内容进行移动
+      if (newVnode.props.to !== oldVnode.props.to) {
+        const newTarget =
+          typeof newVnode.props.to === 'string'
+            ? document.querySelector(newVnode.props.to)
+            : oldVnode.porps.to;
+
+        // 移动新容器
+        newVnode.children.forEach(component => move(component, newTarget));
+      }
     }
   },
 };
@@ -447,6 +459,19 @@ function createRenderer(options) {
       } else {
         patchComponent(oldVnode, newVnode, anchor);
       }
+    } else if (typeof type === 'object' && type.__isTeleport) {
+      type.process(oldVnode, newVnode, container, anchor, {
+        patch,
+        patchChildren,
+        unmount,
+        move(vnode, container, anchor) {
+          options.insert(
+            vnode.component ? vnode.component.subTree.el : vnode.el,
+            container,
+            anchor
+          );
+        },
+      });
     }
   }
 
