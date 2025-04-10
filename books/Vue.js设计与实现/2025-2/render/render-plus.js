@@ -1,3 +1,5 @@
+import { interfaces } from 'mocha';
+
 const { effect, reactive, ref, shallowReactive, shallowReadonly } =
   VueReactivity;
 
@@ -12,6 +14,27 @@ const Text = Symbol();
 const Comment = Symbol();
 const Fragment = Symbol();
 let currentInstance = null;
+
+const Teleport = {
+  __isTeleport: true,
+  process(oldVnode, newVnode, container, anchor, interfaces) {
+    // 通过 internals 参数取得渲染器的内部方法
+    const { patch } = interfaces;
+
+    // 如果旧 Vnode n1 不存在，则是全新的挂载，否则执行更新
+    if (!oldVnode) {
+      // 挂载
+      // 获取容器，即挂载点
+      const target =
+        typeof newVnode.props.to === 'string'
+          ? document.querySelector(newVnode.props.to)
+          : newVnode.props.to;
+
+      newVnode.children.forEach(c => patch(null, c, target, anchor));
+    }
+  },
+};
+
 function setCurrentInstance(instance) {
   currentInstance = instance;
 }
@@ -782,8 +805,9 @@ export {
   Text,
   Comment,
   Fragment,
-  onMounted,
   KeepAlive,
+  Teleport,
+  onMounted,
   createRenderer,
   normalizeClass,
   defineAsyncComponent,
