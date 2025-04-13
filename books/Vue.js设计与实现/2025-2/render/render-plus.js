@@ -1,5 +1,3 @@
-import { interfaces } from 'mocha';
-
 const { effect, reactive, ref, shallowReactive, shallowReadonly } =
   VueReactivity;
 
@@ -44,6 +42,61 @@ const Teleport = {
         newVnode.children.forEach(component => move(component, newTarget));
       }
     }
+  },
+};
+
+const Transition = {
+  name: 'Transition',
+  setup(props, { slots }) {
+    return () => {
+      // 通过默认插槽获取需要过渡的元素
+      const innerVNode = slots.default();
+
+      // 在过渡元素的 VNode 对象上添加 transition 相应的钩子函数
+      innerVNode.transition = {
+        beforeEnter(el) {
+          // 设置初始状态: 添加 enter-form 和 enter-active 类
+          el.classList.add('enter-form');
+          el.classList.add('enter-active');
+        },
+
+        enter(el) {
+          requestAnimationFrame(() => {
+            // 移除 enter-from 类，添加enter-to 类
+            el.classList.remove('enter-from');
+            el.classList.add('enter-to');
+
+            // 监听 transitionend 事件完成收尾工作
+            el.addEventListener('transitionend', () => {
+              el.classList.remove('enter-to');
+              el.classList.remove('enter-active');
+            });
+          });
+        },
+
+        leave(el, performRemove) {
+          el.classList.add('leave-from');
+          el.classList.add('leave-active');
+          // 强制 reflow，使得初始状态生效
+          document.body.offsetHeight;
+          requestAnimationFrame(() => {
+            // 移除 leave-from 类，添加 leave-to 类
+            el.classList.remove('enter-form');
+            el.classList.add('leave-to');
+
+            // 监听 transitionend 事件完成收尾工作
+            el.addEventListener('transitionend', () => {
+              el.classList.remove('leave-to');
+              el.classList.remove('leave-active');
+
+              performRemove();
+            });
+          });
+        },
+      };
+
+      return innerVNode;
+    };
   },
 };
 
@@ -745,8 +798,19 @@ function createRenderer(options) {
       }
     }
 
+    // 判断一个 VNode 是否需要过渡
+    const needTransition = vnode.transition;
+    if (needTransition) {
+      vnode.transition.beforeEnter(el);
+    }
+
     // 将元素添加到容器中
     options.insert(el, container, anchor);
+
+    if (needTransition) {
+      // 调用 transition.enter 钩子，并将 DOM 元素作为参数传递
+      vnode.transition.enter(el);
+    }
   }
 
   /**
@@ -756,6 +820,7 @@ function createRenderer(options) {
    */
   function unmount(vnode) {
     // 在卸载时，如果卸载的 vnode 类型为 Fragement,则需要卸载其 children
+    const needTransition = vnode.transition;
     if (vnode.type === Fragment) {
       vnode.children.forEach(c => unmount(c));
       return;
@@ -774,7 +839,13 @@ function createRenderer(options) {
     const parent = vnode.el.parentNode;
     if (parent) {
       // eslint-disable-next-line unicorn/prefer-dom-node-remove
-      parent.removeChild(vnode.el);
+      const performRemove = () => parent.removeChild(vnode.el);
+
+      if (needTransition) {
+        vnode.transition.leave(vnode.el, performRemove);
+      } else {
+        performRemove();
+      }
     }
   }
 
@@ -832,6 +903,7 @@ export {
   Fragment,
   KeepAlive,
   Teleport,
+  Transition,
   onMounted,
   createRenderer,
   normalizeClass,
