@@ -58,6 +58,9 @@ function tokenize(str) {
         if (isAlpha(char)) {
           // 1. 遇到字母，保持状态不变，但应该将当前字符缓存到 chars 数组
           chars.push(char);
+
+          // 2. 消费当前字符
+          str = str.slice(1);
         }
     }
   }
