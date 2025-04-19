@@ -42,13 +42,13 @@ function tokenize(str) {
         // 遇到字符 <
         if (isAlpha(char)) {
           currentState = State.tagName;
+          // 2. 将当前字符缓存到 chars 数组
+          chars.push(char);
           str = str.slice(1);
         } else if (char === '/') {
           // 1. 遇到字符，切换到文本状态
-          currentState = State.text;
-          // 2. 将当前字母缓存到 char 数组
-          chars.push(char);
-          // 3. 消费当前字符
+          currentState = State.tagName;
+          // 2. 消费当前字符
           str = str.slice(1);
         }
         break;
@@ -100,7 +100,16 @@ function tokenize(str) {
           str = str.slice(1);
         }
         break;
+      // 状态机处于标签结束状态
+      case State.tagEnd:
+        if (isAlpha(char)) {
+          currentState = State.tagEndName;
+          chars.push(char);
+          str = str.slice(1);
+        }
+        break;
 
+      // 状态机当前处于结束标签名称状态
       case State.tagEndName:
         if (isAlpha(char)) {
           // 1. 遇到字母，不需要切换状态，但需要将当前字符缓存到 chars 数组
@@ -128,3 +137,7 @@ function tokenize(str) {
   // 最后，返回 tokens
   return tokens;
 }
+
+const tokens = tokenize(`<p>Vue</p>`);
+
+console.log(tokens);
