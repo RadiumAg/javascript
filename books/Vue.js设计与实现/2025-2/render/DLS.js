@@ -138,6 +138,16 @@ function tokenize(str) {
   return tokens;
 }
 
+function parse(str) {
+  // 首先对模板进行标记化，得到 tokens
+  const tokens = tokenize(str);
+  // 创建 Root 根节点
+  const Root = {
+    type: 'Root',
+    children: [],
+  };
+}
+
 // const tokens = tokenize(`<p>Vue</p>`);
 const tokens1 = tokenize(`<div><p>Vue</p><p>Template</p></div>`);
 
