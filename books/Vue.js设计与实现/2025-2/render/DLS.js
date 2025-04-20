@@ -9,7 +9,7 @@ const State = {
 };
 
 function isAlpha(char) {
-  return (char > 'a' && char <= 'z') || (char > 'A' && char <= 'Z');
+  return (char >= 'a' && char <= 'z') || (char > 'A' && char <= 'Z');
 }
 
 function tokenize(str) {
@@ -138,6 +138,8 @@ function tokenize(str) {
   return tokens;
 }
 
-const tokens = tokenize(`<p>Vue</p>`);
+// const tokens = tokenize(`<p>Vue</p>`);
+const tokens1 = tokenize(`<div><p>Vue</p><p>Template</p></div>`);
 
-console.log(tokens);
+// console.log(tokens);
+console.log(tokens1);
