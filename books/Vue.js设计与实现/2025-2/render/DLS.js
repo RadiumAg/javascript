@@ -138,6 +138,13 @@ function tokenize(str) {
   return tokens;
 }
 
+function dump(node, indent = 0) {
+  // 节点的类型
+  const type = node.type;
+  // 节点的描述，如果是根节点，则没有描述
+  // 如果是 Element 类型的节点，则使用 node.tag 作为节点的描述
+}
+
 function parse(str) {
   // 首先对模板进行标记化，得到 tokens
   const tokens = tokenize(str);
