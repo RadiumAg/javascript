@@ -142,12 +142,12 @@ function parse(str) {
   // 首先对模板进行标记化，得到 tokens
   const tokens = tokenize(str);
   // 创建 Root 根节点
-  const Root = {
+  const root = {
     type: 'Root',
     children: [],
   };
   // 创建 elmentStack 栈，起初只有 Root 根节点
-  const elementStack = [Root];
+  const elementStack = [root];
 
   // 开启一个 while 循环扫描 tokens，直到所有 Token 都被扫描完毕为止
   while (tokens.length > 0) {
@@ -185,6 +185,8 @@ function parse(str) {
     }
     tokens.shift();
   }
+
+  return root;
 }
 
 // const tokens = tokenize(`<p>Vue</p>`);
