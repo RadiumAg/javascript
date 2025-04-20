@@ -146,6 +146,45 @@ function parse(str) {
     type: 'Root',
     children: [],
   };
+  // 创建 elmentStack 栈，起初只有 Root 根节点
+  const elementStack = [Root];
+
+  // 开启一个 while 循环扫描 tokens，直到所有 Token 都被扫描完毕为止
+  while (tokens.length > 0) {
+    // 获取当前栈顶节点作为父节点 parent
+    const parent = elementStack[elementStack.length - 1];
+    // 当前扫描的 Token
+    const t = tokens[0];
+
+    switch (t.type) {
+      case 'tag':
+        // 如果当前 Token 是开始标签，则创建 Element 类型的 Ast 节点
+        const elementNode = {
+          type: 'Element',
+          tag: t.name,
+          children: [],
+        };
+        // 将其添加到父节点的 children 中
+        parent.children.push(elementNode);
+        elementStack.push(elementNode);
+        break;
+
+      case 'text':
+        // 如果当前 Token 是文本，则创建 Text 类型的 AST 节点
+        const textNode = {
+          type: 'Text',
+          content: t.content,
+        };
+        // 将其添加到父节点的 children 中
+        parent.children.push(textNode);
+        break;
+
+      case 'tagEnd':
+        elementStack.pop();
+        break;
+    }
+    tokens.shift();
+  }
 }
 
 // const tokens = tokenize(`<p>Vue</p>`);
