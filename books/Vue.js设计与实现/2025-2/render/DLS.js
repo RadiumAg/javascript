@@ -69,7 +69,7 @@ function tokenize(str) {
           str = str.slice(1);
         } else if (char === '/') {
           // 1. 遇到字符，切换到文本状态
-          currentState = State.tagName;
+          currentState = State.tagEnd;
           // 2. 消费当前字符
           str = str.slice(1);
         }
@@ -181,6 +181,7 @@ function parse(str) {
     switch (t.type) {
       case 'tag':
         // 如果当前 Token 是开始标签，则创建 Element 类型的 Ast 节点
+        // eslint-disable-next-line no-case-declarations
         const elementNode = {
           type: 'Element',
           tag: t.name,
@@ -193,6 +194,7 @@ function parse(str) {
 
       case 'text':
         // 如果当前 Token 是文本，则创建 Text 类型的 AST 节点
+        // eslint-disable-next-line no-case-declarations
         const textNode = {
           type: 'Text',
           content: t.content,
@@ -205,14 +207,36 @@ function parse(str) {
         elementStack.pop();
         break;
     }
+
     tokens.shift();
   }
 
   return root;
 }
 
+function traverseNode(ast, context) {
+  // 当前节点，ast 本身就是 Root 节点
+  const currentNode = ast;
+  // 如果又子节点，则递归地调用 traverseNode 函数进行遍历
+
+  // context.nodeTransforms 是一个数组，其中每一个元素都是一个函数
+  const transforms = context.nodeTransforms;
+
+  for (const transform of transforms) {
+    transform(currentNode, context);
+  }
+  const children = currentNode.children;
+
+  if (children) {
+    for (const child of children) {
+      traverseNode(child);
+    }
+  }
+}
+
 // const tokens = tokenize(`<p>Vue</p>`);
 const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
+console.log(ast);
 console.log(dump(ast));
 
 // console.log(tokens);
