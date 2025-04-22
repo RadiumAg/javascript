@@ -326,6 +326,20 @@ function transform(ast) {
   console.log(dump(ast));
 }
 
+function parseAttributes(context) {
+  //  用来存储解析过程中产生的属性节点和指令节点
+  const props = [];
+
+  // 开启 while 循环， 不断地消费模版内容，
+  while (
+    !context.source.startsWith('>') &&
+    !context.source.startsWith('//>')
+  ) {}
+
+  // 将解析结果返回
+  return props;
+}
+
 // 由于 parseTag 既用来处理开始标签，也可以哟哦你来处理结束标签，
 function parseTag(context, type = 'start') {
   // 从上下文对象中拿到 advvanceBy 函数
