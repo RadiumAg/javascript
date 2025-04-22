@@ -8,6 +8,40 @@ const State = {
   tagEndName: 6,
 };
 
+const TextModes = {
+  DATA: 'DATA',
+  RCDATA: 'RCDATA',
+  RAWTEXT: 'RAWTEXT',
+  CDATA: 'CDATA',
+};
+
+function parseChildren(context, ancestors) {
+  // 定义 nodes 数组存储子节点，它将作为最终的返回值
+  const nodes = [];
+  // 从上下文对象中取得当前状态，包括模式 mode 和模版内容 source
+  const { mode, source } = context;
+  // 开启 while 循环，只要满足条件就会一直对字符串将进行解析
+  // 关于 isEnd()
+
+  while (!isEnd(context, ancestors)) {
+    let node;
+    // 只有 DATA 模式 和 RCDATA 模式才支持标签节点的解析
+    if (mode === TextModes.DATA || mode === TextModes.RCDATA) {
+     // 只有 DATA 模式才支持标签节点的解析
+     if(mode === TextModes.DATA && source[0] === '<') {
+      if(source[1] === '!') {
+        if(source.startWith('<!--')) {
+          noode  = parseComment(context)
+        }else if(source.startWith('<![CDATA[')) {
+          // CDATA
+          node = parseCCDATA(context, ancestors)
+        }
+      }
+     }
+    }
+  }
+}
+
 function dump(node, indent = 0) {
   // 节点的类型
   const type = node.type;
@@ -161,12 +195,23 @@ function tokenize(str) {
 }
 
 function parse(str) {
+  // 定义上下文对象
+  const context = {
+    sourcce: str,
+    mode: TextModes.DATA,
+  };
+  // 调用 parrseChildren 函数开始进行解析，它返回解析后得到的子节点
+  // parseChilldren 函数开始进行解析，它返回解析后得到的子节点
+  // 第一个参数是上下文对象 context
+  // 第二个参数是由父代节点构成的节点栈，初始栈为空
+  const nodes = parseChildren(context, []);
+
   // 首先对模板进行标记化，得到 tokens
   const tokens = tokenize(str);
   // 创建 Root 根节点
   const root = {
     type: 'Root',
-    children: [],
+    children: nodes,
   };
   // 创建 elmentStack 栈，起初只有 Root 根节点
   const elementStack = [root];
@@ -256,9 +301,5 @@ function transform(ast) {
   console.log(dump(ast));
 }
 
-// const tokens = tokenize(`<p>Vue</p>`);
 const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
 console.log(transform(ast));
-
-// console.log(tokens);
-// console.log(tokens1);
