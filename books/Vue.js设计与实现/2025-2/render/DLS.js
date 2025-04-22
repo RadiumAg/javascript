@@ -326,6 +326,7 @@ function transform(ast) {
   console.log(dump(ast));
 }
 
+// 由于 parseTag 既用来处理开始标签，也可以哟哦你来处理结束标签，
 function parseTag(context, type = 'start') {
   // 从上下文对象中拿到 advvanceBy 函数
   const { advanceBy, advanceSpaces } = context;
@@ -357,14 +358,35 @@ function parseTag(context, type = 'start') {
   };
 }
 
-function parseElement() {
+function parseElement(context, ancestors) {
   // 解析开始标签
   const element = parseTag();
-  // 这里递归地调用 parseChildren 函数进行 <div> 标签子节点的解析
-  element.children = parseChildren();
-  // 结束标签解析
-  parseEndTag();
 
+  if (element.isSelfClosing) return element;
+
+  // 切换到正确的文本模式
+  if (element.tag === 'textarea' || element.tag === 'title') {
+    // 如果由 parseTag 解析得到的标签是 <textarea> 或 <title>
+    context.mode = TextModes.RCDATA;
+  } else if (/style|xmp|iframe|noembed|nooframes|noscript/.test(element.tag)) {
+    // 如果由 parseTag 解析得到的标签是:
+    // <style>、<xmp>、<iframe>、<nooembed>、<noframes>、<noscript>
+    // 切换到 RAWTEXT 模式
+    context.mode = TextModes.RAWTEXT;
+  } else {
+    // 否则切换到 DATA 模式
+    context.mode = TextModes.DATA;
+  }
+
+  ancestors.push(element);
+  element.children = parseChildren(context, ancestors);
+  ancestors.pop();
+
+  if (context.source.startsWith(`</${element.tag}`)) {
+    parseTag(context, 'end');
+  } else {
+    console.error(`${element.tag} 标签缺少闭合标签`);
+  }
   return element;
 }
 const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
