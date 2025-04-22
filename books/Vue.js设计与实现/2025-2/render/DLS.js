@@ -229,15 +229,36 @@ function traverseNode(ast, context) {
 
   if (children) {
     for (const child of children) {
-      traverseNode(child);
+      traverseNode(child, context);
     }
   }
 }
 
+function transformElement(node) {
+  if (node.type === 'Element' && node.tag === 'p') {
+    node.tag = 'h1';
+  }
+}
+
+function transformText(node) {
+  if (node.type === 'Text') {
+    node.content = node.content.repeat(2);
+  }
+}
+
+function transform(ast) {
+  // 在 transform 函数内创建 context 对象
+  const context = {
+    nodeTransforms: [transformElement, transformText],
+  };
+
+  traverseNode(ast, context);
+  console.log(dump(ast));
+}
+
 // const tokens = tokenize(`<p>Vue</p>`);
 const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
-console.log(ast);
-console.log(dump(ast));
+console.log(transform(ast));
 
 // console.log(tokens);
 // console.log(tokens1);
