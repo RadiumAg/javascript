@@ -15,6 +15,17 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+function isEnd(context, ancestors) {
+  // 当模版内容解析完毕后，停止
+  if (!context.source) return true;
+  // 获取父级标签集节点
+  const parent = ancestors[ancestors.length - 1];
+  // 如果遇到结束标签，并且该标签与父级标签节点同名，则停止
+  if (parent && context.source.startsWith(`</${parent.tag}`)) {
+    return true;
+  }
+}
+
 function parseChildren(context, ancestors) {
   // 定义 nodes 数组存储子节点，它将作为最终的返回值
   const nodes = [];
@@ -26,19 +37,33 @@ function parseChildren(context, ancestors) {
   while (!isEnd(context, ancestors)) {
     let node;
     // 只有 DATA 模式 和 RCDATA 模式才支持标签节点的解析
-    if (mode === TextModes.DATA || mode === TextModes.RCDATA) {
-     // 只有 DATA 模式才支持标签节点的解析
-     if(mode === TextModes.DATA && source[0] === '<') {
-      if(source[1] === '!') {
-        if(source.startWith('<!--')) {
-          noode  = parseComment(context)
-        }else if(source.startWith('<![CDATA[')) {
+    if (
+      (mode === TextModes.DATA || mode === TextModes.RCDATA) && // 只有 DATA 模式才支持标签节点的解析
+      mode === TextModes.DATA &&
+      source[0] === '<'
+    ) {
+      if (source[1] === '!') {
+        if (source.startsWith('<!--')) {
+          noode = parseComment(context);
+        } else if (source.startsWith('<![CDATA[')) {
           // CDATA
-          node = parseCCDATA(context, ancestors)
+          node = parseCCDATA(context, ancestors);
+        } else if (source[1] === '/') {
+        } else if (/[a-z]/i.test(source)[1]) {
+          node = parseElement(context, ancestors);
+        } else if (source.startsWith('{{')) {
+          node = parseInterpolation(context);
         }
       }
-     }
+
+      if (!node) {
+        node = parseText(context);
+      }
+
+      nodes.push(node);
     }
+
+    return nodes;
   }
 }
 
@@ -301,5 +326,15 @@ function transform(ast) {
   console.log(dump(ast));
 }
 
+function parseElement() {
+  // 解析开始标签
+  const element = parseTag();
+  // 这里递归地调用 parseChildren 函数进行 <div> 标签子节点的解析
+  element.children = parseChildren();
+  // 结束标签解析
+  parseEndTag();
+
+  return element;
+}
 const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
 console.log(transform(ast));
