@@ -328,13 +328,66 @@ function transform(ast) {
 
 function parseAttributes(context) {
   //  用来存储解析过程中产生的属性节点和指令节点
+  const { advanceBy, advanceSpaces } = context;
   const props = [];
 
   // 开启 while 循环， 不断地消费模版内容，
-  while (
-    !context.source.startsWith('>') &&
-    !context.source.startsWith('//>')
-  ) {}
+  while (!context.source.startsWith('>') && !context.source.startsWith('//>')) {
+    // 该正则用于匹配属性名称
+    const match = /^[\t\n\f\r />][^\t\n\f\r /=>]*/.exec(context.source);
+    // 得到属性名称
+    const name = match[0];
+
+    // 消费属性名称
+    advanceBy(name.length);
+    // 消费属性名称与等于号之间的空白字符
+    advanceSpaces();
+    // 消费等于号
+    advanceBy(1);
+
+    // 属性值
+    let value = '';
+
+    // 获取当前模版内容等待第一个字符
+    const quote = context.sourcce[0];
+    // 判断属性值是否被引号引用
+    const isQuoted = quote === '"' || quote === "'";
+
+    if (isQuoted) {
+      // 属性值被引号引用，消费引号
+      advanceBy(1);
+      // 获取下一个引号的索引
+      const enddQuoteIndex = context.sourcce.indexOf(quote);
+
+      if (enddQuoteIndex > -1) {
+        // 获取下一个引号之前的内容作为属性值
+        value = context.source.slice(0, enddQuoteIndex);
+        // 消费属性值
+        advanceBy(value.length);
+        // 消费引号
+        advanceBy(1);
+      } else {
+        console.error('缺少引号错误');
+      }
+    } else {
+      // 代码运行到这里，说明属性值没有被引号引用
+      // 下一个白字符之前的内容全作为属性值
+      const match = /^[^\t\n\f\r >\\n]+/.exec(context.source);
+      value = match[0];
+      // 消费属性值
+      advanceBy(value.length);
+    }
+
+    // 消费属性值后面的空白字符
+    advanceSpaces();
+
+    // 使用属性名称 + 属性值创建一个属性节点，添加到 props 数组这中
+    props.push({
+      type: 'Attribute',
+      name,
+      value,
+    });
+  }
 
   // 将解析结果返回
   return props;
