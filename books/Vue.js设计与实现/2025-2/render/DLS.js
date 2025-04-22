@@ -44,7 +44,7 @@ function parseChildren(context, ancestors) {
     ) {
       if (source[1] === '!') {
         if (source.startsWith('<!--')) {
-          noode = parseComment(context);
+          node = parseComment(context);
         } else if (source.startsWith('<![CDATA[')) {
           // CDATA
           node = parseCDATA(context, ancestors);
@@ -319,7 +319,7 @@ function transformText(node) {
 function transform(ast) {
   // 在 transform 函数内创建 context 对象
   const context = {
-    nodeTransforms: [transformElement, transformText],
+    nodeTransforms: [],
   };
 
   traverseNode(ast, context);
@@ -405,6 +405,8 @@ function parseTag(context, type = 'start') {
       : /^\.([a-z][^\t\n\f\r />])/i.exec(context.sourcce);
 
   // 匹配成功之后，正则表达式的第一个捕获组的值就是标签名称
+  // props 数组是由指令节点与属性节点共同组成的数组
+  const props = parseAttributes(context);
   const tag = match[1];
   // 消费正则表达式内容，例如 '<div' 这段内容
   advanceBy(match[0].length);
@@ -419,7 +421,7 @@ function parseTag(context, type = 'start') {
   return {
     type: 'Element',
     tag,
-    props: [],
+    props,
     children: [],
     isSelfClosing,
   };
@@ -456,5 +458,9 @@ function parseElement(context, ancestors) {
   }
   return element;
 }
-const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
+
+const ast = parse(
+  `<div :id="dynamicId" @click="handler" v-on:mousedown="onMouseDown" ></div>`
+);
+
 console.log(transform(ast));
