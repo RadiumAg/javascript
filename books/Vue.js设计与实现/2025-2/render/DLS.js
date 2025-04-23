@@ -294,11 +294,18 @@ function traverseNode(ast, context) {
 
   for (const transform of transforms) {
     transform(currentNode, context);
+
+    if (!context.currentNode) return;
   }
   const children = currentNode.children;
 
   if (children) {
-    for (const child of children) {
+    for (const [i, child] of children.entries()) {
+      // 递归地调用 traverseNode 转换子节点之前，将当前节点设置为父节点
+      context.parent = context.currentNode;
+      // 设置位置索引
+      context.childIndex = i;
+      // 递归调用时，将 context 穿透
       traverseNode(child, context);
     }
   }
@@ -319,7 +326,13 @@ function transformText(node) {
 function transform(ast) {
   // 在 transform 函数内创建 context 对象
   const context = {
-    nodeTransforms: [],
+    // 增加 currentNode，用来存储档当前正在转换的节点
+    currentNode: null,
+    // 增加 childIndex, 用来存储当前节点在父的 children 中的位置索引
+    childIndex: 0,
+    // 增加 parent，用来存储当前转换节点的父节点
+    parent: null,
+    nodeTransforms: [transformElement, transformText],
   };
 
   traverseNode(ast, context);
