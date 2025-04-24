@@ -288,11 +288,18 @@ function traverseNode(ast, context) {
   // 当前节点，ast 本身就是 Root 节点
   const currentNode = ast;
   // 如果又子节点，则递归地调用 traverseNode 函数进行遍历
-
+  // 1. 增加退出阶段的回调函数数组
+  const exitFns = [];
   // context.nodeTransforms 是一个数组，其中每一个元素都是一个函数
   const transforms = context.nodeTransforms;
 
-  for (const transform of transforms) {
+  for (const [i, transform] of Object.entries(transforms)) {
+    // 2. 转换函数可以返回另外一个函数，该函数即作为退出阶段的回调函数
+    const onExit = transform[i](context.currentNode, context);
+
+    if (onExit) {
+      // 将退出阶段的回调函数添加到 exitFns 数组中
+    }
     transform(currentNode, context);
 
     if (!context.currentNode) return;
@@ -332,6 +339,15 @@ function transform(ast) {
     childIndex: 0,
     // 增加 parent，用来存储当前转换节点的父节点
     parent: null,
+    // 用于删除当前节点
+    removeNode() {
+      if (context.parent) {
+        // 调用数组的 splice 方法，根据当前节点的索引删除当前节点
+        context.parent.children.splice(context.childIndex);
+        // 将 context.currentNode 置空
+        context.currentNode = null;
+      }
+    },
     nodeTransforms: [transformElement, transformText],
   };
 
