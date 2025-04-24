@@ -293,15 +293,14 @@ function traverseNode(ast, context) {
   // context.nodeTransforms 是一个数组，其中每一个元素都是一个函数
   const transforms = context.nodeTransforms;
 
-  for (const [i, transform] of Object.entries(transforms)) {
+  for (const transform of transforms) {
     // 2. 转换函数可以返回另外一个函数，该函数即作为退出阶段的回调函数
-    const onExit = transform[i](context.currentNode, context);
+    const onExit = transform(context.currentNode, context);
 
     if (onExit) {
       // 将退出阶段的回调函数添加到 exitFns 数组中
+      exitFns.push(onExit);
     }
-    transform(currentNode, context);
-
     if (!context.currentNode) return;
   }
   const children = currentNode.children;
@@ -316,12 +315,24 @@ function traverseNode(ast, context) {
       traverseNode(child, context);
     }
   }
+
+  // 在节点处理的最后阶段执行缓存到 exitFns 中的回调函数
+  // 注意，这里问我们要反序执行
+  let i = exitFns.length;
+  while (i--) {
+    exitFns[i]();
+  }
 }
 
 function transformElement(node) {
   if (node.type === 'Element' && node.tag === 'p') {
     node.tag = 'h1';
   }
+
+  // 返回一个会在退出节点时执行的回调函数
+  return () => {
+    // 在这里编写退出节点的逻辑，当这里的代码运行时，对当前转换
+  };
 }
 
 function transformText(node) {
