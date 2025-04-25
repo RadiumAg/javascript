@@ -15,6 +15,65 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+// 转换 Root 根节点
+function transformRoot(node) {
+  // 将逻辑编写在退出阶段的回调函数中，保证子节点全部处理完毕
+
+  return () => {
+    // 如果不是根节点，则什么都不做
+    if (node.type !== 'Root') {
+      return;
+    }
+
+    // node 是根节点，根节点的第一个子节点就是模版的根节点
+    // 当然，这里我们暂时不考虑模版存在多个根节点的情况
+    const vnodeJSAST = node.chidlren[0].jsNode;
+    // 创建 render 函数的声明语句节点，将 vnodeJSATS 作为 render 函数体的返回语句
+    node.jsNode = {
+      type: 'FunctionDecl',
+      id: { type: 'identifier', name: 'render' },
+      params: [],
+      body: {
+        type: 'ReturnStatement',
+        return: vnodeJSAST,
+      },
+    };
+  };
+}
+
+// 用来创建 StringLiteral 节点
+function createStringLiteral(value) {
+  return {
+    type: 'StringLiteral',
+    value,
+  };
+}
+
+// 用来创建 Identifier 节点
+function createIdentifier(name) {
+  return {
+    type: 'ArrayExpression',
+    name,
+  };
+}
+
+// 用来创建 ArrayExpression 节点
+function createArrayExpression(elements) {
+  return {
+    type: 'ArrayExpression',
+    elements,
+  };
+}
+
+// 用来创建 CallExpression 节点
+function createCallExpression(callee, argument) {
+  return {
+    type: 'CallExpression',
+    callee: createIdentifier(callee),
+    arguments: argument,
+  };
+}
+
 const FunctionDeclNode = {
   type: 'FunctionDecl', // 代表该节点是函数声明
   // 函数的名称是一个标识符，标识符本身也是一个节点
@@ -27,7 +86,18 @@ const FunctionDeclNode = {
   body: [
     {
       type: 'ReturnStatement',
-      return: null, //暂时留空，在
+      return: {
+        type: 'CallExpression',
+        callee: { type: 'Identifier', name: 'h' },
+        arguments: [
+          Str,
+          // 第二个参数是一个数组
+          {
+            type: 'CallExpression',
+            calllee: {},
+          },
+        ],
+      },
     },
   ],
 };
@@ -346,6 +416,20 @@ function transformElement(node) {
     node.tag = 'h1';
   }
 
+  // 1. 创建 h 函数调用语句
+  // h 函数调用的第一个参数是标签名称，因此我们以 node.tag 来创建一个字符串字面量节点
+  // 作为第一个参数
+  const callExp = createCallExpression('h', [createStringLiteral(node.tag)]);
+
+  //2. 处理 h 函数调用的参数
+  node.children.length === 1
+    ? callExp.arguments.push(node.children[0].jsNode)
+    : callExp.arguments.push(
+        createArrayExpression(node.children.map(c => c.jsNode))
+      );
+
+  // 3. 将当前标签节点对应的 JavaScript AST 添加到 JSNode 属性下
+  node.jsNode = callExp;
   // 返回一个会在退出节点时执行的回调函数
   return () => {
     // 在这里编写退出节点的逻辑，当这里的代码运行时，对当前转换
@@ -356,6 +440,10 @@ function transformText(node) {
   if (node.type === 'Text') {
     node.content = node.content.repeat(2);
   }
+  // 文本节点对应的 JavaScript Ast 节点其实就是一个字符串字面量，
+  // 因此只需要使用 node.content 创建一个 StringLiteral 类型的节点即可
+  // 最后将文本对应的 JavaScript AST 节点添加到 node.jsNode属性下
+  node.jsNode = createStringLiteral(node.content);
 }
 
 function transform(ast) {
