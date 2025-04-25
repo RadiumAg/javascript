@@ -15,6 +15,23 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const FunctionDeclNode = {
+  type: 'FunctionDecl', // 代表该节点是函数声明
+  // 函数的名称是一个标识符，标识符本身也是一个节点
+  id: {
+    type: 'Identifier',
+    name: 'render', // name 用来存储标识符的名称，在这里它就是渲染函数的名称 render
+  },
+  params: [], // 参数，目前渲染函数还不需要参数，所以这里是一个空数组
+  // 渲染函数的函数体只有一个语句，即return语句
+  body: [
+    {
+      type: 'ReturnStatement',
+      return: null, //暂时留空，在
+    },
+  ],
+};
+
 function isEnd(context, ancestors) {
   // 当模版内容解析完毕后，停止
   if (!context.source) return true;
