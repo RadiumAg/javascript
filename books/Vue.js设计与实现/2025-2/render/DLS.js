@@ -26,6 +26,35 @@ function compile(template) {
   return code;
 }
 
+function genNode(node, context) {
+  switch (node.type) {
+    case 'FunctionDecl':
+      genFunctionDecl(node, context);
+      break;
+
+    case 'ReturnStatement':
+      genReturnStatement(node, context);
+      break;
+
+    case 'CallExpression':
+      genCallExpresssion(node, context);
+      break;
+
+    case 'StringLiteral':
+      genStringLiteral(node, context);
+      break;
+
+    case 'ArrayExpression':
+      genArrayExpression(node, context);
+      break;
+  }
+}
+
+function genFunctionDecl(node, context) {
+  // 从 context 对象中取出工作函数
+  const { push, indent, deIndent } = context;
+}
+
 function generate(node) {
   const context = {
     // 在存储最终生成的渲染函数代码
