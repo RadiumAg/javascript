@@ -15,6 +15,39 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+function compile(template) {
+  // 模块 AST
+  const ast = parse(template);
+  // 将模板 AST 转换为 JavaScript AST
+  transform(ast);
+  // 代码生成
+  const code = generate(ast.jsNode);
+
+  return code;
+}
+
+function generate(node) {
+  const context = {
+    // 在存储最终生成的渲染函数代码
+    code: '',
+    // 在生成代码时，通过调用push 函数完成代码的拼接
+    push(code) {
+      context.code += code;
+    },
+    // 当前缩进的级别，初始值为 9， 即没有缩进
+    currentIndent: 0,
+    // 该函数用来换行，即在代码字符串的后面追加 \n 字符
+    // 另外，换行时应该保留缩进，所以我们还要追加 currentIndent + 2 个空格字符
+    newline() {
+      context.code += `\n${`  `.repeat(context.currentIndent)}`;
+    },
+    // 用来缩进
+  };
+
+  // 调用 genNode 函数
+  genNode(node, context);
+}
+
 // 转换 Root 根节点
 function transformRoot(node) {
   // 将逻辑编写在退出阶段的回调函数中，保证子节点全部处理完毕
