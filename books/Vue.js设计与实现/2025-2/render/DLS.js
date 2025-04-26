@@ -50,9 +50,42 @@ function genNode(node, context) {
   }
 }
 
+function genArrayExpression(node, context) {
+  const { push } = context;
+  // 追加方括号
+  push('[');
+  // 调用 genNodeList 为数组元素生成代码
+  genNodeList(node.elements, context);
+  // 补全方括号
+  push(']');
+}
+
 function genFunctionDecl(node, context) {
   // 从 context 对象中取出工作函数
   const { push, indent, deIndent } = context;
+  // node.id 是一个标识符，用来描述函数的名称，即 node.id.name
+  push(`function ${node.id.name}`);
+  push(`(`);
+  push(`{`);
+  // 缩进
+  indent();
+  // 为函数体生成代码，这里递归调用了 genNode 函数
+  node.body.forEach(n => genNode(n, context));
+
+  // 取消缩进
+  deIndent();
+  push(`}`);
+}
+
+function genNodeList(nodes, context) {
+  const { push } = context;
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    genNode(node, context);
+    if (i < nodes.length - 1) {
+      push(', ');
+    }
+  }
 }
 
 function generate(node) {
