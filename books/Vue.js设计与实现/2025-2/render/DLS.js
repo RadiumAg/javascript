@@ -41,11 +41,22 @@ function generate(node) {
     newline() {
       context.code += `\n${`  `.repeat(context.currentIndent)}`;
     },
-    // 用来缩进
+    // 用来缩进，即让 currentIndent 自增后，调用换行函数
+    indent() {
+      context.currentIndent++;
+      context.newline();
+    },
+    // 取消缩进，即让 currentIndent 自减后，调用换行函数
+    deIndent() {
+      context.currentIndent--;
+      context.newline();
+    },
   };
 
   // 调用 genNode 函数
   genNode(node, context);
+
+  return context.code;
 }
 
 // 转换 Root 根节点
