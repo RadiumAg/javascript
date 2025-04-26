@@ -50,7 +50,13 @@ function genNode(node, context) {
   }
 }
 
-function genCallExpresssion(node, context) {}
+function genCallExpresssion(node, context) {
+  const { push } = context;
+  // 取得调用函数名称和参数列表
+  const { callee, arguments: args } = node;
+  // 生成函数调用代码
+  push(``);
+}
 
 function genStringLiteral(node, context) {
   const { push } = context;
