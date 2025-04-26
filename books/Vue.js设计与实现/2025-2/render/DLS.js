@@ -50,6 +50,8 @@ function genNode(node, context) {
   }
 }
 
+function genCallExpresssion(node, context) {}
+
 function genStringLiteral(node, context) {
   const { push } = context;
   // 对于字符串字面量，只需要追加与 node.value 对应的字符串即可
