@@ -50,6 +50,24 @@ function genNode(node, context) {
   }
 }
 
+function genStringLiteral(node, context) {
+  const { push } = context;
+  // 对于字符串字面量，只需要追加与 node.value 对应的字符串即可
+  push(`'${node.value}'`);
+}
+
+function genReturnStatement(node, context) {
+  const { push } = context;
+  // 取得被调用函数名称和参数列表
+  const { callee, arguments: args } = node;
+  // 生成函数调用代码
+  push(`${callee.name}(`);
+  // 到普票吗 genNodList 生成参数代码
+  genNodeList(args, context);
+  // 补全括号
+  push(`)`);
+}
+
 function genArrayExpression(node, context) {
   const { push } = context;
   // 追加方括号
