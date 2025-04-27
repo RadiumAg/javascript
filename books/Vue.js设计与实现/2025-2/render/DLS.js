@@ -55,7 +55,11 @@ function genCallExpresssion(node, context) {
   // 取得调用函数名称和参数列表
   const { callee, arguments: args } = node;
   // 生成函数调用代码
-  push(``);
+  push(`${callee.name}(`);
+  // 调用 genNodeList 生成参数代码
+  genNodeList(args, context);
+  // 补全括号
+  push(`)`);
 }
 
 function genStringLiteral(node, context) {
@@ -222,7 +226,6 @@ const FunctionDeclNode = {
         type: 'CallExpression',
         callee: { type: 'Identifier', name: 'h' },
         arguments: [
-          Str,
           // 第二个参数是一个数组
           {
             type: 'CallExpression',
@@ -307,6 +310,8 @@ function dump(node, indent = 0) {
     node.children.forEach(n => dump(n, indent + 2));
   }
 }
+
+function parseText() {}
 
 function isAlpha(char) {
   return (char >= 'a' && char <= 'z') || (char > 'A' && char <= 'Z');
@@ -441,7 +446,7 @@ function tokenize(str) {
 function parse(str) {
   // 定义上下文对象
   const context = {
-    sourcce: str,
+    source: str,
     mode: TextModes.DATA,
   };
   // 调用 parrseChildren 函数开始进行解析，它返回解析后得到的子节点
@@ -506,6 +511,7 @@ function parse(str) {
 function traverseNode(ast, context) {
   // 当前节点，ast 本身就是 Root 节点
   const currentNode = ast;
+  context.currentNode = currentNode;
   // 如果又子节点，则递归地调用 traverseNode 函数进行遍历
   // 1. 增加退出阶段的回调函数数组
   const exitFns = [];
@@ -548,23 +554,26 @@ function transformElement(node) {
     node.tag = 'h1';
   }
 
-  // 1. 创建 h 函数调用语句
-  // h 函数调用的第一个参数是标签名称，因此我们以 node.tag 来创建一个字符串字面量节点
-  // 作为第一个参数
-  const callExp = createCallExpression('h', [createStringLiteral(node.tag)]);
-
-  //2. 处理 h 函数调用的参数
-  node.children.length === 1
-    ? callExp.arguments.push(node.children[0].jsNode)
-    : callExp.arguments.push(
-        createArrayExpression(node.children.map(c => c.jsNode))
-      );
-
-  // 3. 将当前标签节点对应的 JavaScript AST 添加到 JSNode 属性下
-  node.jsNode = callExp;
   // 返回一个会在退出节点时执行的回调函数
   return () => {
-    // 在这里编写退出节点的逻辑，当这里的代码运行时，对当前转换
+    if (node.type !== 'Element') {
+      return;
+    }
+
+    // 1. 创建 h 函数调用语句
+    // h 函数调用的第一个参数是标签名称，因此我们以 node.tag 来创建一个字符串字面量节点
+    // 作为第一个参数
+    const callExp = createCallExpression('h', [createStringLiteral(node.tag)]);
+
+    //2. 处理 h 函数调用的参数
+    node.children.length === 1
+      ? callExp.arguments.push(node.children[0].jsNode)
+      : callExp.arguments.push(
+          createArrayExpression(node.children.map(c => c.jsNode))
+        );
+
+    // 3. 将当前标签节点对应的 JavaScript AST 添加到 JSNode 属性下
+    node.jsNode = callExp;
   };
 }
 
@@ -626,7 +635,7 @@ function parseAttributes(context) {
     let value = '';
 
     // 获取当前模版内容等待第一个字符
-    const quote = context.sourcce[0];
+    const quote = context.source[0];
     // 判断属性值是否被引号引用
     const isQuoted = quote === '"' || quote === "'";
 
@@ -634,7 +643,7 @@ function parseAttributes(context) {
       // 属性值被引号引用，消费引号
       advanceBy(1);
       // 获取下一个引号的索引
-      const enddQuoteIndex = context.sourcce.indexOf(quote);
+      const enddQuoteIndex = context.source.indexOf(quote);
 
       if (enddQuoteIndex > -1) {
         // 获取下一个引号之前的内容作为属性值
@@ -679,7 +688,7 @@ function parseTag(context, type = 'start') {
   const match =
     type === 'start'
       ? /^([a-z][^\t\n\f\r />]*)/.exec(context.source)
-      : /^\.([a-z][^\t\n\f\r />])/i.exec(context.sourcce);
+      : /^\.([a-z][^\t\n\f\r />])/i.exec(context.source);
 
   // 匹配成功之后，正则表达式的第一个捕获组的值就是标签名称
   // props 数组是由指令节点与属性节点共同组成的数组
@@ -736,8 +745,8 @@ function parseElement(context, ancestors) {
   return element;
 }
 
-const ast = parse(
-  `<div :id="dynamicId" @click="handler" v-on:mousedown="onMouseDown" ></div>`
-);
+const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
+transform(ast);
+const code = generate(ast.jsNode);
 
-console.log(transform(ast));
+console.log(code);
