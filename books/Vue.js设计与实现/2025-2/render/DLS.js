@@ -102,7 +102,6 @@ function genFunctionDecl(node, context) {
   deIndent();
   push(`}`);
 }
-
 function genNodeList(nodes, context) {
   const { push } = context;
   for (let i = 0; i < nodes.length; i++) {
@@ -211,33 +210,6 @@ function createCallExpression(callee, argument) {
     arguments: argument,
   };
 }
-
-const FunctionDeclNode = {
-  type: 'FunctionDecl', // 代表该节点是函数声明
-  // 函数的名称是一个标识符，标识符本身也是一个节点
-  id: {
-    type: 'Identifier',
-    name: 'render', // name 用来存储标识符的名称，在这里它就是渲染函数的名称 render
-  },
-  params: [], // 参数，目前渲染函数还不需要参数，所以这里是一个空数组
-  // 渲染函数的函数体只有一个语句，即return语句
-  body: [
-    {
-      type: 'ReturnStatement',
-      return: {
-        type: 'CallExpression',
-        callee: { type: 'Identifier', name: 'h' },
-        arguments: [
-          // 第二个参数是一个数组
-          {
-            type: 'CallExpression',
-            calllee: {},
-          },
-        ],
-      },
-    },
-  ],
-};
 
 function isEnd(context, ancestors) {
   // 当模版内容解析完毕后，停止
@@ -454,17 +426,6 @@ function tokenize(str) {
 }
 
 function parse(str) {
-  // 定义上下文对象
-  const context = {
-    source: str,
-    mode: TextModes.DATA,
-  };
-  // 调用 parrseChildren 函数开始进行解析，它返回解析后得到的子节点
-  // parseChilldren 函数开始进行解析，它返回解析后得到的子节点
-  // 第一个参数是上下文对象 context
-  // 第二个参数是由父代节点构成的节点栈，初始栈为空
-  const nodes = parseChildren(context, []);
-
   // 首先对模板进行标记化，得到 tokens
   const tokens = tokenize(str);
   // 创建 Root 根节点
@@ -516,6 +477,37 @@ function parse(str) {
   }
 
   return root;
+}
+
+function pase2(str) {
+  // 定义上下文对象
+  const context = {
+    source: str,
+    mode: TextModes.DATA,
+    // advanceBy 函数用来消费指定数量的字符，它接收一个数字作为参数
+    advanceBy(num) {
+      // 根据给定字符数 num，截取 num 后的模版内容，并替换当前模版内容
+      context.source = context.source.slice(num);
+    },
+    advanceSpaces() {
+      // 匹配空白字符
+      const match = /^[\t\n\f\r ]+/.exec(context.source);
+      if (match) {
+        // 调用 advanceBy 函数消费空白字符
+        context.advanceBy(match[0].length);
+      }
+    },
+  };
+  // 调用 parrseChildren 函数开始进行解析，它返回解析后得到的子节点
+  // parseChilldren 函数开始进行解析，它返回解析后得到的子节点
+  // 第一个参数是上下文对象 context
+  // 第二个参数是由父代节点构成的节点栈，初始栈为空
+  const nodes = parseChildren(context, []);
+
+  return {
+    type: 'Root',
+    children: nodes,
+  };
 }
 
 function traverseNode(ast, context) {
@@ -622,9 +614,9 @@ function parseAttributes(context) {
   const props = [];
 
   // 开启 while 循环， 不断地消费模版内容，
-  while (!context.source.startsWith('>') && !context.source.startsWith('//>')) {
+  while (!context.source.startsWith('>') && !context.source.startsWith('/>')) {
     // 该正则用于匹配属性名称
-    const match = /^[\t\n\f\r />][^\t\n\f\r /=>]*/.exec(context.source);
+    const match = /^[^\t\n\f\r />][^\t\n\f\r /=>]*/.exec(context.source);
     // 得到属性名称
     const name = match[0];
 
@@ -720,7 +712,6 @@ function parseTag(context, type = 'start') {
 function parseElement(context, ancestors) {
   // 解析开始标签
   const element = parseTag();
-
   if (element.isSelfClosing) return element;
 
   // 切换到正确的文本模式
@@ -749,8 +740,7 @@ function parseElement(context, ancestors) {
   return element;
 }
 
-const ast = parse(`<div><p>Vue</p><p>Template</p></div>`);
+const ast = pase2(
+  `<div :id="dynamicId" @click="handler" v-on:mousedown="onMouseDown" ></div>`
+);
 transform(ast);
-const code = generate(ast.jsNode);
-
-console.log(code);
