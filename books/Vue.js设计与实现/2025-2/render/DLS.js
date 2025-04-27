@@ -70,14 +70,10 @@ function genStringLiteral(node, context) {
 
 function genReturnStatement(node, context) {
   const { push } = context;
-  // 取得被调用函数名称和参数列表
-  const { callee, arguments: args } = node;
-  // 生成函数调用代码
-  push(`${callee.name}(`);
-  // 到普票吗 genNodList 生成参数代码
-  genNodeList(args, context);
-  // 补全括号
-  push(`)`);
+  // 追加 return 关键字和空格
+  push(`return `);
+  // 调用 genNode 函数递归地生成返回值代码
+  genNode(node.return, context);
 }
 
 function genArrayExpression(node, context) {
@@ -163,16 +159,22 @@ function transformRoot(node) {
 
     // node 是根节点，根节点的第一个子节点就是模版的根节点
     // 当然，这里我们暂时不考虑模版存在多个根节点的情况
-    const vnodeJSAST = node.chidlren[0].jsNode;
+    const vnodeJSAST = node.children[0].jsNode;
     // 创建 render 函数的声明语句节点，将 vnodeJSATS 作为 render 函数体的返回语句
     node.jsNode = {
       type: 'FunctionDecl',
       id: { type: 'identifier', name: 'render' },
       params: [],
-      body: {
-        type: 'ReturnStatement',
-        return: vnodeJSAST,
-      },
+      body: [
+        {
+          callee: {
+            name: 'render',
+          },
+          arguments: [],
+          type: 'ReturnStatement',
+          return: vnodeJSAST,
+        },
+      ],
     };
   };
 }
@@ -311,7 +313,15 @@ function dump(node, indent = 0) {
   }
 }
 
-function parseText() {}
+function parseText() {
+  return [];
+}
+
+function parseComment() {}
+
+function parseCDATA() {}
+
+function parseInterpolation() {}
 
 function isAlpha(char) {
   return (char >= 'a' && char <= 'z') || (char > 'A' && char <= 'Z');
@@ -460,7 +470,7 @@ function parse(str) {
   // 创建 Root 根节点
   const root = {
     type: 'Root',
-    children: nodes,
+    children: [],
   };
   // 创建 elmentStack 栈，起初只有 Root 根节点
   const elementStack = [root];
@@ -510,8 +520,7 @@ function parse(str) {
 
 function traverseNode(ast, context) {
   // 当前节点，ast 本身就是 Root 节点
-  const currentNode = ast;
-  context.currentNode = currentNode;
+  context.currentNode = ast;
   // 如果又子节点，则递归地调用 traverseNode 函数进行遍历
   // 1. 增加退出阶段的回调函数数组
   const exitFns = [];
@@ -528,7 +537,7 @@ function traverseNode(ast, context) {
     }
     if (!context.currentNode) return;
   }
-  const children = currentNode.children;
+  const children = context.currentNode.children;
 
   if (children) {
     for (const [i, child] of children.entries()) {
@@ -550,10 +559,6 @@ function traverseNode(ast, context) {
 }
 
 function transformElement(node) {
-  if (node.type === 'Element' && node.tag === 'p') {
-    node.tag = 'h1';
-  }
-
   // 返回一个会在退出节点时执行的回调函数
   return () => {
     if (node.type !== 'Element') {
@@ -578,9 +583,8 @@ function transformElement(node) {
 }
 
 function transformText(node) {
-  if (node.type === 'Text') {
-    node.content = node.content.repeat(2);
-  }
+  if (node.type !== 'Text') return;
+
   // 文本节点对应的 JavaScript Ast 节点其实就是一个字符串字面量，
   // 因此只需要使用 node.content 创建一个 StringLiteral 类型的节点即可
   // 最后将文本对应的 JavaScript AST 节点添加到 node.jsNode属性下
@@ -596,6 +600,7 @@ function transform(ast) {
     childIndex: 0,
     // 增加 parent，用来存储当前转换节点的父节点
     parent: null,
+    nodeTransforms: [transformElement, transformText, transformRoot],
     // 用于删除当前节点
     removeNode() {
       if (context.parent) {
@@ -605,7 +610,6 @@ function transform(ast) {
         context.currentNode = null;
       }
     },
-    nodeTransforms: [transformElement, transformText],
   };
 
   traverseNode(ast, context);
