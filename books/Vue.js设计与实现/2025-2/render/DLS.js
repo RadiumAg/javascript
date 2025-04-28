@@ -233,19 +233,18 @@ function parseChildren(context, ancestors) {
   while (!isEnd(context, ancestors)) {
     let node;
     // 只有 DATA 模式 和 RCDATA 模式才支持标签节点的解析
-    if (
-      (mode === TextModes.DATA || mode === TextModes.RCDATA) && // 只有 DATA 模式才支持标签节点的解析
-      mode === TextModes.DATA &&
-      source[0] === '<'
-    ) {
-      if (source[1] === '!') {
-        if (source.startsWith('<!--')) {
-          node = parseComment(context);
-        } else if (source.startsWith('<![CDATA[')) {
-          // CDATA
-          node = parseCDATA(context, ancestors);
+    if (mode === TextModes.DATA || mode === TextModes.RCDATA) {
+      if (mode === TextModes.DATA && source[0] === '<') {
+        if (source[1] === '!') {
+          if (source.startsWith('<!--')) {
+            node = parseComment(context);
+          } else if (source.startsWith('<![CDATA[')) {
+            // CDATA
+            node = parseCDATA(context, ancestors);
+          }
         } else if (source[1] === '/') {
-        } else if (/[a-z]/i.test(source)[1]) {
+          // 结束标签，这里需要抛出错误
+        } else if (/[a-z]/i.test(source[1])) {
           node = parseElement(context, ancestors);
         } else if (source.startsWith('{{')) {
           node = parseInterpolation(context);
@@ -290,8 +289,6 @@ function parseText() {
 }
 
 function parseComment() {}
-
-function parseCDATA() {}
 
 function parseInterpolation() {}
 
@@ -683,8 +680,8 @@ function parseTag(context, type = 'start') {
   // 处理开始标签和结束标签的正则表哦多大事不同
   const match =
     type === 'start'
-      ? /^([a-z][^\t\n\f\r />]*)/.exec(context.source)
-      : /^\.([a-z][^\t\n\f\r />])/i.exec(context.source);
+      ? /^<([a-z][^\t\n\f\r />]*)/i.exec(context.source)
+      : /^\.([a-z][^\t\n\f\r />]*)/i.exec(context.source);
 
   // 匹配成功之后，正则表达式的第一个捕获组的值就是标签名称
   // props 数组是由指令节点与属性节点共同组成的数组
@@ -711,7 +708,7 @@ function parseTag(context, type = 'start') {
 
 function parseElement(context, ancestors) {
   // 解析开始标签
-  const element = parseTag();
+  const element = parseTag(context);
   if (element.isSelfClosing) return element;
 
   // 切换到正确的文本模式
@@ -740,7 +737,5 @@ function parseElement(context, ancestors) {
   return element;
 }
 
-const ast = pase2(
-  `<div :id="dynamicId" @click="handler" v-on:mousedown="onMouseDown" ></div>`
-);
+const ast = pase2(`<div id="foo" v-show="display"></div>`);
 transform(ast);
