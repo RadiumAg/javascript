@@ -24,7 +24,10 @@ const namedCharacterReferences = {
 };
 
 function decodeHtml(rawText, asAttr = false) {
-   let offset = 0;
+  const offset = 0;
+  const end = rawText.length;
+  // 经过解码后的文本将作为返回值被返回
+  const decodeText = '';
 }
 
 function compile(template) {
