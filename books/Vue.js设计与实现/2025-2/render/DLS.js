@@ -257,9 +257,9 @@ function parseChildren(context, ancestors) {
 
       nodes.push(node);
     }
-
-    return nodes;
   }
+
+  return nodes;
 }
 
 function dump(node, indent = 0) {
@@ -600,9 +600,8 @@ function transform(ast) {
       }
     },
   };
-
-  traverseNode(ast, context);
   console.log(dump(ast));
+  return traverseNode(ast, context);
 }
 
 function parseAttributes(context) {
@@ -681,16 +680,16 @@ function parseTag(context, type = 'start') {
   const match =
     type === 'start'
       ? /^<([a-z][^\t\n\f\r />]*)/i.exec(context.source)
-      : /^\.([a-z][^\t\n\f\r />]*)/i.exec(context.source);
+      : /^<\/([a-z][^\t\n\f\r />]*)/i.exec(context.source);
 
   // 匹配成功之后，正则表达式的第一个捕获组的值就是标签名称
-  // props 数组是由指令节点与属性节点共同组成的数组
-  const props = parseAttributes(context);
   const tag = match[1];
   // 消费正则表达式内容，例如 '<div' 这段内容
   advanceBy(match[0].length);
   // 消费标签中无用的空白字符
   advanceSpaces();
+  // props 数组是由指令节点与属性节点共同组成的数组
+  const props = parseAttributes(context);
 
   // 在消费匹配的内容后，如果字符串以 '/>' 开头，则说明这是一个自闭合标签
   const isSelfClosing = context.source.startsWith('/>');
@@ -738,4 +737,5 @@ function parseElement(context, ancestors) {
 }
 
 const ast = pase2(`<div id="foo" v-show="display"></div>`);
-transform(ast);
+console.log(transform(ast));
+console.log(ast);
