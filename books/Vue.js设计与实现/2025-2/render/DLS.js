@@ -15,6 +15,18 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const namedCharacterReferences = {
+  gt: '>',
+  'gt;': '>',
+  lt: '<',
+  'lt;': '<',
+  'ltcc;': '⪦',
+};
+
+function decodeHtml(rawText, asAttr = false) {
+   let offset = 0;
+}
+
 function compile(template) {
   // 模块 AST
   const ast = parse(template);
@@ -763,6 +775,6 @@ function parseElement(context, ancestors) {
   return element;
 }
 
-const ast = pase2(`<div id="foo" v-show="display"></div>`);
+const ast = pase2(`<div>Text</div>`);
 console.log(transform(ast));
 console.log(ast);
