@@ -24,11 +24,47 @@ const namedCharacterReferences = {
 };
 
 function decodeHtml(rawText, asAttr = false) {
-  const offset = 0;
+  let offset = 0;
   const end = rawText.length;
   // 经过解码后的文本将作为返回值被返回
-  const decodeText = '';
+  let decodeText = '';
   const maxCRNameLengthh = 0;
+
+  // advance 函数用于消费指定长度的文本
+  function advance(length) {
+    offset += length;
+    rawText = rawText.slice(length);
+  }
+
+  // 消费字符串，直到处理完毕为止
+  while (offset < end) {
+    // 用于匹配字符引用的开始部分，如果匹配成功，那么 head[0]的值将有三种可能：
+    // 1. head[0] === '&', 这说明该字符引用是命名字符串引用
+    // 2. head[0] === '&#', 这说明该字符引用是用十进制表示的数字符引用
+    // 3. head[0] === '&#x', 这说明该字符引用是用十六进制表示的数字字符引用
+    const head = /&(?:#x?)?/i.exec(rawText);
+    // 如果没有匹配，说明已经没有需要解码的内容了
+    if (!head) {
+      // 计算剩余内容的长度
+      const remaining = end - offset;
+      // 将剩余内容加到 decodedText 上
+      decodeText += rawText.slice(0, remaining);
+      // 消费剩余内容
+      advance(remaining);
+      break;
+    }
+    // head.index 为匹配的字符 & 在 rawText 中的位置索引
+    // 截取字符 & 之前的内容加到 decodedText 上
+    decodeText += rawText.slice(0, head.index);
+    // 消费 & 之前的内容
+    advance(head.index);
+
+    if (head[0] === '&') {
+      const name = '';
+      let value;
+      // 字符 & 的下一个字符必须是 ASCII 字母或数字，这样才是合法的命名字符引用
+    }
+  }
 }
 
 function compile(template) {
