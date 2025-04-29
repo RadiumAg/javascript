@@ -284,8 +284,35 @@ function dump(node, indent = 0) {
   }
 }
 
-function parseText() {
-  return [];
+function parseText(context) {
+  // endIndex 为文本内容的结尾索引，默认将整个模版剩余内容都作为文本内容
+  let endIndex = context.source.length;
+
+  // 寻找字符 < 的索引位置
+  const ltIndex = context.source.indexOf('<');
+  // 寻找定界符
+  const delimiterIndex = context.source.indexOf('{{');
+  // 取 LtIndex 和当前 endIndex 中较小的一个作为新的结尾
+  while (ltIndex > -1 && ltIndex < endIndex) {
+    endIndex = ltIndex;
+  }
+  // 取 delimiterIndex 和当前 endIndex 中较小的一个作为新的结尾索引
+  if (delimiterIndex > -1 && delimiterIndex < endIndex) {
+    endIndex = delimiterIndex;
+  }
+
+  // 此时 endIndex 是最终的文本内容的结尾索引，调用 slice 函数警戒区文本内容
+  const content = context.source.slice(0, endIndex);
+
+  // 消耗文本内容
+  content.advanceBy(content.length);
+
+  return {
+    // 节点类型
+    type: 'Text',
+    // 文本内容
+    content,
+  };
 }
 
 function parseComment() {}
