@@ -28,6 +28,7 @@ function decodeHtml(rawText, asAttr = false) {
   const end = rawText.length;
   // 经过解码后的文本将作为返回值被返回
   const decodeText = '';
+  const maxCRNameLengthh = 0;
 }
 
 function compile(template) {
