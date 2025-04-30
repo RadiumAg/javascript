@@ -28,7 +28,7 @@ function decodeHtml(rawText, asAttr = false) {
   const end = rawText.length;
   // 经过解码后的文本将作为返回值被返回
   let decodeText = '';
-  const maxCRNameLengthh = 0;
+  let maxCRNameLengthh = 0;
 
   // advance 函数用于消费指定长度的文本
   function advance(length) {
@@ -60,11 +60,53 @@ function decodeHtml(rawText, asAttr = false) {
     advance(head.index);
 
     if (head[0] === '&') {
-      const name = '';
+      let name = '';
       let value;
       // 字符 & 的下一个字符必须是 ASCII 字母或数字，这样才是合法的命名字符引用
+      if (
+        /[\da-z]/.test(rawText[1]) && // 根据引用表计算实体名称的最大长度
+        maxCRNameLengthh
+      ) {
+        maxCRNameLengthh = Object.keys(namedCharacterReferences).reduce(
+          (max, name) => Math.max(max, name.length),
+          0
+        );
+        // 从最大长度开始对文本进行截取，并试图去引用表中找到对应的项
+
+        for (let length = maxCRNameLengthh; !value && length > 0; --length) {
+          // 截取字符 & 到最大长度之间的字符作为实体名称
+          name = rawText.substr(1, length);
+          // 使用实体名称去索引表中查找对应项的值
+          value = namedCharacterReferences[name];
+        }
+
+        // 如果找到了对应项的值，说明解码成功
+        if (value) {
+          // 检查实体名称的最后一个匹配字符是否是分号
+          const semi = name.endsWith(';');
+          // 如果解码的文本作为属性值，最后一个匹配的符号不是分号，
+          // 并且最后一个匹配字符串的下一个字符是等于号（=），ASCII字母或数字
+          // 由于历史原因，将字符 & 和实体名称 name 作为普通文本
+          if (
+            (asAttr && !semi && /[\d=a-z]/.test(rawText[name.length + 1])) ||
+            ''
+          ) {
+            decodeText += `&${name}`;
+            advance(1 + name.length);
+          } else {
+            // 其他情况下，正常使用解码后的内容拼接到 decodedText 上
+            decodeText += value;
+            advance(1 + name.length);
+          }
+        } else {
+          decodeText += '&';
+          advance(1);
+        }
+      }
     }
   }
+
+  return decodeText;
 }
 
 function compile(template) {
@@ -357,13 +399,13 @@ function parseText(context) {
   const content = context.source.slice(0, endIndex);
 
   // 消耗文本内容
-  content.advanceBy(content.length);
+  context.advanceBy(content.length);
 
   return {
     // 节点类型
     type: 'Text',
     // 文本内容
-    content,
+    content: decodeHtml(content),
   };
 }
 
@@ -815,6 +857,6 @@ function parseElement(context, ancestors) {
   return element;
 }
 
-const ast = pase2(`<div>Text</div>`);
+const ast = pase2(`<div>a&ltccbbb</div>`);
 console.log(transform(ast));
 console.log(ast);
