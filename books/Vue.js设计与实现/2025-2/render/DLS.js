@@ -28,7 +28,7 @@ function decodeHtml(rawText, asAttr = false) {
   const end = rawText.length;
   // 经过解码后的文本将作为返回值被返回
   let decodeText = '';
-  let maxCRNameLengthh = 0;
+  let maxCRNameLength = 0;
 
   // advance 函数用于消费指定长度的文本
   function advance(length) {
@@ -63,17 +63,17 @@ function decodeHtml(rawText, asAttr = false) {
       let name = '';
       let value;
       // 字符 & 的下一个字符必须是 ASCII 字母或数字，这样才是合法的命名字符引用
-      if (
-        /[\da-z]/.test(rawText[1]) && // 根据引用表计算实体名称的最大长度
-        maxCRNameLengthh
-      ) {
-        maxCRNameLengthh = Object.keys(namedCharacterReferences).reduce(
-          (max, name) => Math.max(max, name.length),
-          0
-        );
+      if (/[\da-z]/i.test(rawText[1])) {
+        // 根据引用表计算实体名称的最大长度
+        if (!maxCRNameLength) {
+          maxCRNameLength = Object.keys(namedCharacterReferences).reduce(
+            (max, name) => Math.max(max, name.length),
+            0
+          );
+        }
         // 从最大长度开始对文本进行截取，并试图去引用表中找到对应的项
 
-        for (let length = maxCRNameLengthh; !value && length > 0; --length) {
+        for (let length = maxCRNameLength; !value && length > 0; --length) {
           // 截取字符 & 到最大长度之间的字符作为实体名称
           name = rawText.substr(1, length);
           // 使用实体名称去索引表中查找对应项的值
@@ -88,7 +88,7 @@ function decodeHtml(rawText, asAttr = false) {
           // 并且最后一个匹配字符串的下一个字符是等于号（=），ASCII字母或数字
           // 由于历史原因，将字符 & 和实体名称 name 作为普通文本
           if (
-            (asAttr && !semi && /[\d=a-z]/.test(rawText[name.length + 1])) ||
+            (asAttr && !semi && /[\d=a-z]/i.test(rawText[name.length + 1])) ||
             ''
           ) {
             decodeText += `&${name}`;
@@ -99,7 +99,7 @@ function decodeHtml(rawText, asAttr = false) {
             advance(1 + name.length);
           }
         } else {
-          decodeText += '&';
+          decodeText += `&${name}`;
           advance(1);
         }
       }
