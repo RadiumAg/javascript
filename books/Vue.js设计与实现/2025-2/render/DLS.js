@@ -15,6 +15,36 @@ const TextModes = {
   CDATA: 'CDATA',
 };
 
+const CCR_REPLACEMENTS = {
+  0x80: 0x20ac,
+  0x82: 0x201a,
+  0x83: 0x0192,
+  0x84: 0x201e,
+  0x85: 0x2026,
+  0x86: 0x2020,
+  0x87: 0x2021,
+  0x88: 0x02c6,
+  0x89: 0x2030,
+  0x8a: 0x0160,
+  0x8b: 0x2039,
+  0x8c: 0x0152,
+  0x8e: 0x017d,
+  0x91: 0x2018,
+  0x92: 0x2019,
+  0x93: 0x201c,
+  0x94: 0x201d,
+  0x95: 0x2022,
+  0x96: 0x2013,
+  0x97: 0x2014,
+  0x98: 0x02dc,
+  0x99: 0x2122,
+  0x9a: 0x0161,
+  0x9b: 0x203a,
+  0x9c: 0x0153,
+  0x9e: 0x017e,
+  0x9f: 0x0178,
+};
+
 const namedCharacterReferences = {
   gt: '>',
   'gt;': '>',
@@ -42,6 +72,7 @@ function decodeHtml(rawText, asAttr = false) {
     // 1. head[0] === '&', 这说明该字符引用是命名字符串引用
     // 2. head[0] === '&#', 这说明该字符引用是用十进制表示的数字符引用
     // 3. head[0] === '&#x', 这说明该字符引用是用十六进制表示的数字字符引用
+
     const head = /&(?:#x?)?/i.exec(rawText);
     // 如果没有匹配，说明已经没有需要解码的内容了
     if (!head) {
@@ -319,12 +350,13 @@ function isEnd(context, ancestors) {
 function parseChildren(context, ancestors) {
   // 定义 nodes 数组存储子节点，它将作为最终的返回值
   const nodes = [];
-  // 从上下文对象中取得当前状态，包括模式 mode 和模版内容 source
   const { mode, source } = context;
   // 开启 while 循环，只要满足条件就会一直对字符串将进行解析
   // 关于 isEnd()
 
-  while (!isEnd(context, ancestors)) {
+  itwhile (!isEnd(context, ancestors)) {
+    // 从上下文对象中取得当前状态，包括模式 mode 和模版内容 source
+
     let node;
     // 只有 DATA 模式 和 RCDATA 模式才支持标签节点的解析
     if (mode === TextModes.DATA || mode === TextModes.RCDATA) {
@@ -340,17 +372,17 @@ function parseChildren(context, ancestors) {
           // 结束标签，这里需要抛出错误
         } else if (/[a-z]/i.test(source[1])) {
           node = parseElement(context, ancestors);
-        } else if (source.startsWith('{{')) {
-          node = parseInterpolation(context);
         }
+      } else if (source.startsWith('{{')) {
+        node = parseInterpolation(context);
       }
-
-      if (!node) {
-        node = parseText(context);
-      }
-
-      nodes.push(node);
     }
+
+    if (!node) {
+      node = parseText(context);
+    }
+
+    nodes.push(node);
   }
 
   return nodes;
@@ -378,17 +410,37 @@ function dump(node, indent = 0) {
   }
 }
 
+function parseComment(context){
+  // 消费注释的开始部分
+  context.advanceBy('<!--'.length);
+
+  // 找到注释结束部分的位置索引
+  const closeIndex = context.source.indexOf('-->')
+
+  // 截取注释节点的内容
+  const content = context.source.slice(0,closeIndex);
+  // 消费内容
+  context.advanceBy(content.length);
+
+  // 消费注释的结束部分
+  context.advanceBy('-->'.length);
+  // 返回类型为 Comment 的节点
+  return {
+    type: 'Comment',
+    content
+  }
+}
+
 function parseText(context) {
   // endIndex 为文本内容的结尾索引，默认将整个模版剩余内容都作为文本内容
   let endIndex = context.source.length;
-
   // 寻找字符 < 的索引位置
   const ltIndex = context.source.indexOf('<');
   // 寻找定界符
   const delimiterIndex = context.source.indexOf('{{');
   // 取 LtIndex 和当前 endIndex 中较小的一个作为新的结尾
-  while (ltIndex > -1 && ltIndex < endIndex) {
-    endIndex = ltIndex;
+  if (ltIndex > -1 && ltIndex < endIndex) {
+     endIndex = ltIndex;
   }
   // 取 delimiterIndex 和当前 endIndex 中较小的一个作为新的结尾索引
   if (delimiterIndex > -1 && delimiterIndex < endIndex) {
@@ -411,7 +463,34 @@ function parseText(context) {
 
 function parseComment() {}
 
-function parseInterpolation() {}
+function parseInterpolation(context) {
+  // 消费开始界定符
+  context.advanceBy('{{'.length);
+  // 找到结束定界符的位置索引
+  const closeIndex = context.source.indexOf('}}');
+
+  if (closeIndex < 0) {
+    console.error('插值缺少结束界定符');
+  }
+
+  // 截取开始定界符与结束定界符之间的内容作为插值表达式
+  const content = context.source.slice(0, closeIndex);
+  // 消费表达式的内容
+  context.advanceBy(context.length);
+  // 消费结束定界符
+  context.advanceBy('}}'.length);
+
+  // 返回类型为 Interpolation 的节点，代表插值节点
+  return {
+    type: 'Interpolation',
+    // 插值节点的 content 是一个类型为 Expression 的表达式节点
+    content: {
+      type: 'Expression',
+      // 表达式节点的内容则是经过 HTML 解码后的插值表达式
+      content: decodeHtml(content),
+    },
+  };
+}
 
 function isAlpha(char) {
   return (char >= 'a' && char <= 'z') || (char > 'A' && char <= 'Z');
@@ -857,6 +936,6 @@ function parseElement(context, ancestors) {
   return element;
 }
 
-const ast = pase2(`<div>a&ltccbbb</div>`);
+const ast = pase2(`<div>foo {{ bar }} baz</div>`);
 console.log(transform(ast));
 console.log(ast);
