@@ -388,6 +388,8 @@ function parseChildren(context, ancestors) {
   return nodes;
 }
 
+function parseCDATA(context, ancestors) {}
+
 function dump(node, indent = 0) {
   // 节点的类型
   const type = node.type;
