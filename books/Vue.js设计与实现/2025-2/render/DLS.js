@@ -354,7 +354,7 @@ function parseChildren(context, ancestors) {
   // 开启 while 循环，只要满足条件就会一直对字符串将进行解析
   // 关于 isEnd()
 
-  itwhile (!isEnd(context, ancestors)) {
+  while (!isEnd(context, ancestors)) {
     // 从上下文对象中取得当前状态，包括模式 mode 和模版内容 source
 
     let node;
@@ -410,15 +410,15 @@ function dump(node, indent = 0) {
   }
 }
 
-function parseComment(context){
+function parseComment(context) {
   // 消费注释的开始部分
   context.advanceBy('<!--'.length);
 
   // 找到注释结束部分的位置索引
-  const closeIndex = context.source.indexOf('-->')
+  const closeIndex = context.source.indexOf('-->');
 
   // 截取注释节点的内容
-  const content = context.source.slice(0,closeIndex);
+  const content = context.source.slice(0, closeIndex);
   // 消费内容
   context.advanceBy(content.length);
 
@@ -427,8 +427,8 @@ function parseComment(context){
   // 返回类型为 Comment 的节点
   return {
     type: 'Comment',
-    content
-  }
+    content,
+  };
 }
 
 function parseText(context) {
@@ -440,7 +440,7 @@ function parseText(context) {
   const delimiterIndex = context.source.indexOf('{{');
   // 取 LtIndex 和当前 endIndex 中较小的一个作为新的结尾
   if (ltIndex > -1 && ltIndex < endIndex) {
-     endIndex = ltIndex;
+    endIndex = ltIndex;
   }
   // 取 delimiterIndex 和当前 endIndex 中较小的一个作为新的结尾索引
   if (delimiterIndex > -1 && delimiterIndex < endIndex) {
