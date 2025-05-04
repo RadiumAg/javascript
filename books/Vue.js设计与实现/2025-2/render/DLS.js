@@ -388,7 +388,33 @@ function parseChildren(context, ancestors) {
   return nodes;
 }
 
-function parseCDATA(context, ancestors) {}
+function parseCDATA(context, ancestors) {
+  // 消费 <![CDATA[ 的开始部分
+  context.advanceBy('<![CDATA['.length);
+
+  // 找到 CDATA 结束部分的位置索引
+  const closeIndex = context.source.indexOf(']]>');
+
+  if (closeIndex < 0) {
+    console.error('CDATA 节点缺少结束标记 ]]>');
+    return;
+  }
+
+  // 截取 CDATA 节点的内容
+  const content = context.source.slice(0, closeIndex);
+
+  // 消费内容
+  context.advanceBy(content.length);
+
+  // 消费 CDATA 的结束部分
+  context.advanceBy(']]>'.length);
+
+  // 返回类型为 CDATA 的节点
+  return {
+    type: 'CDATA',
+    content,
+  };
+}
 
 function dump(node, indent = 0) {
   // 节点的类型
