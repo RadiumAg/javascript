@@ -106,7 +106,7 @@ function decodeHtml(rawText, asAttr = false) {
 
         for (let length = maxCRNameLength; !value && length > 0; --length) {
           // 截取字符 & 到最大长度之间的字符作为实体名称
-          name = rawText.substr(1, length);
+          name = rawText.slice(1, 1 + length);
           // 使用实体名称去索引表中查找对应项的值
           value = namedCharacterReferences[name];
         }
@@ -488,8 +488,6 @@ function parseText(context) {
     content: decodeHtml(content),
   };
 }
-
-function parseComment() {}
 
 function parseInterpolation(context) {
   // 消费开始界定符
