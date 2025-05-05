@@ -339,11 +339,17 @@ function createCallExpression(callee, argument) {
 function isEnd(context, ancestors) {
   // 当模版内容解析完毕后，停止
   if (!context.source) return true;
-  // 获取父级标签集节点
-  const parent = ancestors[ancestors.length - 1];
-  // 如果遇到结束标签，并且该标签与父级标签节点同名，则停止
-  if (parent && context.source.startsWith(`</${parent.tag}`)) {
-    return true;
+  // // 获取父级标签集节点
+  // const parent = ancestors[ancestors.length - 1];
+  // // 如果遇到结束标签，并且该标签与父级标签节点同名，则停止
+  // if (parent && context.source.startsWith(`</${parent.tag}`)) {
+  //   return true;
+  // }
+
+  for (let i = ancestors.length - 1; i >= 0; --i) {
+    if (context.source.startsWith(`</${ancestors[i].tag}`)) {
+      return true;
+    }
   }
 }
 
@@ -373,7 +379,7 @@ function parseChildren(context, ancestors) {
         } else if (/[a-z]/i.test(source[1])) {
           node = parseElement(context, ancestors);
         }
-      } else if (source.startsWith('{{')) {
+      } else if (context.source.startsWith('{{')) {
         node = parseInterpolation(context);
       }
     }
