@@ -28,11 +28,11 @@ interface Aggregator {
 class AlphabeticalOrderIterator implements Iterator<string> {
   private collection: WordsCollection;
 
-  private position: number = 0;
+  private position = 0;
 
-  private reverse: boolean = false;
+  private reverse = false;
 
-  constructor(collection: WordsCollection, reverse: boolean = false) {
+  constructor(collection: WordsCollection, reverse = false) {
     this.collection = collection;
     this.reverse = reverse;
 
@@ -68,6 +68,54 @@ class AlphabeticalOrderIterator implements Iterator<string> {
   }
 }
 
-class WoordsCollection implements Aggregator {
+/**
+ * Concrete Collections provide one or several methods for retrieving fresh
+ * iterator instances, compatible with the collection class.
+ */
+class WordsCollection implements Aggregator {
   private items: string[] = [];
+
+  public getItems(): string[] {
+    return this.items;
+  }
+
+  public getCount(): number {
+    return this.items.length;
+  }
+
+  public addItem(item: string): void {
+    this.items.push(item);
+  }
+
+  public getIterator(): Iterator<string> {
+    return new AlphabeticalOrderIterator(this);
+  }
+
+  public getReverseIterator(): Iterator<string> {
+    return new AlphabeticalOrderIterator(this, true);
+  }
+}
+
+/**
+ * The client code may or may not know about the Concrete Iterator or Collection
+ * classes, depending on the level of indirection you want to keep in your
+ * program.
+ */
+const collection = new WordsCollection();
+collection.addItem('First');
+collection.addItem('Second');
+collection.addItem('Third');
+
+const iterator = collection.getIterator();
+
+console.log('Straight traversal:');
+while (iterator.valid()) {
+  console.log(iterator.next());
+}
+
+console.log('');
+console.log('Reverse traversal:');
+const reverseIterator = collection.getReverseIterator();
+while (reverseIterator.valid()) {
+  console.log(reverseIterator.next());
 }
