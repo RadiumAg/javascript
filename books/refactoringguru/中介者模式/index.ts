@@ -36,7 +36,7 @@ class ConcreateMediator implements Mediator {
 
 /**
  * The Base Component provides the basic functionality of storing a mediator's
- * instance inside component objects.
+ * instance inside component objects. 
  */
 class BaseComponent {
   protected mediator: Mediator;
