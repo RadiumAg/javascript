@@ -1,4 +1,4 @@
-class Context {
+export class Context {
   private state: State;
 
   constructor(state: State) {
