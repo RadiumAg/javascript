@@ -14,8 +14,9 @@
   <script>
     window.onclick = function (event) {
       const { target } = event;
-      console.dir(target);
-      console.log(event);
+      const paths = event.path || event.composedPath();
+      const xPath = paths.map((item) => item.tagName).join(' > ');
+      console.log('xPath', xPath);
     };
   </script>
 
