@@ -9,7 +9,14 @@
     <canvas id="canvas"></canvas>
 
     <script>
-      const canvs = document.getElementById('canvas');
+      const canvasDom = document.querySelector('#canvas');
+
+      const context = canvasDom.getContext('2d');
+      const FONT_HEIGHT = 15;
+      const MARGIN = 35;
+      const HAND_TURNCATION = canvasDom.clientWidth / 25;
+      const HOUR_HAND_TURNCATION = canvasDom.clientWidth / 10;
+      const NUMERAL_SPACING = 20;
     </script>
   </body>
 </html>
