@@ -14,3 +14,12 @@ context.strokeText(
   canvas.clientWidth / 2 - 150,
   canvas.clientHeight / 2 + 15
 );
+
+function drawGrid(strokeStyle, fillStyle) {
+  context.save();
+  context.fillStyle = fillStyle;
+  context.strokeStyle = strokeStyle;
+  context.strokeStyle = strokeStyle;
+
+  context.restore();
+}
