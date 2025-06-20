@@ -2,7 +2,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 
 const model = new ChatOpenAI({
-  apiKey: 'TYfKypdXOIequDBwDbMX:eifTHdItXyutcdvevNzq',
+  apiKey: '',
   model: 'x1',
   configuration: {
     baseURL: 'https://spark-api-open.xf-yun.com/v2',
@@ -22,7 +22,7 @@ const run = async () => {
     input: 'I love programming.',
   });
 
-  console.log(result);
+  console.log;
 };
 
 run();
