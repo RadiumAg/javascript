@@ -1,7 +1,7 @@
-function add(x) {
+function add(x: number) {
   let sum = x;
 
-  function innerAdd(y) {
+  function innerAdd(y: number) {
     sum += y;
     return innerAdd; // 返回自身以便链式调用
   }
