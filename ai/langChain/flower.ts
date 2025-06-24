@@ -6,6 +6,7 @@
 import path from 'path';
 import fs from 'fs';
 import PdfParse from 'pdf-parse/lib/pdf-parse';
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 
 const loadFile = async (path: string) => {
   if (path.endsWith('.pdf')) {
@@ -22,4 +23,12 @@ const filePath = path.resolve(
 
 const docContent = await loadFile(filePath);
 
-console.log(docContent?.text);
+const textSplitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 500,
+  chunkOverlap: 250,
+});
+
+if (docContent) {
+  const docSplits = await textSplitter.splitText(docContent.text);
+  console.log(docSplits);
+}
