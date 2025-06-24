@@ -1,7 +1,12 @@
-from openai import OpenAI
+import os
 
-client = OpenAI(base_url="https://spark-api-open.xf-yun.com/v2")
+os.environ["OPENAI_API_KEY"] = "你的Open API Key"
+from langchain.llms import OpenAI
 
-client.completions.create(
-    model="x1", temperature=0.5, max_tokens=100, prompt="给我花店起个名"
+llm = OpenAI(
+    model="x1",
+    temperature=0.8,
+    max_tokens=60,
 )
+response = llm.predict("请给我的花店起个名")
+print(response)
