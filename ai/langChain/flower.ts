@@ -6,7 +6,17 @@
 import path from 'path';
 import fs from 'fs';
 import PdfParse from 'pdf-parse/lib/pdf-parse';
+import { MultiQueryRetriever } from '@langchain/';
+import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
+import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
+
+const llm = new ChatOpenAI({
+  model: 'x1',
+  configuration: {
+    baseURL: 'https://spark-api-open.xf-yun.com/v2',
+  },
+});
 
 const loadFile = async (path: string) => {
   if (path.endsWith('.pdf')) {
@@ -14,12 +24,14 @@ const loadFile = async (path: string) => {
     const data = await PdfParse(dataBuffer);
     return data;
   }
+
+  if (path.endsWith('.text')) {
+    const dataBuffer = fs.readFileSync(path);
+    return dataBuffer.toString();
+  }
 };
 
-const filePath = path.resolve(
-  './doc',
-  '2208_professional-javascript-for-web-developers-5-ed.pdf'
-);
+const filePath = path.resolve('./doc', 'test.text');
 
 const docContent = await loadFile(filePath);
 
@@ -29,6 +41,15 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 });
 
 if (docContent) {
-  const docSplits = await textSplitter.splitText(docContent.text);
-  console.log(docSplits);
+  const docSplits = await textSplitter.splitText(docContent);
+
+  const vectorStore = await MemoryVectorStore.fromTexts(
+    docSplits,
+    [],
+    new OpenAIEmbeddings({ model: 'text-embedding-3-large' })
+  );
+
+  const retriever = vectorStore.asRetriever();
+
+  console.log(retriever);
 }

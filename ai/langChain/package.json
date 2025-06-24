@@ -14,10 +14,13 @@
     "@langchain/community": "^0.3.47",
     "@langchain/core": "^0.3.61",
     "@langchain/langgraph": "^0.3.4",
+    "@langchain/ollama": "^0.2.3",
     "@langchain/openai": "^0.5.15",
     "@langchain/textsplitters": "^0.1.0",
+    "@qdrant/js-client-rest": "^1.14.1",
     "cheerio": "^1.1.0",
     "esno": "^4.8.0",
+    "langchain": "^0.3.29",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "zod": "^3.25.67"
