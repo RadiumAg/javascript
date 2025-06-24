@@ -8,7 +8,7 @@
   "author": "",
   "main": "main.ts",
   "scripts": {
-    "start": "esno flower.ts"
+    "start": "esno -r dotenv/config flower.ts"
   },
   "dependencies": {
     "@langchain/community": "^0.3.47",
@@ -19,6 +19,7 @@
     "@langchain/textsplitters": "^0.1.0",
     "@qdrant/js-client-rest": "^1.14.1",
     "cheerio": "^1.1.0",
+    "dotenv": "^16.5.0",
     "esno": "^4.8.0",
     "langchain": "^0.3.29",
     "pdf-lib": "^1.17.1",

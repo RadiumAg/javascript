@@ -6,13 +6,17 @@
 import path from 'path';
 import fs from 'fs';
 import PdfParse from 'pdf-parse/lib/pdf-parse';
-import { MultiQueryRetriever } from '@langchain/';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
+import dotenv from 'dotenv';
+import { assembleWsAuthUrl } from './util.js';
+
+dotenv.config({ path: path.resolve('./.local.env') });
 
 const llm = new ChatOpenAI({
   model: 'x1',
+  apiKey: process.env.CHAT_LLM_API_KEY,
   configuration: {
     baseURL: 'https://spark-api-open.xf-yun.com/v2',
   },
@@ -46,7 +50,22 @@ if (docContent) {
   const vectorStore = await MemoryVectorStore.fromTexts(
     docSplits,
     [],
-    new OpenAIEmbeddings({ model: 'text-embedding-3-large' })
+    new OpenAIEmbeddings({
+      model: 'text-embedding-3-large',
+      configuration: {
+        defaultHeaders: {
+          status: '3',
+          appId: 'dc131790',
+        },
+        baseURL: assembleWsAuthUrl(
+          'https://emb-cn-huabei-1.xf-yun.com',
+          'post',
+          'bfdf538ed8760d04e9de457c3c3758b2',
+          'MTVmMjg3MTQzM2ExZmU5YTg0ZGIzZWE4'
+        ),
+        apiKey: process.env.EMBEDDINGS_LLM_API_KEY,
+      },
+    })
   );
 
   const retriever = vectorStore.asRetriever();
