@@ -4,9 +4,9 @@ import base64 from 'base64-js';
 
 function assembleWsAuthUrl(
   requestUrl: string,
-  method: string = 'GET',
-  apiKey: string = '',
-  apiSecret: string = ''
+  method = 'GET',
+  apiKey = '',
+  apiSecret = ''
 ): string {
   const u = new URL(requestUrl);
   const host = u.host;

@@ -37,6 +37,14 @@ export class SparkEmbeddings extends Embeddings {
 
   private async embedBatch(texts: string[]) {
     const responseArray = [];
+
+    const baseUrl = assembleWsAuthUrl(
+      'https://emb-cn-huabei-1.xf-yun.com',
+      'POST',
+      process.env.EMBEDDINGS_LLM_API_KEY,
+      process.env.EMBEDDINGS_LLM_API_SECRET
+    );
+
     try {
       for (const text of texts) {
         const body = {
@@ -47,28 +55,21 @@ export class SparkEmbeddings extends Embeddings {
           ),
         };
 
-        const baseUrl = assembleWsAuthUrl(
-          'https://emb-cn-huabei-1.xf-yun.com',
-          'POST',
-          process.env.EMBEDDINGS_LLM_API_KEY,
-          process.env.EMBEDDINGS_LLM_API_SECRET
-        );
-
         const response = await fetch(baseUrl, {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(body),
           method: 'POST',
         })
-          .then(async (res) => {
+          .then(async res => {
             const textRes = await res.text();
             return parserMessage(textRes);
           })
-          .catch((error) => {
+          .catch(error => {
             console.error(error);
             return [];
           });
 
-        responseArray.push(Array.from(response as Float32Array));
+        responseArray.push(Array.from(response as Float32Array).slice(0, 1536));
       }
 
       return responseArray;
