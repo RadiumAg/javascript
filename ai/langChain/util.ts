@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { URL } from 'url';
+import * as base64 from 'base-64';
 
 function assembleWsAuthUrl(
   requestUrl: string,
@@ -22,12 +23,50 @@ function assembleWsAuthUrl(
   const authorization = Buffer.from(authorizationOrigin).toString('base64');
 
   const values = new URLSearchParams({
-    host: host,
-    date: date,
-    authorization: authorization,
+    host,
+    date,
+    authorization,
   });
 
   return `${requestUrl}?${values.toString()}`;
 }
 
-export { assembleWsAuthUrl };
+interface Body {
+  header: {
+    app_id: string;
+    uid: string;
+    status: number;
+  };
+  parameter: {
+    emb: {
+      domain: string;
+      feature: {
+        encoding: string;
+      };
+    };
+  };
+  payload: {
+    messages: {
+      text: string;
+    };
+  };
+}
+
+function getBody(appid: string, text: any, style: string): Body {
+  const orgContent = JSON.stringify(text);
+  console.log(Buffer.from(orgContent, 'utf-8'));
+
+  const body: Body = {
+    header: { app_id: appid, uid: '39769795890', status: 3 },
+    parameter: { emb: { domain: style, feature: { encoding: 'utf8' } } },
+    payload: {
+      messages: {
+        text: base64.encode(orgContent),
+      },
+    },
+  };
+
+  return body;
+}
+
+export { assembleWsAuthUrl, getBody };

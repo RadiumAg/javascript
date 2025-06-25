@@ -10,7 +10,7 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import dotenv from 'dotenv';
-import { assembleWsAuthUrl } from './util.js';
+import { assembleWsAuthUrl, getBody } from './util.js';
 
 dotenv.config({ path: path.resolve('./.local.env') });
 
@@ -52,15 +52,20 @@ if (docContent) {
     [],
     new OpenAIEmbeddings({
       model: 'text-embedding-3-large',
+
       configuration: {
+        fetchOptions: {
+          body: JSON.stringify(getBody()),
+        },
         defaultHeaders: {
           status: '3',
           appId: 'dc131790',
         },
+
         baseURL: assembleWsAuthUrl(
           'https://emb-cn-huabei-1.xf-yun.com',
           'post',
-          'bfdf538ed8760d04e9de457c3c3758b2',
+          process.env.EMBEDDINGS_LLM_API_KEY,
           'MTVmMjg3MTQzM2ExZmU5YTg0ZGIzZWE4'
         ),
         apiKey: process.env.EMBEDDINGS_LLM_API_KEY,
