@@ -77,15 +77,15 @@ function getBody(appid: string, text: any, style: string): Body {
  */
 function parserMessage(message: string): Float32Array | undefined {
   const data = JSON.parse(message);
-  console.log('data' + message);
+  // console.log('data' + message);
 
   const code = data.header.code;
   if (code !== 0) {
     console.log(`请求错误: ${code}, ${JSON.stringify(data)}`);
-    return undefined;
+    return new Float32Array();
   } else {
-    const sid = data.header.sid;
-    console.log('本次会话的id为：' + sid);
+    // const sid = data.header.sid;
+    // console.log('本次会话的id为：' + sid);
 
     const textBase = data.payload.feature.text;
     // 使用base64解码
@@ -98,10 +98,9 @@ function parserMessage(message: string): Float32Array | undefined {
     const text = new Float32Array(textData.buffer);
 
     // 打印向量维度
-    console.log(text.length);
-
-    console.log('返回的向量化数组为:');
-    console.log(text);
+    // console.log(text.length);
+    // console.log('返回的向量化数组为:');
+    // console.log(text);
     return text;
   }
 }
