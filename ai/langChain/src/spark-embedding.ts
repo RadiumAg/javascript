@@ -1,7 +1,7 @@
-import { Embeddings } from '@langchain/core/embeddings';
+import { Embeddings, EmbeddingsParams } from '@langchain/core/embeddings';
 import { assembleWsAuthUrl, getBody, parserMessage } from './util.js';
 
-interface SparkEmbeddingsParams {
+interface SparkEmbeddingsParams extends EmbeddingsParams {
   apiKey: string;
   apiSecret: string;
   model?: string;
@@ -69,7 +69,7 @@ export class SparkEmbeddings extends Embeddings {
             return [];
           });
 
-        responseArray.push(Array.from(response as Float32Array).slice(0, 1536));
+        responseArray.push(Array.from(response as Float32Array));
       }
 
       return responseArray;

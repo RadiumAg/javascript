@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "nodenext",
+    "module": "esnext",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
     "baseUrl": "."
   },
-  "include": ["./src", "node_modules"]
+  "include": ["./src"]
 }

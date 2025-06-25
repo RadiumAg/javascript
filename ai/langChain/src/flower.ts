@@ -9,19 +9,15 @@ import { ChatOpenAI } from '@langchain/openai';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { RetrievalQAChain } from 'langchain/chains';
+import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { QdrantVectorStore } from '@langchain/qdrant';
 import { QdrantClient } from '@qdrant/js-client-rest';
-import { SparkEmbeddings } from './spark-embedding';
-// eslint-disable-next-line import/order
 import { MultiQueryRetriever } from 'langchain/retrievers/multi_query';
+import { SparkEmbeddings } from './spark-embedding';
 
 dotenv.config({ path: path.resolve('./.local.env') });
 
-const client = new QdrantClient({
-  url: 'https://6d56580b-8ef5-4d3a-bb43-ded4c74060d2.us-east4-0.gcp.cloud.qdrant.io:6333',
-  apiKey:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.tIxqyqByHXWlh-Erer7HrNM54Jqk9Ym780k9BBYf_fY',
-});
+const client = new QdrantClient();
 
 const llm = new ChatOpenAI({
   model: 'x1',
@@ -47,16 +43,12 @@ const createEmbedding = async () => {
   if (rawDocs) {
     const docSplits = await textSplitter.splitDocuments(rawDocs);
 
-    const vectorStore = await QdrantVectorStore.fromDocuments(
+    const vectorStore = await MemoryVectorStore.fromDocuments(
       docSplits,
       new SparkEmbeddings({
         apiKey: process.env.EMBEDDINGS_LLM_API_KEY as string,
         apiSecret: process.env.EMBEDDINGS_LLM_API_SECRE as string,
-      }),
-      {
-        client,
-        collectionName: 'leanai',
-      }
+      })
     );
 
     return vectorStore;
