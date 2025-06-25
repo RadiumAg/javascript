@@ -38,15 +38,15 @@ export class SparkEmbeddings extends Embeddings {
   private async embedBatch(texts: string[]) {
     const responseArray = [];
 
-    const baseUrl = assembleWsAuthUrl(
-      'https://emb-cn-huabei-1.xf-yun.com',
-      'POST',
-      process.env.EMBEDDINGS_LLM_API_KEY,
-      process.env.EMBEDDINGS_LLM_API_SECRET
-    );
-
     try {
       for (const text of texts) {
+        const baseUrl = assembleWsAuthUrl(
+          'https://emb-cn-huabei-1.xf-yun.com',
+          'POST',
+          process.env.EMBEDDINGS_LLM_API_KEY,
+          process.env.EMBEDDINGS_LLM_API_SECRET
+        );
+
         const body = {
           ...getBody(
             process.env.EMBEDDINGS_LLM_API_APPID as string,
