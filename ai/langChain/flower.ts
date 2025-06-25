@@ -54,14 +54,14 @@ if (docContent) {
     new OpenAIEmbeddings({
       configuration: {
         fetch: (input: string | URL | Request, init?: RequestInit) => {
+          const url = input.toString().replace('/embeddings', '');
           if (init === null || init === undefined) return fetch(input, init);
           if (init.body === null || init.body === undefined)
             return fetch(input, init);
 
-          const orginBody = JSON.parse(init.body.toString());
+          // const orginBody = JSON.parse(init.body.toString());
 
           const body = {
-            ...orginBody,
             ...getBody(
               process.env.EMBEDDINGS_LLM_API_APPID as string,
               docSplits,
@@ -69,15 +69,15 @@ if (docContent) {
             ),
           };
 
-          return fetch(input, {
+          return fetch(url, {
             ...init,
             headers: { 'content-type': 'application/json' },
-            body,
+            body: JSON.stringify(body),
           });
         },
         baseURL: assembleWsAuthUrl(
           'https://emb-cn-huabei-1.xf-yun.com',
-          'post',
+          'POST',
           process.env.EMBEDDINGS_LLM_API_KEY,
           process.env.EMBEDDINGS_LLM_API_SECRET
         ),
