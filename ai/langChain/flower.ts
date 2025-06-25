@@ -11,6 +11,7 @@ import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import dotenv from 'dotenv';
 import { assembleWsAuthUrl, getBody } from './util.js';
+import { de } from 'zod/v4/locales';
 
 dotenv.config({ path: path.resolve('./.local.env') });
 
@@ -51,19 +52,29 @@ if (docContent) {
     docSplits,
     [],
     new OpenAIEmbeddings({
-      model: 'text-embedding-3-large',
-
       configuration: {
-        fetchOptions: {
-          body: JSON.stringify(
-            getBody(process.env.EMBEDDINGS_LLM_API_APPID, docSplits)
-          ),
-        },
-        defaultHeaders: {
-          status: '3',
-          appId: 'dc131790',
-        },
+        fetch: (input: string | URL | Request, init?: RequestInit) => {
+          if (init === null || init === undefined) return fetch(input, init);
+          if (init.body === null || init.body === undefined)
+            return fetch(input, init);
 
+          const orginBody = JSON.parse(init.body.toString());
+
+          const body = {
+            ...orginBody,
+            ...getBody(
+              process.env.EMBEDDINGS_LLM_API_APPID as string,
+              docSplits,
+              ''
+            ),
+          };
+
+          return fetch(input, {
+            ...init,
+            headers: { 'content-type': 'application/json' },
+            body,
+          });
+        },
         baseURL: assembleWsAuthUrl(
           'https://emb-cn-huabei-1.xf-yun.com',
           'post',

@@ -18,7 +18,7 @@
     "@langchain/openai": "^0.5.15",
     "@langchain/textsplitters": "^0.1.0",
     "@qdrant/js-client-rest": "^1.14.1",
-    "base-64": "^1.0.0",
+    "base64-js": "^1.5.1",
     "cheerio": "^1.1.0",
     "dotenv": "^16.5.0",
     "esno": "^4.8.0",
@@ -28,6 +28,7 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@types/base-64": "^1.0.2",
     "@types/pdf-parse": "^1.1.1",
     "typescript": "^5.8.3"
   }

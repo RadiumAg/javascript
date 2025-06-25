@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import { URL } from 'url';
-import * as base64 from 'base-64';
+import base64 from 'base64-js';
 
 function assembleWsAuthUrl(
   requestUrl: string,
@@ -34,7 +34,7 @@ function assembleWsAuthUrl(
 interface Body {
   header: {
     app_id: string;
-    uid: string;
+    uid?: string;
     status: number;
   };
   parameter: {
@@ -54,14 +54,13 @@ interface Body {
 
 function getBody(appid: string, text: any, style: string): Body {
   const orgContent = JSON.stringify(text);
-  console.log(Buffer.from(orgContent, 'utf-8'));
 
   const body: Body = {
-    header: { app_id: appid, uid: '39769795890', status: 3 },
+    header: { app_id: appid, status: 3 },
     parameter: { emb: { domain: style, feature: { encoding: 'utf8' } } },
     payload: {
       messages: {
-        text: base64.encode(orgContent),
+        text: base64.fromByteArray(Buffer.from(orgContent, 'utf-8')),
       },
     },
   };
