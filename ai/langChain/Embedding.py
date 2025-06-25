@@ -171,7 +171,12 @@ if __name__ == "__main__":
     }
     # 当上传文档时 ，需要将文本切分为多块，然后将切分的chunk 填充到上面的content中
     # get_embp_embedding   是将文本、知识库内容进行向量化的服务
-    res = get_embp_embedding(desc, appid=APPID, apikey=APIKEY, apisecret=APISecret)
+    res = get_embp_embedding(
+        desc,
+        appid="dc131790",
+        apikey="bfdf538ed8760d04e9de457c3c3758b2",
+        apisecret="MTVmMjg3MTQzM2ExZmU5YTg0ZGIzZWE4",
+    )
 
     # ques ={"messages":[{"content":"这段话的内容变成向量化是什么样的","role":"user"}]}
     # #get_embq_embedding   是将用户问题进行向量化的服务

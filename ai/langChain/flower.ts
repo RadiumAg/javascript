@@ -10,10 +10,7 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
 import dotenv from 'dotenv';
-import { assembleWsAuthUrl, getBody } from './util.js';
-import { de } from 'zod/v4/locales';
-
-dotenv.config({ path: path.resolve('./.local.env') });
+import { assembleWsAuthUrl, getBody, parserMessage } from './util.js';
 
 const llm = new ChatOpenAI({
   model: 'x1',
@@ -64,8 +61,8 @@ if (docContent) {
           const body = {
             ...getBody(
               process.env.EMBEDDINGS_LLM_API_APPID as string,
-              docSplits,
-              ''
+              JSON.parse(init.body as string).input.join(','),
+              'para'
             ),
           };
 
@@ -73,7 +70,19 @@ if (docContent) {
             ...init,
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify(body),
-          });
+          })
+            .then(async (res) => {
+              const textRes = await res.text();
+
+              return {
+                headers: res.headers,
+                text: res.text,
+                body: parserMessage(textRes),
+              };
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         },
         baseURL: assembleWsAuthUrl(
           'https://emb-cn-huabei-1.xf-yun.com',

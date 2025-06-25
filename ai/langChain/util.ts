@@ -53,7 +53,9 @@ interface Body {
 }
 
 function getBody(appid: string, text: any, style: string): Body {
-  const orgContent = JSON.stringify(text);
+  const orgContent = JSON.stringify({
+    messages: [{ content: text, role: 'user' }],
+  });
 
   const body: Body = {
     header: { app_id: appid, status: 3 },
@@ -68,4 +70,40 @@ function getBody(appid: string, text: any, style: string): Body {
   return body;
 }
 
-export { assembleWsAuthUrl, getBody };
+/**
+ * 解析消息并返回浮点数数组
+ * @param message JSON格式的消息字符串
+ * @returns 解析后的浮点数数组
+ */
+function parserMessage(message: string): Float32Array | undefined {
+  const data = JSON.parse(message);
+  console.log('data' + message);
+
+  const code = data.header.code;
+  if (code !== 0) {
+    console.log(`请求错误: ${code}, ${JSON.stringify(data)}`);
+    return undefined;
+  } else {
+    const sid = data.header.sid;
+    console.log('本次会话的id为：' + sid);
+
+    const textBase = data.payload.feature.text;
+    // 使用base64解码
+    const textData = Buffer.from(
+      base64.fromByteArray(Buffer.from(textBase)),
+      'base64'
+    );
+
+    // 将字节缓冲区转换为Float32Array
+    const text = new Float32Array(textData.buffer);
+
+    // 打印向量维度
+    console.log(text.length);
+
+    console.log('返回的向量化数组为:');
+    console.log(text);
+    return text;
+  }
+}
+
+export { assembleWsAuthUrl, getBody, parserMessage };
