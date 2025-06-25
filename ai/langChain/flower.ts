@@ -55,7 +55,9 @@ if (docContent) {
 
       configuration: {
         fetchOptions: {
-          body: JSON.stringify(getBody()),
+          body: JSON.stringify(
+            getBody(process.env.EMBEDDINGS_LLM_API_APPID, docSplits)
+          ),
         },
         defaultHeaders: {
           status: '3',
@@ -66,7 +68,7 @@ if (docContent) {
           'https://emb-cn-huabei-1.xf-yun.com',
           'post',
           process.env.EMBEDDINGS_LLM_API_KEY,
-          'MTVmMjg3MTQzM2ExZmU5YTg0ZGIzZWE4'
+          process.env.EMBEDDINGS_LLM_API_SECRET
         ),
         apiKey: process.env.EMBEDDINGS_LLM_API_KEY,
       },
