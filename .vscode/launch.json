@@ -8,7 +8,7 @@
       "name": "esno",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable":"node",
+      "runtimeExecutable": "node",
       "args": ["./node_modules/esno/esno.js", "${file}"],
       "console": "integratedTerminal"
     },
