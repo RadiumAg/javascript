@@ -11,7 +11,7 @@ import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { RetrievalQAChain } from 'langchain/chains';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 // import { QdrantVectorStore } from '@langchain/qdrant';
-import { QdrantClient } from '@qdrant/js-client-rest';
+// import { QdrantClient } from '@qdrant/js-client-rest';
 import { MultiQueryRetriever } from 'langchain/retrievers/multi_query';
 import { SparkEmbeddings } from './spark-embedding';
 
@@ -69,7 +69,7 @@ if (vectorStore) {
   const qaChain = RetrievalQAChain.fromLLM(llm, retrieverFromLLM);
 
   const response = await qaChain._call({
-    query: '介绍一下Vue.js设计与实现',
+    query: 'react是啥',
   });
 
   console.log('答案:', response.text);
