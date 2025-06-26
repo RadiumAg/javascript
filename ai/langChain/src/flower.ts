@@ -13,6 +13,7 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 // import { QdrantVectorStore } from '@langchain/qdrant';
 // import { QdrantClient } from '@qdrant/js-client-rest';
 import { MultiQueryRetriever } from 'langchain/retrievers/multi_query';
+import { PromptTemplate } from '@langchain/core/prompts';
 import { SparkEmbeddings } from './spark-embedding';
 
 dotenv.config({ path: path.resolve('./.local.env') });
@@ -68,8 +69,14 @@ if (vectorStore) {
 
   const qaChain = RetrievalQAChain.fromLLM(llm, retrieverFromLLM);
 
+  const prompt = PromptTemplate.fromTemplate(
+    '您是一位专业的前端开发工程师，{introduce}'
+  );
+
+  prompt.format({ introduce: '请介绍《vue设计与实现这本书》' });
+
   const response = await qaChain._call({
-    query: 'react是啥',
+    query: prompt,
   });
 
   console.log('答案:', response.text);

@@ -43,3 +43,11 @@ const chatMessage = async () => {
 
   console.log(result);
 };
+
+const prompt = PromptTemplate.fromTemplate(
+  '您是一位专业的前端开发工程师，您能告诉我{tech}是什么吗？'
+);
+
+prompt.format({ tech: 'vue' });
+
+console.log(prompt);
