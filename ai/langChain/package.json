@@ -8,7 +8,8 @@
   "author": "",
   "main": "main.ts",
   "scripts": {
-    "start": "esno -r dotenv/config ./src/flower.ts"
+    "start": "esno -r dotenv/config ./src/flower.ts",
+    "start:test": "esno -r dotenv/config ./src/test.ts"
   },
   "dependencies": {
     "@langchain/community": "^0.3.47",
