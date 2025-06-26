@@ -73,10 +73,12 @@ if (vectorStore) {
     '您是一位专业的前端开发工程师，{introduce}'
   );
 
-  prompt.format({ introduce: '请介绍《vue设计与实现这本书》' });
+  const query = await prompt.format({
+    introduce: '请介绍《vue设计与实现这本书》',
+  });
 
   const response = await qaChain._call({
-    query: prompt,
+    query,
   });
 
   console.log('答案:', response.text);
