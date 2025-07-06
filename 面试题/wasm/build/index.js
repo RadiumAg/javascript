@@ -10,13 +10,14 @@ async function instantiate(module, imports = {}) {
   };
 }
 
-export const {memery,add} = await instantiate(
+export const { memery, add } = await instantiate(
   await (async (url) => {
     const isNodeOrBund =
       typeof process === 'object' && typeof require === 'function';
 
     if (isNodeOrBund) {
-      return globalThis.WebAssembly.compile(url);
+      const fs = await import('fs/promises');
+      return globalThis.WebAssembly.compile(await fs.readFile(url));
     } else {
       return await globalThis.WebAssembly.compileStreaming(
         globalThis.fetch('./build/release.wasm')
