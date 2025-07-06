@@ -4,12 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "asbuild": "asc assembly/index.ts --target release"
+    "asbuild": "asc assembly/index.ts --target release",
+    "test": "node tests",
+    "start": "npx serve ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "assemblyscript": "0.28.2"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./build/release.js",
+      "types": "./build/release.d.ts"
+    }
   }
 }
