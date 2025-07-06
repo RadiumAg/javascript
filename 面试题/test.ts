@@ -29,7 +29,7 @@
 () => {
   const myInstanceOf = (
     instance: Record<string, ay>,
-    constructor: new (...args: any[]) => any,
+    constructor: new (...args: any[]) => any
   ) => {
     let flag = false;
     let leftPrototype = Object.getPrototypeOf(instance);
@@ -66,13 +66,13 @@
 
     promiseArr.forEach((promise, index) => {
       promise
-        .then(value => {
+        .then((value) => {
           result[index] = value;
-          if (result.filter(_ => _).length === promiseArr.length) {
+          if (result.filter((_) => _).length === promiseArr.length) {
             resolveFn(result);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           rejectFn(error);
         });
     });
@@ -81,21 +81,21 @@
   };
 
   Promise.myAll([Promise.resolve(1), Promise.reject(2)]).then(
-    value => {
+    (value) => {
       console.log(value);
     },
-    error => {
+    (error) => {
       console.log(error);
-    },
+    }
   );
 
   Promise.all([Promise.resolve(1), Promise.reject(2)]).then(
-    value => {
+    (value) => {
       console.log(value);
     },
-    error => {
+    (error) => {
       console.log(error);
-    },
+    }
   );
 };
 
@@ -103,7 +103,7 @@
 () => {
   const flatArray = (array: any[]) => {
     const flatFn = (array: any[], see: any[] = []) => {
-      array.forEach(current => {
+      array.forEach((current) => {
         if (Array.isArray(current)) {
           flatFn(current, see);
         } else {
@@ -118,4 +118,8 @@
   };
 
   console.log(flatArray([1, [1, 2, 3, [1, 2, 3]]]));
+};
+
+() => {
+  Number.parseInt();
 };

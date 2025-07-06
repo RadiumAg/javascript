@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+
+  <script>
+    function Animal(weight) {
+      this.weight = weight;
+    }
+
+    Animal.prototype.height = 10;
+    Animal.prototype.eat = function () {
+      console.log('eat');
+    };
+
+    const cat1 = new Animal(20);
+    cat1.eat();
+  </script>
+</html>

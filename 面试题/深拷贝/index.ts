@@ -123,7 +123,7 @@ function clone(target: unknown, map = new WeakMap()) {
 
   // 克隆set
   if (isSet(type, target)) {
-    target.forEach(value => {
+    target.forEach((value) => {
       (<Set<any>>cloneTarget).add(clone(value, map));
     });
 
