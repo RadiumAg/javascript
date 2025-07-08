@@ -161,3 +161,14 @@
 
   console.log(newCustom(custom, 1, 2));
 };
+
+/***
+ *
+ * 实现一个instanceOf操作符
+ * 用法：instanceOf 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
+ * 思路：
+ *  1. 通过 Object.getPrototypeOf 获取 obj 的原型
+ *  2. 循环判断 objPrototype 是否等于 constructor.prototype
+ *     2.1 如果相等就返回 true
+ *     2.2 如果不相等就重新赋值一下
+ */
