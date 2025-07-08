@@ -120,6 +120,44 @@
   console.log(flatArray([1, [1, 2, 3, [1, 2, 3]]]));
 };
 
+/**
+ * 手写 new 操作符
+ * 用法：创建一个实例化对象
+ * 思路：
+ *  1. 判断传入的 fn 是否为 funciton
+ *  2. 创建于给空对象
+ *  3. 将这个空对象的原型设置为构造函数的原型
+ *  4. 使用 apply 执行构造函数 并传入参数 arguments 获取函数的返回值
+ *  5. 判断这个返回值 如果返回的是 Object || Function类型 就返回该对象，否则返回创建的对象
+ *
+ *
+ */
 () => {
-  Number.parseInt();
+  function newCustom(constructor: Function, ...args: any[]) {
+    const insertPrototypeObj = Object.create(constructor.prototype);
+
+    const callResult = constructor.call(insertPrototypeObj, ...args);
+
+    if (typeof callResult === 'object') {
+      return callResult;
+    }
+
+    if (typeof callResult === 'function') {
+      return callResult;
+    }
+
+    return insertPrototypeObj;
+  }
+
+  function custom(a, b) {
+    this.a = a;
+    this.b = b;
+  }
+
+  custom.prototype = {
+    a: 1,
+    b: 2,
+  };
+
+  console.log(newCustom(custom, 1, 2));
 };
