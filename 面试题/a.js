@@ -3,8 +3,11 @@ class Scheduler {
   runJobsArray = [];
   freshing = false;
   isFrshing = false;
+  seenJob = [];
 
   constructor() {}
+
+  getSeenJob(j) {}
 
   runJobs() {
     if (this.runJobsArray.length < 2) {
@@ -12,9 +15,14 @@ class Scheduler {
       if (currentJob != null) {
         this.runJobsArray.push(currentJob);
       } else if (currentJob == null) {
-        this.runJobsArray[0].task().then(() => {
-          this.runJobsArray[0].resolve();
-        });
+        const j = this.runJobsArray[0];
+        const senndJobObj = this.seenJob.find((s) => s.j === j);
+
+        if (senndJobObj) {
+          senndJobObj.promise.then((res) => {
+            j.resolve(res);
+          });
+        }
       }
     }
 
@@ -23,7 +31,24 @@ class Scheduler {
 
       Promise.race(
         this.runJobsArray.map((j) => {
-          return j.task().then((res) => {
+          const senndJobObj = this.seenJob.find((s) => s.j === j);
+
+          if (senndJobObj) {
+            return senndJobObj.promise.then((res) => {
+              return {
+                res,
+                resolve: j.resolve,
+              };
+            });
+          }
+
+          const promise = j.task();
+
+          if (senndJobObj == null) {
+            this.seenJob.push({ j, promise });
+          }
+
+          return promise.then((res) => {
             return {
               res,
               resolve: j.resolve,
@@ -58,6 +83,7 @@ class Scheduler {
 /* 测试代码，请勿修改 */
 const timeout = (time) =>
   new Promise((resolve) => {
+    // console.log('执行了', time);
     setTimeout(resolve, time);
   });
 
@@ -66,7 +92,4 @@ const addTask = (time, order) => {
   scheduler.add(() => timeout(time)).then(() => console.log(order));
 };
 
-addTask(1000, '1');
-addTask(500, '2');
-addTask(300, '3');
-addTask(400, '4');
+
