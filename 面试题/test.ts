@@ -291,7 +291,7 @@ import { time } from 'console';
   };
 };
 
-(() => {
+() => {
   Promise.all = (promiseArray: Array<Promise<any>>) => {
     return new Promise((resolve, reject) => {
       const resultArray = [];
@@ -315,4 +315,30 @@ import { time } from 'console';
   Promise.all([Promise.resolve(1), Promise.resolve(2)]).then((res) =>
     console.log(res)
   );
+};
+
+// 扁平化二维数组
+(() => {
+  const a = [1, [1, 2, 3, [1, [10, 23213]]]];
+
+  /**
+   * Flattens a nested array structure into a single-level array.
+   * @param array - The input array to be flattened
+   * @returns A new array with all nested elements flattened
+   */
+  const flatArray = (array) => {
+    let result = [];
+
+    for (const item of array) {
+      if (Array.isArray(item)) {
+        result.push(...flatArray(item));
+      } else {
+        result.push(item);
+      }
+    }
+
+    return result;
+  };
+
+  console.log(flatArray(a));
 })();
