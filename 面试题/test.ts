@@ -1,11 +1,13 @@
+import { time } from 'console';
+
 // 防抖
 () => {
   const useThrottle = (fn: (...args: any[]) => any, duration: number) => {
     let lastTime = 0;
 
-    return () => {
+    return (...args: any[]) => {
       if (Date.now() - lastTime > duration) {
-        fn();
+        fn(...args);
         lastTime = Date.now();
       }
     };
@@ -14,11 +16,11 @@
   const useDebounce = (fn: (...args: any[]) => any, duration: number) => {
     let timer: undefined | NodeJS.Timeout;
 
-    return () => {
+    return (...args: any[]) => {
       if (timer) clearTimeout(timer);
 
       timer = setTimeout(() => {
-        fn();
+        fn(...args);
         clearTimeout(timer);
       }, duration);
     };
@@ -170,5 +172,147 @@
  *  1. 通过 Object.getPrototypeOf 获取 obj 的原型
  *  2. 循环判断 objPrototype 是否等于 constructor.prototype
  *     2.1 如果相等就返回 true
- *     2.2 如果不相等就重新赋值一下
+ *     2.2 如果不相等就重新赋值一下 obj 原型进入下一次循环
+ *  3. 判断 objPrototype 是否为空 如果为空就说明不存在 返回 false
+ *
  */
+
+() => {
+  interface Constructor {
+    new (...args: any[]): any;
+  }
+  // https://www.typescriptlang.org/docs/handbook/2/functions.html#call-signatures
+
+  function myInstanceOf(obj: Record<string, any>, constructor: Constructor) {
+    let objPrototype = Object.getPrototypeOf(obj);
+
+    while (objPrototype) {
+      if (objPrototype === constructor.prototype) {
+        return true;
+      }
+
+      objPrototype = Object.getPrototypeOf(objPrototype);
+    }
+
+    return false;
+  }
+
+  let b = {};
+  function a() {}
+  a.prototype = b;
+
+  console.log(myInstanceOf(new a(), a));
+};
+
+/**
+ *
+ * 手写一个节流函数
+ *
+ */
+() => {
+  const throttle = (fn: Function, delay: number) => {
+    let startTime = Date.now();
+
+    return (...args: any[]) => {
+      if (Date.now() - startTime > delay) {
+        startTime = Date.now();
+        fn.call(this, ...args);
+      }
+    };
+  };
+
+  const handleClick = throttle(() => console.log('click'), 1000);
+};
+
+/**
+ *
+ * 手写防抖
+ *
+ *
+ */
+
+() => {
+  const debounce = (fn: Function, delay: number) => {
+    let timer: any = null;
+
+    return (...args: any[]) => {
+      // 如果到期没执行就删除定时器
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+
+      timer = setTimeout(() => {
+        fn.call(this, ...args);
+        timer = null;
+      }, delay);
+    };
+  };
+
+  const handleClick = debounce(() => console.log('click'), 1000);
+};
+
+/** 手写call
+ * 用法： call 方法用于调用一个函数，并指定函数内部 this 的指向，传入一个对象
+ * 思路：
+ *  1. 判断 this 是否指向一个函数，只有函数
+ *
+ */
+() => {
+  Function.prototype.call = function (context, ...args) {
+    debugger;
+    context = context || window;
+
+    context.fn = this;
+
+    const result = context.fn(...args);
+
+    delete context.fn;
+
+    return result;
+  };
+
+  function a() {}
+
+  a.call({ a: 1 }, 1, 2, 3);
+};
+
+() => {
+  Funciton.prototype.bind = function (context, ...args) {
+    context ||= window;
+    context.fn = this;
+
+    return (...args) => {
+      const result = context.fn(...args);
+      delete context.fn;
+
+      return result;
+    };
+  };
+};
+
+(() => {
+  Promise.all = (promiseArray: Array<Promise<any>>) => {
+    return new Promise((resolve, reject) => {
+      const resultArray = [];
+
+      promiseArray.forEach((promise, index) => {
+        promise
+          .then((res) => {
+            resultArray[index] = res;
+
+            if (resultArray.filter((x) => x).length === promiseArray.length) {
+              resolve(resultArray);
+            }
+          })
+          .catch((res) => {
+            reject(res);
+          });
+      });
+    });
+  };
+
+  Promise.all([Promise.resolve(1), Promise.resolve(2)]).then((res) =>
+    console.log(res)
+  );
+})();
