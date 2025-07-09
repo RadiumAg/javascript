@@ -30,7 +30,7 @@ class MyPromise {
   resolvePromise(value) {
     let called = false;
 
-    if (value === this) {
+    if (value === this) { // 如果返回的是自己，则抛出错误
       this.reject(
         new TypeError(
           'Circular reference detected: promise and x are the same object'
@@ -38,7 +38,7 @@ class MyPromise {
       );
 
       return false;
-    } else if (value instanceof MyPromise) {
+    } else if (value instanceof MyPromise) { // 如果返回的是Promise，则最终状态由这个Promise决定
       try {
         value.then(
           x => {
@@ -58,7 +58,7 @@ class MyPromise {
         this.reject(e);
         return false;
       }
-    } else if (value && typeof value === 'object') {
+    } else if (value && typeof value === 'object') { // 如果返回的是thenable对象
       try {
         const thenable = Reflect.get(value, 'then');
         if (typeof thenable === 'function') {
