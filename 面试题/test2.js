@@ -7,35 +7,34 @@ class RedPackage {
   _remain = 0;
 
   constructor(money, count) {
-      this.money = money;
-      this.count = count;
-      this._remain = money;
+    this.money = money;
+    this.count = count;
+    this._remain = money;
   }
 
   openRedPackge() {
-    if(this.count === 1) {
+    if (this.count === 1) {
       const lastMoney = this.money;
-      this.money = 0
+      this.money = 0;
       this.count = 0;
-      console.log(lastMoney) 
+      console.log(lastMoney);
       return lastMoney;
     }
-    if(this.count === 0) return null;
-    if(this.money === 0) return null;
+    if (this.count === 0) return null;
+    if (this.money === 0) return null;
 
-     const getMoney = Math.floor(this.money * Math.random()* (1 /  this.count));
+    const getMoney = Math.floor(this.money * Math.random() * (1 / this.count));
 
-     if(getMoney === 0 ) {
-        return this.openRedPackge();
-     }
+    if (getMoney === 0) {
+      return this.openRedPackge();
+    }
 
-     this.money = this.money - getMoney
-     this.count--;
+    this.money = this.money - getMoney;
+    this.count--;
 
+    console.log(getMoney);
 
-     console.log(getMoney)
-
-     return getMoney
+    return getMoney;
   }
 }
 
