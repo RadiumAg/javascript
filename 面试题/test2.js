@@ -1,6 +1,3 @@
-/**
- * 提供了一个RedPackage的类，初始化时传入红包金额和个数，需要实现一个openRedPackage方法，每调一次都进行一次“抢红包”，并以console.log的形式输出抢到的红包金额
- */
 class RedPackage {
   money = 0;
   count = 0;
@@ -9,39 +6,52 @@ class RedPackage {
   constructor(money, count) {
     this.money = money;
     this.count = count;
-    this._remain = money;
+    this._remain = money; // 初始化剩余金额
   }
 
   openRedPackge() {
+    // 红包已抢完
+    if (this.count === 0) {
+      console.log(0);
+      return 0;
+    }
+    
+    // 最后一个红包
     if (this.count === 1) {
-      const lastMoney = this.money;
+      const lastMoney = this._remain; // 使用剩余金额
       this.money = 0;
       this.count = 0;
-      console.log(lastMoney);
+      this._remain = 0;
+      console.log(lastMoney.toFixed(2));
       return lastMoney;
     }
-    if (this.count === 0) return null;
-    if (this.money === 0) return null;
-
-    const getMoney = Math.floor(this.money * Math.random() * (1 / this.count));
-
-    if (getMoney === 0) {
-      return this.openRedPackge();
-    }
-
-    this.money = this.money - getMoney;
+    
+    // 二倍均值法计算最大可抢金额
+    const max = Math.min(
+      this._remain - 0.01 * (this.count - 1), // 确保每人至少有0.01元
+      this._remain / this.count * 2 // 二倍均值
+    );
+    
+    // 随机金额（至少0.01元）
+    const getMoney = parseFloat(
+      Math.max(0.01, (Math.random() * max)).toFixed(2)
+    );
+    
+    // 更新状态
+    this._remain -= getMoney;
     this.count--;
-
-    console.log(getMoney);
-
+    
+    console.log(getMoney.toFixed(2));
     return getMoney;
   }
 }
 
+// 测试
 const redpkg = new RedPackage(100, 5);
+console.log("开始抢红包：");
 redpkg.openRedPackge();
 redpkg.openRedPackge();
 redpkg.openRedPackge();
 redpkg.openRedPackge();
 redpkg.openRedPackge();
-redpkg.openRedPackge();
+redpkg.openRedPackge(); // 第六次应该返回0
