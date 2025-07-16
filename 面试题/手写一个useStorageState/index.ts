@@ -9,7 +9,11 @@ import React from 'react';
  * @param cacheKey 缓存的key
  * @param expired 过期时间，单位（秒）
  */
-const useStorageState = (initialData: any, cacheKey: string, expired: number) => {
+const useStorageState = (
+  initialData: any,
+  cacheKey: string,
+  expired: number
+) => {
   const cacheTimeKey = `${cacheKey}_expired_time`;
   const [storageValue, setStorageValue] = React.useState(() => {
     const storageValue = localStorage.getItem(cacheKey);
@@ -22,7 +26,10 @@ const useStorageState = (initialData: any, cacheKey: string, expired: number) =>
         return initialData;
       }
     } else {
-      localStorage.setItem(cacheTimeKey, (Date.now() + expired * 1000).toString());
+      localStorage.setItem(
+        cacheTimeKey,
+        (Date.now() + expired * 1000).toString()
+      );
     }
 
     // 下次组件渲染时优先使用本地缓存值作为初始值（而非传入的 initialData）
@@ -44,4 +51,4 @@ const useStorageState = (initialData: any, cacheKey: string, expired: number) =>
   return [storageValue, setStorageValue];
 };
 
-export {useStorageState};
+export { useStorageState };
