@@ -1,31 +1,3 @@
-import puppeteer from 'puppeteer-core';
-import ExcelJS from 'exceljs';
-
-async function startProcess() {
-  const browser = await puppeteer.launch({
-    executablePath:
-      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // Windows
-    headless: false, // 使用全新 Headless 模式
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
-
-  const page = await browser.newPage();
-
-  await page.goto(
-    'https://vendorcentral.amazon.com/hz/vendor/members/coop?ref_=vc_xx_favb'
-  );
-
-  return page;
-}
-
-async function exportExcel(data: Array<any>) {
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Sheet1');
-  worksheet.addRow(['productAsin', 'invoiceNumber']);
-
-  await workbook.xlsx.writeFile('output.xlsx');
-}
-
 async function processData() {
   const excelData = [];
   const tableData = [
@@ -66,4 +38,32 @@ async function processData() {
   return excelData;
 }
 
-export { startProcess, exportExcel, processData };
+const excelScript = document.createElement('script');
+const saveAsScript = document.createElement('script');
+
+saveAsScript.src =
+  'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js';
+excelScript.src =
+  'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+
+document.body.appendChild(excelScript);
+document.body.appendChild(saveAsScript);
+
+saveAsScript.addEventListener('load', () => {
+  excelScript.addEventListener('load', async () => {
+    const excelData = await processData();
+
+    const workbook = new (window as any).ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+    worksheet.addRow(['productAsin', 'invoiceNumber']);
+    excelData.forEach((row) => {
+      worksheet.addRow([row['productAsin'].join(','), row['invoiceNumber']]);
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer('output.xlsx');
+
+    window.saveAs(new Blob([buffer]), 'result.xlsx');
+    URL.createObjectURL(new Blob([buffer]));
+    window.open(URL.createObjectURL(new Blob([buffer])));
+  });
+});
