@@ -1,0 +1,20 @@
+{
+  "name": "order-crawler-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "run": "npx esno ./src/main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.1",
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "commander": "^14.0.0",
+    "inquirer": "^12.8.2",
+    "puppeteer-core": "^24.15.0"
+  }
+}
