@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { startProcess } from './utils.js';
+import { exportExcel, startProcess } from './utils.js';
 
 const newPage = await startProcess();
 
@@ -12,9 +12,9 @@ inquirer
       default: true,
     },
   ])
-  .then((answers: Record<any, string>) => {
+  .then(async (answers: Record<any, string>) => {
     if (answers.continue) {
-      const excelData = newPage.evaluate(async () => {
+      const excelData = await newPage.evaluate(async () => {
         const excelData = [];
         const tableData = [
           ...document
@@ -57,6 +57,8 @@ inquirer
 
         return excelData;
       });
+
+      await exportExcel(excelData);
     }
   })
   .catch((error: Error) => {

@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer-core';
+import ExcelJS from 'exceljs';
 
 async function startProcess() {
   const browser = await puppeteer.launch({
@@ -17,4 +18,12 @@ async function startProcess() {
   return page;
 }
 
-export { startProcess };
+async function exportExcel(data: Array<any>) {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+  worksheet.addRow(['productAsin', 'invoiceNumber']);
+
+  await workbook.xlsx.writeFile('output.xlsx');
+}
+
+export { startProcess, exportExcel };
