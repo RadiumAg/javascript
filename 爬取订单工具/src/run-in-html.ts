@@ -61,9 +61,6 @@ saveAsScript.addEventListener('load', () => {
     });
 
     const buffer = await workbook.xlsx.writeBuffer('output.xlsx');
-
     window.saveAs(new Blob([buffer]), 'result.xlsx');
-    URL.createObjectURL(new Blob([buffer]));
-    window.open(URL.createObjectURL(new Blob([buffer])));
   });
 });
