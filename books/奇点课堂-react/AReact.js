@@ -260,4 +260,14 @@ function useState(initialState) {
   return [hook.state, setState];
 }
 
-export { act, useState, createRoot, createElement };
+function useReducer(reducer, initialState) {
+  const [state, setState] = useState(initialState);
+
+  const dispatch = (action) => {
+    setState((state) => reducer(state, action));
+  };
+
+  return [state, dispatch];
+}
+
+export { act, useState, useReducer, createRoot, createElement };

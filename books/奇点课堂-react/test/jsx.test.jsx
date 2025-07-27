@@ -171,4 +171,85 @@ describe('Hooks', () => {
 
     expect(globalObj.count).toBe(200);
   });
+
+  it('should support userReducer', async () => {
+    const container = document.createElement('div');
+    const globalObj = {};
+
+    function reducer(state, action) {
+      switch (action.type) {
+        case 'add':
+          return state + 1;
+
+        default:
+          throw new Error();
+      }
+    }
+
+    function App(props) {
+      const [count, dispatch] = AReact.useReducer(reducer, 100);
+      globalObj.count = count;
+      globalObj.dispatch = dispatch;
+
+      return (
+        <div id="foo" className="bar">
+          {count}
+        </div>
+      );
+    }
+
+    const root = AReact.createRoot(container);
+    await AReact.act(() => {
+      root.render(<App title="main title"></App>);
+      expect(container.innerHTML).toBe('');
+    });
+
+    await AReact.act(() => {
+      globalObj.dispatch({ type: 'add' });
+    });
+
+    expect(globalObj.count).toBe(101);
+
+    await AReact.act(() => {
+      globalObj.dispatch({ type: 'add' });
+    });
+
+    expect(globalObj.count).toBe(102);
+  });
 });
+
+// describe('event binding', () => {
+//   it('should support event binding', async () => {
+//     const container = document.createElement('div');
+//     const globalObj = {};
+//     function App(props) {
+//       const [count, setCount] = AReact.useState(100);
+//       globalObj.count = count;
+//       globalObj.setCount = setCount;
+
+//       return (
+//         <div id="foo" className="bar">
+//           {count}
+//         </div>
+//       );
+//     }
+
+//     const root = AReact.createRoot(container);
+//     await AReact.act(() => {
+//       root.render(<App title="main title"></App>);
+//       expect(container.innerHTML).toBe('');
+//     });
+
+//     await AReact.act(() => {
+//       globalObj.setCount((count) => count + 1);
+//     });
+
+//     expect(globalObj.count).toBe(101);
+
+//     await AReact.act(() => {
+//       globalObj.setCount(200);
+//     });
+
+//     expect(globalObj.count).toBe(200);
+//   });
+// });
