@@ -60,6 +60,7 @@ class AReactDomRoot {
       },
     };
     workInProgressRoot = this._internalRoot;
+    workInProgressRoot.deletions = [];
     workInProgress = workInProgressRoot.current.alternate;
     requestIdleCallback(workLoop);
     // this.renderImpl(element, this.container);
@@ -148,6 +149,7 @@ function performUnitOfWork(fiber) {
 }
 
 function commitRoot() {
+  workInProgressRoot.deletions.forEach(commitWork);
   commitWork(workInProgressRoot.current.alternate.child);
 
   workInProgressRoot.current = workInProgressRoot.current.alternate;
@@ -181,10 +183,20 @@ function commitWork(fiber) {
     domParentFiber.stateNode.appendChild(fiber.stateNode);
   } else if (fiber.effectTag === 'UPDATE' && fiber.stateNode) {
     updateDom(fiber.stateNode, fiber.alternate.props, fiber.props);
+  } else if (fiber.effectTag === 'DELETION') {
+    commitDeletion(fiber, domParentFiber.stateNode);
   }
 
   commitWork(fiber.child);
   commitWork(fiber.sibling);
+}
+
+function commitDeletion(fiber, parentStateNode) {
+  if (fiber.stateNode) {
+    parentStateNode.removeChild(fiber.stateNode);
+  } else {
+    commitDeletion(fiber.child, parent);
+  }
 }
 
 function updateDom(stateNode, prevProps, nextProps) {
@@ -246,7 +258,7 @@ function reconcileChildren(fiber, children) {
   while (index < fiber.props.children.length || oldFiber) {
     let newFiber = null;
     const child = fiber.props.children[index];
-    let sameType = oldFiber && child.type === oldFiber.type;
+    let sameType = oldFiber && child?.type === oldFiber.type;
 
     if (child && !sameType) {
       // mount/placement
@@ -274,6 +286,8 @@ function reconcileChildren(fiber, children) {
       };
     } else if (!sameType && oldFiber) {
       // delete
+      oldFiber.effectTag = 'DELETION';
+      workInProgressRoot.deletions.push(oldFiber);
     }
 
     if (oldFiber) {
@@ -341,6 +355,7 @@ function useState(initialState) {
         };
 
         workInProgress = workInProgressRoot.current.alternate;
+        workInProgressRoot.deletions = [];
         requestIdleCallback(workLoop);
         // this.renderImpl(element, this.container);
       };
