@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as AReact from '../AReact';
+import { vi } from 'vitest';
 
 describe('AReact JSX', () => {
   it('should render jsx', async () => {
@@ -218,38 +219,76 @@ describe('Hooks', () => {
   });
 });
 
-// describe('event binding', () => {
-//   it('should support event binding', async () => {
-//     const container = document.createElement('div');
-//     const globalObj = {};
-//     function App(props) {
-//       const [count, setCount] = AReact.useState(100);
-//       globalObj.count = count;
-//       globalObj.setCount = setCount;
+describe('event binding', () => {
+  it('should support event binding', async () => {
+    const container = document.createElement('div');
+    const globalObj = {
+      increase: (count) => count + 1,
+    };
+    function App() {
+      const [count, setCount] = AReact.useState(100);
 
-//       return (
-//         <div id="foo" className="bar">
-//           {count}
-//         </div>
-//       );
-//     }
+      return (
+        <button
+          onClick={() => {
+            setCount(globalObj.increase);
+          }}
+        >
+          {count}
+        </button>
+      );
+    }
 
-//     const root = AReact.createRoot(container);
-//     await AReact.act(() => {
-//       root.render(<App title="main title"></App>);
-//       expect(container.innerHTML).toBe('');
-//     });
+    const increaseSpy = vi.spyOn(globalObj, 'increase');
 
-//     await AReact.act(() => {
-//       globalObj.setCount((count) => count + 1);
-//     });
+    const root = AReact.createRoot(container);
+    await AReact.act(() => {
+      root.render(<App />);
+    });
+    expect(increaseSpy).not.toBeCalled();
 
-//     expect(globalObj.count).toBe(101);
+    await AReact.act(() => {
+      container.querySelectorAll('button')[0].click();
+      container.querySelectorAll('button')[0].click();
+    });
 
-//     await AReact.act(() => {
-//       globalObj.setCount(200);
-//     });
+    expect(increaseSpy).toBeCalledTimes(2);
+  });
+});
 
-//     expect(globalObj.count).toBe(200);
-//   });
-// });
+describe('Reconciler', () => {
+  it('should support DOM CRUD', async () => {
+    const container = document.createElement('div');
+    function App(props) {
+      const [count, setState] = AReact.useState(2);
+
+      return (
+        <div>
+          {count}
+          <button onClick={() => setState((count) => count + 1)}></button>
+          <button onClick={() => setState((count) => count - 1)}>-</button>
+
+          <ul>
+            {Array.from({ length: count }, (_, i) => (
+              <li key={i}>{i}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    const root = AReact.createRoot(container);
+    await AReact.act(() => {
+      root.render(<App />);
+      expect(container.innerHTML).toBe('');
+    });
+
+    await AReact.act(() => {
+      container.querySelectorAll('button')[0].click();
+    });
+
+    expect(container.innerHTML).toBe(
+      '<div>3<button></button><button>-</button><ul><li>0</li><li>1</li><li>2</li></ul></div>'
+    );
+  });
+});

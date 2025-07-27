@@ -33,7 +33,12 @@ function createTextElement(text) {
   };
 }
 
-const isProperty = (key) => key !== 'children';
+const isProperty = (key) => key !== 'children' && !isEvent(key);
+const isEvent = (key) => key.startsWith('on');
+const isGone = (prev, next) => (key) => !(key in next);
+const isChanged = (prev, next) => (key) =>
+  key in prev && key in next && prev[key] !== next[key];
+const isNew = (prev, next) => (key) => !(key in prev) && key in next;
 
 class AReactDomRoot {
   _internalRoot = null;
@@ -92,8 +97,7 @@ function workLoop() {
   }
 
   if (!workInProgress && workInProgressRoot.current.alternate) {
-    workInProgressRoot.current = workInProgressRoot.current.alternate;
-    workInProgressRoot.current.alternate = null;
+    commitRoot();
   }
 }
 
@@ -134,23 +138,101 @@ function performUnitOfWork(fiber) {
         fiber.type === 'HostText'
           ? document.createTextNode('')
           : document.createElement(fiber.type);
-
-      Object.keys(fiber.props)
-        .filter(isProperty)
-        .forEach((key) => {
-          fiber.stateNode[key] = fiber.props[key];
-        });
-    }
-
-    if (fiber.return) {
-      // 往上查找，直到有一个节点存在 stateNode
-      let domParentFiber = fiber.return;
-      while (!domParentFiber.stateNode) {
-        domParentFiber = domParentFiber.return;
-      }
-      domParentFiber.stateNode.appendChild(fiber.stateNode);
     }
   }
+
+  reconcileChildren(fiber, fiber.props.children);
+  // 3. 返回下一个处理的 fiber
+
+  return getNextFiber(fiber);
+}
+
+function commitRoot() {
+  commitWork(workInProgressRoot.current.alternate.child);
+
+  workInProgressRoot.current = workInProgressRoot.current.alternate;
+  workInProgressRoot.current.alternate = null;
+}
+
+/**
+ * 提交dom 插入
+ *
+ * @param {*} fiber
+ */
+function commitWork(fiber) {
+  let domParentFiber = null;
+  if (!fiber) {
+    return;
+  }
+
+  if (fiber.return) {
+    // 往上查找，直到有一个节点存在 stateNode
+    domParentFiber = fiber.return;
+    while (!domParentFiber.stateNode) {
+      domParentFiber = domParentFiber.return;
+    }
+  }
+
+  if (fiber.effectTag === 'PLACEMENT' && fiber.stateNode) {
+    // set props
+
+    updateDom(fiber.stateNode, {}, fiber.props);
+    // append dom
+    domParentFiber.stateNode.appendChild(fiber.stateNode);
+  } else if (fiber.effectTag === 'UPDATE' && fiber.stateNode) {
+    updateDom(fiber.stateNode, fiber.alternate.props, fiber.props);
+  }
+
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+}
+
+function updateDom(stateNode, prevProps, nextProps) {
+  // remove old or changed event binding
+  Object.keys(prevProps)
+    .filter(isEvent)
+    .filter(
+      (key) =>
+        isGone(prevProps, nextProps)(key) ||
+        isChanged(prevProps, nextProps)(key)
+    )
+    .forEach((key) => {
+      stateNode.removeEventListener(key.slice(2).toLowerCase(), prevProps[key]);
+    });
+
+  // revmoe deleted props
+  Object.keys(prevProps)
+    .filter(isProperty)
+    .filter((key) => isGone(prevProps, nextProps)(key))
+    .forEach((key) => {
+      stateNode[key] = '';
+    });
+
+  // set new or changed props
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(
+      (key) =>
+        isNew(prevProps, nextProps)(key) || isChanged(prevProps, nextProps)(key)
+    )
+    .forEach((key) => {
+      stateNode[key] = nextProps[key];
+    });
+
+  // add new or event binding
+  Object.keys(nextProps)
+    .filter(isEvent)
+    .filter(
+      (key) =>
+        isNew(prevProps, nextProps)(key) || isChanged(prevProps, nextProps)(key)
+    )
+    .forEach((key) => {
+      stateNode.addEventListener(key.slice(2).toLowerCase(), nextProps[key]);
+    });
+}
+
+function reconcileChildren(fiber, children) {
+  // 遍历 children, 比较当前fiber和oldFiber，然后在 fiber 上添加effectTag
 
   // 初始化 children 的fiber
   let prevSibling = null;
@@ -158,10 +240,16 @@ function performUnitOfWork(fiber) {
   let oldFiber = fiber.alternate?.child;
 
   // 2. 初始化 children 的 fibber
-  fiber.props.children.forEach((child, index) => {
+  // fiber.props.children.forEach((child, index) => {
+  let index = 0;
+
+  while (index < fiber.props.children.length || oldFiber) {
     let newFiber = null;
-    if (!oldFiber) {
-      // 创建子fiber
+    const child = fiber.props.children[index];
+    let sameType = oldFiber && child.type === oldFiber.type;
+
+    if (child && !sameType) {
+      // mount/placement
       newFiber = {
         type: child.type,
         stateNode: null,
@@ -170,8 +258,9 @@ function performUnitOfWork(fiber) {
         alternate: null,
         child: null,
         sibling: null,
+        effectTag: 'PLACEMENT',
       };
-    } else {
+    } else if (sameType) {
       // update
       newFiber = {
         type: child.type,
@@ -181,7 +270,10 @@ function performUnitOfWork(fiber) {
         alternate: oldFiber,
         child: null,
         sibling: null,
+        effectTag: 'UPDATE',
       };
+    } else if (!sameType && oldFiber) {
+      // delete
     }
 
     if (oldFiber) {
@@ -195,9 +287,8 @@ function performUnitOfWork(fiber) {
     }
 
     prevSibling = newFiber;
-  });
-  // 3. 返回下一个处理的 fiber
-  return getNextFiber(fiber);
+    index++;
+  }
 }
 
 /**
