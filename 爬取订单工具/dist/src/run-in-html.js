@@ -29,6 +29,7 @@ async function processData() {
     }
     return excelData;
 }
+
 const excelScript = document.createElement('script');
 const saveAsScript = document.createElement('script');
 saveAsScript.src =
@@ -50,4 +51,3 @@ saveAsScript.addEventListener('load', () => {
         window.saveAs(new Blob([buffer]), 'result.xlsx');
     });
 });
-export {};
