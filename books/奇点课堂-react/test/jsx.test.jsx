@@ -84,3 +84,26 @@ describe('AReact Concurrent', () => {
     );
   });
 });
+
+describe('Function component', () => {
+  it.only('should render function component', async () => {
+    const container = document.createElement('div');
+    function App() {
+      return (
+        <div id="foo" className="bar">
+          <button>Add</button>
+        </div>
+      );
+    }
+
+    const root = AReact.createRoot(container);
+    await AReact.act(() => {
+      root.render(<App />);
+      expect(container.innerHTML).toBe('');
+    });
+
+    expect(container.innerHTML).toBe(
+      '<div id="foo" class="bar"><button>Add</button></div>'
+    );
+  });
+});
