@@ -1,5 +1,6 @@
 let workkInProgress = null;
 let workkInProgressRoot = null; // 存储根fiberRoot
+import './requestIdleCallbackPolyfill';
 
 function createElement(type, props, ...children) {
   return {
@@ -13,6 +14,13 @@ function createElement(type, props, ...children) {
   };
 }
 
+/**
+ *
+ * 创建文本节点
+ *
+ * @param {*} text
+ * @returns
+ */
 function createTextElement(text) {
   return {
     type: 'HostText',
@@ -46,7 +54,7 @@ class AReactDomRoot {
     };
     workkInProgressRoot = this._internalRoot;
     workkInProgress = workkInProgressRoot.current.alternate;
-    setTimeout(workLoop);
+    requestIdleCallback(workLoop);
     // this.renderImpl(element, this.container);
   }
 
@@ -146,4 +154,25 @@ function performUnitOfWork(fiber) {
   return getNextFiber(fiber);
 }
 
-export { createRoot, createElement };
+/**
+ * act
+ * @param {*} callback
+ * @returns
+ */
+function act(callback) {
+  callback();
+
+  return new Promise((resolve) => {
+    function loop() {
+      if (workkInProgress) {
+        window.requestIdleCallback(loop);
+      } else {
+        resolve();
+      }
+    }
+
+    loop();
+  });
+}
+
+export { act, createRoot, createElement };
