@@ -193,7 +193,8 @@ function commitWork(fiber) {
 
 function commitDeletion(fiber, parentStateNode) {
   if (fiber.stateNode) {
-    parentStateNode.removeChild(fiber.stateNode);
+    parentStateNode.contains(fiber.stateNode) &&
+      parentStateNode.removeChild(fiber.stateNode);
   } else {
     commitDeletion(fiber.child, parent);
   }
@@ -297,7 +298,7 @@ function reconcileChildren(fiber, children) {
     if (index === 0) {
       fiber.child = newFiber;
     } else {
-      prevSibling.sibling = newFiber;
+      prevSibling && (prevSibling.sibling = newFiber);
     }
 
     prevSibling = newFiber;
