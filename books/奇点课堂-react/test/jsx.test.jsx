@@ -164,5 +164,11 @@ describe('Hooks', () => {
     });
 
     expect(globalObj.count).toBe(101);
+
+    await AReact.act(() => {
+      globalObj.setCount(200);
+    });
+
+    expect(globalObj.count).toBe(200);
   });
 });

@@ -227,25 +227,32 @@ function useState(initialState) {
   const hook = {
     state: oldHook ? oldHook.state : initialState,
     queue: [],
+    dispatch: oldHook ? oldHook.dispatch : null,
   };
   const actions = oldHook ? oldHook.queue : [];
   actions.forEach((action) => {
-    hook.state = action(hook.state);
+    if (typeof action === 'function') {
+      hook.state = action(hook.state);
+    } else {
+      hook.state = action;
+    }
   });
 
-  const setState = (action) => {
-    hook.queue.push(action);
-    // render
-    workInProgressRoot.current.alternate = {
-      stateNode: workInProgressRoot.containerInfo,
-      props: workInProgressRoot.current.props,
-      alternate: workInProgressRoot.current, // 重要，交换 alternate
-    };
+  const setState = hook.dispatch
+    ? hook.dispatch
+    : (action) => {
+        hook.queue.push(action);
+        // render
+        workInProgressRoot.current.alternate = {
+          stateNode: currentHookFiber.containerInfo,
+          props: workInProgressRoot.current.props,
+          alternate: workInProgressRoot.current, // 重要，交换 alternate
+        };
 
-    workInProgress = workInProgressRoot.current.alternate;
-    requestIdleCallback(workLoop);
-    // this.renderImpl(element, this.container);
-  };
+        workInProgress = workInProgressRoot.current.alternate;
+        requestIdleCallback(workLoop);
+        // this.renderImpl(element, this.container);
+      };
 
   currentHookFiber.memorizedState.push(hook);
   currentHookIndex++;
