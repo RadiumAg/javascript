@@ -86,7 +86,7 @@ describe('AReact Concurrent', () => {
 });
 
 describe('Function component', () => {
-  it.only('should render function component', async () => {
+  it.only('should render Function component', async () => {
     const container = document.createElement('div');
     function App() {
       return (
@@ -104,6 +104,35 @@ describe('Function component', () => {
 
     expect(container.innerHTML).toBe(
       '<div id="foo" class="bar"><button>Add</button></div>'
+    );
+  });
+});
+
+describe('Function component', () => {
+  it('should render nested Function component', async () => {
+    const container = document.createElement('div');
+    function App(props) {
+      return (
+        <div id="foo" className="bar">
+          <div id="bar">{props.title}</div>
+          <button>Add</button>
+          {props.children}
+        </div>
+      );
+    }
+
+    const root = AReact.createRoot(container);
+    await AReact.act(() => {
+      root.render(
+        <App title="main title">
+          <App title="sub title" />
+        </App>
+      );
+      expect(container.innerHTML).toBe('');
+    });
+
+    expect(container.innerHTML).toBe(
+      '<div id="foo" class="bar"><div id="bar">main title</div><button>Add</button><div id="foo" class="bar"><div id="bar">sub title</div><button>Add</button></div></div>'
     );
   });
 });
