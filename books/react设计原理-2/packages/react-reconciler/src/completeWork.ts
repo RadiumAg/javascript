@@ -9,14 +9,14 @@ import { FiberNode } from './fiber';
 import {
   Fragment,
   FunctionComponent,
-  HostComponent,
+  HostComponent, 
   HostRoot,
   HostText,
 } from './workTags';
 import { NoFlags, Ref, Update } from './fiberFlags';
 
 function markUpdate(fiber: FiberNode) {
-  fiber.flags |= Update;
+  fiber.flags |= Update; 
 }
 
 function markRef(fiber: FiberNode) {
