@@ -35,7 +35,7 @@ function childReconciler(shouldTrackEffects: boolean) {
 
   function deleteRemainingChildren(
     returnFiber: FiberNode,
-    currentFirstChild: FiberNode | null
+    currentFirstChild: FiberNode | null,
   ) {
     if (!shouldTrackEffects) {
       return;
@@ -51,7 +51,7 @@ function childReconciler(shouldTrackEffects: boolean) {
   function reconcileSingleElement(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
-    element: ReactElement
+    element: ReactElement,
   ) {
     const key = element.key;
     // eslint-disable-next-line no-restricted-syntax
@@ -100,7 +100,7 @@ function childReconciler(shouldTrackEffects: boolean) {
   function reconcileSingleTextNode(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
-    content: string | number
+    content: string | number,
   ) {
     while (currentFiber !== null) {
       // update
@@ -145,7 +145,7 @@ function childReconciler(shouldTrackEffects: boolean) {
   function reconcileChildrenArray(
     returnFiber: FiberNode,
     currentFirstChild: FiberNode | null,
-    newChild: any[]
+    newChild: any[],
   ) {
     // 最后一个可复用fiber在current的index
     let lastPlacedIndex = 0;
@@ -194,7 +194,7 @@ function childReconciler(shouldTrackEffects: boolean) {
           'currentIndex',
           current.index,
           'lastPlacedIndex',
-          lastPlacedIndex
+          lastPlacedIndex,
         );
         const oldIndex = current.index;
         if (oldIndex < lastPlacedIndex) {
@@ -213,7 +213,7 @@ function childReconciler(shouldTrackEffects: boolean) {
 
     // 将移动的标记为移动
     // 4.将Map中剩下的标记为删除
-    existingChildren.forEach(fiber => {
+    existingChildren.forEach((fiber) => {
       deleteChild(returnFiber, fiber);
     });
 
@@ -233,7 +233,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     returnFiber: FiberNode,
     existingChildren: existingChildren,
     index: number,
-    element: any
+    element: any,
   ): FiberNode | null {
     const keyToUse = element.key !== null ? element.key : index;
     const before = existingChildren.get(keyToUse);
@@ -255,12 +255,12 @@ function childReconciler(shouldTrackEffects: boolean) {
       switch (element.$$typeof) {
         case REACT_ELEMENT_TYPE:
           if (element.type === REACT_FRAGMENT_TYPE) {
-            return updateFragement(
+            return updateFragment(
               returnFiber,
               before,
               element,
               keyToUse,
-              existingChildren
+              existingChildren,
             );
           }
           if (before && before.type === element.type) {
@@ -271,21 +271,16 @@ function childReconciler(shouldTrackEffects: boolean) {
           return createFiberFromElement(element);
       }
 
-      // TODO 数组类型
-      if (Array.isArray(element) && __DEV__) {
-        console.warn('还未实现数组类型的child');
-        return null;
+      // 数组类型;
+      if (Array.isArray(element)) {
+        return updateFragment(
+          returnFiber,
+          before,
+          element,
+          keyToUse,
+          existingChildren,
+        );
       }
-    }
-
-    if (Array.isArray(element)) {
-      return updateFragement(
-        returnFiber,
-        before,
-        element,
-        keyToUse,
-        existingChildren
-      );
     }
 
     return null;
@@ -294,7 +289,7 @@ function childReconciler(shouldTrackEffects: boolean) {
   return function reconcileChildFibers(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
-    newChild: ReactElement
+    newChild: ReactElement,
   ) {
     const isUnkeyedTopLevelFragment =
       typeof newChild === 'object' &&
@@ -316,7 +311,7 @@ function childReconciler(shouldTrackEffects: boolean) {
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
-            reconcileSingleElement(returnFiber, currentFiber, newChild)
+            reconcileSingleElement(returnFiber, currentFiber, newChild),
           );
 
         default:
@@ -330,7 +325,7 @@ function childReconciler(shouldTrackEffects: boolean) {
     // HostText
     if (typeof newChild === 'string' || typeof newChild === 'number') {
       return placeSingleChild(
-        reconcileSingleTextNode(returnFiber, currentFiber, newChild)
+        reconcileSingleTextNode(returnFiber, currentFiber, newChild),
       );
     }
 
@@ -359,12 +354,12 @@ function useFiber(fiber: FiberNode, pendingProps: Props): FiberNode {
   return clone;
 }
 
-function updateFragement(
+function updateFragment(
   returnFiber: FiberNode,
   current: FiberNode | undefined,
   elements: any[],
   key: Key,
-  existingChildren: existingChildren
+  existingChildren: existingChildren,
 ) {
   let fiber;
 

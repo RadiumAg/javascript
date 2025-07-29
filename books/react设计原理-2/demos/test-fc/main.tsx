@@ -3,6 +3,10 @@ import { useEffect } from 'react';
 import { useTransition } from 'react';
 import ReactDOM from 'react-dom';
 
+const Children = () => {
+  return <div>children</div>;
+};
+
 const App = () => {
   const [state, setState] = useState(false);
 
@@ -22,14 +26,16 @@ const App = () => {
 
   return (
     <div
+      id="container"
       onClick={() => {
         startTransition(() => {
           setState(!state);
         });
       }}
     >
-      {/* <Children /> */}
       {children}
+      {isPending}
+      <Children />
     </div>
   );
 };

@@ -36,7 +36,7 @@ export function createContainer(container: Container) {
  */
 export function updateContainer(
   element: ReactElement | null,
-  root: FiberRootNode
+  root: FiberRootNode,
 ) {
   const hostRootFiber = root.current;
   const lane = requestUpdateLanes();
@@ -44,7 +44,7 @@ export function updateContainer(
   const update = createUpdate<ReactElement | null>(element, lane);
   enqueueUpdate(
     hostRootFiber.updateQueue as UpdateQueue<ReactElement | null>,
-    update
+    update,
   );
   scheduleUpdateOnFiber(hostRootFiber, lane);
   return element;
