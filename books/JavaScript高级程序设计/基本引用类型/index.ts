@@ -12,6 +12,7 @@
     const parseTime = Date.parse('May 23, 2019');
     const someDate = new Date(parseTime);
     console.log('parseTime', parseTime);
+    console.log(new Date('5/23/2019')); // 会在后台调用Date.parese
   })();
   // 如果直接把表示日期的字符串传给Date构造函数，那么Date会在后台调用Date.parse();
   (() => {
@@ -20,9 +21,19 @@
   })();
 
   // Date.UTC
+  /**
+   *
+   *  new Date(year, monthIndex)
+      new Date(year, monthIndex, day)
+      new Date(year, monthIndex, day, hours)
+      new Date(year, monthIndex, day, hours, minutes)
+      new Date(year, monthIndex, day, hours, minutes, seconds)
+      new Date(year, monthIndex, day, hours, minutes, seconds, milliseconds)
+   *
+   */
   (() => {
-    const y2k = new Date(Date.UTC(2000, 0));
-    console.log(y2k);
+    const y2k = new Date(2000, 1, 2);
+    console.log('Date.UTC', y2k);
   })();
 })();
 
