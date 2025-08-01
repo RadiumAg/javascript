@@ -80,7 +80,7 @@
 };
 
 // Number
-(() => {
+() => {
   // toFixed,保留小数位的位数，存在四舍五入
   (() => {
     console.log((1.2222222).toFixed(2));
@@ -110,4 +110,16 @@
     console.log(Number.isInteger(1.0));
     console.log(Number.isInteger(1.01));
   })();
+};
+
+// 字符串操作方法
+(() => {
+  (() => {
+    let stringValue = 'hello ';
+    let result = stringValue.concat('hello world');
+    console.log(result);
+    console.log(stringValue);
+  })();
+
+  //
 })();
