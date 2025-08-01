@@ -1,7 +1,7 @@
 // 在不给Date构造函数传参的情况下，创建对象保存当前日期和时间
 // 要基于其他日期和时间创建对象，必须传入其毫秒表示
 // 为此提供两个辅助方法，Date.parse 和 Date.UTC
-(() => {
+() => {
   // 构造函数传参
   (() => {
     console.log(new Date(123123123132));
@@ -35,7 +35,7 @@
     const y2k = new Date(2000, 1, 2);
     console.log('Date.UTC', y2k);
   })();
-})();
+};
 
 () => {
   () => {
@@ -58,7 +58,7 @@
     console.log(pattern.lastIndex);
   };
 
-  (() => {
+  () => {
     let text = 'cat, bat, sat, fat';
     let pattern = /.at/y;
     let matches = pattern.exec(text);
@@ -76,22 +76,27 @@
     console.log(matches.index); // 5
     console.log(matches[0]); // bat
     console.log(pattern.lastIndex); // 8
-  })();
+  };
 };
 
 // Number
-() => {
+(() => {
+  // toFixed,保留小数位的位数，存在四舍五入
+  (() => {
+    console.log((1.2222222).toFixed(2));
+  })();
+
   // toExponential
-  // toExponential()也接收一个参数，表示结果中小数的位数
-  () => {
+  // toExponential()也接收一个参数，表示结果中小数的位数,科学计数法
+  (() => {
     const num = 10;
     console.log(num.toExponential(1));
     console.log(num.toExponential(2));
     console.log(num.toExponential(3));
-  };
+  })();
 
   // toPrecision()
-  // 会根据情况返回最合理的输出结果
+  // 会根据情况返回最合理的输出结果，有效数字的位数
   (() => {
     let num = 99;
     console.log(num.toPrecision(1)); //"1e+2"
@@ -105,4 +110,4 @@
     console.log(Number.isInteger(1.0));
     console.log(Number.isInteger(1.01));
   })();
-};
+})();
