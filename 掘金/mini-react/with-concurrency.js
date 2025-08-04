@@ -1,15 +1,17 @@
 const ELEMENT_TYPE = {
   TEXT_ELEMENT: 'TEXT_ELEMENT',
 };
-const nextUnitOfWork = null;
-const isEvent = eventName => eventName.startsWith('on');
+let workInProgress = null;
+let workInProgressRoot = null;
+
+const isEvent = (eventName) => eventName.startsWith('on');
 
 function createElement(type, props, ...children) {
   return {
     type,
     props: {
       ...props,
-      children: children.map(child => {
+      children: children.map((child) => {
         if (typeof child === 'string') {
           return createTextElement(child);
         } else {
@@ -47,8 +49,8 @@ function updateComponent(element, container) {
   }
 
   Object.keys(props)
-    .filter(prop => prop !== 'children')
-    .forEach(prop => {
+    .filter((prop) => prop !== 'children')
+    .forEach((prop) => {
       if (isEvent(prop)) {
         dom.addEventListener(prop.slice(2).toLowerCase(), props[prop]);
       }
@@ -57,7 +59,7 @@ function updateComponent(element, container) {
 
   container.append(dom);
 
-  props.children?.forEach(child => {
+  props.children?.forEach((child) => {
     render(child, dom);
   });
 }
@@ -75,18 +77,19 @@ function updateFunctionComponent(element, container) {
  * @param {*} container
  */
 function render(element, container) {
-  const { type } = element;
-
-  switch (typeof type) {
-    case 'string':
-      updateComponent(element, container);
-      break;
-
-    case 'function':
-      updateFunctionComponent(element, container);
-      break;
-  }
+  workInProgressRoot = {
+    alternate: null,
+    current: {
+      stateNode: container,
+    },
+  };
 }
+
+function performUnitOfWork() {
+  beginWork();
+}
+
+function beginWork(fiber) {}
 
 function commitWork() {}
 
@@ -95,6 +98,8 @@ function commitWork() {}
  * @param {IdleDeadline} deadline
  */
 function workLoop(deadline) {
+  const nextFiber = performUnitOfWork(workInProgress);
+
   requestIdleCallback(workLoop);
 }
 
