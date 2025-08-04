@@ -209,4 +209,92 @@
 
 // 为了让一个可迭代对象能够创建多个迭代器，必须每创建一个迭代器就对应一个新计数器。为此，可以把
 // 计数器变量放到比暴力，然后通过闭包返回迭代器
-(() => {})();
+() => {
+  class Counter {
+    limit: number;
+
+    constructor(limit: number) {
+      this.limit = limit;
+    }
+
+    [Symbol.iterator]() {
+      let count = 1;
+      let limit = this.limit;
+
+      return {
+        next() {
+          if (count <= limit) {
+            return { done: false, value: count++ };
+          } else {
+            return { done: true, value: undefined };
+          }
+        },
+      };
+    }
+  }
+
+  let counter = new Counter(3);
+
+  for (let i of counter) {
+    console.log(i);
+  }
+
+  for (let i of counter) {
+    console.log(i);
+  }
+};
+
+// 提前终止迭代器
+// 可选的return()方法用于指定在迭代器提前关闭时执行的逻辑。执行跌代的结构在想让迭代器知道它不想便利到
+// 可迭代对象耗尽时，就可以关闭迭代器。
+(() => {
+  class Counter {
+    constructor(limit) {
+      this.limit = limit;
+    }
+    [Symbol.iterator]() {
+      let count = 1,
+        limit = this.limit;
+      return {
+        next() {
+          if (count <= limit) {
+            return { done: false, value: count++ };
+          } else {
+            return { done: true };
+          }
+        },
+        return() {
+          console.log('Exitingearly');
+          return { done: true };
+        },
+      };
+    }
+  }
+
+  let counter1 = new Counter(5);
+
+  for (let i of counter1) {
+    if (i > 2) {
+      break;
+    }
+    console.log(i);
+  }
+  //1
+  //2
+  //Exitingearly
+  let counter2 = new Counter(5);
+  try {
+    for (let i of counter2) {
+      if (i > 2) {
+        throw 'err';
+      }
+      console.log(i);
+    }
+  } catch (e) {}
+  // 1
+  // 2
+  //Exitingearly
+  let counter3 = new Counter(5);
+  let [a, b] = counter3;
+  //Exitingearly
+})();
