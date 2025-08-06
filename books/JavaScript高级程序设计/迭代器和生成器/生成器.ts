@@ -48,6 +48,32 @@
 
 /**
  *
- *
+ * 使用yield 实现输入输出
  *
  */
+() => {
+  function* generatorFn(initial) {
+    console.log(initial);
+    console.log(yield);
+    console.log(yield);
+  }
+  const generatorObject = generatorFn('foo');
+  generatorObject.next('bar'); // foo
+  generatorObject.next('baz'); // baz
+  generatorObject.next('qux'); // qux
+};
+
+/**
+ *
+ *
+ * 产生可迭代对象
+ *
+ */
+(() => {
+  function* generatorFn() {
+    yield* [1, 2, 3];
+  }
+  for (const x of generatorFn()) {
+    console.log(x);
+  }
+})();
