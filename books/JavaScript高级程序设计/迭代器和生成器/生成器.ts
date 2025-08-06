@@ -34,7 +34,7 @@
  *
  *
  */
-(() => {
+() => {
   function* generatorFn() {
     yield 1;
     yield 2;
@@ -44,4 +44,10 @@
   for (const x of generatorFn()) {
     console.log(x);
   }
-})();
+};
+
+/**
+ *
+ *
+ *
+ */
