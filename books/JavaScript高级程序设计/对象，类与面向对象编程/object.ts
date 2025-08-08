@@ -105,7 +105,7 @@
 })();
 
 // 合并对象Object.assign
-// Object.propertyIsEnumerable() === true && Object.hasOwnProperty() === true
+// 需要满足条件： Object.propertyIsEnumerable() === true && Object.hasOwnProperty() === true
 () => {
   let dest, src, result;
   dest = {};
