@@ -23,3 +23,20 @@ arguments不会自动反映函数参数的变化
 增加了保留字（比如protected、static和interface）
  * 
  */
+
+
+
+(()=>{
+/**
+ * 
+ * [Object: null prototype] {
+  dirname: '/Users/zly/Desktop/work/javascript/books/ECMAScript 6 入门/Module',
+  filename: '/Users/zly/Desktop/work/javascript/books/ECMAScript 6 入门/Module/index.js',
+  resolve: [Function: resolve],
+  url: 'file:///Users/zly/Desktop/work/javascript/books/ECMAScript%206%20%E5%85%A5%E9%97%A8/Module/index.js'
+ }
+ * 
+ */
+  console.log(import.meta);
+  
+})()
