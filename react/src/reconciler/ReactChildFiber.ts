@@ -1,6 +1,6 @@
-import { createFiberFromElement, createFiberFromText, createWorkInProgress } from '../types/Fiber.js';
-import { REACT_ELEMENT_TYPE } from '../types/ReactElement.js';
-import { Placement, Deletion, ChildDeletion, NoFlags, HostText } from '../types/constants.js';
+import { createFiberFromElement, createFiberFromText, createWorkInProgress } from '../types/Fiber.ts';
+import { REACT_ELEMENT_TYPE } from '../types/ReactElement.ts';
+import { Placement, Deletion, ChildDeletion, NoFlags, HostText } from '../types/constants.ts';
 
 /**
  * 创建子Fiber协调器

@@ -13,7 +13,7 @@ import {
   Priority,
   Lanes,
   Lane,
-} from '../types/constants.js';
+} from '../types/constants.ts';
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
 

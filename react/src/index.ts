@@ -4,7 +4,7 @@ export {
   cloneElement, 
   createFragment,
   isValidElement
-} from './types/ReactElement.js';
+} from './types/ReactElement.ts';
 
 // 类型导出
 export type {
@@ -13,7 +13,7 @@ export type {
   ComponentType,
   RefType,
   Key
-} from './types/ReactElement.js';
+} from './types/ReactElement.ts';
 
 export {
   useState,
@@ -23,13 +23,13 @@ export {
   useReducer,
   useRef,
   useContext
-} from './hooks/index.js';
+} from './hooks/index.ts';
 
 export {
   startTransition,
   useTransition,
   useDeferredValue
-} from './hooks/index.js';
+} from './hooks/index.ts';
 
 // React组件相关
 export interface ComponentProps {
@@ -308,8 +308,8 @@ const ReactNoopUpdateQueue: ReactNoopUpdateQueue = {
 };
 
 // 重新导入类型
-import { ReactElement, ReactNode } from './types/ReactElement.js';
-import { RefType } from './types/ReactElement.js';
-import { useEffect } from './hooks/index.js';
+import { ReactElement, ReactNode } from './types/ReactElement.ts';
+import { RefType } from './types/ReactElement.ts';
+import { useEffect } from './hooks/index.ts';
 
 const __DEV__ = process.env.NODE_ENV !== 'production';

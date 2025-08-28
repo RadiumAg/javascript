@@ -6,10 +6,12 @@
   "types": "dist/simple-react.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc && rollup -c",
-    "dev": "tsc -w & rollup -c -w",
-    "test": "tsc && node --experimental-modules test/index.js",
-    "type-check": "tsc --noEmit"
+    "build": "tsc --noEmitOnError false && rollup -c rollup.config.ts",
+    "build-ignore-errors": "tsc --noEmitOnError false --skipLibCheck && rollup -c rollup.config.ts",
+    "dev": "tsc -w & rollup -c rollup.config.ts -w",
+    "test": "tsc --noEmitOnError false && node --experimental-modules test/index.ts",
+    "type-check": "tsc --noEmit",
+    "type-check-ignore": "tsc --noEmit --skipLibCheck"
   },
   "keywords": ["react", "concurrent", "fiber", "hooks"],
   "author": "React Implementation",

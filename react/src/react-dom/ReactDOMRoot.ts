@@ -1,7 +1,7 @@
-import { createFiber } from '../types/Fiber.js';
-import { createUpdateQueue, createUpdate, enqueueUpdate } from '../types/UpdateQueue.js';
-import { scheduleUpdateOnFiber } from '../reconciler/ReactFiberWorkLoop.js';
-import { HostRoot, NoLanes, ConcurrentMode } from '../types/constants.js';
+import { createFiber } from '../types/Fiber.ts';
+import { createUpdateQueue, createUpdate, enqueueUpdate } from '../types/UpdateQueue.ts';
+import { scheduleUpdateOnFiber } from '../reconciler/ReactFiberWorkLoop.ts';
+import { HostRoot, NoLanes, ConcurrentMode } from '../types/constants.ts';
 
 /**
  * React DOM Root 实现

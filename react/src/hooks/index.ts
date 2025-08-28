@@ -1,8 +1,8 @@
 // React Hooks 系统的 TypeScript 实现
 
-import { Fiber, Hook } from '../types/Fiber.js';
-import { Lanes, Lane, NoLanes } from '../types/constants.js';
-import { Update, UpdateQueue, createUpdate, createUpdateQueue, enqueueUpdate, processUpdateQueue } from '../types/UpdateQueue.js';
+import { Fiber, Hook } from '../types/Fiber.ts';
+import { Lanes, Lane, NoLanes } from '../types/constants.ts';
+import { Update, UpdateQueue, createUpdate, createUpdateQueue, enqueueUpdate, processUpdateQueue } from '../types/UpdateQueue.ts';
 
 // Hook 类型定义
 type Dispatch<A> = (value: A) => void;

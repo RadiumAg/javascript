@@ -1,4 +1,4 @@
-import { createWorkInProgress, createFiberFromElement, createFiberFromText } from '../types/Fiber.js';
+import { createWorkInProgress, createFiberFromElement, createFiberFromText } from '../types/Fiber.ts';
 import { 
   FunctionComponent,
   HostComponent,
@@ -13,9 +13,9 @@ import {
   ChildDeletion,
   NoLanes,
   OffscreenComponent,
-} from '../types/constants.js';
-import { processUpdateQueue } from '../types/UpdateQueue.js';
-import { shouldSetTextContent, createTextInstance, createInstance } from '../react-dom/ReactDOMHostConfig.js';
+} from '../types/constants.ts';
+import { processUpdateQueue } from '../types/UpdateQueue.ts';
+import { shouldSetTextContent, createTextInstance, createInstance } from '../react-dom/ReactDOMHostConfig.ts';
 
 // 当前正在渲染的lanes
 let renderLanes = NoLanes;

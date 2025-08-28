@@ -1,4 +1,4 @@
-import { HostComponent, HostText, HostRoot, FunctionComponent, NoFlags, Update, Ref } from '../types/constants.js';
+import { HostComponent, HostText, HostRoot, FunctionComponent, NoFlags, Update, Ref } from '../types/constants.ts';
 
 /**
  * 完成工作 - Fiber完成阶段

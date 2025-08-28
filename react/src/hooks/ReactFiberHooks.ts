@@ -1,7 +1,7 @@
-import { scheduleUpdateOnFiber } from '../reconciler/ReactFiberWorkLoop.js';
-import { createUpdate, enqueueUpdate } from '../types/UpdateQueue.js';
-import { requestUpdateLane, getCurrentEventPriority } from '../scheduler/SchedulerPriorities.js';
-import { NoLanes, HookLayout, HookPassive } from '../types/constants.js';
+import { scheduleUpdateOnFiber } from '../reconciler/ReactFiberWorkLoop.ts';
+import { createUpdate, enqueueUpdate } from '../types/UpdateQueue.ts';
+import { requestUpdateLane, getCurrentEventPriority } from '../scheduler/SchedulerPriorities.ts';
+import { NoLanes, HookLayout, HookPassive } from '../types/constants.ts';
 
 // 全局Hooks状态
 let currentlyRenderingFiber = null;

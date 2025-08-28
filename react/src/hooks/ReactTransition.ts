@@ -3,9 +3,9 @@ import {
   setCurrentUpdatePriority,
   claimNextTransitionLane,
   mergeLanes
-} from '../scheduler/SchedulerPriorities.js';
-import { scheduleCallback,  } from '../scheduler/Scheduler.js';
-import { NoLane, NoLanes, NormalPriority, TransitionLane1 } from '../types/constants.js';
+} from '../scheduler/SchedulerPriorities.ts';
+import { scheduleCallback,  } from '../scheduler/Scheduler.ts';
+import { NoLane, NoLanes, NormalPriority, TransitionLane1 } from '../types/constants.ts';
 
 // Transition 上下文
 let currentTransition = null;

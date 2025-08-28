@@ -5,7 +5,7 @@ import {
   requestPaint,
   getCurrentPriorityLevel,
   runWithPriority,
-} from '../scheduler/Scheduler.js';
+} from '../scheduler/Scheduler.ts';
 
 import {
   lanesToSchedulerPriority,
@@ -21,11 +21,11 @@ import {
   markSkippedUpdateLanes,
   getSkippedLanes,
   resetSkippedLanes,
-} from '../scheduler/SchedulerPriorities.js';
+} from '../scheduler/SchedulerPriorities.ts';
 
 import {
   createWorkInProgress,
-} from '../types/Fiber.js';
+} from '../types/Fiber.ts';
 
 import {
   HostRoot,
@@ -39,7 +39,7 @@ import {
   NoLane,
   SyncLane,
   NoLanes
-} from '../types/constants.js';
+} from '../types/constants.ts';
 
 // 全局状态
 let workInProgressRoot = null;

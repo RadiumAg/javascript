@@ -1,7 +1,7 @@
 // Reconciler 模块入口文件
 // 简化的React Fiber Reconciler实现
 
-import { Fiber, createWorkInProgress } from '../types/Fiber.js';
+import { Fiber, createWorkInProgress } from '../types/Fiber.ts';
 import { 
   Lanes, 
   Lane,
@@ -21,19 +21,19 @@ import {
   Placement,
   Update,
   Deletion
-} from '../types/constants.js';
-import { ReactElement, ReactNode } from '../types/ReactElement.js';
+} from '../types/constants.ts';
+import { ReactElement, ReactNode } from '../types/ReactElement.ts';
 import { 
   scheduleCallback,
   shouldYieldToHost,
   getCurrentPriorityLevel,
   Task
-} from '../scheduler/Scheduler.js';
+} from '../scheduler/Scheduler.ts';
 import {
   lanesToSchedulerPriority,
   getCurrentUpdatePriority,
   getHighestPriorityLane
-} from '../scheduler/SchedulerPriorities.js';
+} from '../scheduler/SchedulerPriorities.ts';
 
 // FiberRoot 类型定义
 export interface FiberRoot {

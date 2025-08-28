@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo, useTransition, startTransition } from '../src/index.js';
-import ReactDOM from '../src/react-dom/index.js';
+import React, { useState, useEffect, useCallback, useMemo, useTransition, startTransition } from '../src/index.ts';
+import ReactDOM from '../src/react-dom/index.ts';
 
 // 模拟DOM环境
 if (typeof document === 'undefined') {

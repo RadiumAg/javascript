@@ -12,8 +12,8 @@ import {
   DidCapture,
   StrictLegacyMode,
   HostRoot 
-} from './constants.js';
-import { Fiber } from './Fiber.js';
+} from './constants.ts';
+import { Fiber } from './Fiber.ts';
 
 /**
  * 更新对象接口

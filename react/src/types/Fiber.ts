@@ -18,8 +18,8 @@ import {
   Lanes,
   Lane,
   TypeOfMode,
-} from './constants.js';
-import { ReactElement, ComponentType, RefType, ReactNode } from './ReactElement.js';
+} from './constants.ts';
+import { ReactElement, ComponentType, RefType, ReactNode } from './ReactElement.ts';
 
 // Update Queue 相关类型
 export interface Update<State = any> {
