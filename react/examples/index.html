@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简易React示例应用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .app {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .tabs button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tabs button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        .counter, .todo-list, .concurrent-demo {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .counter h2, .todo-list h2, .concurrent-demo h2 {
+            color: #495057;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .counter p {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #007acc;
+            font-weight: bold;
+        }
+
+        .counter button, .todo-list button, .concurrent-demo button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .counter button:hover, .todo-list button:hover, .concurrent-demo button:hover {
+            background: #005a9e;
+        }
+
+        .counter input, .todo-list input {
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin: 0.25rem;
+        }
+
+        .todo-list ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .todo-list li {
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .todo-list li:last-child {
+            border-bottom: none;
+        }
+
+        .todo-list label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .todo-list input[type="checkbox"] {
+            margin-right: 0.75rem;
+        }
+
+        .theme-dark {
+            background: #343a40 !important;
+            color: #fff !important;
+        }
+
+        .theme-light {
+            background: #fff;
+            color: #333;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        footer ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        footer li {
+            padding: 0.25rem 0;
+            color: #28a745;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+            margin: 1rem 0;
+        }
+
+        small {
+            color: #6c757d;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            background: #ffeaa7;
+            color: #2d3436;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="loading">
+            <h2>🚀 加载简易React应用中...</h2>
+            <p>正在初始化React实例和组件...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // 由于浏览器不支持直接导入相对路径的ES模块
+        // 这里提供一个简化的演示版本
+        
+        console.log('🎯 浏览器演示版本');
+        console.log('完整功能请运行: npm test 或者 node examples/complete-app.js');
+        
+        const root = document.getElementById('root');
+        
+        root.innerHTML = `
+            <div class="app">
+                <header>
+                    <h1>🚀 简易React示例应用</h1>
+                    <p>展示自实现的React核心功能</p>
+                </header>
+                
+                <nav>
+                    <div class="tabs">
+                        <button style="background: #007acc; color: white; font-weight: bold;">演示预览</button>
+                    </div>
+                </nav>
+
+                <main>
+                    <div class="counter">
+                        <h2>📊 实现的核心功能</h2>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                            <div style="background: #e3f2fd; padding: 1rem; border-radius: 6px;">
+                                <h3>🏗️ 核心架构</h3>
+                                <ul style="margin-top: 0.5rem; list-style: disc; margin-left: 1.5rem;">
+                                    <li>Fiber架构</li>
+                                    <li>双缓存机制</li>
+                                    <li>协调算法 (Reconciler)</li>
+                                    <li>更新队列系统</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #f3e5f5; padding: 1rem; border-radius: 6px;">
+                                <h3>⚡ 并发特性</h3>
+                                <ul style="margin-top: 0.5rem; list-style: disc; margin-left: 1.5rem;">
+                                    <li>Scheduler调度器</li>
+                                    <li>时间切片</li>
+                                    <li>startTransition</li>
+                                    <li>优先级管理</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #e8f5e8; padding: 1rem; border-radius: 6px;">
+                                <h3>🪝 Hooks系统</h3>
+                                <ul style="margin-top: 0.5rem; list-style: disc; margin-left: 1.5rem;">
+                                    <li>useState</li>
+                                    <li>useEffect</li>
+                                    <li>useCallback</li>
+                                    <li>useMemo</li>
+                                    <li>useTransition</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #fff3cd; padding: 1rem; border-radius: 6px;">
+                                <h3>🌐 ReactDOM</h3>
+                                <ul style="margin-top: 0.5rem; list-style: disc; margin-left: 1.5rem;">
+                                    <li>createRoot</li>
+                                    <li>render 方法</li>
+                                    <li>DOM操作封装</li>
+                                    <li>事件系统基础</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="todo-list">
+                        <h2>🧪 测试运行指南</h2>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+                            <h4>运行完整测试:</h4>
+                            <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 3px; display: block; margin: 0.5rem 0;">
+                                cd /path/to/react && npm test
+                            </code>
+                            
+                            <h4 style="margin-top: 1rem;">运行示例应用:</h4>
+                            <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 3px; display: block; margin: 0.5rem 0;">
+                                node examples/complete-app.js
+                            </code>
+                            
+                            <h4 style="margin-top: 1rem;">查看项目结构:</h4>
+                            <code style="background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 3px; display: block; margin: 0.5rem 0;">
+                                tree src/ -I node_modules
+                            </code>
+                        </div>
+                    </div>
+                    
+                    <div class="concurrent-demo">
+                        <h2>📁 项目结构</h2>
+                        <pre style="background: #f8f9fa; padding: 1rem; border-radius: 6px; overflow-x: auto; font-family: 'Courier New', monospace; line-height: 1.4;">
+src/
+├── types/                 # 核心类型定义
+│   ├── constants.js      # 常量定义
+│   ├── ReactElement.js   # ReactElement类型
+│   ├── Fiber.js          # Fiber节点类型
+│   └── UpdateQueue.js    # 更新队列
+├── scheduler/            # 调度器
+│   ├── Scheduler.js      # 核心调度逻辑
+│   └── SchedulerPriorities.js # 优先级管理
+├── reconciler/           # 协调器
+│   ├── ReactFiberWorkLoop.js # 工作循环
+│   ├── ReactFiberBeginWork.js # 开始阶段
+│   ├── ReactFiberCompleteWork.js # 完成阶段
+│   └── ReactChildFiber.js # 子节点协调
+├── hooks/                # Hooks实现
+│   ├── ReactFiberHooks.js # Hooks系统
+│   └── ReactTransition.js # Transition特性
+├── react-dom/            # DOM渲染器
+│   ├── ReactDOMRoot.js   # 根节点管理
+│   └── index.js          # DOM入口
+└── index.js              # React主入口
+                        </pre>
+                    </div>
+                </main>
+
+                <footer>
+                    <hr>
+                    <p><strong>✨ 实现的核心特性:</strong></p>
+                    <ul>
+                        <li>✅ createElement, Fragment, Component类</li>
+                        <li>✅ useState, useEffect, useCallback, useMemo, useReducer</li>
+                        <li>✅ useTransition, startTransition, useDeferredValue</li>
+                        <li>✅ Fiber架构和双缓存机制</li>
+                        <li>✅ 时间切片和并发特性</li>
+                        <li>✅ 协调算法和diff优化</li>
+                        <li>✅ ReactDOM.createRoot 和渲染系统</li>
+                        <li>✅ Context API 基础实现</li>
+                    </ul>
+                    
+                    <hr style="margin-top: 1.5rem;">
+                    <p style="text-align: center;">
+                        <small>© 2024 简易React实现 - 学习React源码的最佳实践项目</small>
+                    </p>
+                </footer>
+            </div>
+        `;
+    </script>
+</body>
+</html>

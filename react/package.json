@@ -1,0 +1,26 @@
+{
+  "name": "simple-react",
+  "version": "1.0.0",
+  "description": "A simple React implementation with concurrent features",
+  "main": "dist/simple-react.js",
+  "types": "dist/simple-react.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "dev": "tsc -w & rollup -c -w",
+    "test": "tsc && node --experimental-modules test/index.js",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": ["react", "concurrent", "fiber", "hooks"],
+  "author": "React Implementation",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^3.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^18.0.0",
+    "tslib": "^2.5.0"
+  }
+}
