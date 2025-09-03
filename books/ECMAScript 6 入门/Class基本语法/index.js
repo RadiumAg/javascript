@@ -10,7 +10,7 @@
 
   // 等同于
 
-  Point.prototype = {
+  Point.prototype = { 
     constructor() {},
     toString() {},
     toValue() {},

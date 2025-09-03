@@ -306,7 +306,7 @@ function commitRoot(root: FiberRootNode) {
     // mutation
     // 更新 dom
     commitMutationEffect(finishedWork, root);
-
+ 
     // Fiber Tree切换
     root.current = finishedWork;
 
