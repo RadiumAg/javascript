@@ -279,7 +279,7 @@ function commitRoot(root: FiberRootNode) {
 
   markRootFinished(root, lane);
 
-  // 执行useEffect回调
+  // 执行useEffect回调，是异步的，会在commitMutationEffect完成后执行
   if (
     ((finishedWork.flags & PassiveMask) !== NoFlags ||
       (finishedWork.subtreeFlags & PassiveMask) !== NoFlags) &&

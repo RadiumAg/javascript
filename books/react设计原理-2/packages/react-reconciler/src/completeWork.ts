@@ -24,7 +24,7 @@ function markRef(fiber: FiberNode) {
 }
 
 /**
- * 创建node并下一层
+ *  创建stateNode并且构建根据fiber构建fiber树
  *
  * @param workInProgress
  * @returns
