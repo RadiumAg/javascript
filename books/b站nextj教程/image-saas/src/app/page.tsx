@@ -1,9 +1,11 @@
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Textarea } from '@/components/Textarea';
-import Image from 'next/image';
+import { db } from '@/server/db/db';
 
-export default function Home() {
+export default async function Home() {
+  const users = await db.query.User.findMany();
+
   return (
     <div className="h-screen flex justify-center items-center">
       <form className="w-full max-w-md flex flex-col gap-4">
