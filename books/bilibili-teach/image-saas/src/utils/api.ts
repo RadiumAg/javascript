@@ -1,13 +1,15 @@
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { TestRouter } from './trpc';
+import {  httpBatchLink } from '@trpc/client';
+import { createTRPCReact } from '@trpc/react-query';
 
-const trpcClient = createTRPCClient<TestRouter>({
+const trpcClientReact = createTRPCReact<TestRouter>({});
+
+const trpcClient = trpcClientReact.createClient({
   links: [
     httpBatchLink({
       url: 'http://localhost:3000/api/trpc',
-      // You can pass any HTTP headers you wish here
     }),
   ],
 });
 
-export { trpcClient };
+export { trpcClient, trpcClientReact };
