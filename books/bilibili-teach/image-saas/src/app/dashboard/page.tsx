@@ -1,8 +1,16 @@
+'use client';
+
+import { useEffect } from 'react';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Textarea } from '@/components/Textarea';
+import { trpcClient } from '@/utils/api';
 
-export default async function Home() {
+export default function Home() {
+  useEffect(() => {
+    trpcClient.hello.query();
+  });
+
   return (
     <div className="h-screen flex justify-center items-center">
       <form className="w-full max-w-md flex flex-col gap-4">
