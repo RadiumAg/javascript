@@ -7,10 +7,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const session = await getServerSession();
+  const session = await getServerSession();
 
-  // if (!session?.user) {
-  //   redirect('/api/auth/signin');
-  // }
+  if (!session?.user) {
+    redirect('/api/auth/signin');
+  }
   return <>{children}</>;
 }
