@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { v4 as uuidV4 } from 'uuid';
 import {
   PutObjectCommand,
   PutObjectCommandInput,
@@ -24,10 +25,9 @@ const fileRoutes = router({
 
       const params: PutObjectCommandInput = {
         Bucket: process.env.OSS_BUCKET!,
-        Key: `${dateString}/${input.filename}`,
+        Key: `${dateString}-${input.filename}-${uuidV4()}`,
         ContentType: input.contentType,
         ContentLength: input.size,
-        Expires: new Date(Date.now() + 1000 * 60 * 15),
       };
 
       const command = new PutObjectCommand(params);
@@ -42,7 +42,7 @@ const fileRoutes = router({
       });
 
       const url = await getSignedUrl(s3Client, command, {
-        expiresIn: 60 * 60 * 24,
+        expiresIn: 60 * 2,
       });
 
       return {
