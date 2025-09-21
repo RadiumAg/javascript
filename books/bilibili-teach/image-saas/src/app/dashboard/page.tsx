@@ -7,7 +7,7 @@ import { trpcClientReact } from '@/utils/api';
 
 export default function Home() {
   const { data, isError, error, isLoading } = trpcClientReact.hello.useQuery(
-    null,
+    undefined,
     { refetchOnWindowFocus: false },
   );
 
@@ -18,6 +18,7 @@ export default function Home() {
         <Input name="name" placeholder="App Name"></Input>
         <Textarea name="description" placeholder="Description"></Textarea>
         <Button type="submit">Submit</Button>
+
         {data?.hello}
         {isLoading && <div>Loading...</div>}
         {isError && <div>Error: {error.message}</div>}
