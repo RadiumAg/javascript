@@ -25,7 +25,7 @@ const fileRoutes = router({
 
       const params: PutObjectCommandInput = {
         Bucket: process.env.OSS_BUCKET!,
-        Key: `${dateString}-${input.filename}-${uuidV4()}`,
+        Key: `${dateString}/${input.filename}-${uuidV4()}`,
         ContentType: input.contentType,
         ContentLength: input.size,
       };
