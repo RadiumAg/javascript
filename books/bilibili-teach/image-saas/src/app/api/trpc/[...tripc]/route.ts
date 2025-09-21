@@ -1,13 +1,12 @@
 import { NextRequest } from 'next/server';
+import { appRouter } from '@/server/trpc-middlewares/router';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { createTRPCContext, testRouter } from '@/utils/trpc';
 
 const handler = (request: NextRequest) => {
   return fetchRequestHandler({
     endpoint: '/api/trpc',
     req: request,
-    router: testRouter,
-    createContext: createTRPCContext,
+    router: appRouter,
   });
 };
 

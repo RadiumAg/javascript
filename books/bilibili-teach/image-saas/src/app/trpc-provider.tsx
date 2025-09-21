@@ -1,5 +1,5 @@
 'use client';
-import { trpcClient, trpcClientReact } from '@/utils/api';
+import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import { QueryClient } from '@tanstack/react-query';
 import { FC, PropsWithChildren, useMemo } from 'react';
 
@@ -8,7 +8,7 @@ const TrpcProvider: FC<PropsWithChildren> = (props) => {
   const queryClient = useMemo(() => new QueryClient(), []);
 
   return (
-    <trpcClientReact.Provider client={trpcClient} queryClient={queryClient}>
+    <trpcClientReact.Provider client={trpcPureClient} queryClient={queryClient}>
       {children}
     </trpcClientReact.Provider>
   );

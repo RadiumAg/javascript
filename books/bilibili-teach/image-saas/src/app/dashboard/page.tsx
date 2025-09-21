@@ -1,5 +1,7 @@
 'use client';
+import { Button } from '@/components/Button';
 import { useUppyState } from '@/hooks/use-uppy-state';
+import { trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
 import { useMemo } from 'react';
@@ -10,10 +12,14 @@ export default function Home() {
 
     uppy.use(AWS3, {
       shouldUseMultipart: false,
-      getUploadParameters: () => {
-        return {
-          url: '',
-        };
+      getUploadParameters: (file) => {
+        console.log('[DEBUG] upload file', file);
+
+        return trpcPureClient.file.createPresignedUrl.mutate({
+          filename: file.data instanceof File ? file.data.name : '',
+          contentType: file.data.type || '',
+          size: file.size || 0,
+        });
       },
     });
 
@@ -23,6 +29,9 @@ export default function Home() {
   const files = useUppyState(uppy, (selector) => {
     console.log(selector.files);
     return selector.files;
+  });
+  const progress = useUppyState(uppy, (selector) => {
+    return selector.totalProgress;
   });
 
   const fileShowEle = useMemo(() => {
@@ -36,12 +45,9 @@ export default function Home() {
     });
   }, [files]);
 
-  console.log(fileShowEle);
-
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-screen flex  items-start flex-col">
       <input
-        multiple
         type="file"
         onChange={(e) => {
           if (e.target.files) {
@@ -51,8 +57,16 @@ export default function Home() {
           }
         }}
       ></input>
+      <Button
+        onClick={() => {
+          uppy.upload();
+        }}
+      >
+        Upload
+      </Button>
 
       {fileShowEle}
+      <div>{progress}</div>
     </div>
   );
 }
