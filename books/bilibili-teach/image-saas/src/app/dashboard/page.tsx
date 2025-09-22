@@ -66,7 +66,6 @@ export default function Home() {
       </Button>
 
       {fileShowEle}
-      <div>{progress}</div>
     </div>
   );
 }
