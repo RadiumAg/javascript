@@ -95,7 +95,7 @@ export const authenticators = pgTable(
 );
 
 export const files = pgTable('files', {
-  id: uuid('id').notNull().primaryKey().defaultRandom(),
+  id: uuid('id').notNull().primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
   type: varchar('type', { length: 100 }).notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
@@ -108,4 +108,8 @@ export const files = pgTable('files', {
 
 export const photosRelations = relations(files, ({ one }) => ({
   photos: one(users, { fields: [files.id], references: [users.id] }),
+}));
+
+export const filesRelations = relations(files, ({ one }) => ({
+  files: one(users, { fields: [files.useId], references: [users.id] }),
 }));

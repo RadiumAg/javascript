@@ -7,6 +7,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { protectedProcedure, router } from '../trpc-middlewares/trpc';
+import { db } from '../db/db';
+import { files } from '../db/schema';
+import { v4 as uuid } from 'uuid';
 
 const fileRoutes = router({
   createPresignedUrl: protectedProcedure
@@ -50,7 +53,33 @@ const fileRoutes = router({
         method: 'PUT' as const,
       };
     }),
- 
+  saveFile: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        path: z.string(),
+        type: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { session } = ctx;
+
+      const url = new URL(input.path);
+
+      const photo = await db
+        .insert(files)
+        .values({
+          ...input,
+          id: new uuid(),
+          path: url.pathname,
+          url: url.toString(),
+          userId: session?.user?.id,
+          contentType: input.type,
+        } as any)
+        .returning();
+
+      return photo[0];
+    }),
 });
 
 export { fileRoutes };

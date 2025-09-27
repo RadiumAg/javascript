@@ -4,7 +4,7 @@ import { useUppyState } from '@/hooks/use-uppy-state';
 import { trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export default function Home() {
   const uppy = useMemo(() => {
@@ -44,6 +44,18 @@ export default function Home() {
       );
     });
   }, [files]);
+
+  useEffect(() => {
+    uppy.on("upload-success", (file, resp)=>{
+      if(file) {
+        trpcPureClient.file.saveFile.mutate({
+          name: file.data instanceof File ? file.data.name : 'test',
+          path: resp.uploadURL ?? "",
+          type: file.data.type,
+        });
+      }
+    })
+  },[])
 
   return (
     <div className="h-screen flex  items-start flex-col">
