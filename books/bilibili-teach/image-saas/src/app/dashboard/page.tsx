@@ -81,8 +81,8 @@ export default function Home() {
   });
 
   return (
-    <div className="container mx-auto ">
-      <div>
+    <div className="container mx-auto p-2">
+      <div className="pb-4">
         <UploadButton uppy={uppy}></UploadButton>
       </div>
       {isPending && <div>Loading...</div>}
