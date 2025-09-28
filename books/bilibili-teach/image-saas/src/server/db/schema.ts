@@ -102,7 +102,7 @@ export const files = pgTable('files', {
   deleteAt: timestamp('deleted_at', { mode: 'date' }).defaultNow(),
   path: varchar('path', { length: 1024 }).notNull(),
   url: varchar('url', { length: 1024 }).notNull(),
-  useId: text('user_id').notNull(),
+  userId: text('user_id').notNull(),
   contentType: varchar('content_type', { length: 100 }).notNull(),
 });
 
@@ -111,5 +111,5 @@ export const photosRelations = relations(files, ({ one }) => ({
 }));
 
 export const filesRelations = relations(files, ({ one }) => ({
-  files: one(users, { fields: [files.useId], references: [users.id] }),
+  files: one(users, { fields: [files.userId], references: [users.id] }),
 }));

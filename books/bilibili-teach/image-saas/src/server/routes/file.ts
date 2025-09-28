@@ -10,6 +10,7 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { db } from '../db/db';
 import { files } from '../db/schema';
 import { v4 as uuid } from 'uuid';
+import { desc } from 'drizzle-orm';
 
 const fileRoutes = router({
   createPresignedUrl: protectedProcedure
@@ -70,16 +71,24 @@ const fileRoutes = router({
         .insert(files)
         .values({
           ...input,
-          id: new uuid(),
+          id: uuid(),
           path: url.pathname,
           url: url.toString(),
           userId: session?.user?.id,
           contentType: input.type,
-        } as any)
+        })
         .returning();
 
       return photo[0];
     }),
+
+  listFiles: protectedProcedure.query(async () => {
+    const result = await db.query.files.findMany({
+      orderBy: [desc(files.createdAt)],
+    });
+
+    return result;
+  }),
 });
 
 export { fileRoutes };

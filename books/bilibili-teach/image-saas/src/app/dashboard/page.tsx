@@ -1,9 +1,11 @@
 'use client';
 import { Button } from '@/components/Button';
+import { UploadButton } from '@/components/feature/UploadButton';
 import { useUppyState } from '@/hooks/use-uppy-state';
-import { trpcPureClient } from '@/utils/api';
+import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
-import { Uppy } from '@uppy/core';
+import { Uppy, UppyFile } from '@uppy/core';
+import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 
 export default function Home() {
@@ -34,50 +36,57 @@ export default function Home() {
     return selector.totalProgress;
   });
 
-  const fileShowEle = useMemo(() => {
-    return Object.entries(files).map(([key, file]) => {
-      return (
-        <div key={file.id}>
-          <img src={file.preview} />
-          <div>{file.name}</div>
-        </div>
-      );
-    });
-  }, [files]);
-
   useEffect(() => {
-    uppy.on("upload-success", (file, resp)=>{
-      if(file) {
+    const handler = (file, resp) => {
+      if (file) {
         trpcPureClient.file.saveFile.mutate({
           name: file.data instanceof File ? file.data.name : 'test',
-          path: resp.uploadURL ?? "",
+          path: resp.uploadURL ?? '',
           type: file.data.type,
         });
       }
-    })
-  },[])
+    };
+
+    uppy.on('upload-success', handler);
+
+    return () => {
+      uppy.off('upload-success', handler);
+    };
+  }, []);
+
+  const { data: fileList, isPending } =
+    trpcClientReact.file.listFiles.useQuery();
+
+  const fileListEle = fileList?.map((file) => {
+    const isImage = file.contentType.startsWith('image');
+
+    return (
+      <div
+        className="w-56 h-56 flex justify-center items-center border"
+        key={file.id}
+      >
+        {isImage ? (
+          <img src={file.url} alt="file" />
+        ) : (
+          <Image
+            width={100}
+            height={100}
+            className="w-full"
+            src="/file.png"
+            alt="unknow file type"
+          />
+        )}
+      </div>
+    );
+  });
 
   return (
-    <div className="h-screen flex  items-start flex-col">
-      <input
-        type="file"
-        onChange={(e) => {
-          if (e.target.files) {
-            Array.from(e.target.files).forEach((file) => {
-              uppy.addFile(file);
-            });
-          }
-        }}
-      ></input>
-      <Button
-        onClick={() => {
-          uppy.upload();
-        }}
-      >
-        Upload
-      </Button>
-
-      {fileShowEle}
+    <div className="container mx-auto ">
+      <div>
+        <UploadButton uppy={uppy}></UploadButton>
+      </div>
+      {isPending && <div>Loading...</div>}
+      <div className="flex flex-wrap gap-4">{fileListEle}</div>
     </div>
   );
 }
