@@ -3,9 +3,10 @@ import React, { PropsWithChildren } from 'react';
 
 type DropzoneProps = {
   uppy: Uppy;
+  children: (draging: boolean) => React.ReactNode;
 };
 
-const Dropzone: React.FC<PropsWithChildren<DropzoneProps>> = (props) => {
+const Dropzone: React.FC<DropzoneProps> = (props) => {
   const { uppy, children } = props;
   const [draging, setDragging] = React.useState(false);
 
@@ -31,7 +32,7 @@ const Dropzone: React.FC<PropsWithChildren<DropzoneProps>> = (props) => {
         setDragging(false);
       }}
     >
-      {children}
+      {children(draging)}
     </div>
   );
 };

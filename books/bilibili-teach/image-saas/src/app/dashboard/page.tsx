@@ -87,8 +87,14 @@ export default function Home() {
         <UploadButton uppy={uppy}></UploadButton>
       </div>
       <Dropzone uppy={uppy}>
-        {isPending && <div>Loading...</div>}
-        <div className="flex flex-wrap gap-4">{fileListEle}</div>
+        {(draggling) => {
+          return (
+            <>
+              {isPending && <div>Loading...</div>}
+              <div className="flex flex-wrap gap-4">{fileListEle}</div>
+            </>
+          );
+        }}
       </Dropzone>
     </div>
   );
