@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/Button';
+import Dropzone from '@/components/feature/Dropzone';
 import { UploadButton } from '@/components/feature/UploadButton';
 import { useUppyState } from '@/hooks/use-uppy-state';
 import { trpcClientReact, trpcPureClient } from '@/utils/api';
@@ -85,8 +86,10 @@ export default function Home() {
       <div className="pb-4">
         <UploadButton uppy={uppy}></UploadButton>
       </div>
-      {isPending && <div>Loading...</div>}
-      <div className="flex flex-wrap gap-4">{fileListEle}</div>
+      <Dropzone uppy={uppy}>
+        {isPending && <div>Loading...</div>}
+        <div className="flex flex-wrap gap-4">{fileListEle}</div>
+      </Dropzone>
     </div>
   );
 }
