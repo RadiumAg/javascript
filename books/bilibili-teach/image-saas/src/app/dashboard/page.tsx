@@ -91,8 +91,17 @@ export default function Home() {
         {(draggling) => {
           return (
             <div
-              className={cn('flex flex-wrap  gap-4', draggling && 'bg-red-100')}
+              className={cn(
+                'flex flex-wrap gap-4 relative',
+                draggling && 'border border-dashed',
+              )}
             >
+              {draggling && (
+                <div className="absolute inset-0 bg-secondary/30 flex justify-center items-center">
+                  Drop File Here To Upload
+                </div>
+              )}
+
               {isPending && <div>Loading...</div>}
               <div className="flex flex-wrap gap-4">{fileListEle}</div>
             </div>
