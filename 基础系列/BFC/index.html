@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <style>
+      .a {
+        height: 100px;
+        width: 100px;
+        /* display: inline-block; */
+        background-color: red;
+        margin-bottom: 60px;
+      }
+
+      .b {
+        height: 100px;
+        width: 100px;
+        margin-top: 30px;
+        background-color: blue;
+      }
+
+      .c {
+        height: 100px;
+        width: 100px;
+        margin-top: 30px;
+        background-color: blue;
+      }
+
+      .d {
+        height: 90px;
+        width: 100px;
+        margin-top: 60px;
+        background-color: red;
+      }
+
+      .container {
+        display: inline-block;
+      }
+
+      .bfc {
+        overflow: hidden;
+      }
+    </style>
+
+    <div class="container">
+      <div class="a"></div>
+      <div class="bfc">
+        <div class="b"></div>
+      </div>
+
+      <div class="c">
+        <div class="d"></div>
+      </div>
+    </div>
+  </body>
+</html>
