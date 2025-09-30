@@ -1,5 +1,5 @@
 import Uppy from '@uppy/core';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 
 type DropzoneProps = {
   uppy: Uppy;
@@ -8,6 +8,7 @@ type DropzoneProps = {
 
 const Dropzone: React.FC<DropzoneProps> = (props) => {
   const { uppy, children } = props;
+  const timer = React.useRef<ReturnType<typeof setTimeout>>(null);
   const [draging, setDragging] = React.useState(false);
 
   return (
@@ -18,12 +19,21 @@ const Dropzone: React.FC<DropzoneProps> = (props) => {
       }}
       onDragLeave={(e) => {
         e.preventDefault();
-        setDragging(false);
+        if (timer.current) {
+          clearTimeout(timer.current);
+          timer.current = null;
+        }
+        timer.current = setTimeout(() => {
+          setDragging(false);
+        }, 50);
       }}
       onDragOver={(e) => {
         e.preventDefault();
+        if (timer.current) {
+          clearTimeout(timer.current);
+        }
       }}
-      onDrag={(e) => {
+      onDrop={(e) => {
         e.preventDefault();
         const files = e.dataTransfer.files;
         Array.from(files).forEach((file) => {

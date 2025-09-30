@@ -3,6 +3,7 @@ import { Button } from '@/components/Button';
 import Dropzone from '@/components/feature/Dropzone';
 import { UploadButton } from '@/components/feature/UploadButton';
 import { useUppyState } from '@/hooks/use-uppy-state';
+import { cn } from '@/lib/utils';
 import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy, UppyFile } from '@uppy/core';
@@ -89,10 +90,12 @@ export default function Home() {
       <Dropzone uppy={uppy}>
         {(draggling) => {
           return (
-            <>
+            <div
+              className={cn('flex flex-wrap  gap-4', draggling && 'bg-red-100')}
+            >
               {isPending && <div>Loading...</div>}
               <div className="flex flex-wrap gap-4">{fileListEle}</div>
-            </>
+            </div>
           );
         }}
       </Dropzone>
