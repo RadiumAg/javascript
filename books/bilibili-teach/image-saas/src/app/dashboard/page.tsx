@@ -87,7 +87,7 @@ export default function Home() {
             height={100}
             className="w-full"
             src="/file.png"
-            alt="unknow file type"
+            alt="unknew file type"
           />
         )}
       </div>
@@ -96,7 +96,15 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-2">
-      <div className="pb-4">
+      <div className="flex justify-between items-center mb-4">
+        <Button
+          onClick={() => {
+            uppy.upload();
+          }}
+        >
+          Upload
+        </Button>
+
         <UploadButton uppy={uppy}></UploadButton>
       </div>
       <Dropzone uppy={uppy}>

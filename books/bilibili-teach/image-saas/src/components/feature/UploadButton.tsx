@@ -1,6 +1,7 @@
 import Uppy from '@uppy/core';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button } from '../Button';
+import { Plus } from 'lucide-react';
 
 type UploadButtonProps = {
   uppy: Uppy;
@@ -8,10 +9,13 @@ type UploadButtonProps = {
 
 const UploadButton: React.FC<UploadButtonProps> = (props) => {
   const { uppy } = props;
+  const inputRef = React.useRef<HTMLInputElement>();
 
   return (
     <>
       <input
+        ref={inputRef}
+        className="hidden"
         type="file"
         onChange={(e) => {
           if (e.target.files) {
@@ -21,12 +25,16 @@ const UploadButton: React.FC<UploadButtonProps> = (props) => {
           }
         }}
       ></input>
+
       <Button
+        variant="ghost"
         onClick={() => {
-          uppy.upload();
+          if (inputRef.current) {
+            inputRef.current.click();
+          }
         }}
       >
-        Upload
+        <Plus />
       </Button>
     </>
   );
