@@ -1,7 +1,16 @@
 import Uppy from '@uppy/core';
 import React from 'react';
-import { Dialog, DialogContent } from '../Dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogTitle,
+  DialogFooter,
+} from '../Dialog';
+import Image from 'next/image';
 import { useUppyState } from '@/hooks/use-uppy-state';
+import { Button } from '../Button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type UploadPreviewProps = {
   uppy: Uppy;
@@ -9,11 +18,93 @@ type UploadPreviewProps = {
 
 const UploadPreview: React.FC<UploadPreviewProps> = (props) => {
   const { uppy } = props;
-  const open = useUppyState(uppy, (s) => Object.keys(s.files).length > 0);
+  const files = Object.values(useUppyState(uppy, (s) => s.files));
+  const open = files.length > 0;
+  const [index, setIndex] = React.useState(0);
+  const file = files[index];
+  const isImage = file?.data?.type?.startsWith('image');
+  if (file == null) return null;
+
+  const url = URL.createObjectURL(file?.data);
 
   return (
     <Dialog open={open}>
-      <DialogContent>Text</DialogContent>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Upload Previews</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex items-center justify-between">
+          <Button variant="ghost">
+            <ChevronLeft
+              onClick={() => {
+                if (index === 0) {
+                  setIndex(files.length - 1);
+                } else {
+                  setIndex(index - 1);
+                }
+              }}
+            ></ChevronLeft>
+          </Button>
+
+          <div className="w-56 h-56 flex justify-center items-center border">
+            {isImage ? (
+              <img src={url} alt="file" />
+            ) : (
+              <Image
+                width={100}
+                height={100}
+                className="w-full"
+                src="/file.png"
+                alt="unknew file type"
+              />
+            )}
+          </div>
+
+          <Button
+            variant="ghost"
+            onClick={() => {
+              if (index === files.length - 1) {
+                setIndex(0);
+              } else {
+                setIndex(index + 1);
+              }
+            }}
+          >
+            <ChevronRight></ChevronRight>
+          </Button>
+        </div>
+
+        <DialogFooter>
+          <Button
+            variant="destructive"
+            onClick={() => {
+              uppy.removeFile(file.id);
+              setIndex((oldIndex) => {
+                if (oldIndex < files.length - 1 && oldIndex! == 0) {
+                  return oldIndex - 1;
+                } else {
+                  return 0;
+                }
+              });
+            }}
+          >
+            Delete This
+          </Button>
+
+          <Button
+            onClick={() => {
+              uppy.upload().then(() => {
+                files.forEach((file) => {
+                  uppy.removeFile(file.id);
+                });
+              });
+            }}
+          >
+            Upload All
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 };

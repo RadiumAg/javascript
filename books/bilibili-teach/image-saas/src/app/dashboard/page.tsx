@@ -32,14 +32,6 @@ export default function Home() {
     return uppy;
   }, []);
 
-  const files = useUppyState(uppy, (selector) => {
-    console.log(selector.files);
-    return selector.files;
-  });
-  const progress = useUppyState(uppy, (selector) => {
-    return selector.totalProgress;
-  });
-
   usePasteFile({
     onFilePaste(files) {
       console.log('[DEBUG] paste file', files);

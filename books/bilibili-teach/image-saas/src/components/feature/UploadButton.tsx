@@ -9,12 +9,13 @@ type UploadButtonProps = {
 
 const UploadButton: React.FC<UploadButtonProps> = (props) => {
   const { uppy } = props;
-  const inputRef = React.useRef<HTMLInputElement>();
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <>
       <input
         ref={inputRef}
+        multiple
         className="hidden"
         type="file"
         onChange={(e) => {
