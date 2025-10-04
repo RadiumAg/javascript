@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 
-const usePasteFile = ({}: {}) => {
+const usePasteFile = ({
+  onFilePaste,
+}: {
+  onFilePaste: (files: File[]) => void;
+}) => {
   useEffect(() => {
     const pasteHandler = (event: ClipboardEvent) => {
       const files: File[] = [];
@@ -12,6 +16,10 @@ const usePasteFile = ({}: {}) => {
           files.push(f);
         }
       });
+
+      if (files.length > 0) {
+        onFilePaste(files);
+      }
     };
 
     document.body.addEventListener('paste', pasteHandler);
@@ -19,7 +27,7 @@ const usePasteFile = ({}: {}) => {
     return () => {
       document.body.removeEventListener('paste', pasteHandler);
     };
-  }, []);
+  }, [onFilePaste]);
 };
 
 export { usePasteFile };

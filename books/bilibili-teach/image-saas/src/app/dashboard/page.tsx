@@ -9,6 +9,7 @@ import AWS3 from '@uppy/aws-s3';
 import { Uppy, UppyFile } from '@uppy/core';
 import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
+import { usePasteFile } from '../hooks/userPasteFile';
 
 export default function Home() {
   const uppy = useMemo(() => {
@@ -36,6 +37,17 @@ export default function Home() {
   });
   const progress = useUppyState(uppy, (selector) => {
     return selector.totalProgress;
+  });
+
+  usePasteFile({
+    onFilePaste(files) {
+      console.log('[DEBUG] paste file', files);
+      uppy.addFiles(
+        files.map((file) => {
+          return { data: file, name: file.name };
+        }),
+      );
+    },
   });
 
   useEffect(() => {
