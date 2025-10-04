@@ -10,6 +10,7 @@ import { Uppy, UppyFile } from '@uppy/core';
 import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 import { usePasteFile } from '../hooks/userPasteFile';
+import UploadPreview from '@/components/feature/UploadPreview';
 
 export default function Home() {
   const uppy = useMemo(() => {
@@ -128,6 +129,7 @@ export default function Home() {
           );
         }}
       </Dropzone>
+      <UploadPreview uppy={uppy}></UploadPreview>
     </div>
   );
 }
