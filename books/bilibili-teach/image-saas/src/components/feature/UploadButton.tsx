@@ -23,6 +23,7 @@ const UploadButton: React.FC<UploadButtonProps> = (props) => {
             Array.from(e.target.files).forEach((file) => {
               uppy.addFile(file);
             });
+            if (inputRef.current) inputRef.current.value = '';
           }
         }}
       ></input>

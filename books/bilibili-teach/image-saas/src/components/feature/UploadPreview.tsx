@@ -27,9 +27,28 @@ const UploadPreview: React.FC<UploadPreviewProps> = (props) => {
 
   const url = URL.createObjectURL(file?.data);
 
+  const clear = () => {
+    files.forEach((file) => {
+      uppy.removeFile(file.id);
+    });
+
+    setIndex(0);
+  };
+
   return (
-    <Dialog open={open}>
-      <DialogContent>
+    <Dialog
+      open={open}
+      onOpenChange={(flag) => {
+        if (flag === false) {
+          clear();
+        }
+      }}
+    >
+      <DialogContent
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Upload Previews</DialogTitle>
         </DialogHeader>
