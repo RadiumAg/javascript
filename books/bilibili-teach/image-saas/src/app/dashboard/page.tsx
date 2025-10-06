@@ -103,7 +103,6 @@ export default function Home() {
 
     uppy.on('upload-success', handler);
     uppy.on('complete', completeHandler);
-
     uppy.on('upload', uploadProgressHandler);
 
     return () => {
