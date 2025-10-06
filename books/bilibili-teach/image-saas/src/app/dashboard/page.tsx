@@ -8,7 +8,7 @@ import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy, UppyFile } from '@uppy/core';
 import Image from 'next/image';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePasteFile } from '../hooks/userPasteFile';
 import UploadPreview from '@/components/feature/UploadPreview';
 
@@ -32,38 +32,11 @@ export default function Home() {
     return uppy;
   }, []);
 
-  usePasteFile({
-    onFilePaste(files) {
-      console.log('[DEBUG] paste file', files);
-      uppy.addFiles(
-        files.map((file) => {
-          return { data: file, name: file.name };
-        }),
-      );
-    },
-  });
-
-  useEffect(() => {
-    const handler = (file, resp) => {
-      if (file) {
-        trpcPureClient.file.saveFile.mutate({
-          name: file.data instanceof File ? file.data.name : 'test',
-          path: resp.uploadURL ?? '',
-          type: file.data.type,
-        });
-      }
-    };
-
-    uppy.on('upload-success', handler);
-
-    return () => {
-      uppy.off('upload-success', handler);
-    };
-  }, []);
-
+  const uppyFiles = useUppyState(uppy, (s) => s.files);
+  const [uploadingFilesIds, setUploadingFilesIds] = useState<string[]>([]);
+  const utils = trpcClientReact.useUtils();
   const { data: fileList, isPending } =
     trpcClientReact.file.listFiles.useQuery();
-
   const fileListEle = fileList?.map((file) => {
     const isImage = file.contentType.startsWith('image');
 
@@ -86,6 +59,59 @@ export default function Home() {
       </div>
     );
   });
+
+  usePasteFile({
+    onFilePaste(files) {
+      console.log('[DEBUG] paste file', files);
+      uppy.addFiles(
+        files.map((file) => {
+          return { data: file, name: file.name };
+        }),
+      );
+    },
+  });
+
+  useEffect(() => {
+    const handler = (file, resp) => {
+      if (file) {
+        trpcPureClient.file.saveFile
+          .mutate({
+            name: file.data instanceof File ? file.data.name : 'test',
+            path: resp.uploadURL ?? '',
+            type: file.data.type,
+          })
+          .then((resp) => {
+            utils.file.listFiles.setData(undefined, (prev) => {
+              if (!prev) return prev;
+
+              return [resp, ...prev];
+            });
+          });
+      }
+    };
+
+    const uploadProgressHandler = (_, resp) => {
+      setUploadingFilesIds((currentFiles) => [
+        ...currentFiles,
+        ...resp.map((file) => file.id),
+      ]);
+    };
+
+    const completeHandler = () => {
+      setUploadingFilesIds([]);
+    };
+
+    uppy.on('upload-success', handler);
+    uppy.on('complete', completeHandler);
+
+    uppy.on('upload', uploadProgressHandler);
+
+    return () => {
+      uppy.off('upload-success', handler);
+      uppy.off('complete', completeHandler);
+      uppy.off('upload', uploadProgressHandler);
+    };
+  }, []);
 
   return (
     <div className="container mx-auto p-2">
@@ -116,7 +142,35 @@ export default function Home() {
               )}
 
               {isPending && <div>Loading...</div>}
-              <div className="flex flex-wrap gap-4">{fileListEle}</div>
+
+              <div className="flex flex-wrap gap-4">
+                {uploadingFilesIds.length > 0 &&
+                  uploadingFilesIds.map((fileId) => {
+                    const file = uppyFiles[fileId];
+                    const isImage = file.data.type.startsWith('image');
+                    const url = URL.createObjectURL(file.data);
+
+                    return (
+                      <div
+                        key={fileId}
+                        className="w-56 h-56 flex justify-center items-center border border-red-500"
+                      >
+                        {isImage ? (
+                          <img src={url} alt="file" />
+                        ) : (
+                          <Image
+                            width={100}
+                            height={100}
+                            className="w-full"
+                            src="/file.png"
+                            alt="unknew file type"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                {fileListEle}
+              </div>
             </div>
           );
         }}
