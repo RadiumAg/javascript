@@ -6,7 +6,7 @@ import { useUppyState } from '@/hooks/use-uppy-state';
 import { cn } from '@/lib/utils';
 import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
-import { Uppy, UppyFile } from '@uppy/core';
+import { Uppy } from '@uppy/core';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { usePasteFile } from '../hooks/userPasteFile';
