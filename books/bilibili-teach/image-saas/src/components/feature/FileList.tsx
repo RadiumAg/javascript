@@ -3,6 +3,7 @@ import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import Uppy from '@uppy/core';
 import Image from 'next/image';
 import React from 'react';
+import { RemoteFileItem } from './FileItem';
 
 interface FileListProps {
   uppy: Uppy;
@@ -67,17 +68,11 @@ const FileList: React.FC<FileListProps> = (props) => {
         className="w-56 h-56 flex justify-center items-center border"
         key={file.id}
       >
-        {isImage ? (
-          <img src={file.url} alt="file" />
-        ) : (
-          <Image
-            width={100}
-            height={100}
-            className="w-full"
-            src="/file.png"
-            alt="unknew file type"
-          />
-        )}
+        <RemoteFileItem
+          contentType={file.contentType}
+          url={file.url}
+          name={file.name}
+        ></RemoteFileItem>
       </div>
     );
   });

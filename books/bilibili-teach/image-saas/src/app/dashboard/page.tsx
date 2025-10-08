@@ -65,7 +65,7 @@ export default function Home() {
               )}
             >
               {draggling && (
-                <div className="absolute inset-0 bg-secondary/30 flex justify-center items-center">
+                <div className="absolute inset-0 bg-secondary/50 z-10 flex justify-center items-center">
                   Drop File Here To Upload
                 </div>
               )}

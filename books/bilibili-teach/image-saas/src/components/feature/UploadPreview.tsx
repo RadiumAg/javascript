@@ -7,10 +7,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from '../Dialog';
-import Image from 'next/image';
 import { useUppyState } from '@/hooks/use-uppy-state';
 import { Button } from '../Button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { LocalFileItem } from './FileItem';
 
 type UploadPreviewProps = {
   uppy: Uppy;
@@ -22,10 +22,7 @@ const UploadPreview: React.FC<UploadPreviewProps> = (props) => {
   const open = files.length > 0;
   const [index, setIndex] = React.useState(0);
   const file = files[index];
-  const isImage = file?.data?.type?.startsWith('image');
   if (file == null) return null;
-
-  const url = URL.createObjectURL(file?.data);
 
   const clear = () => {
     files.forEach((file) => {
@@ -67,17 +64,7 @@ const UploadPreview: React.FC<UploadPreviewProps> = (props) => {
           </Button>
 
           <div className="w-56 h-56 flex justify-center items-center border">
-            {isImage ? (
-              <img src={url} alt="file" />
-            ) : (
-              <Image
-                width={100}
-                height={100}
-                className="w-full"
-                src="/file.png"
-                alt="unknew file type"
-              />
-            )}
+            <LocalFileItem file={file.data}></LocalFileItem>
           </div>
 
           <Button
