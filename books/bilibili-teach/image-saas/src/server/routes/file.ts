@@ -10,7 +10,7 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { db } from '../db/db';
 import { files } from '../db/schema';
 import { v4 as uuid } from 'uuid';
-import { desc } from 'drizzle-orm';
+import { desc, gt } from 'drizzle-orm';
 
 const fileRoutes = router({
   createPresignedUrl: protectedProcedure
@@ -89,6 +89,22 @@ const fileRoutes = router({
 
     return result;
   }),
+
+  infinityQueryFiles: protectedProcedure
+    .input(z.object({ cursor: z.string().optional() }))
+    .query(async (ctx) => {
+      const { cursor } = ctx.input;
+      const result = await db
+        .select()
+        .from(files)
+        .where(cursor ? gt(files.id, cursor) : undefined)
+        .orderBy(desc(files.createdAt));
+
+      return {
+        items: result,
+        nextCursor: result.length > 0 ? result[result.length - 1].id : null,
+      };
+    }),
 });
 
 export { fileRoutes };
