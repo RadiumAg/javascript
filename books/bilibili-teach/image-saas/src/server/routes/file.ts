@@ -10,7 +10,7 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { db } from '../db/db';
 import { files } from '../db/schema';
 import { v4 as uuid } from 'uuid';
-import { desc, gt } from 'drizzle-orm';
+import { desc, gt, lt, sql } from 'drizzle-orm';
 
 const fileRoutes = router({
   createPresignedUrl: protectedProcedure
@@ -91,18 +91,39 @@ const fileRoutes = router({
   }),
 
   infinityQueryFiles: protectedProcedure
-    .input(z.object({ cursor: z.string().optional() }))
+    .input(
+      z.object({
+        cursor: z
+          .object({
+            id: z.string(),
+            createAt: z.string(),
+          })
+          .optional(),
+        limit: z.number().default(10),
+      }),
+    )
     .query(async (ctx) => {
-      const { cursor } = ctx.input;
+      const { cursor, limit } = ctx.input;
       const result = await db
         .select()
         .from(files)
-        .where(cursor ? gt(files.id, cursor) : undefined)
+        .limit(limit)
+        .where(
+          cursor
+            ? sql`("files"."created_at", "files"."id") < (${new Date(cursor.createAt).toISOString()}, ${cursor.id})`
+            : undefined,
+        )
         .orderBy(desc(files.createdAt));
 
       return {
         items: result,
-        nextCursor: result.length > 0 ? result[result.length - 1].id : null,
+        nextCursor:
+          result.length > 0
+            ? {
+                id: result[result.length - 1].id,
+                createAt: result[result.length - 1].createdAt!,
+              }
+            : null,
       };
     }),
 });

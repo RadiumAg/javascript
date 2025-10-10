@@ -13,3 +13,4 @@ const trpcPureClient = trpcClientReact.createClient({
 });
 
 export { trpcClientReact, trpcPureClient };
+export type { AppRouter };
