@@ -22,7 +22,7 @@ const FileList: React.FC<FileListProps> = (props) => {
     fetchNextPage,
   } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(
     {
-      limit: 3,
+      limit: 10,
     },
     {
       getNextPageParam: (resp) => resp.nextCursor,
@@ -69,11 +69,27 @@ const FileList: React.FC<FileListProps> = (props) => {
             type: file.data.type,
           })
           .then((resp) => {
-            utils.file.listFiles.setData(undefined, (prev) => {
-              if (!prev) return prev;
+            utils.file.infinityQueryFiles.setInfiniteData(
+              { limit: 10 },
+              (prev) => {
+                debugger;
+                if (!prev) return prev;
 
-              return [resp, ...prev];
-            });
+                return {
+                  ...prev,
+                  pages: prev.pages.map((page, index) => {
+                    if (index === 0) {
+                      return {
+                        ...page,
+                        items: [resp, ...page.items],
+                      };
+                    }
+                    return page;
+                  }),
+                  pageParams: prev.pageParams,
+                };
+              },
+            );
           });
       }
     };
