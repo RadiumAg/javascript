@@ -39,6 +39,25 @@ const FileList: React.FC<FileListProps> = (props) => {
   const [uploadingFilesIds, setUploadingFilesIds] = React.useState<string[]>(
     [],
   );
+  const bottomRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (bottomRef.current) {
+      const observer = new IntersectionObserver(
+        (e) => {
+          if (e[0].intersectionRatio > 0.1) fetchNextPage();
+        },
+        { threshold: 0.1 },
+      );
+
+      observer.observe(bottomRef.current);
+
+      return () => {
+        if (bottomRef.current) observer.unobserve(bottomRef.current);
+        observer.disconnect();
+      };
+    }
+  }, [fetchNextPage]);
 
   React.useEffect(() => {
     const handler = (file, resp) => {
@@ -98,7 +117,7 @@ const FileList: React.FC<FileListProps> = (props) => {
 
   return (
     <ScrollArea
-     className='h-full'
+      className="h-full w-full"
       onScrollEnd={() => {
         fetchNextPage();
       }}
@@ -131,6 +150,17 @@ const FileList: React.FC<FileListProps> = (props) => {
             );
           })}
         {fileListEle}
+      </div>
+
+      <div ref={bottomRef} className="flex justify-center p-8">
+        <Button
+          variant="ghost"
+          onClick={() => {
+            fetchNextPage();
+          }}
+        >
+          Load Next Page
+        </Button>
       </div>
     </ScrollArea>
   );
