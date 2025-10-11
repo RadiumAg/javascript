@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@/components/Button';
+import { Button } from '@/components/ui/Button';
 import Dropzone from '@/components/feature/Dropzone';
 import { UploadButton } from '@/components/feature/UploadButton';
 import { cn } from '@/lib/utils';
@@ -43,8 +43,8 @@ export default function Home() {
   });
 
   return (
-    <div className="container mx-auto p-2">
-      <div className="flex justify-between items-center mb-4">
+    <div className="h-screen">
+      <div className="container mx-auto flex justify-between items-center h-[60px]">
         <Button
           onClick={() => {
             uppy.upload();
@@ -55,12 +55,13 @@ export default function Home() {
 
         <UploadButton uppy={uppy}></UploadButton>
       </div>
-      <Dropzone uppy={uppy}>
+
+      <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
         {(draggling) => {
           return (
             <div
               className={cn(
-                'flex flex-wrap gap-4 relative',
+                'flex flex-wrap gap-4 relative h-full container mx-auto',
                 draggling && 'border border-dashed',
               )}
             >

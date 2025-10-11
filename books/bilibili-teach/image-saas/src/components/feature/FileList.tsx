@@ -5,7 +5,8 @@ import Image from 'next/image';
 import React from 'react';
 import { RemoteFileItem } from './FileItem';
 import { inferRouterOutputs } from '@trpc/server';
-import { Button } from '../Button';
+import { Button } from '../ui/Button';
+import { ScrollArea } from '../ui/ScrollArea';
 
 interface FileListProps {
   uppy: Uppy;
@@ -96,9 +97,14 @@ const FileList: React.FC<FileListProps> = (props) => {
   });
 
   return (
-    <>
+    <ScrollArea
+     className='h-full'
+      onScrollEnd={() => {
+        fetchNextPage();
+      }}
+    >
       {isPending && <div>Loading...</div>}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 justify-center">
         {uploadingFilesIds.length > 0 &&
           uploadingFilesIds.map((fileId) => {
             const file = uppyFiles[fileId];
@@ -126,15 +132,7 @@ const FileList: React.FC<FileListProps> = (props) => {
           })}
         {fileListEle}
       </div>
-
-      <Button
-        onClick={() => {
-          fetchNextPage();
-        }}
-      >
-        Load Next Page
-      </Button>
-    </>
+    </ScrollArea>
   );
 };
 

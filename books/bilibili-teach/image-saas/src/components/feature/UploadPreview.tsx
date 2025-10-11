@@ -6,9 +6,9 @@ import {
   DialogContent,
   DialogTitle,
   DialogFooter,
-} from '../Dialog';
+} from '../ui/Dialog';
 import { useUppyState } from '@/hooks/use-uppy-state';
-import { Button } from '../Button';
+import { Button } from '../ui/Button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { LocalFileItem } from './FileItem';
 
