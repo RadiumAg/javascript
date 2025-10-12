@@ -6,10 +6,12 @@ import { cn } from '@/lib/utils';
 import { trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { usePasteFile } from '../hooks/userPasteFile';
 import UploadPreview from '@/components/feature/UploadPreview';
 import FileList from '@/components/feature/FileList';
+import { FilesOrderByColumn } from '@/server/routes/file';
+import { MoveUp, MoveDown } from 'lucide-react';
 
 export default function Home() {
   const uppy = useMemo(() => {
@@ -42,17 +44,26 @@ export default function Home() {
     },
   });
 
+  const [orderBy, setOrderBy] = useState<
+    Exclude<FilesOrderByColumn, undefined>
+  >({
+    field: 'createdAt',
+    order: 'desc',
+  });
+
   return (
     <div className="h-screen">
       <div className="container mx-auto flex justify-between items-center h-[60px]">
         <Button
           onClick={() => {
-            uppy.upload();
+            setOrderBy((current) => ({
+              ...current,
+              order: current.order === 'desc' ? 'asc' : 'desc',
+            }));
           }}
         >
-          Upload
+          Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
         </Button>
-
         <UploadButton uppy={uppy}></UploadButton>
       </div>
 
@@ -71,7 +82,7 @@ export default function Home() {
                 </div>
               )}
 
-              <FileList uppy={uppy}></FileList>
+              <FileList orderBy={orderBy} uppy={uppy}></FileList>
             </div>
           );
         }}

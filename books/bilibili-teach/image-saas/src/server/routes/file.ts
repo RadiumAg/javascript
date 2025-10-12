@@ -10,7 +10,17 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { db } from '../db/db';
 import { files } from '../db/schema';
 import { v4 as uuid } from 'uuid';
-import { desc, gt, lt, sql } from 'drizzle-orm';
+import { asc, desc, gt, lt, sql } from 'drizzle-orm';
+import { filesCanOrderByColumn } from '../db/validate-schema';
+
+const filesOrderByColumnSchema = z
+  .object({
+    field: filesCanOrderByColumn.keyof(),
+    order: z.enum(['asc', 'desc']),
+  })
+  .optional();
+
+export type FilesOrderByColumn = z.infer<typeof filesOrderByColumnSchema>;
 
 const fileRoutes = router({
   createPresignedUrl: protectedProcedure
@@ -100,11 +110,17 @@ const fileRoutes = router({
           })
           .optional(),
         limit: z.number().default(10),
+        orderBy: filesOrderByColumnSchema,
       }),
     )
     .query(async (ctx) => {
-      const { cursor, limit } = ctx.input;
-      const result = await db
+      const {
+        cursor,
+        limit,
+        orderBy = { field: 'createdAt', order: 'desc' },
+      } = ctx.input;
+
+      const statement = db
         .select()
         .from(files)
         .limit(limit)
@@ -112,8 +128,15 @@ const fileRoutes = router({
           cursor
             ? sql`("files"."created_at", "files"."id") < (${new Date(cursor.createAt).toISOString()}, ${cursor.id})`
             : undefined,
-        )
-        .orderBy(desc(files.createdAt));
+        );
+
+      statement.orderBy(
+        orderBy.order === 'asc'
+          ? asc(files[orderBy.field])
+          : desc(files[orderBy.field]),
+      );
+
+      const result = await statement;
 
       return {
         items: result,
