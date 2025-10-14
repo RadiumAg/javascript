@@ -149,6 +149,10 @@ const fileRoutes = router({
             : null,
       };
     }),
+
+  deleteFile: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {}),
 });
 
 export { fileRoutes };
