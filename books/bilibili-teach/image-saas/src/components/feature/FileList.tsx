@@ -100,7 +100,7 @@ const FileList: React.FC<FileListProps> = (props) => {
                 if (!prev) return prev;
 
                 return {
-                  ...prev,
+                  ...prev, 
                   pages: prev.pages.map((page, index) => {
                     if (index === 0) {
                       return {
