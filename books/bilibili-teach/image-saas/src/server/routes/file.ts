@@ -10,7 +10,7 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { db } from '../db/db';
 import { files } from '../db/schema';
 import { v4 as uuid } from 'uuid';
-import { asc, desc, gt, lt, sql } from 'drizzle-orm';
+import { asc, desc, eq, gt, lt, sql } from 'drizzle-orm';
 import { filesCanOrderByColumn } from '../db/validate-schema';
 
 const filesOrderByColumnSchema = z
@@ -152,7 +152,12 @@ const fileRoutes = router({
 
   deleteFile: protectedProcedure
     .input(z.string())
-    .mutation(async ({ ctx, input }) => {}),
+    .mutation(async ({ ctx, input }) => {
+      return db
+        .update(files)
+        .set({ deleteAt: new Date() })
+        .where(eq(files.id, input));
+    }),
 });
 
 export { fileRoutes };

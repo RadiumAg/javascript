@@ -8,6 +8,7 @@ import { inferRouterOutputs } from '@trpc/server';
 import { Button } from '../ui/Button';
 import { ScrollArea } from '../ui/ScrollArea';
 import { FilesOrderByColumn } from '@/server/routes/file';
+import DeleteFileAction from './FileItemAction';
 
 interface FileListProps {
   uppy: Uppy;
@@ -122,9 +123,12 @@ const FileList: React.FC<FileListProps> = (props) => {
   const fileListEle = fileList?.map((file) => {
     return (
       <div
-        className="w-56 h-56 flex justify-center items-center border"
+        className="w-56 h-56 flex justify-center items-center border relative"
         key={file.id}
       >
+        <div className='w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200'>
+          <DeleteFileAction fileId={file.id}></DeleteFileAction>
+        </div>
         <RemoteFileItem
           contentType={file.contentType}
           url={file.url}
