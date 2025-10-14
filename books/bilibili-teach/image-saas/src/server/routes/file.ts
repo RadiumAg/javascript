@@ -10,7 +10,7 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { db } from '../db/db';
 import { files } from '../db/schema';
 import { v4 as uuid } from 'uuid';
-import { asc, desc, eq, gt, lt, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, isNull, lt, sql } from 'drizzle-orm';
 import { filesCanOrderByColumn } from '../db/validate-schema';
 
 const filesOrderByColumnSchema = z
@@ -120,14 +120,19 @@ const fileRoutes = router({
         orderBy = { field: 'createdAt', order: 'desc' },
       } = ctx.input;
 
+      const deletedFilter = isNull(files.deleteAt);
+
       const statement = db
         .select()
         .from(files)
         .limit(limit)
         .where(
           cursor
-            ? sql`("files"."created_at", "files"."id") < (${new Date(cursor.createAt).toISOString()}, ${cursor.id})`
-            : undefined,
+            ? and(
+                sql`("files"."created_at", "files"."id") < (${new Date(cursor.createAt).toISOString()}, ${cursor.id})`,
+                deletedFilter,
+              )
+            : deletedFilter,
         );
 
       statement.orderBy(

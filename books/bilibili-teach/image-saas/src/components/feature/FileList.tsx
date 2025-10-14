@@ -32,13 +32,34 @@ const FileList: React.FC<FileListProps> = (props) => {
       getNextPageParam: (resp) => resp.nextCursor,
     },
   );
+  const utils = trpcClientReact.useUtils();
 
   const fileList =
     infinityQueryData?.pages.reduce<FileResult['items']>((result, page) => {
       return [...result, ...page.items];
     }, []) || [];
 
-  const utils = trpcClientReact.useUtils();
+  const handleFileDelete = (id: string) => {
+    utils.file.infinityQueryFiles.setInfiniteData({ limit: 10 }, (prev) => {
+      debugger
+      if (!prev) return prev;
+
+      return {
+        ...prev,
+        pages: prev.pages.map((page, index) => {
+          if (index === 0) {
+            return {
+              ...page,
+              items: page.items.filter((file) => file.id !== id),
+            };
+          }
+          return page;
+        }),
+        pageParams: prev.pageParams,
+      };
+    });
+  };
+
   const uppyFiles = useUppyState(uppy, (s) => s.files);
   const [uploadingFilesIds, setUploadingFilesIds] = React.useState<string[]>(
     [],
@@ -76,7 +97,6 @@ const FileList: React.FC<FileListProps> = (props) => {
             utils.file.infinityQueryFiles.setInfiniteData(
               { limit: 10 },
               (prev) => {
-                debugger;
                 if (!prev) return prev;
 
                 return {
@@ -126,8 +146,11 @@ const FileList: React.FC<FileListProps> = (props) => {
         className="w-56 h-56 flex justify-center items-center border relative"
         key={file.id}
       >
-        <div className='w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200'>
-          <DeleteFileAction fileId={file.id}></DeleteFileAction>
+        <div className="w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200">
+          <DeleteFileAction
+            onDeleteSuccess={handleFileDelete}
+            fileId={file.id}
+          ></DeleteFileAction>
         </div>
         <RemoteFileItem
           contentType={file.contentType}

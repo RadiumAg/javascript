@@ -102,7 +102,7 @@ export const files = pgTable(
     name: varchar('name', { length: 100 }).notNull(),
     type: varchar('type', { length: 100 }).notNull(),
     createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
-    deleteAt: timestamp('deleted_at', { mode: 'date' }).defaultNow(),
+    deleteAt: timestamp('deleted_at', { mode: 'date' }),
     path: varchar('path', { length: 1024 }).notNull(),
     url: varchar('url', { length: 1024 }).notNull(),
     userId: text('user_id').notNull(),
