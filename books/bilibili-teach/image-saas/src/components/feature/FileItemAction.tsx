@@ -3,6 +3,7 @@ import { trpcClientReact } from '@/utils/api';
 import { Button } from '../ui/Button';
 import { Trash2, Copy } from 'lucide-react';
 import copy from 'copy-to-clipboard';
+import { toast } from 'sonner';
 
 interface FileItemActionProps {
   fileId: string;
@@ -41,6 +42,7 @@ const CopyUrl: React.FC<{ url: string }> = (props) => {
       variant="ghost"
       onClick={() => {
         copy(url);
+        toast('Url Copy Success')
       }}
     >
       <Copy></Copy>
