@@ -1,7 +1,8 @@
 import React from 'react';
 import { trpcClientReact } from '@/utils/api';
 import { Button } from '../ui/Button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Copy } from 'lucide-react';
+import copy from 'copy-to-clipboard';
 
 interface FileItemActionProps {
   fileId: string;
@@ -32,5 +33,21 @@ const DeleteFileAction: React.FC<FileItemActionProps> = (props) => {
     </Button>
   );
 };
+
+const CopyUrl: React.FC<{ url: string }> = (props) => {
+  const { url } = props;
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => {
+        copy(url);
+      }}
+    >
+      <Copy></Copy>
+    </Button>
+  );
+};
+
+export { CopyUrl };
 
 export default DeleteFileAction;
