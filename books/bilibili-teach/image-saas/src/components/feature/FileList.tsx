@@ -19,28 +19,29 @@ type FileResult = inferRouterOutputs<AppRouter>['file']['infinityQueryFiles'];
 
 const FileList: React.FC<FileListProps> = (props) => {
   const { uppy, orderBy } = props;
+  const query = {
+    limit: 10,
+    ...orderBy,
+  };
   const {
     data: infinityQueryData,
     isPending,
     fetchNextPage,
-  } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(
-    {
-      limit: 10,
-      ...orderBy,
-    },
-    {
-      getNextPageParam: (resp) => resp.nextCursor,
-    },
-  );
-  const utils = trpcClientReact.useUtils();
+  } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(query, {
+    getNextPageParam: (resp) => resp.nextCursor,
+  });
 
   const fileList =
     infinityQueryData?.pages.reduce<FileResult['items']>((result, page) => {
       return [...result, ...page.items];
     }, []) || [];
 
+  const utils = trpcClientReact.useUtils();
+
+  console.log('fileList', utils.file.infinityQueryFiles.getInfiniteData(query));
+
   const handleFileDelete = (id: string) => {
-    utils.file.infinityQueryFiles.setInfiniteData({ limit: 10 }, (prev) => {
+    utils.file.infinityQueryFiles.setInfiniteData(query, (prev) => {
       if (!prev) return prev;
 
       return {
@@ -93,26 +94,23 @@ const FileList: React.FC<FileListProps> = (props) => {
             type: file.data.type,
           })
           .then((resp) => {
-            utils.file.infinityQueryFiles.setInfiniteData(
-              { limit: 10 },
-              (prev) => {
-                if (!prev) return prev;
+            utils.file.infinityQueryFiles.setInfiniteData(query, (prev) => {
+              if (!prev) return prev;
 
-                return {
-                  ...prev, 
-                  pages: prev.pages.map((page, index) => {
-                    if (index === 0) {
-                      return {
-                        ...page,
-                        items: [resp, ...page.items],
-                      };
-                    }
-                    return page;
-                  }),
-                  pageParams: prev.pageParams,
-                };
-              },
-            );
+              return {
+                ...prev,
+                pages: prev.pages.map((page, index) => {
+                  if (index === 0) {
+                    return {
+                      ...page,
+                      items: [resp, ...page.items],
+                    };
+                  }
+                  return page;
+                }),
+                pageParams: prev.pageParams,
+              };
+            });
           });
       }
     };
@@ -137,7 +135,7 @@ const FileList: React.FC<FileListProps> = (props) => {
       uppy.off('complete', completeHandler);
       uppy.off('upload', uploadProgressHandler);
     };
-  }, []);
+  }, [query]);
 
   const fileListEle = fileList?.map((file) => {
     return (
