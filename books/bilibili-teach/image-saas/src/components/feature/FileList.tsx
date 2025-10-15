@@ -41,7 +41,6 @@ const FileList: React.FC<FileListProps> = (props) => {
 
   const handleFileDelete = (id: string) => {
     utils.file.infinityQueryFiles.setInfiniteData({ limit: 10 }, (prev) => {
-      debugger
       if (!prev) return prev;
 
       return {
