@@ -21,6 +21,7 @@ const DeleteFileAction: React.FC<FileItemActionProps> = (props) => {
 
   const handleRemoveFile = () => {
     deleteFile(fileId);
+    toast('Delete Success!')
   };
 
   return (
