@@ -154,7 +154,7 @@ const FileList: React.FC<FileListProps> = (props) => {
 
         <RemoteFileItem
           contentType={file.contentType}
-          url={file.url}
+          id={file.id}
           name={file.name}
         ></RemoteFileItem>
       </div>

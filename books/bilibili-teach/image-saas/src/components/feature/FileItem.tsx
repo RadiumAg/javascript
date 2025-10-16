@@ -42,13 +42,14 @@ const LocalFileItem = (option: { file: File | Blob }) => {
 
 const RemoteFileItem = (option: {
   contentType: string;
-  url: string;
+  id: string;
   name: string;
 }) => {
-  const { contentType, url, name } = option;
+  const { contentType, id, name } = option;
   const isImage = contentType.startsWith('image');
+  const imageUrl = `/image/${id}`;
 
-  return <FileItem isImage={isImage} url={url} name={name}></FileItem>;
+  return <FileItem isImage={isImage} url={imageUrl} name={name}></FileItem>;
 };
 
 export { LocalFileItem, RemoteFileItem };
