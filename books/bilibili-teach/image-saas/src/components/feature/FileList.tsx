@@ -9,6 +9,7 @@ import { Button } from '../ui/Button';
 import { ScrollArea } from '../ui/ScrollArea';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import DeleteFileAction, { CopyUrl } from './FileItemAction';
+import { hostname } from 'os';
 
 interface FileListProps {
   uppy: Uppy;
@@ -144,7 +145,7 @@ const FileList: React.FC<FileListProps> = (props) => {
         key={file.id}
       >
         <div className="w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200">
-          <CopyUrl url={file.url}></CopyUrl>
+          <CopyUrl url={`${location.host}/image/${file.id}`}></CopyUrl>
 
           <DeleteFileAction
             onDeleteSuccess={handleFileDelete}
