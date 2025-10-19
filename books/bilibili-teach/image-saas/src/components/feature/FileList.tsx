@@ -30,6 +30,9 @@ const FileList: React.FC<FileListProps> = (props) => {
     fetchNextPage,
   } = trpcClientReact.file.infinityQueryFiles.useInfiniteQuery(query, {
     getNextPageParam: (resp) => resp.nextCursor,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   const fileList =

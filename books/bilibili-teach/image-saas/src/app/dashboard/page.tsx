@@ -52,7 +52,7 @@ export default function Home() {
   });
 
   return (
-    <div className="h-screen">
+    <div className="h-full">
       <div className="container mx-auto flex justify-between items-center h-[60px]">
         <Button
           onClick={() => {
