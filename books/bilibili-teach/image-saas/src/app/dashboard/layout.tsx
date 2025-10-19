@@ -1,14 +1,17 @@
 import { getServerSession } from '@/server/auth';
 import { redirect } from 'next/navigation';
-import '../globals.css';
 import { Button } from '@/components/ui/Button';
 import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Avatar } from '@/components/ui/Avatar';
+import React from 'react';
+import '../globals.css';
 
 export default async function RootLayout({
   children,
+  nav,
 }: Readonly<{
   children: React.ReactNode;
+  nav: React.ReactNode;
 }>) {
   const session = await getServerSession();
 
@@ -28,7 +31,7 @@ export default async function RootLayout({
         </Button>
 
         <div className="absolute h-full left-1/2 -translate-x-1/2 flex justify-center items-center">
-          13231223
+          {nav}
         </div>
       </nav>
       <main className="h-[calc(100vh-80px)]">{children}</main>
