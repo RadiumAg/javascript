@@ -92,9 +92,10 @@ const fileRoutes = router({
       return photo[0];
     }),
 
-  listFiles: protectedProcedure.query(async () => {
+  listFiles: protectedProcedure.query(async ({ ctx }) => {
     const result = await db.query.files.findMany({
       orderBy: [desc(files.createdAt)],
+      where: (files, { eq }) => eq(files.userId, ctx.session.user.id),
     });
 
     return result;
@@ -121,6 +122,7 @@ const fileRoutes = router({
       } = ctx.input;
 
       const deletedFilter = isNull(files.deleteAt);
+      const userFilter = eq(files.userId, ctx.ctx.session.user.id);
 
       const statement = db
         .select()
@@ -131,8 +133,9 @@ const fileRoutes = router({
             ? and(
                 sql`("files"."created_at", "files"."id") < (${new Date(cursor.createAt).toISOString()}, ${cursor.id})`,
                 deletedFilter,
+                userFilter,
               )
-            : deletedFilter,
+            : and(deletedFilter, userFilter),
         );
 
       statement.orderBy(

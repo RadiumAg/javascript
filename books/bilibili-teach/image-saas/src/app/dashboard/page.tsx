@@ -66,7 +66,6 @@ export default function Home() {
           Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
         </Button>
         <UploadButton uppy={uppy}></UploadButton>
-        <Link href="/dashboard/a">AAA</Link>
       </div>
 
       <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
