@@ -29,7 +29,7 @@ const UploadButton: React.FC<UploadButtonProps> = (props) => {
       ></input>
 
       <Button
-        variant="ghost"
+        variant="outline"
         onClick={() => {
           if (inputRef.current) {
             inputRef.current.click();

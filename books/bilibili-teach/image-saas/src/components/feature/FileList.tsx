@@ -172,7 +172,7 @@ const FileList: React.FC<FileListProps> = (props) => {
         fetchNextPage();
       }}
     >
-      {isPending && <div>Loading...</div>}
+      {isPending && <div className="text-center">Loading...</div>}
       <div className="flex flex-wrap gap-4 justify-center">
         {uploadingFilesIds.length > 0 &&
           uploadingFilesIds.map((fileId) => {
