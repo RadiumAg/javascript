@@ -70,6 +70,7 @@ const fileRoutes = router({
         name: z.string(),
         path: z.string(),
         type: z.string(),
+        appId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
