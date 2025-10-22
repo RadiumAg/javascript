@@ -93,14 +93,20 @@ const fileRoutes = router({
       return photo[0];
     }),
 
-  listFiles: protectedProcedure.query(async ({ ctx }) => {
-    const result = await db.query.files.findMany({
-      orderBy: [desc(files.createdAt)],
-      where: (files, { eq }) => eq(files.userId, ctx.session.user.id),
-    });
+  listFiles: protectedProcedure
+    .input(z.object({ appId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const result = await db.query.files.findMany({
+        orderBy: [desc(files.createdAt)],
+        where: (files, { eq }) =>
+          and(
+            eq(files.userId, ctx.session.user.id),
+            eq(files.appId, input.appId),
+          ),
+      });
 
-    return result;
-  }),
+      return result;
+    }),
 
   infinityQueryFiles: protectedProcedure
     .input(
@@ -113,6 +119,7 @@ const fileRoutes = router({
           .optional(),
         limit: z.number().default(10),
         orderBy: filesOrderByColumnSchema,
+        appId: z.string(),
       }),
     )
     .query(async (ctx) => {
@@ -122,6 +129,7 @@ const fileRoutes = router({
         orderBy = { field: 'createdAt', order: 'desc' },
       } = ctx.input;
 
+      const appFilter = eq(files.appId, ctx.input.appId);
       const deletedFilter = isNull(files.deleteAt);
       const userFilter = eq(files.userId, ctx.ctx.session.user.id);
 
@@ -135,8 +143,9 @@ const fileRoutes = router({
                 sql`("files"."created_at", "files"."id") < (${new Date(cursor.createAt).toISOString()}, ${cursor.id})`,
                 deletedFilter,
                 userFilter,
+                appFilter,
               )
-            : and(deletedFilter, userFilter),
+            : and(deletedFilter, userFilter, appFilter),
         );
 
       statement.orderBy(
