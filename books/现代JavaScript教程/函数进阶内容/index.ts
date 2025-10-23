@@ -96,3 +96,29 @@
   结果示例：
  * 
  */
+
+(() => {
+  // 1.递归
+  let max = 4;
+  const result = Array.from({ length: max + 1 }).reduce<number>(
+    (total, current, currentIndex) => {
+      return (total += currentIndex);
+    },
+    0,
+  );
+
+  console.log('递归结果', result);
+
+  function sum(current = 0) {
+    if (current === max) return current;
+    return current + sum(current + 1);
+  }
+
+  console.log('递归结果', sum());
+
+  function sumTo(n: number): number {
+    return (n * (1 + n)) / 2;
+  }
+
+  console.log('等差数列', sumTo(4));
+})();
