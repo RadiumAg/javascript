@@ -4,11 +4,11 @@ import { protectedProcedure, router } from '../trpc-middlewares/trpc';
 import { apps } from '../db/schema';
 import { v4 as uuid } from 'uuid';
 
-export const appRouter = router({
+export const appsRouter = router({
   createApp: protectedProcedure
-    .input(createAppSchema)
+    .input(createAppSchema.pick({ name: true, description: true }))
     .mutation(async ({ ctx, input }) => {
-      return db
+      const result = await db
         .insert(apps)
         .values({
           id: uuid(),
@@ -17,5 +17,7 @@ export const appRouter = router({
           userId: ctx.session.user.id,
         })
         .returning();
+
+      return result[0];
     }),
 });

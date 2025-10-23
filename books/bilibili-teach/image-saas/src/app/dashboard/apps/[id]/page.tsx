@@ -7,14 +7,18 @@ import { trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
 import { useMemo, useState } from 'react';
-import { usePasteFile } from '../hooks/userPasteFile';
+import { usePasteFile } from '@/app/hooks/userPasteFile';
 import UploadPreview from '@/components/feature/UploadPreview';
 import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import { MoveUp, MoveDown } from 'lucide-react';
-import Link from 'next/link';
 
-export default function Home() {
+interface AppPageProps {
+  appId: string;
+}
+
+export default function AppPage(props: AppPageProps) {
+  const { appId } = props;
   const uppy = useMemo(() => {
     const uppy = new Uppy();
 
@@ -83,7 +87,7 @@ export default function Home() {
                 </div>
               )}
 
-              <FileList orderBy={orderBy} uppy={uppy}></FileList>
+              <FileList appId={appId} orderBy={orderBy} uppy={uppy}></FileList>
             </div>
           );
         }}

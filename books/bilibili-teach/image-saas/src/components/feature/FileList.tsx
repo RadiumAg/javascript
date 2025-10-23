@@ -9,19 +9,20 @@ import { Button } from '../ui/Button';
 import { ScrollArea } from '../ui/ScrollArea';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import DeleteFileAction, { CopyUrl } from './FileItemAction';
-import { hostname } from 'os';
 
 interface FileListProps {
   uppy: Uppy;
+  appId: string;
   orderBy: FilesOrderByColumn;
 }
 
 type FileResult = inferRouterOutputs<AppRouter>['file']['infinityQueryFiles'];
 
 const FileList: React.FC<FileListProps> = (props) => {
-  const { uppy, orderBy } = props;
+  const { uppy, appId, orderBy } = props;
   const query = {
     limit: 10,
+    appId,
     ...orderBy,
   };
   const {
@@ -96,6 +97,7 @@ const FileList: React.FC<FileListProps> = (props) => {
             name: file.data instanceof File ? file.data.name : 'test',
             path: resp.uploadURL ?? '',
             type: file.data.type,
+            appId,
           })
           .then((resp) => {
             utils.file.infinityQueryFiles.setInfiniteData(query, (prev) => {
