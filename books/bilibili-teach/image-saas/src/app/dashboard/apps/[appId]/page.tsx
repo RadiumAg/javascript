@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
-import { useMemo, useState } from 'react';
+import { useMemo, use, useState } from 'react';
 import { usePasteFile } from '@/app/hooks/userPasteFile';
 import UploadPreview from '@/components/feature/UploadPreview';
 import FileList from '@/components/feature/FileList';
@@ -14,11 +14,13 @@ import { FilesOrderByColumn } from '@/server/routes/file';
 import { MoveUp, MoveDown } from 'lucide-react';
 
 interface AppPageProps {
-  appId: string;
+  params: Promise<{ appId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function AppPage(props: AppPageProps) {
-  const { appId } = props;
+export default  function AppPage(props: AppPageProps) {
+  const params = use(props.params);
+  const { appId } = params;
   const uppy = useMemo(() => {
     const uppy = new Uppy();
 

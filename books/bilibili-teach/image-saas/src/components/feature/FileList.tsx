@@ -25,6 +25,7 @@ const FileList: React.FC<FileListProps> = (props) => {
     appId,
     ...orderBy,
   };
+
   const {
     data: infinityQueryData,
     isPending,
