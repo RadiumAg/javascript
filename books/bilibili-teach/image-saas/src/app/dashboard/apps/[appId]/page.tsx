@@ -72,7 +72,7 @@ export default function AppPage(props: AppPageProps) {
         >
           Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
         </Button>
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <UploadButton uppy={uppy}></UploadButton>
 
           <Button asChild>

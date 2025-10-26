@@ -25,7 +25,7 @@ export default function CreateApp() {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
+    <div className="h-full flex justify-center items-center">
       <form className="w-full max-w-md flex flex-col gap-4" action={createApp}>
         <h1 className="text-center text-xl font-bold">Create App</h1>
         <Input
