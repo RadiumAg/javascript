@@ -12,13 +12,14 @@ import UploadPreview from '@/components/feature/UploadPreview';
 import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import { MoveUp, MoveDown } from 'lucide-react';
+import Link from 'next/link';
 
 interface AppPageProps {
   params: Promise<{ appId: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default  function AppPage(props: AppPageProps) {
+export default function AppPage(props: AppPageProps) {
   const params = use(props.params);
   const { appId } = params;
   const uppy = useMemo(() => {
@@ -71,7 +72,13 @@ export default  function AppPage(props: AppPageProps) {
         >
           Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
         </Button>
-        <UploadButton uppy={uppy}></UploadButton>
+        <div className="flex items-center">
+          <UploadButton uppy={uppy}></UploadButton>
+
+          <Button asChild>
+            <Link href="/dashboard/apps/new">new app</Link>
+          </Button>
+        </div>
       </div>
 
       <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
