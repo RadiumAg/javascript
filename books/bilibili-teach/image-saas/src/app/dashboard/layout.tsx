@@ -1,6 +1,5 @@
 import { getServerSession } from '@/server/auth';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
 import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Avatar } from '@/components/ui/Avatar';
 import React from 'react';
