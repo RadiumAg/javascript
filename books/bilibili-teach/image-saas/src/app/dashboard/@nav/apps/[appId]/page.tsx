@@ -31,7 +31,9 @@ export default function AppDashboardNav(props: Props) {
         {apps?.map((app) => {
           return (
             <DropdownMenuItem disabled={app.id === appId} key={app.id}>
-              <Link href={`/dashboard/apps/${app.id}`}>{app.name}</Link>
+              <Link className="w-full" href={`/dashboard/apps/${app.id}`}>
+                {app.name}
+              </Link>
             </DropdownMenuItem>
           );
         })}
