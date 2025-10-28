@@ -9,6 +9,8 @@ import {
   uuid,
   varchar,
   index,
+  serial,
+  json,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccount } from 'next-auth/adapters';
 
@@ -124,9 +126,7 @@ export const files = pgTable(
     contentType: varchar('content_type', { length: 100 }).notNull(),
     appId: uuid(),
   },
-  (table) => ({
-    cursorIndex: index('cursor_idx').on(table.id, table.createdAt),
-  }),
+  (table) => [index('cursor_idx').on(table.id, table.createdAt)],
 );
 
 export const filesRelations = relations(files, ({ one }) => ({
@@ -138,3 +138,24 @@ export const appRelations = relations(apps, ({ one, many }) => ({
   user: one(users, { fields: [apps.userId], references: [users.id] }),
   files: many(files),
 }));
+
+export type S3StorageConfiguration = {
+  bucket: string;
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  apiEndPoint?: string;
+};
+
+export type StorageConfiguration = S3StorageConfiguration;
+
+export const storageConfiguration = pgTable('storageConfiguration', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  userId: uuid('user_id').notNull(),
+  configuration: json('configuration')
+    .$type<S3StorageConfiguration>()
+    .notNull(),
+  createAt: timestamp('create_at', { mode: 'date' }).defaultNow(),
+  deleteAt: timestamp('deleted_at', { mode: 'date' }),
+});
