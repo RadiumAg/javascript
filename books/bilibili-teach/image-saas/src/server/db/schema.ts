@@ -37,6 +37,7 @@ export const users = pgTable('user', {
 export const usersRelation = relations(users, ({ many }) => ({
   files: many(files),
   apps: many(apps),
+  storgages: many(storageConfiguration),
 }));
 
 export const accounts = pgTable(
@@ -136,6 +137,10 @@ export const filesRelations = relations(files, ({ one }) => ({
 
 export const appRelations = relations(apps, ({ one, many }) => ({
   user: one(users, { fields: [apps.userId], references: [users.id] }),
+  storage: one(storageConfiguration, {
+    fields: [apps.storageId],
+    references: [storageConfiguration.id],
+  }),
   files: many(files),
 }));
 
@@ -159,3 +164,13 @@ export const storageConfiguration = pgTable('storageConfiguration', {
   createAt: timestamp('create_at', { mode: 'date' }).defaultNow(),
   deleteAt: timestamp('deleted_at', { mode: 'date' }),
 });
+
+export const storageConfigurationRelation = relations(
+  storageConfiguration,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [storageConfiguration.userId],
+      references: [users.id],
+    }),
+  }),
+);

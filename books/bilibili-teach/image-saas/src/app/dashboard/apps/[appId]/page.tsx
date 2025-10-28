@@ -34,6 +34,7 @@ export default function AppPage(props: AppPageProps) {
           filename: file.data instanceof File ? file.data.name : '',
           contentType: file.data.type || '',
           size: file.size || 0,
+          appId
         });
       },
     });
