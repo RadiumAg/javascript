@@ -11,7 +11,7 @@ import { usePasteFile } from '@/app/hooks/userPasteFile';
 import UploadPreview from '@/components/feature/UploadPreview';
 import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
-import { MoveUp, MoveDown } from 'lucide-react';
+import { MoveUp, MoveDown, Settings } from 'lucide-react';
 import Link from 'next/link';
 
 interface AppPageProps {
@@ -28,13 +28,11 @@ export default function AppPage(props: AppPageProps) {
     uppy.use(AWS3, {
       shouldUseMultipart: false,
       getUploadParameters: (file) => {
-        console.log('[DEBUG] upload file', file);
-
         return trpcPureClient.file.createPresignedUrl.mutate({
           filename: file.data instanceof File ? file.data.name : '',
           contentType: file.data.type || '',
           size: file.size || 0,
-          appId
+          appId,
         });
       },
     });
@@ -78,6 +76,12 @@ export default function AppPage(props: AppPageProps) {
 
           <Button asChild>
             <Link href="/dashboard/apps/new">new app</Link>
+          </Button>
+
+          <Button asChild>
+            <Link href={`/dashboard/apps/${appId}/storage`}>
+              <Settings></Settings>
+            </Link>
           </Button>
         </div>
       </div>
