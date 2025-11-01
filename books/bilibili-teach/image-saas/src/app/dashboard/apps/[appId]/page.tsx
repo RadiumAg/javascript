@@ -42,7 +42,6 @@ export default function AppPage(props: AppPageProps) {
 
   usePasteFile({
     onFilePaste(files) {
-      console.log('[DEBUG] paste file', files);
       uppy.addFiles(
         files.map((file) => {
           return { data: file, name: file.name };
