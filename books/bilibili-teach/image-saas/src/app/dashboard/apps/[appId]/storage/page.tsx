@@ -2,6 +2,7 @@
 import { use } from 'react';
 import { Button } from '@/components/ui/Button';
 import { trpcClientReact } from '@/utils/api';
+import { Plus } from 'lucide-react';
 
 interface Props {
   params: Promise<{ appId: string }>;
@@ -15,7 +16,12 @@ export default function StoragePage(props: Props) {
 
   return (
     <div className="container pt-10 m-auto">
-      <div className="flex justify-between items-centerWWW"></div>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl mb-6">Storage</h1>
+        <Button>
+          <Plus></Plus>
+        </Button>
+      </div>
       {storages?.map((storage) => {
         return (
           <div
