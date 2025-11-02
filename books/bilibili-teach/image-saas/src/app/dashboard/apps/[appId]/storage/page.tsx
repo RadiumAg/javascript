@@ -11,6 +11,25 @@ interface Props {
 
 export default function StoragePage(props: Props) {
   const { appId } = use(props.params);
+  const utils = trpcClientReact.useUtils();
+  const { mutate } = trpcClientReact.apps.changeStorage.useMutation({
+    onSuccess(data, variables) {
+      utils.apps.listApps.setData(undefined, (prev) => {
+        if (!prev) {
+          return prev;
+        }
+
+        return prev.map((p) =>
+          p.id === appId
+            ? {
+                ...p,
+                storageId: variables.storageId,
+              }
+            : p,
+        );
+      });
+    },
+  });
   const { data: storages } = trpcClientReact.storages.listStorages.useQuery();
   const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery();
   const currentApp = apps?.filter((app) => app.id === appId)[0];
@@ -29,10 +48,16 @@ export default function StoragePage(props: Props) {
         return (
           <div
             key={storage.id}
-            className="border p-4 flex justify-between items-center"
+            className="border p-4 flex justify-between items-center m-4"
           >
             {storage.name}
-            <Button disabled={storage.id === currentApp?.storageId}>
+            <Button
+              className="cursor-pointer"
+              disabled={storage.id === currentApp?.storageId}
+              onClick={() => {
+                mutate({ appId, storageId: storage.id });
+              }}
+            >
               {storage.id === currentApp?.storageId ? 'Used' : 'Use'}
             </Button>
           </div>
