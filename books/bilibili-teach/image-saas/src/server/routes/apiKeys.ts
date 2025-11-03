@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 export const apiKeysRouter = router({
   listApiKeys: protectedProcedure
-    .input(z.object({ appId: z.string() }))
+    .input(z.object({ appId: z.number() }))
     .query(async ({ ctx }) => {
       return db.query.storageConfiguration.findMany({
         where: (apiKeys, { eq, and, isNull }) =>
