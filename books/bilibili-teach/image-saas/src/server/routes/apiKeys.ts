@@ -6,14 +6,11 @@ import { v4 as uuid } from 'uuid';
 
 export const apiKeysRouter = router({
   listApiKeys: protectedProcedure
-    .input(z.object({ appId: z.number() }))
-    .query(async ({ ctx }) => {
-      return db.query.storageConfiguration.findMany({
+    .input(z.object({ appId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return db.query.apiKeys.findMany({
         where: (apiKeys, { eq, and, isNull }) =>
-          and(
-            eq(apiKeys.userId, ctx.session.user.id),
-            isNull(apiKeys.deleteAt),
-          ),
+          and(eq(apiKeys.appId, input.appId), isNull(apiKeys.deleted)),
       });
     }),
 
@@ -21,7 +18,7 @@ export const apiKeysRouter = router({
     .input(
       z.object({
         name: z.string().min(3).max(50),
-        appId: z.number(),
+        appId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

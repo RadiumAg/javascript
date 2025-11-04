@@ -35,7 +35,7 @@ export default function StoragePage(props: Props) {
   const currentApp = apps?.filter((app) => app.id === appId)[0];
 
   return (
-    <div className="container pt-10 m-auto">
+    <div className="pt-10">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl mb-6">Storage</h1>
         <Link href={`/dashboard/apps/${appId}/storage/new`}>

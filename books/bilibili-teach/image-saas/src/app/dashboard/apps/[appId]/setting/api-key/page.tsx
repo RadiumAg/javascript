@@ -13,15 +13,15 @@ export default function StoragePage(props: Props) {
   const { appId } = use(props.params);
   const utils = trpcClientReact.useUtils();
   const { data: apiKeys } = trpcClientReact.apiKeys.listApiKeys.useQuery({
-    appId: +appId,
+    appId,
   });
   const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery();
   const currentApp = apps?.filter((app) => app.id === appId)[0];
 
   return (
-    <div className="container pt-10 m-auto">
+    <div className="pt-10">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl mb-6">Storage</h1>
+        <h1 className="text-3xl mb-6">Api Keys</h1>
         <Link href={`/dashboard/apps/${appId}/storage/new`}>
           <Button>
             <Plus></Plus>
