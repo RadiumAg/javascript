@@ -1,9 +1,15 @@
 'use client';
-import { use } from 'react';
+import { use, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { trpcClientReact } from '@/utils/api';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/Popover';
+import { Input } from '@/components/ui/Input';
 
 interface Props {
   params: Promise<{ appId: string }>;
@@ -11,22 +17,54 @@ interface Props {
 
 export default function StoragePage(props: Props) {
   const { appId } = use(props.params);
+  const newApiKeyName = useRef('');
   const utils = trpcClientReact.useUtils();
+  const { mutate } = trpcClientReact.apiKeys.createApiKey.useMutation({
+    onSuccess: (data) => {
+      utils.apiKeys.listApiKeys.setData({ appId }, (prev) => {
+        newApiKeyName.current = '';
+        if (!prev || !data) {
+          return prev;
+        }
+
+        return [data, ...prev];
+      });
+    },
+  });
   const { data: apiKeys } = trpcClientReact.apiKeys.listApiKeys.useQuery({
     appId,
   });
-  const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery();
-  const currentApp = apps?.filter((app) => app.id === appId)[0];
 
   return (
     <div className="pt-10">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl mb-6">Api Keys</h1>
-        <Link href={`/dashboard/apps/${appId}/storage/new`}>
-          <Button>
-            <Plus></Plus>
-          </Button>
-        </Link>
+        <Popover>
+          <PopoverTrigger>
+            <Button>
+              <Plus></Plus>
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent>
+            <div className="flex flex-col gap-4">
+              <Input
+                placeholder="Name"
+                onChange={(e) => {
+                  newApiKeyName.current = e.target.value;
+                }}
+              ></Input>
+              <Button
+                type="submit"
+                onClick={() => {
+                  mutate({ appId, name: newApiKeyName.current });
+                }}
+              >
+                Submit
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       {apiKeys?.map((storage) => {
         return (
@@ -34,7 +72,8 @@ export default function StoragePage(props: Props) {
             key={storage.id}
             className="border p-4 flex justify-between items-center m-4"
           >
-            {storage.name}
+            <span>{storage.name}</span>
+            <span>{storage.key}</span>
           </div>
         );
       })}
