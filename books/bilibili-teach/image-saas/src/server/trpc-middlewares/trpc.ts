@@ -1,5 +1,8 @@
 import { getServerSession } from '@/server/auth';
 import { initTRPC, TRPCError } from '@trpc/server';
+import { headers } from 'next/headers';
+import { db } from '../db/db';
+import { and } from 'drizzle-orm';
 
 const t = initTRPC.create();
 
@@ -25,6 +28,8 @@ const loggedProcedure = t.middleware(async ({ ctx, next }) => {
   return result;
 });
 
+const withLoggerProcedure = procedure.use(loggedProcedure);
+
 const protectedProcedure = procedure
   .use(loggedProcedure)
   .use(withSessionMiddleware)
@@ -42,4 +47,16 @@ const protectedProcedure = procedure
     });
   });
 
-export { router, protectedProcedure };
+const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
+  const request = ctx;
+  const header = await headers();
+  const apiKey = header.get('api-key');
+  const app = db.query.apiKeys.findFirst({
+    where: (apiKeys, { eq, and, isNotNull }) =>
+      and(eq(apiKeys.key, apiKey), isNotNull(apiKeys.deleted)),
+  });
+
+  return next();
+});
+
+export { router, protectedProcedure, withAppProcedure };
