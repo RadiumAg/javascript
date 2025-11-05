@@ -51,12 +51,37 @@ const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
   const request = ctx;
   const header = await headers();
   const apiKey = header.get('api-key');
-  const app = db.query.apiKeys.findFirst({
+
+  if (apiKey == null) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+    });
+  }
+
+  const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
     where: (apiKeys, { eq, and, isNotNull }) =>
       and(eq(apiKeys.key, apiKey), isNotNull(apiKeys.deleted)),
+    with: {
+      app: {
+        with: {
+          user: true,
+        },
+      },
+    },
   });
 
-  return next();
+  if (apiKeyAndAppUser == null) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+    });
+  }
+
+  return next({
+    ctx: {
+      app: apiKeyAndAppUser.app,
+      user: apiKeyAndAppUser.app.user,
+    },
+  });
 });
 
 export { router, protectedProcedure, withAppProcedure };
