@@ -193,4 +193,4 @@ const fileOpenRoutes = router({
     }),
 });
 
-export { fileOpenRoutes as fileRoutes };
+export { fileOpenRoutes };
