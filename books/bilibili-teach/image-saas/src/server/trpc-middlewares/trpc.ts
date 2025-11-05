@@ -48,7 +48,6 @@ const protectedProcedure = procedure
   });
 
 const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
-  const request = ctx;
   const header = await headers();
   const apiKey = header.get('api-key');
 
