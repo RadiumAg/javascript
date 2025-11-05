@@ -2,7 +2,6 @@ import { getServerSession } from '@/server/auth';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { headers } from 'next/headers';
 import { db } from '../db/db';
-import { and } from 'drizzle-orm';
 
 const t = initTRPC.create();
 
@@ -20,11 +19,8 @@ const withSessionMiddleware = t.middleware(async ({ ctx, next }) => {
 
 const loggedProcedure = t.middleware(async ({ ctx, next }) => {
   const start = Date.now();
-
   const result = await next();
-
   console.log('[DEBUG] api time', Date.now() - start);
-
   return result;
 });
 
