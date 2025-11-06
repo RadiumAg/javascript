@@ -78,7 +78,7 @@ export default function AppPage(props: AppPageProps) {
           </Button>
 
           <Button asChild>
-            <Link href={`/dashboard/apps/${appId}/storage`}>
+            <Link href={`/dashboard/apps/${appId}/setting/storage`}>
               <Settings></Settings>
             </Link>
           </Button>

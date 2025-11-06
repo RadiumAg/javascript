@@ -10,7 +10,7 @@ export const apiKeysRouter = router({
     .query(async ({ ctx, input }) => {
       return db.query.apiKeys.findMany({
         where: (apiKeys, { eq, and, isNull }) =>
-          and(eq(apiKeys.appId, input.appId), isNull(apiKeys.deleted)),
+          and(eq(apiKeys.appId, input.appId), isNull(apiKeys.deletedAt)),
       });
     }),
 

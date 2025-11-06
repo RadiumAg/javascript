@@ -54,8 +54,8 @@ const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
   }
 
   const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
-    where: (apiKeys, { eq, and, isNotNull }) =>
-      and(eq(apiKeys.key, apiKey), isNotNull(apiKeys.deleted)),
+    where: (apiKeys, { eq, and, isNull }) =>
+      and(eq(apiKeys.key, apiKey), isNull(apiKeys.deletedAt)),
     with: {
       app: {
         with: {

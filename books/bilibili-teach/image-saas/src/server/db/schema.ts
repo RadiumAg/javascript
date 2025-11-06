@@ -182,7 +182,7 @@ export const apiKeys = pgTable('apiKeys', {
   name: varchar('name', { length: 255 }).notNull(),
   appId: varchar('appId', { length: 100 }).notNull(),
   createAt: timestamp('create_at', { mode: 'date' }).defaultNow(),
-  deleted: timestamp('deleted_at', { mode: 'date' }),
+  deletedAt: timestamp('deleted_at', { mode: 'date' }),
 });
 
 export const apiKeysRelation = relations(apiKeys, ({ one }) => ({
