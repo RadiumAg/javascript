@@ -103,7 +103,7 @@ const fileOpenRoutes = router({
           id: uuid(),
           path: url.pathname,
           url: url.toString(),
-          userId: ctx?.user?.id,
+          userId: ctx?.session?.user?.id,
           contentType: input.type,
         })
         .returning();
