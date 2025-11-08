@@ -102,12 +102,12 @@ function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
       // 浅比较依赖
       const prevDeps = prevEffect.deps;
       if (areHookInputsEqual(nextDeps, prevDeps)) {
-        // 绑定的是上一个destory函数
+        // 绑定的是上一个destory函数，并将最新的create赋值
         hook.memoizedState = pushEffect(Passive, create, destory, nextDeps);
         return;
       }
     }
-    // 浅比较后 不相等
+    // 浅比较后 不相等，将最新的create赋值
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     currentlyRenderingFiber!.flags |= PassiveEffect;
     hook.memoizedState = pushEffect(
