@@ -88,6 +88,43 @@ const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
         message: 'ClientId not found',
       });
     }
+
+    const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
+      where: (apiKeys, { eq, and, isNull }) =>
+        and(
+          eq(apiKeys.clientId, (payload as JwtPayload).clientId),
+          isNull(apiKeys.deletedAt),
+        ),
+      with: {
+        app: {
+          with: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (apiKeyAndAppUser == null) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+      });
+    }
+
+    try {
+      jwt.verify(signedToken, apiKeyAndAppUser.key);
+    } catch {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Invalid signed token',
+      });
+    }
+
+    return next({
+      ctx: {
+        app: apiKeyAndAppUser.app,
+        user: apiKeyAndAppUser.app.user,
+      },
+    });
   }
 });
 
