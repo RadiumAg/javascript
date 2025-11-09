@@ -1,5 +1,5 @@
-import { OpenRouter } from '@/server/open-router';
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
+import { OpenRouter } from './open-router-dts';
+import { createTRPCClient, httpBatchLink } from '@trpc/react-query';
 
 const apiClient = createTRPCClient<OpenRouter>({
   links: [

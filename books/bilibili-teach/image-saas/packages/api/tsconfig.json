@@ -5,15 +5,14 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true,
     "esModuleInterop": true,
-    "tsBuildInfoFile": ".tsbuildinfo",
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "declaration": true,
     "plugins": [
       {
         "name": "next"
