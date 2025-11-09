@@ -1,7 +1,7 @@
 import { OpenRouter } from './open-router-dts';
-import { createTRPCClient, httpBatchLink } from '@trpc/react-query';
+import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 
-const apiClient = createTRPCClient<OpenRouter>({
+const apiClient = createTRPCProxyClient<OpenRouter>({
   links: [
     httpBatchLink({
       url: 'http://localhost:3000/api/trpc',
