@@ -2,6 +2,7 @@ import { getServerSession } from '@/server/auth';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { headers } from 'next/headers';
 import { db } from '../db/db';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const t = initTRPC.create();
 
@@ -46,37 +47,48 @@ const protectedProcedure = procedure
 const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
   const header = await headers();
   const apiKey = header.get('api-key');
+  const signedToken = header.get('signed-token');
 
-  if (apiKey == null) {
+  if (apiKey == null || signedToken == null) {
     throw new TRPCError({
       code: 'FORBIDDEN',
     });
   }
 
-  const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
-    where: (apiKeys, { eq, and, isNull }) =>
-      and(eq(apiKeys.key, apiKey), isNull(apiKeys.deletedAt)),
-    with: {
-      app: {
-        with: {
-          user: true,
+  if (apiKey) {
+    const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
+      where: (apiKeys, { eq, and, isNull }) =>
+        and(eq(apiKeys.key, apiKey), isNull(apiKeys.deletedAt)),
+      with: {
+        app: {
+          with: {
+            user: true,
+          },
         },
       },
-    },
-  });
-
-  if (apiKeyAndAppUser == null) {
-    throw new TRPCError({
-      code: 'NOT_FOUND',
     });
-  }
 
-  return next({
-    ctx: {
-      app: apiKeyAndAppUser.app,
-      user: apiKeyAndAppUser.app.user,
-    },
-  });
+    if (apiKeyAndAppUser == null) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+      });
+    }
+
+    return next({
+      ctx: {
+        app: apiKeyAndAppUser.app,
+        user: apiKeyAndAppUser.app.user,
+      },
+    });
+  } else {
+    const payload = jwt.decode(signedToken);
+    if (!(payload as JwtPayload).clientId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'ClientId not found',
+      });
+    }
+  }
 });
 
 export { router, protectedProcedure, withAppProcedure };
