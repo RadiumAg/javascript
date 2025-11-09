@@ -26,6 +26,7 @@ export const apiKeysRouter = router({
         .insert(apiKeys)
         .values({
           key: uuid(),
+          clientId: uuid(),
           name: input.name,
           appId: input.appId,
         })

@@ -178,8 +178,9 @@ export const storageConfigurationRelation = relations(
 
 export const apiKeys = pgTable('apiKeys', {
   id: serial('id').primaryKey(),
-  key: varchar('key', { length: 100 }).notNull(),
+  key: varchar('key', { length: 100 }).notNull().unique(),
   name: varchar('name', { length: 255 }).notNull(),
+  clientId: varchar('client_id', { length: 100 }).notNull().unique(),
   appId: uuid('appId').notNull(),
   createAt: timestamp('create_at', { mode: 'date' }).defaultNow(),
   deletedAt: timestamp('deleted_at', { mode: 'date' }),
