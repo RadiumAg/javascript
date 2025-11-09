@@ -1,13 +1,17 @@
 import { OpenRouter } from './open-router-dts';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 
-const apiClient = createTRPCProxyClient<OpenRouter>({
-  links: [
-    httpBatchLink({
-      url: 'http://localhost:3000/api/trpc',
-    }),
-  ],
-});
+const createApiClient = ({ apiKey }: { apiKey: string }) =>
+  createTRPCProxyClient<OpenRouter>({
+    links: [
+      httpBatchLink({
+        url: 'http://localhost:3000/api/open',
+        headers: {
+          'api-key': apiKey,
+        },
+      }),
+    ],
+  });
 
-export { apiClient };
+export { createApiClient };
 export type { OpenRouter };
