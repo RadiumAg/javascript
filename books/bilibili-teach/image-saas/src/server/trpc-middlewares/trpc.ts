@@ -49,12 +49,6 @@ const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
   const apiKey = header.get('api-key');
   const signedToken = header.get('signed-token');
 
-  if (apiKey == null || signedToken == null) {
-    throw new TRPCError({
-      code: 'FORBIDDEN',
-    });
-  }
-
   if (apiKey) {
     const apiKeyAndAppUser = await db.query.apiKeys.findFirst({
       where: (apiKeys, { eq, and, isNull }) =>
@@ -80,7 +74,7 @@ const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
         user: apiKeyAndAppUser.app.user,
       },
     });
-  } else {
+  } else if (signedToken) {
     const payload = jwt.decode(signedToken);
     if (!(payload as JwtPayload).clientId) {
       throw new TRPCError({
@@ -126,6 +120,10 @@ const withAppProcedure = withLoggerProcedure.use(async ({ ctx, next }) => {
       },
     });
   }
+
+  throw new TRPCError({
+    code: 'FORBIDDEN',
+  });
 });
 
 export { router, protectedProcedure, withAppProcedure };
