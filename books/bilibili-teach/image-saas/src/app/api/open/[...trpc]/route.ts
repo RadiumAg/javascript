@@ -7,10 +7,24 @@ const handler = async (request: NextRequest) => {
     endpoint: '/api/open',
     req: request,
     router: openRouter,
+    createContext: () => ({}),
   });
 
   res.headers.append('Access-Control-Allow-Origin', '*');
-  res.headers.append('Access-Control-Allow-Nethods', '*');
+  res.headers.append('Access-Control-Allow-Methods', '*');
+  res.headers.append('Access-Control-Allow-Headers', 'api-key');
 };
 
-export { handler as GET, handler as POST };
+const OPTIONS = () => {
+  const res = new Response('', {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': '*',
+      'Access-Control-Allow-Headers': 'api-key',
+    },
+  });
+
+  return res;
+};
+
+export { handler as GET, OPTIONS, handler as POST };
