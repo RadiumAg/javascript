@@ -111,7 +111,7 @@ export class FiberRootNode {
 
 export const createWorkInProgress = (
   current: FiberNode,
-  pendingProps: Props
+  pendingProps: Props,
 ): FiberNode => {
   let wip = current.alternate;
 
@@ -140,6 +140,13 @@ export const createWorkInProgress = (
   return wip;
 };
 
+/**
+ *
+ * 创建fiber
+ *
+ * @param element
+ * @returns
+ */
 export function createFiberFromElement(element: ReactElement): FiberNode {
   const { type, key, ref, props } = element;
   let fiberTag: WorkTag = FunctionComponent;

@@ -48,6 +48,13 @@ function childReconciler(shouldTrackEffects: boolean) {
     }
   }
 
+  /**
+   *
+   * @param returnFiber
+   * @param currentFiber mount时currentFiber为null
+   * @param element
+   * @returns
+   */
   function reconcileSingleElement(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
@@ -286,6 +293,9 @@ function childReconciler(shouldTrackEffects: boolean) {
     return null;
   }
 
+  /**
+   * mount时currentFiber为null
+   */
   return function reconcileChildFibers(
     returnFiber: FiberNode,
     currentFiber: FiberNode | null,
