@@ -30,7 +30,7 @@ import { HookHasEffect } from './hookEffectTags';
 let nextEffect: FiberNode | null = null;
 
 /**
- * mount和update阶段更新
+ * mount和update阶段更新,深度遍历优先，搜集需要执行的useEffect,useLayoutEffect,dom ref
  *
  * @param {string} phrase
  * @param {Flags} mask
@@ -40,7 +40,7 @@ let nextEffect: FiberNode | null = null;
 export const commitEffect = (
   phrase: 'mutation' | 'layout',
   mask: Flags,
-  callback: (fiber: FiberNode, root: FiberRootNode) => void
+  callback: (fiber: FiberNode, root: FiberRootNode) => void,
 ) => {
   return (finishedWork: FiberNode, root: FiberRootNode) => {
     nextEffect = finishedWork;
@@ -69,7 +69,7 @@ export const commitEffect = (
 
 const commitMutationEffectOnFiber = (
   finishedWork: FiberNode,
-  root: FiberRootNode
+  root: FiberRootNode,
 ) => {
   const flags = finishedWork.flags;
 
@@ -88,7 +88,7 @@ const commitMutationEffectOnFiber = (
   if ((flags & ChildDeletion) !== NoFlags) {
     const deletions = finishedWork.deletions;
     if (deletions !== null) {
-      deletions.forEach(childToDelete => {
+      deletions.forEach((childToDelete) => {
         commitDeleteion(childToDelete, root);
       });
     }
@@ -125,7 +125,7 @@ function safelyDetachRef(current: FiberNode) {
 
 const commitLayoutEffectOnFiber = (
   finishedWork: FiberNode,
-  root: FiberRootNode
+  root: FiberRootNode,
 ) => {
   const { flags, tag } = finishedWork;
 
@@ -163,7 +163,7 @@ function safelyAttachRef(fiber: FiberNode) {
 function commitPassiveEffect(
   fiber: FiberNode,
   root: FiberRootNode,
-  type: keyof PendingPassiveEffects
+  type: keyof PendingPassiveEffects,
 ) {
   // update unmount
   if (
@@ -191,7 +191,7 @@ function commitPassiveEffect(
  * @param {Effect} lastEffect
  */
 export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
-  commitHookEffectList(flags, lastEffect, effect => {
+  commitHookEffectList(flags, lastEffect, (effect) => {
     const destory = effect.destory;
     if (typeof destory === 'function') {
       destory();
@@ -208,7 +208,7 @@ export function commitHookEffectListUnmount(flags: Flags, lastEffect: Effect) {
  * @param {Effect} lastEffect
  */
 export function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
-  commitHookEffectList(flags, lastEffect, effect => {
+  commitHookEffectList(flags, lastEffect, (effect) => {
     const destory = effect.destory;
     if (typeof destory === 'function') {
       destory();
@@ -224,7 +224,7 @@ export function commitHookEffectListDestory(flags: Flags, lastEffect: Effect) {
  * @param {Effect} lastEffect
  */
 export function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
-  commitHookEffectList(flags, lastEffect, effect => {
+  commitHookEffectList(flags, lastEffect, (effect) => {
     const create = effect.create;
     if (typeof create === 'function') {
       effect.destory = create();
@@ -235,7 +235,7 @@ export function commitHookEffectListCreate(flags: Flags, lastEffect: Effect) {
 function commitHookEffectList(
   flags: Flags,
   lastEffect: Effect,
-  callback: (effect: Effect) => void
+  callback: (effect: Effect) => void,
 ) {
   let effect = lastEffect.next as Effect;
 
@@ -250,7 +250,7 @@ function commitHookEffectList(
 
 function recordHostChildrenToDelete(
   childrenToDelete: FiberNode[],
-  unmountFiber: FiberNode
+  unmountFiber: FiberNode,
 ) {
   // 1. 找到第一个root host 节点
   const lastOne = childrenToDelete[childrenToDelete.length - 1];
@@ -273,7 +273,7 @@ function commitDeleteion(childToDelete: FiberNode, root: FiberRootNode) {
   const rootChildrenToDelete: FiberNode[] = [];
 
   // 递归子树
-  commitNestedComponent(childToDelete, unmountFiber => {
+  commitNestedComponent(childToDelete, (unmountFiber) => {
     switch (unmountFiber.tag) {
       case HostComponent:
         recordHostChildrenToDelete(rootChildrenToDelete, unmountFiber);
@@ -303,7 +303,7 @@ function commitDeleteion(childToDelete: FiberNode, root: FiberRootNode) {
 
     // eslint-disable-next-line eqeqeq
     if (hostParent != null) {
-      rootChildrenToDelete.forEach(node => {
+      rootChildrenToDelete.forEach((node) => {
         removeChild(node.stateNode, hostParent);
       });
     }
@@ -315,7 +315,7 @@ function commitDeleteion(childToDelete: FiberNode, root: FiberRootNode) {
 
 function commitNestedComponent(
   root: FiberNode,
-  onCommitUnmount: (fiber: FiberNode) => void
+  onCommitUnmount: (fiber: FiberNode) => void,
 ) {
   let node = root;
   while (true) {
@@ -423,7 +423,7 @@ function getHostParent(fiber: FiberNode) {
 function insertOrAppendPlacementNodeInToContainer(
   finishedWork: FiberNode,
   hostParent: Container,
-  before?: Instance
+  before?: Instance,
 ) {
   // fiber host
   if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
@@ -452,11 +452,11 @@ function insertOrAppendPlacementNodeInToContainer(
 export const commitMutationEffect = commitEffect(
   'mutation',
   MutationMask | PassiveMask,
-  commitMutationEffectOnFiber
+  commitMutationEffectOnFiber,
 );
 
 export const commitLayoutEffect = commitEffect(
   'layout',
   LayoutMask,
-  commitLayoutEffectOnFiber
+  commitLayoutEffectOnFiber,
 );
