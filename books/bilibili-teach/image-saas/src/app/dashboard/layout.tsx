@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { ThemeProvider } from './ThemeProvider';
 import '../globals.css';
+import { ThemeToggle } from './ThemeToggle';
 
 export default async function RootLayout({
   children,
@@ -26,7 +27,9 @@ export default async function RootLayout({
   return (
     <ThemeProvider>
       <nav className="h-[80px] border-b flex justify-center">
-        <div className="container flex justify-end h-full items-center relative">
+        <div className="container flex justify-end h-full items-center relative gap-2">
+          <ThemeToggle />
+
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
