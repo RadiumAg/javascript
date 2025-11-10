@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/Button';
 import Dropzone from '@/components/feature/Dropzone';
 import { UploadButton } from '@/components/feature/UploadButton';
 import { cn } from '@/lib/utils';
-import { trpcPureClient } from '@/utils/api';
+import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
-import { useMemo, use, useState } from 'react';
+import { useMemo, use, useState, useEffect, ReactNode } from 'react';
 import { usePasteFile } from '@/app/hooks/userPasteFile';
 import UploadPreview from '@/components/feature/UploadPreview';
 import FileList from '@/components/feature/FileList';
@@ -22,6 +22,9 @@ interface AppPageProps {
 export default function AppPage(props: AppPageProps) {
   const params = use(props.params);
   const { appId } = params;
+  const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery();
+  const currentApp = apps?.find((app) => app.id === appId);
+
   const uppy = useMemo(() => {
     const uppy = new Uppy();
 
@@ -57,55 +60,69 @@ export default function AppPage(props: AppPageProps) {
     order: 'desc',
   });
 
-  return (
-    <div className="h-full">
-      <div className="container mx-auto flex justify-between items-center h-[60px]">
-        <Button
-          onClick={() => {
-            setOrderBy((current) => ({
-              ...current,
-              order: current.order === 'desc' ? 'asc' : 'desc',
-            }));
-          }}
-        >
-          Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
-        </Button>
-        <div className="flex items-center gap-2">
-          <UploadButton uppy={uppy}></UploadButton>
+  let children: ReactNode;
 
-          <Button asChild>
-            <Link href="/dashboard/apps/new">new app</Link>
+  if (isPending) {
+    children = <div>Loading...</div>;
+  } else if (currentApp == null) {
+    children = <div>App not found</div>;
+  } else {
+    children = (
+      <div className="h-full">
+        <div className="container mx-auto flex justify-between items-center h-[60px]">
+          <Button
+            onClick={() => {
+              setOrderBy((current) => ({
+                ...current,
+                order: current.order === 'desc' ? 'asc' : 'desc',
+              }));
+            }}
+          >
+            Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
           </Button>
+          <div className="flex items-center gap-2">
+            <UploadButton uppy={uppy}></UploadButton>
 
-          <Button asChild>
-            <Link href={`/dashboard/apps/${appId}/setting/storage`}>
-              <Settings></Settings>
-            </Link>
-          </Button>
+            <Button asChild>
+              <Link href="/dashboard/apps/new">new app</Link>
+            </Button>
+
+            <Button asChild>
+              <Link href={`/dashboard/apps/${appId}/setting/storage`}>
+                <Settings></Settings>
+              </Link>
+            </Button>
+          </div>
         </div>
+
+        <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
+          {(draggling) => {
+            return (
+              <div
+                className={cn(
+                  'flex flex-wrap gap-4 relative h-full container mx-auto',
+                  draggling && 'border border-dashed',
+                )}
+              >
+                {draggling && (
+                  <div className="absolute inset-0 bg-secondary/50 z-10 flex justify-center items-center">
+                    Drop File Here To Upload
+                  </div>
+                )}
+
+                <FileList
+                  appId={appId}
+                  orderBy={orderBy}
+                  uppy={uppy}
+                ></FileList>
+              </div>
+            );
+          }}
+        </Dropzone>
+        <UploadPreview uppy={uppy}></UploadPreview>
       </div>
+    );
+  }
 
-      <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
-        {(draggling) => {
-          return (
-            <div
-              className={cn(
-                'flex flex-wrap gap-4 relative h-full container mx-auto',
-                draggling && 'border border-dashed',
-              )}
-            >
-              {draggling && (
-                <div className="absolute inset-0 bg-secondary/50 z-10 flex justify-center items-center">
-                  Drop File Here To Upload
-                </div>
-              )}
-
-              <FileList appId={appId} orderBy={orderBy} uppy={uppy}></FileList>
-            </div>
-          );
-        }}
-      </Dropzone>
-      <UploadPreview uppy={uppy}></UploadPreview>
-    </div>
-  );
+  return children;
 }
