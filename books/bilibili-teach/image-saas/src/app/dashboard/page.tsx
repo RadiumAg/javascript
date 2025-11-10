@@ -1,19 +1,12 @@
 'use client';
 import { Button } from '@/components/ui/Button';
-import Dropzone from '@/components/feature/Dropzone';
-import { UploadButton } from '@/components/feature/UploadButton';
-import { cn } from '@/lib/utils';
 import { trpcClientReact, trpcPureClient } from '@/utils/api';
 import AWS3 from '@uppy/aws-s3';
 import { Uppy } from '@uppy/core';
-import { useMemo, use, useState, useEffect, ReactNode } from 'react';
+import { useMemo, use, useState, ReactNode } from 'react';
 import { usePasteFile } from '@/app/hooks/userPasteFile';
-import UploadPreview from '@/components/feature/UploadPreview';
-import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
-import { MoveUp, MoveDown, Settings } from 'lucide-react';
 import Link from 'next/link';
-import app from 'next/app';
 
 interface AppPageProps {
   params: Promise<{ appId: string }>;

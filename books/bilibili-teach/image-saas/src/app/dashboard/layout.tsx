@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
+import { ThemeProvider } from './ThemeProvider';
 import '../globals.css';
 
 export default async function RootLayout({
@@ -23,7 +24,7 @@ export default async function RootLayout({
     redirect('/api/auth/signin');
   }
   return (
-    <>
+    <ThemeProvider>
       <nav className="h-[80px] border-b flex justify-center">
         <div className="container flex justify-end h-full items-center relative">
           <DropdownMenu>
@@ -45,6 +46,6 @@ export default async function RootLayout({
         </div>
       </nav>
       <main className="h-[calc(100vh-80px)]">{children}</main>
-    </>
+    </ThemeProvider>
   );
 }
