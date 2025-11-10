@@ -13,6 +13,7 @@ import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import { MoveUp, MoveDown, Settings } from 'lucide-react';
 import Link from 'next/link';
+import app from 'next/app';
 
 interface AppPageProps {
   params: Promise<{ appId: string }>;
@@ -22,7 +23,14 @@ interface AppPageProps {
 export default function AppPage(props: AppPageProps) {
   const params = use(props.params);
   const { appId } = params;
-  const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery();
+  const { data: apps, isPending } = trpcClientReact.apps.listApps.useQuery(
+    undefined,
+    {
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  );
   const currentApp = apps?.find((app) => app.id === appId);
 
   const uppy = useMemo(() => {
@@ -65,7 +73,19 @@ export default function AppPage(props: AppPageProps) {
   if (isPending) {
     children = <div>Loading...</div>;
   } else if (currentApp == null) {
-    children = <div>App not found</div>;
+    children = (
+      <div className="flex flex-col mt-10 p-4 border rounded-md max-w-48 mx-auto items-center">
+        <p className="text-lg">App not found</p>
+        <p className="text-sm">Chose another one</p>
+        <div className="flex flex-col agp-4 items-center">
+          {apps?.map((app) => (
+            <Button key={app.id} asChild variant="link">
+              <Link href={`/dashboard/apps/${app.id}`}>{app.name}</Link>
+            </Button>
+          ))}
+        </div>
+      </div>
+    );
   } else {
     children = (
       <div className="h-full">
