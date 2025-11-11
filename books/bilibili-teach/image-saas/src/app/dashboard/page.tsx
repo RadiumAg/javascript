@@ -64,7 +64,7 @@ export default function AppPage(props: AppPageProps) {
   let children: ReactNode;
 
   if (isPending) {
-    children = <div>Loading...</div>;
+    children = <div className="flex items-center justify-center">Loading...</div>;
   } else if (currentApp == null) {
     children = (
       <div className="flex flex-col mt-10 p-4 border rounded-md max-w-48 mx-auto items-center">

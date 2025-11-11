@@ -171,13 +171,13 @@ const FileList: React.FC<FileListProps> = (props) => {
 
   return (
     <ScrollArea
-      className="h-full w-full"
+      className="h-full w-full @container"
       onScrollEnd={() => {
         fetchNextPage();
       }}
     >
       {isPending && <div className="text-center">Loading...</div>}
-      <div className={cn("grid grid-cols-4 gap-4 relative container")}>
+      <div className={cn("grid grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 gap-4 relative container")}>
         {uploadingFilesIds.length > 0 &&
           uploadingFilesIds.map((fileId) => {
             const file = uppyFiles[fileId];
