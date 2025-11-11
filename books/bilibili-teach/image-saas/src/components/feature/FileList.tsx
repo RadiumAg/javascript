@@ -9,6 +9,7 @@ import { Button } from '../ui/Button';
 import { ScrollArea } from '../ui/ScrollArea';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import DeleteFileAction, { CopyUrl } from './FileItemAction';
+import { cn } from '@/lib/utils';
 
 interface FileListProps {
   uppy: Uppy;
@@ -147,7 +148,7 @@ const FileList: React.FC<FileListProps> = (props) => {
   const fileListEle = fileList?.map((file) => {
     return (
       <div
-        className="w-56 h-56 flex justify-center items-center border relative"
+        className="flex justify-center items-center border relative"
         key={file.id}
       >
         <div className="w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200">
@@ -176,7 +177,7 @@ const FileList: React.FC<FileListProps> = (props) => {
       }}
     >
       {isPending && <div className="text-center">Loading...</div>}
-      <div className="flex flex-wrap gap-4 justify-center">
+      <div className={cn("grid grid-cols-4 gap-4 relative container")}>
         {uploadingFilesIds.length > 0 &&
           uploadingFilesIds.map((fileId) => {
             const file = uppyFiles[fileId];
@@ -186,7 +187,7 @@ const FileList: React.FC<FileListProps> = (props) => {
             return (
               <div
                 key={fileId}
-                className="w-56 h-56 flex justify-center items-center border border-red-500"
+                className="flex justify-center items-center border border-red-500"
               >
                 {isImage ? (
                   <img src={url} alt="file" />
