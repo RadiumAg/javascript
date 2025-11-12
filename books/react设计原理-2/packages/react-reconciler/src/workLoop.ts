@@ -304,9 +304,10 @@ function commitRoot(root: FiberRootNode) {
     // beforeMutation
 
     // mutation
+    // 搜集useEffect的update，并在flushSyncCallbacks中执行
     // 更新 dom
     commitMutationEffect(finishedWork, root);
- 
+
     // Fiber Tree切换
     root.current = finishedWork;
 
