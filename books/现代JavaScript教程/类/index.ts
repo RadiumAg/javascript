@@ -38,7 +38,24 @@
     }
   }
 
-  const coffeeMachine = new CoffeeMachine();
+  const coffeeMachine = new CoffeeMachine(1);
 
   coffeeMachine.waterAmount = 10;
+})();
+
+// 私有的 "#waterLimit"
+(() => {
+  class CoffeeMachine {
+    #waterLimit = 200;
+
+    #fixWaterAmount(value: number) {
+      if (value < 0) return 0;
+      if (value > this.#waterLimit) return this.#waterLimit;
+      return value;
+    }
+
+    setWaterAmount(value: number) {
+      this.#waterLimit = this.#fixWaterAmount(value);
+    }
+  }
 })();
