@@ -77,3 +77,10 @@
   const filteredArr = arr.filter((item) => item >= 10);
   // console.log(filteredArr.isEmpty());
 };
+
+// instanceof
+(() => {
+  class Rabbit {}
+  const rabbit = new Rabbit();
+  console.log(rabbit instanceof Rabbit);
+})();
