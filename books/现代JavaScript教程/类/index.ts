@@ -16,3 +16,25 @@
   const button = new Button('hello');
   setTimeout(button.click, 1000);
 })();
+
+// Mixin 实例
+(() => {
+  const sayHiMixin = {
+    sayHi() {
+      console.log(`Hello ${this.name}`);
+    },
+    sayBye() {
+      console.log(`Hello ${this.name}`);
+    },
+  };
+
+  class User {
+    constructor(name) {
+      this.name = name;
+    }
+  }
+
+  Object.assign(User.prototype, sayHiMixin);
+
+  new User('Dude').sayHi();
+})();
