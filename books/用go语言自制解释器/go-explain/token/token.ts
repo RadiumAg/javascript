@@ -20,8 +20,9 @@ const Token = {
   RPAREN: ')',
   LBRACE: '{',
   RBRACE: '}',
-
   // 关键字
   FUNCTION: 'FUNCTION',
   LET: 'LET',
 };
+
+export { Token };
