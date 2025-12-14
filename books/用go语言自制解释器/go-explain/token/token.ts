@@ -28,7 +28,7 @@ enum TokenType {
 
 interface Token {
   type: TokenType;
-  literal: string;
+  literal: string | number;
 }
 
 export { TokenType, Token };

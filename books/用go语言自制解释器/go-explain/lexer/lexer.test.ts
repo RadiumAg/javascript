@@ -24,15 +24,9 @@ describe('Lexer', () => {
     tests.forEach((tt, i) => {
       const tok = l.nextToken();
 
-      expect(tok.type).toBe(
-        tt.expectedType,
-        `tests[${i}] - tokentype wrong. expected=${tt.expectedType}, got=${tok.type}`
-      );
+      expect(tok.type).toBe(tt.expectedType);
 
-      expect(tok.literal).toBe(
-        tt.expectedLiteral,
-        `tests[${i}] - literal wrong. expected=${tt.expectedLiteral}, got=${tok.literal}`
-      );
+      expect(tok.literal).toBe(tt.expectedLiteral);
     });
   });
 });

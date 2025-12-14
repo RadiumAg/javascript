@@ -4,7 +4,7 @@ class Lexer {
   input: string;
   position: number = 0;
   readPosition: number = 0;
-  ch: string = '';
+  ch: string | number;
 
   nextToken(): Token {
     this.skipWhitespace();
@@ -37,7 +37,7 @@ class Lexer {
       case ';':
         token = { type: TokenType.SEMICOLON, literal: ';' };
         break;
-      case '':
+      case 0:
         token = { type: TokenType.EOF, literal: '' };
         break;
       default:
@@ -48,9 +48,15 @@ class Lexer {
     return token;
   }
 
-  private readChar(): void {
+  /**
+   * readChar的目的是读取input中的下一个字符，并前移其在input中的位置。
+   * 这个过程的第一件事就是检查是否已经到达input的末尾。如果是，则将l.ch设置为''，
+   *
+   * @memberof Lexer
+   */
+  readChar(): void {
     if (this.readPosition >= this.input.length) {
-      this.ch = '';
+      this.ch = 0;
     } else {
       this.ch = this.input[this.readPosition];
     }
