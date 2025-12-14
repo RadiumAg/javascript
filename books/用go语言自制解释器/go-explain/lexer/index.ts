@@ -37,11 +37,11 @@ class Lexer {
       case ';':
         token = { type: TokenType.SEMICOLON, literal: ';' };
         break;
-      case 0:
+      case '':
         token = { type: TokenType.EOF, literal: '' };
         break;
-      default:
-        token = { type: TokenType.ILLEGAL, literal: ch };
+      default: {
+      }
     }
 
     this.readChar();
@@ -56,7 +56,7 @@ class Lexer {
    */
   readChar(): void {
     if (this.readPosition >= this.input.length) {
-      this.ch = 0;
+      this.ch = '';
     } else {
       this.ch = this.input[this.readPosition];
     }
@@ -82,5 +82,24 @@ const createLexer = (input: string): Lexer => {
   lexer.readChar();
   return lexer;
 };
+
+function readIdentifier(lexer: Lexer) {
+  let position = lexer.position;
+  while (isLetter(lexer.ch)) {
+    lexer.readChar();
+  }
+  return lexer.input.slice(position, lexer.position);
+}
+
+/**
+ *
+ * 是否是字符
+ *
+ * @param {(string | number)} ch
+ * @return {*}  {boolean}
+ */
+function isLetter(ch: string | number): boolean {
+  return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_';
+}
 
 export { Lexer, createLexer };
