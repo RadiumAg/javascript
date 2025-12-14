@@ -1,10 +1,80 @@
+import { TokenType, Token } from '../token/token';
+
 class Lexer {
-  // 所输入字符串中的当前位置
   input: string;
-
   position: number = 0;
-
   readPosition: number = 0;
+  ch: string = '';
+
+  nextToken(): Token {
+    this.skipWhitespace();
+
+    const ch = this.ch;
+    let token: Token;
+
+    switch (ch) {
+      case '=':
+        token = { type: TokenType.ASSIGN, literal: '=' };
+        break;
+      case '+':
+        token = { type: TokenType.PLUS, literal: '+' };
+        break;
+      case '(':
+        token = { type: TokenType.LPAREN, literal: '(' };
+        break;
+      case ')':
+        token = { type: TokenType.RPAREN, literal: ')' };
+        break;
+      case '{':
+        token = { type: TokenType.LBRACE, literal: '{' };
+        break;
+      case '}':
+        token = { type: TokenType.RBRACE, literal: '}' };
+        break;
+      case ',':
+        token = { type: TokenType.COMMA, literal: ',' };
+        break;
+      case ';':
+        token = { type: TokenType.SEMICOLON, literal: ';' };
+        break;
+      case '':
+        token = { type: TokenType.EOF, literal: '' };
+        break;
+      default:
+        token = { type: TokenType.ILLEGAL, literal: ch };
+    }
+
+    this.readChar();
+    return token;
+  }
+
+  private readChar(): void {
+    if (this.readPosition >= this.input.length) {
+      this.ch = '';
+    } else {
+      this.ch = this.input[this.readPosition];
+    }
+    this.position = this.readPosition;
+    this.readPosition += 1;
+  }
+
+  private skipWhitespace(): void {
+    while (
+      this.ch === ' ' ||
+      this.ch === '\t' ||
+      this.ch === '\n' ||
+      this.ch === '\r'
+    ) {
+      this.readChar();
+    }
+  }
 }
 
-export { Lexer };
+const createLexer = (input: string): Lexer => {
+  const lexer = new Lexer();
+  lexer.input = input;
+  lexer.readChar();
+  return lexer;
+};
+
+export { Lexer, createLexer };
