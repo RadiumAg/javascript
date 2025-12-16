@@ -1,16 +1,21 @@
 import { TokenType, Token } from '../token/token';
 
+const keywords: Record<string, TokenType> = {
+  fn: TokenType.FUNCTION,
+  let: TokenType.LET,
+};
+
 class Lexer {
-  input: string;
+  input: string | undefined;
   position: number = 0;
   readPosition: number = 0;
-  ch: string | number;
+  ch: string | undefined;
 
   nextToken(): Token {
     this.skipWhitespace();
 
     const ch = this.ch;
-    let token: Token;
+    let token: Token | undefined = undefined;
 
     switch (ch) {
       case '=':
@@ -41,6 +46,12 @@ class Lexer {
         token = { type: TokenType.EOF, literal: '' };
         break;
       default: {
+        if (isLetter(ch)) {
+          token!.literal = readIdentifier(this);
+          return token!;
+        } else {
+          token = { type: TokenType.ILLEGAL, literal: ch };
+        }
       }
     }
 
@@ -83,6 +94,13 @@ const createLexer = (input: string): Lexer => {
   return lexer;
 };
 
+/**
+ * 读入一个标识符并前移词法分析器的扫描位置
+ * 直到遇到非字母字符
+ *
+ * @param {Lexer} lexer
+ * @return {*}
+ */
 function readIdentifier(lexer: Lexer) {
   let position = lexer.position;
   while (isLetter(lexer.ch)) {
