@@ -1,7 +1,7 @@
 // lexer/lexer_test.ts
 
 import { createLexer } from './index';
-import { TokenType } from '../token/token';
+import { TokenType } from '../token';
 
 describe('Lexer', () => {
   test('TestNextToken', () => {

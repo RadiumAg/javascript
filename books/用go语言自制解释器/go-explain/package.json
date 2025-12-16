@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "run": "esno main.ts"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "packageManager": "pnpm@10.22.0",
   "devDependencies": {
     "@types/jest": "^29.5.14",
+    "esno": "^4.8.0",
     "jest": "^29.5.0",
     "prettier": "^3.7.4",
     "ts-jest": "^29.1.0",

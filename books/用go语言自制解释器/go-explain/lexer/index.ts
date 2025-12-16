@@ -1,4 +1,4 @@
-import { TokenType, Token, lookupIdent } from '../token/token';
+import { TokenType, Token, lookupIdent } from '../token';
 /**
  * 词法分析器的任务是检查代码是否有意义，能否运行
  * 或者有没有错误
