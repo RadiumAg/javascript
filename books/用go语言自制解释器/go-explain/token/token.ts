@@ -11,6 +11,12 @@ enum TokenType {
   // 运算符
   ASSIGN = '=',
   PLUS = '+',
+  MINUS = '-',
+  BANG = '!',
+  ASTERISK = '*',
+  SLASH = '/',
+  LT = '<',
+  GT = '>',
 
   // 分隔符
   COMMA = ',',
@@ -34,6 +40,11 @@ interface Token {
 const keywords: Record<string, TokenType> = {
   fn: TokenType.FUNCTION,
   let: TokenType.LET,
+  true: TokenType.IDENT,
+  false: TokenType.IDENT,
+  if: TokenType.IDENT,
+  else: TokenType.IDENT,
+  return: TokenType.IDENT,
 };
 
 function lookupIdent(ident: string): TokenType {

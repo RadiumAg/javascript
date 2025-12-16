@@ -1,5 +1,10 @@
 import { TokenType, Token, lookupIdent } from '../token/token';
-
+/**
+ * 词法分析器的任务是检查代码是否有意义，能否运行
+ * 或者有没有错误
+ *
+ * @class Lexer
+ */
 class Lexer {
   input: string = '';
   position: number = 0;
@@ -18,6 +23,24 @@ class Lexer {
         break;
       case '+':
         token = { type: TokenType.PLUS, literal: '+' };
+        break;
+      case '-':
+        token = { type: TokenType.MINUS, literal: '-' };
+        break;
+      case '!':
+        token = { type: TokenType.BANG, literal: '!' };
+        break;
+      case '*':
+        token = { type: TokenType.ASTERISK, literal: '*' };
+        break;
+      case '/':
+        token = { type: TokenType.SLASH, literal: '/' };
+        break;
+      case '<':
+        token = { type: TokenType.LT, literal: '<' };
+        break;
+      case '>':
+        token = { type: TokenType.GT, literal: '>' };
         break;
       case '(':
         token = { type: TokenType.LPAREN, literal: '(' };
