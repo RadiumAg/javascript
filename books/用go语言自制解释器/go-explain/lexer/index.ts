@@ -60,6 +60,25 @@ class Lexer {
       case ';':
         token = { type: TokenType.SEMICOLON, literal: ';' };
         break;
+      case '=':
+        if (peekChar(this) === '=') {
+          const ch = this.ch;
+          this.readChar();
+          token = { type: TokenType.EQ, literal: ch + this.ch };
+        } else {
+          token = { type: TokenType.ASSIGN, literal: '=' };
+        }
+        break;
+
+      case '!':
+        if (peekChar(this) === '=') {
+          const ch = this.ch;
+          this.readChar();
+          token = { type: TokenType.NOT_EQ, literal: ch + this.ch };
+        } else {
+          token = { type: TokenType.BANG, literal: '!' };
+        }
+        break;
       case '':
         token = { type: TokenType.EOF, literal: '' };
         break;
@@ -153,6 +172,14 @@ function readNumber(lexer: Lexer) {
 
 function isDigit(ident: string): boolean {
   return '0' <= ident && ident <= '9';
+}
+
+function peekChar(lexer: Lexer): string {
+  if (lexer.readPosition >= lexer.input.length) {
+    return '';
+  } else {
+    return lexer.input[lexer.readPosition];
+  }
 }
 
 export { Lexer, createLexer };
