@@ -1,21 +1,16 @@
-import { TokenType, Token } from '../token/token';
-
-const keywords: Record<string, TokenType> = {
-  fn: TokenType.FUNCTION,
-  let: TokenType.LET,
-};
+import { TokenType, Token, lookupIdent } from '../token/token';
 
 class Lexer {
-  input: string | undefined;
+  input: string = '';
   position: number = 0;
   readPosition: number = 0;
-  ch: string | undefined;
+  ch: string = '';
 
   nextToken(): Token {
     this.skipWhitespace();
 
     const ch = this.ch;
-    let token: Token | undefined = undefined;
+    let token: Token = { type: TokenType.ILLEGAL, literal: '' };
 
     switch (ch) {
       case '=':
@@ -47,8 +42,13 @@ class Lexer {
         break;
       default: {
         if (isLetter(ch)) {
-          token!.literal = readIdentifier(this);
-          return token!;
+          token.literal = readIdentifier(this);
+          token.type = lookupIdent(token.literal);
+          return token;
+        } else if (isDigit(ch)) {
+          token.literal = readNumber(this);
+          token.type = TokenType.INT;
+          return token;
         } else {
           token = { type: TokenType.ILLEGAL, literal: ch };
         }
@@ -118,6 +118,18 @@ function readIdentifier(lexer: Lexer) {
  */
 function isLetter(ch: string | number): boolean {
   return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_';
+}
+
+function readNumber(lexer: Lexer) {
+  let position = lexer.position;
+  while (isDigit(lexer.ch)) {
+    lexer.readChar();
+  }
+  return lexer.input.slice(position, lexer.position);
+}
+
+function isDigit(ident: string): boolean {
+  return '0' <= ident && ident <= '9';
 }
 
 export { Lexer, createLexer };

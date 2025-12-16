@@ -31,4 +31,13 @@ interface Token {
   literal: string | number;
 }
 
-export { TokenType, Token };
+const keywords: Record<string, TokenType> = {
+  fn: TokenType.FUNCTION,
+  let: TokenType.LET,
+};
+
+function lookupIdent(ident: string): TokenType {
+  return keywords[ident] || TokenType.IDENT;
+}
+
+export { TokenType, Token, lookupIdent };

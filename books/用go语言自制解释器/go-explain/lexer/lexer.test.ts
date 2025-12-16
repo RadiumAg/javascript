@@ -10,7 +10,7 @@ describe('Lexer', () => {
     let ten = 10;
     let add = fn(x, y)  {
       x + y;
-    }
+    };
     let result = add(five, ten);
     `;
 
@@ -58,6 +58,7 @@ describe('Lexer', () => {
 
     tests.forEach((tt, i) => {
       const tok = l.nextToken();
+      console.log(tok);
 
       expect(tok.type).toBe(tt.expectedType);
 
