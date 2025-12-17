@@ -1,3 +1,4 @@
+import { start } from 'repl';
 import { StartRepl } from './repl';
 
 function main() {
