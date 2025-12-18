@@ -1,26 +1,21 @@
 import { Lexer } from '../lexer';
-import { Token } from '../token';
+import { Token, TokenType } from '../token';
+import { Program, Statement, LetStatement, Identifier } from '../ast/indext';
 
+/**
+ * 递归下降语法
+ */
 class Parser {
   /**
    * 指向词法分析器实例点指针
-   *
-   * @type {Lexer}
-   * @memberof Parser
    */
   l: Lexer;
   /**
    * 当前词法单元
-   *
-   * @type {Token}
-   * @memberof Parser
    */
   curToken?: Token;
   /**
    * 下一个词法单元
-   *
-   * @type {Token}
-   * @memberof Parser
    */
   peekToken?: Token;
 
@@ -33,12 +28,62 @@ class Parser {
     this.peekToken = this.l.nextToken();
   }
 
-  parseProgram() {
+  parseProgram(): Program | null {
+    const program = new Program();
+
+    while (this.curToken && this.curToken.type !== TokenType.EOF) {
+      const stmt = this.parseStatement();
+      if (stmt) {
+        program.statements.push(stmt);
+      }
+      this.nextToken();
+    }
+
+    return program;
+  }
+
+  parseStatement(): Statement | null {
+    if (this.curToken?.type === TokenType.LET) {
+      return this.parseLetStatement();
+    }
     return null;
+  }
+
+  parseLetStatement(): LetStatement | null {
+    if (!this.curToken) return null;
+
+    const stmt = new LetStatement(this.curToken);
+
+    if (!this.expectPeek(TokenType.IDENT)) {
+      return null;
+    }
+
+    if (!this.curToken) return null;
+    stmt.name = new Identifier(this.curToken, this.curToken.literal as string);
+
+    if (!this.expectPeek(TokenType.ASSIGN)) {
+      return null;
+    }
+
+    // 跳过表达式解析，直到遇到分号
+    // 这里暂时跳过表达式的值，因为当前测试只关注 let 语句的标识符部分
+    while (this.curToken && this.curToken.type !== TokenType.SEMICOLON) {
+      this.nextToken();
+    }
+
+    return stmt;
+  }
+
+  expectPeek(tokenType: TokenType): boolean {
+    if (this.peekToken?.type === tokenType) {
+      this.nextToken();
+      return true;
+    }
+    return false;
   }
 }
 
-function createParser(lexer: Lexer) {
+function createParser(lexer: Lexer): Parser {
   const p = new Parser(lexer);
 
   // 读取两个词法单元，以设置curToken和peekToken
@@ -47,3 +92,5 @@ function createParser(lexer: Lexer) {
 
   return p;
 }
+
+export { Parser, createParser };

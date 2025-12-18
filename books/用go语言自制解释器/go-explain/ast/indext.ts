@@ -1,49 +1,59 @@
 import { Token } from '../token';
 
 interface Node {
-  TokenLiteral(): string;
+  tokenLiteral(): string;
 }
 
-interface Statement {
-  node: Node;
+interface Statement extends Node {
   statementNode(): void;
 }
 
-interface Expression {
-  node: Node;
-
+interface Expression extends Node {
   expressionNode(): void;
 }
 
-class Program {
+class Program implements Node {
   statements: Statement[] = [];
+
+  tokenLiteral(): string {
+    if (this.statements.length > 0) {
+      return this.statements[0].tokenLiteral();
+    }
+    return '';
+  }
 }
 
-class Identifier {
-  token?: Token;
-  value?: string;
-}
+class Identifier implements Expression {
+  token: Token;
+  value: string;
 
-class LetStatement {
-  token?: Token;
-  name?: Identifier;
-  value?: Expression;
-}
-
-function TokenLiteral(value: Program | LetStatement | Identifier) {
-  if (value instanceof Program) {
-    return value.statements[0].node.TokenLiteral();
-  } else if (value instanceof LetStatement) {
-    return value.token?.literal;
-  } else if (value instanceof Identifier) {
-    return value.token?.literal;
+  constructor(token: Token, value: string) {
+    this.token = token;
+    this.value = value;
   }
 
-  return '';
+  tokenLiteral(): string {
+    return this.token.literal as string;
+  }
+
+  expressionNode(): void {}
 }
 
-function statementNode(ls: LetStatement) {}
+class LetStatement implements Statement {
+  token: Token;
+  name: Identifier;
+  value?: Expression;
 
-function expressionNode() {}
+  constructor(token: Token) {
+    this.token = token;
+    this.name = new Identifier(token, '');
+  }
 
-export { TokenLiteral, statementNode };
+  tokenLiteral(): string {
+    return this.token.literal as string;
+  }
+
+  statementNode(): void {}
+}
+
+export { Node, Statement, Expression, Program, Identifier, LetStatement };
