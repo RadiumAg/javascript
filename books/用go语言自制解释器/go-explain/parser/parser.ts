@@ -85,6 +85,14 @@ class Parser {
     return stmt;
   }
 
+  curTokenIs(tokenType: TokenType): boolean {
+    return this.curToken?.type === tokenType;
+  }
+
+  peekTokenIs(tokenType: TokenType): boolean {
+    return this.peekToken?.type === tokenType;
+  }
+
   expectPeek(tokenType: TokenType): boolean {
     if (this.peekToken?.type === tokenType) {
       this.nextToken();
