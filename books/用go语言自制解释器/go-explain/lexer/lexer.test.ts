@@ -72,7 +72,6 @@ describe('Lexer', () => {
 
     tests.forEach((tt, i) => {
       const tok = l.nextToken();
-      console.log(tok);
 
       expect(tok.type).toBe(tt.expectedType);
 
