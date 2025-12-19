@@ -1,7 +1,7 @@
 // parser/parser.test.ts
 
 import { createLexer } from '../lexer';
-import { createParser } from './parser';
+import { createParser, Parser } from './parser';
 import { LetStatement, Statement } from '../ast/indext';
 
 describe('Parser', () => {
@@ -16,6 +16,7 @@ describe('Parser', () => {
     const parser = createParser(lexer);
 
     const program = parser.parseProgram();
+    checkParserErrors(parser);
 
     expect(program).not.toBeNull();
     expect(program?.statements).toHaveLength(3);
@@ -65,4 +66,18 @@ function testLetStatement(stmt: Statement | undefined, name: string): boolean {
   }
 
   return true;
+}
+
+function checkParserErrors(parser: Parser) {
+  const errors = parser.errors;
+
+  if (errors.length === 0) {
+    return;
+  }
+
+  errors.forEach((err) => {
+    console.error(`parser error: ${err}`);
+  });
+
+  throw new Error('parser has errors');
 }

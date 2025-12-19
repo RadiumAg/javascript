@@ -6,6 +6,7 @@ import { Program, Statement, LetStatement, Identifier } from '../ast/indext';
  * 递归下降语法
  */
 class Parser {
+  errors: string[] = [];
   /**
    * 指向词法分析器实例点指针
    */
@@ -26,6 +27,16 @@ class Parser {
   nextToken() {
     this.curToken = this.peekToken;
     this.peekToken = this.l.nextToken();
+  }
+
+  getErrors() {
+    return this.errors;
+  }
+
+  peekError(token: TokenType) {
+    console.log(
+      `expected next token to be, ${token}, got ${this.peekToken?.type}`
+    );
   }
 
   parseProgram(): Program | null {
@@ -72,6 +83,14 @@ class Parser {
     }
 
     return stmt;
+  }
+
+  curTokenIs(tokenType: TokenType): boolean {
+    return this.curToken?.type === tokenType;
+  }
+
+  peekTokenIs(tokenType: TokenType): boolean {
+    return this.peekToken?.type === tokenType;
   }
 
   expectPeek(tokenType: TokenType): boolean {
