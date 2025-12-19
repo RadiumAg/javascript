@@ -56,4 +56,25 @@ class LetStatement implements Statement {
   statementNode(): void {}
 }
 
-export { Node, Statement, Expression, Program, Identifier, LetStatement };
+class ReturnStatement implements Statement {
+  token?: Token;
+  returnValue?: Expression;
+
+  statementNode(): void {
+    throw new Error('Method not implemented.');
+  }
+
+  tokenLiteral() {
+    return this.token?.literal as string;
+  }
+}
+
+export {
+  Node,
+  Statement,
+  Expression,
+  Program,
+  Identifier,
+  LetStatement,
+  ReturnStatement,
+};
