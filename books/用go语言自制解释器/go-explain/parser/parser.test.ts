@@ -2,7 +2,7 @@
 
 import { createLexer } from '../lexer';
 import { createParser } from './parser';
-import { LetStatement } from '../ast/indext';
+import { LetStatement, Statement } from '../ast/indext';
 
 describe('Parser', () => {
   test('TestLetStatements', () => {
@@ -33,7 +33,7 @@ describe('Parser', () => {
   });
 });
 
-function testLetStatement(stmt: any, name: string): boolean {
+function testLetStatement(stmt: Statement | undefined, name: string): boolean {
   // 检查 TokenLiteral 是否为 'let'
   if (stmt?.tokenLiteral() !== 'let') {
     console.error(`stmt.tokenLiteral not 'let'. got=${stmt?.tokenLiteral()}`);
