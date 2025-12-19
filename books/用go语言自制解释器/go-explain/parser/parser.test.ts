@@ -29,6 +29,7 @@ describe('Parser', () => {
 
     tests.forEach((tt, i) => {
       const stmt = program?.statements[i];
+      console.log('stmt', stmt);
       expect(testLetStatement(stmt, tt.expectedIdentifier)).toBe(true);
     });
   });

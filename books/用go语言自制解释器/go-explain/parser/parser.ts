@@ -93,8 +93,16 @@ class Parser {
     return this.peekToken?.type === tokenType;
   }
 
+  /**
+   * 断言函数主要的目的是通过检查下一个词法单元的类型，
+   * 确保词法单元顺序的正确性
+   *
+   * @param {TokenType} tokenType
+   * @return {*}  {boolean}
+   * @memberof Parser
+   */
   expectPeek(tokenType: TokenType): boolean {
-    if (this.peekToken?.type === tokenType) {
+    if (this.peekTokenIs(tokenType)) {
       this.nextToken();
       return true;
     }
