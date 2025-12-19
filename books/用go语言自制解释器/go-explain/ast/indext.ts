@@ -37,7 +37,9 @@ class Identifier implements Expression {
     this.value = value;
   }
 
-  string(): string {}
+  string(): string {
+    return this.value;
+  }
 
   tokenLiteral(): string {
     return this.token.literal as string;
@@ -90,13 +92,36 @@ class ReturnStatement implements Statement {
 
   string(): string {
     let output = '';
+    output += this.tokenLiteral() + ' ';
 
+    if (this.returnValue != null) {
+      output += this.returnValue.string();
+    }
+    output += ';';
     return output;
   }
   statementNode(): void {}
 
   tokenLiteral() {
     return this.token?.literal as string;
+  }
+}
+
+class ExpressionStatement implements Statement {
+  token?: Token;
+  expression?: Expression;
+
+  statementNode(): void {
+    throw new Error('Method not implemented.');
+  }
+  tokenLiteral(): string {
+    return this.token?.literal as string;
+  }
+  string(): string {
+    if (this.expression != null) {
+      return this.expression.string();
+    }
+    return '';
   }
 }
 
