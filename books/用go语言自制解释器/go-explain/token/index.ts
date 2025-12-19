@@ -32,6 +32,7 @@ enum TokenType {
   // 关键字
   FUNCTION = 'FUNCTION',
   LET = 'LET',
+  RETURN = 'RETURN',
 }
 
 interface Token {
@@ -42,11 +43,11 @@ interface Token {
 const keywords: Record<string, TokenType> = {
   fn: TokenType.FUNCTION,
   let: TokenType.LET,
+  return: TokenType.RETURN,
   true: TokenType.IDENT,
   false: TokenType.IDENT,
   if: TokenType.IDENT,
   else: TokenType.IDENT,
-  return: TokenType.IDENT,
 };
 
 function lookupIdent(ident: string): TokenType {

@@ -2,7 +2,7 @@
 
 import { createLexer } from '../lexer';
 import { createParser, Parser } from './parser';
-import { LetStatement, Statement } from '../ast/indext';
+import { LetStatement, Statement, ReturnStatement } from '../ast/indext';
 
 describe('Parser', () => {
   test('TestLetStatements', () => {
@@ -30,6 +30,28 @@ describe('Parser', () => {
     tests.forEach((tt, i) => {
       const stmt = program?.statements[i];
       expect(testLetStatement(stmt, tt.expectedIdentifier)).toBe(true);
+    });
+  });
+
+  test('TestReturnStatements', () => {
+    const input = `
+      return 5;
+      return 10;
+      return 993322;
+`;
+
+    const lexer = createLexer(input);
+    const parser = createParser(lexer);
+
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    expect(program).not.toBeNull();
+    expect(program?.statements).toHaveLength(3);
+
+    program?.statements.forEach((stmt) => {
+      expect(stmt).toBeInstanceOf(ReturnStatement);
+      expect(stmt.tokenLiteral()).toBe('return');
     });
   });
 });

@@ -60,9 +60,7 @@ class ReturnStatement implements Statement {
   token?: Token;
   returnValue?: Expression;
 
-  statementNode(): void {
-    throw new Error('Method not implemented.');
-  }
+  statementNode(): void {}
 
   tokenLiteral() {
     return this.token?.literal as string;

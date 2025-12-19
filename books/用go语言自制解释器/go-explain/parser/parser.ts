@@ -1,6 +1,12 @@
 import { Lexer } from '../lexer';
 import { Token, TokenType } from '../token';
-import { Program, Statement, LetStatement, Identifier } from '../ast/indext';
+import {
+  Program,
+  Statement,
+  LetStatement,
+  Identifier,
+  ReturnStatement,
+} from '../ast/indext';
 
 /**
  * 递归下降语法
@@ -57,6 +63,9 @@ class Parser {
     if (this.curToken?.type === TokenType.LET) {
       return this.parseLetStatement();
     }
+    if (this.curToken?.type === TokenType.RETURN) {
+      return this.parseReturnStatement();
+    }
     return null;
   }
 
@@ -78,6 +87,23 @@ class Parser {
 
     // 跳过表达式解析，直到遇到分号
     // 这里暂时跳过表达式的值，因为当前测试只关注 let 语句的标识符部分
+    while (this.curToken && this.curToken.type !== TokenType.SEMICOLON) {
+      this.nextToken();
+    }
+
+    return stmt;
+  }
+
+  parseReturnStatement(): ReturnStatement | null {
+    if (!this.curToken) return null;
+
+    const stmt = new ReturnStatement();
+    stmt.token = this.curToken;
+
+    this.nextToken();
+
+    // 跳过表达式解析，直到遇到分号
+    // 这里暂时跳过表达式的值，因为当前测试只关注 return 语句的 token literal
     while (this.curToken && this.curToken.type !== TokenType.SEMICOLON) {
       this.nextToken();
     }
