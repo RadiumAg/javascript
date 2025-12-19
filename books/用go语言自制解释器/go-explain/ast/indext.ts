@@ -57,6 +57,12 @@ class LetStatement implements Statement {
 }
 
 class ReturnStatement implements Statement {
+  /**
+   * 该表达式中的第一个词法单元
+   *
+   * @type {Token}
+   * @memberof ReturnStatement
+   */
   token?: Token;
   returnValue?: Expression;
 
