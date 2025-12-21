@@ -2,7 +2,13 @@
 
 import { createLexer } from '../lexer';
 import { createParser, Parser } from './parser';
-import { LetStatement, Statement, ReturnStatement } from '../ast/indext';
+import {
+  LetStatement,
+  Statement,
+  ReturnStatement,
+  Identifier,
+  ExpressionStatement,
+} from '../ast/indext';
 
 describe('Parser', () => {
   test('TestLetStatements', () => {
@@ -103,3 +109,24 @@ function checkParserErrors(parser: Parser) {
 
   throw new Error('parser has errors');
 }
+
+test('TestIdentifierExpression', () => {
+  const input = 'foobar;';
+
+  const lexer = createLexer(input);
+  const parser = createParser(lexer);
+  const program = parser.parseProgram();
+  checkParserErrors(parser);
+
+  expect(program).not.toBeNull();
+  expect(program?.statements).toHaveLength(1);
+
+  const stmt = program?.statements[0];
+  expect(stmt).toBeInstanceOf(ExpressionStatement);
+
+  const exprStmt = stmt as ExpressionStatement;
+  const ident = exprStmt.expression as Identifier;
+
+  expect(ident.value).toBe('foobar');
+  expect(ident.tokenLiteral()).toBe('foobar');
+});

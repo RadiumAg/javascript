@@ -133,4 +133,5 @@ export {
   Identifier,
   LetStatement,
   ReturnStatement,
+  ExpressionStatement,
 };
