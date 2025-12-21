@@ -6,7 +6,12 @@ import {
   LetStatement,
   Identifier,
   ReturnStatement,
+  Expression,
 } from '../ast/indext';
+
+type PrefixParseFn = () => Expression;
+
+type infixParseFn = (expression: Expression) => Expression;
 
 /**
  * 递归下降语法
@@ -25,6 +30,24 @@ class Parser {
    * 下一个词法单元
    */
   peekToken?: Token;
+
+  /**
+   *
+   * 前缀解析函数
+   *
+   * @type {(Record<TokenType | string, PrefixParseFn>)}
+   * @memberof Parser
+   */
+  prefixParseFns: Record<TokenType | string, PrefixParseFn> = {};
+
+  /**
+   *
+   * 中缀解析函数
+   *
+   * @type {(Record<TokenType | string, infixParseFn>)}
+   * @memberof Parser
+   */
+  infixParseFns: Record<TokenType | string, infixParseFn> = {};
 
   constructor(l: Lexer) {
     this.l = l;
@@ -133,6 +156,14 @@ class Parser {
       return true;
     }
     return false;
+  }
+
+  registerPrefix(tokenType: TokenType, fn: PrefixParseFn) {
+    this.prefixParseFns[tokenType] = fn;
+  }
+
+  registerInfix(tokenType: TokenType, fn: infixParseFn) {
+    this.infixParseFns[tokenType] = fn;
   }
 }
 
