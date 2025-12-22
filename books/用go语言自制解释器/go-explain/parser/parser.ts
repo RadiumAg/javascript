@@ -12,7 +12,7 @@ import {
 
 type PrefixParseFn = () => Expression;
 
-type infixParseFn = (expression: Expression) => Expression;
+type InfixParseFn = (expression: Expression) => Expression | null;
 
 
 enum Precedence {
@@ -57,10 +57,10 @@ class Parser {
    *
    * 中缀解析函数
    *
-   * @type {(Record<TokenType | string, infixParseFn>)}
+   * @type {(Record<TokenType | string, InfixParseFn>)}
    * @memberof Parser
    */
-  infixParseFns: Record<TokenType | string, infixParseFn> = {};
+  infixParseFns: Record<TokenType | string, InfixParseFn> = {};
 
   constructor(l: Lexer) {
     this.l = l;
@@ -154,6 +154,12 @@ class Parser {
     return stmt;
   }
 
+  parseIdentifier(){
+    if(!this.curToken) return null;
+    const identifier = new Identifier(this.curToken, this.curToken.literal as string);
+    return identifier;
+  }
+
   parseReturnStatement(): ReturnStatement | null {
     if (!this.curToken) return null;
 
@@ -199,7 +205,7 @@ class Parser {
     this.prefixParseFns[tokenType] = fn;
   }
 
-  registerInfix(tokenType: TokenType, fn: infixParseFn) {
+  registerInfix(tokenType: TokenType, fn: InfixParseFn) {
     this.infixParseFns[tokenType] = fn;
   }
 }
@@ -210,6 +216,9 @@ function createParser(lexer: Lexer): Parser {
   // 读取两个词法单元，以设置curToken和peekToken
   p.nextToken();
   p.nextToken();
+
+  p.prefixParseFns = {}
+  p.registerInfix(TokenType.IDENT,p.parseIdentifier)
 
   return p;
 }
