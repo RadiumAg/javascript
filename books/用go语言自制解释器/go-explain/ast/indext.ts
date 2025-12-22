@@ -111,6 +111,10 @@ class ExpressionStatement implements Statement {
   token: Token | null = null;
   expression: Expression | null = null;
 
+  constructor(token: Token | null) {
+    this.token = token;
+  }
+
   statementNode(): void {
     throw new Error('Method not implemented.');
   }

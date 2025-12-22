@@ -10,21 +10,19 @@ import {
   ExpressionStatement,
 } from '../ast/indext';
 
-type PrefixParseFn = () => Expression;
+type PrefixParseFn = () => Expression | null;
 
 type InfixParseFn = (expression: Expression) => Expression | null;
 
-
 enum Precedence {
-  LOWEST, 
-  EQUALS,  // ==
+  LOWEST,
+  EQUALS, // ==
   LESSGREATER, // > or <
   SUM, // +
-  PRODUCT,  // *
+  PRODUCT, // *
   PREFIX, // -X or !X
   CALL, // myFunction(X)
 }
-
 
 /**
  * 递归下降语法
@@ -38,11 +36,11 @@ class Parser {
   /**
    * 当前词法单元
    */
-  curToken?: Token;
+  curToken: Token | null = null;
   /**
    * 下一个词法单元
    */
-  peekToken?: Token;
+  peekToken: Token | null = null;
 
   /**
    *
@@ -96,7 +94,7 @@ class Parser {
   }
 
   parseExpressionStatement(): ExpressionStatement | null {
-    const stmt = new ExpressionStatement();
+    const stmt = new ExpressionStatement(this.curToken);
     stmt.expression = this.parseExpression(Precedence.LOWEST);
 
     if (this.peekTokenIs(TokenType.SEMICOLON)) {
@@ -106,7 +104,7 @@ class Parser {
   }
 
   parseExpression(precedence: Precedence): Expression | null {
-    if(this.curToken == null) return null;
+    if (this.curToken == null) return null;
     const prefix = this.prefixParseFns[this.curToken?.type];
     if (!prefix) {
       return null;
@@ -124,9 +122,8 @@ class Parser {
         return this.parseReturnStatement();
 
       default:
-        return this.
+        return this.parseExpressionStatement();
     }
-   
   }
 
   parseLetStatement(): LetStatement | null {
@@ -154,9 +151,12 @@ class Parser {
     return stmt;
   }
 
-  parseIdentifier(){
-    if(!this.curToken) return null;
-    const identifier = new Identifier(this.curToken, this.curToken.literal as string);
+  parseIdentifier() {
+    if (!this.curToken) return null;
+    const identifier = new Identifier(
+      this.curToken,
+      this.curToken.literal as string
+    );
     return identifier;
   }
 
@@ -217,8 +217,8 @@ function createParser(lexer: Lexer): Parser {
   p.nextToken();
   p.nextToken();
 
-  p.prefixParseFns = {}
-  p.registerInfix(TokenType.IDENT,p.parseIdentifier)
+  p.prefixParseFns = {};
+  p.registerPrefix(TokenType.IDENT, p.parseIdentifier.bind(p));
 
   return p;
 }
