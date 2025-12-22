@@ -108,8 +108,8 @@ class ReturnStatement implements Statement {
 }
 
 class ExpressionStatement implements Statement {
-  token?: Token;
-  expression?: Expression;
+  token: Token | null = null;
+  expression: Expression | null = null;
 
   statementNode(): void {
     throw new Error('Method not implemented.');

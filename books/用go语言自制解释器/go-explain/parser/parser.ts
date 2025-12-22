@@ -7,11 +7,24 @@ import {
   Identifier,
   ReturnStatement,
   Expression,
+  ExpressionStatement,
 } from '../ast/indext';
 
 type PrefixParseFn = () => Expression;
 
 type infixParseFn = (expression: Expression) => Expression;
+
+
+enum Precedence {
+  LOWEST, 
+  EQUALS,  // ==
+  LESSGREATER, // > or <
+  SUM, // +
+  PRODUCT,  // *
+  PREFIX, // -X or !X
+  CALL, // myFunction(X)
+}
+
 
 /**
  * 递归下降语法
@@ -82,14 +95,38 @@ class Parser {
     return program;
   }
 
+  parseExpressionStatement(): ExpressionStatement | null {
+    const stmt = new ExpressionStatement();
+    stmt.expression = this.parseExpression(Precedence.LOWEST);
+
+    if (this.peekTokenIs(TokenType.SEMICOLON)) {
+      this.nextToken();
+    }
+    return stmt;
+  }
+
+  parseExpression(precedence: Precedence): Expression | null {
+    if(this.curToken == null) return null;
+    const prefix = this.prefixParseFns[this.curToken?.type];
+    if (!prefix) {
+      return null;
+    }
+    const leftExp = prefix();
+    return leftExp;
+  }
+
   parseStatement(): Statement | null {
-    if (this.curToken?.type === TokenType.LET) {
-      return this.parseLetStatement();
+    switch (this.curToken?.type) {
+      case TokenType.LET:
+        return this.parseLetStatement();
+
+      case TokenType.RETURN:
+        return this.parseReturnStatement();
+
+      default:
+        return this.
     }
-    if (this.curToken?.type === TokenType.RETURN) {
-      return this.parseReturnStatement();
-    }
-    return null;
+   
   }
 
   parseLetStatement(): LetStatement | null {
