@@ -8,6 +8,7 @@ import {
   ReturnStatement,
   Identifier,
   ExpressionStatement,
+  IntegerLiteral,
 } from '../ast/indext';
 
 describe('Parser', () => {
@@ -130,3 +131,24 @@ test('TestIdentifierExpression', () => {
   expect(ident.value).toBe('foobar');
   expect(ident.tokenLiteral()).toBe('foobar');
 });
+
+  test('TestIntegerLiteralExpression', () => {
+    const input = '5;';
+
+    const lexer = createLexer(input);
+    const parser = createParser(lexer);
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    expect(program).not.toBeNull();
+    expect(program?.statements).toHaveLength(1);
+
+    const stmt = program?.statements[0];
+    expect(stmt).toBeInstanceOf(ExpressionStatement);
+
+    const exprStmt = stmt as ExpressionStatement;
+    const literal = exprStmt.expression as IntegerLiteral;
+
+    expect(literal.value).toBe(5);
+    expect(literal.tokenLiteral()).toBe('5');
+  });

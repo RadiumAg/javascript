@@ -129,6 +129,28 @@ class ExpressionStatement implements Statement {
   }
 }
 
+class IntegerLiteral implements Expression {
+  token: Token;
+
+  value: number;
+
+  constructor(token: Token, value: number) {
+    this.token = token;
+
+    this.value = value;
+  }
+
+  string(): string {
+    return this.token.literal as string;
+  }
+
+  tokenLiteral(): string {
+    return this.token.literal as string;
+  }
+
+  expressionNode(): void {}
+}
+
 export {
   Node,
   Statement,
@@ -137,5 +159,6 @@ export {
   Identifier,
   LetStatement,
   ReturnStatement,
+  IntegerLiteral,
   ExpressionStatement,
 };
