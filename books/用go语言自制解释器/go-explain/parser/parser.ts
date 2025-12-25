@@ -8,6 +8,7 @@ import {
   ReturnStatement,
   Expression,
   ExpressionStatement,
+  IntegerLiteral,
 } from '../ast/indext';
 
 type PrefixParseFn = () => Expression | null;
@@ -207,6 +208,10 @@ class Parser {
 
   registerInfix(tokenType: TokenType, fn: InfixParseFn) {
     this.infixParseFns[tokenType] = fn;
+  }
+
+  parseIntegerLiteral() {
+    const list = new IntegerLiteral(this.curToken);
   }
 }
 

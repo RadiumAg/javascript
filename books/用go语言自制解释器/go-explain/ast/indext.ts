@@ -130,22 +130,20 @@ class ExpressionStatement implements Statement {
 }
 
 class IntegerLiteral implements Expression {
-  token: Token;
+  token: Token | null;
 
-  value: number;
+  value?: number;
 
-  constructor(token: Token, value: number) {
+  constructor(token: Token | null) {
     this.token = token;
-
-    this.value = value;
   }
 
   string(): string {
-    return this.token.literal as string;
+    return this.token?.literal as string;
   }
 
   tokenLiteral(): string {
-    return this.token.literal as string;
+    return this.token?.literal as string;
   }
 
   expressionNode(): void {}
