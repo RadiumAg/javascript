@@ -241,6 +241,7 @@ function createParser(lexer: Lexer): Parser {
 
   p.prefixParseFns = {};
   p.registerPrefix(TokenType.IDENT, p.parseIdentifier.bind(p));
+  p.registerPrefix(TokenType.INT, p.parseIntegerLiteral.bind(p));
 
   return p;
 }
