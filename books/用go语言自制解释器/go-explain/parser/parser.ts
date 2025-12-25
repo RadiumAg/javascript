@@ -210,8 +210,25 @@ class Parser {
     this.infixParseFns[tokenType] = fn;
   }
 
+  /**
+   * 解析整数
+   *
+   * @return {*}
+   * @memberof Parser
+   */
   parseIntegerLiteral() {
     const list = new IntegerLiteral(this.curToken);
+    const value = Number.parseInt(this.curToken?.literal || '');
+    if (Number.isNaN(value)) {
+      this.errors.push(
+        'could not parse as interger',
+        this.curToken?.literal || ''
+      );
+      return null;
+    }
+
+    list.value = value;
+    return list;
   }
 }
 

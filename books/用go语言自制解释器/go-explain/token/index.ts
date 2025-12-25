@@ -37,7 +37,7 @@ enum TokenType {
 
 interface Token {
   type: TokenType;
-  literal: string | number;
+  literal: string;
 }
 
 const keywords: Record<string, TokenType> = {
