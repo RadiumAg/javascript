@@ -9,6 +9,7 @@ import {
   Identifier,
   ExpressionStatement,
   IntegerLiteral,
+  PrefixExpression,
 } from '../ast/indext';
 
 describe('Parser', () => {
@@ -111,6 +112,31 @@ function checkParserErrors(parser: Parser) {
   throw new Error('parser has errors');
 }
 
+function testIntegerLiteral(expression: any, value: number): boolean {
+  if (!(expression instanceof IntegerLiteral)) {
+    console.error(`expression not IntegerLiteral. got=${typeof expression}`);
+    return false;
+  }
+
+  const integerLiteral = expression as IntegerLiteral;
+
+  if (integerLiteral.value !== value) {
+    console.error(
+      `integerLiteral.value not ${value}. got=${integerLiteral.value}`
+    );
+    return false;
+  }
+
+  if (integerLiteral.tokenLiteral() !== value.toString()) {
+    console.error(
+      `integerLiteral.tokenLiteral() not ${value}. got=${integerLiteral.tokenLiteral()}`
+    );
+    return false;
+  }
+
+  return true;
+}
+
 test('TestIdentifierExpression', () => {
   const input = 'foobar;';
 
@@ -151,4 +177,32 @@ test('TestIntegerLiteralExpression', () => {
 
   expect(literal.value).toBe(5);
   expect(literal.tokenLiteral()).toBe('5');
+});
+
+test('TestParsingPrefixExpressions', () => {
+  const prefixTests = [
+    { input: '!5;', operator: '!', integerValue: 5 },
+    { input: '-15;', operator: '-', integerValue: 15 },
+  ];
+
+  prefixTests.forEach((tt) => {
+    const lexer = createLexer(tt.input);
+    const parser = createParser(lexer);
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    expect(program).not.toBeNull();
+    expect(program?.statements).toHaveLength(1);
+
+    const stmt = program?.statements[0];
+    expect(stmt).toBeInstanceOf(ExpressionStatement);
+
+    const exprStmt = stmt as ExpressionStatement;
+    const exp = exprStmt.expression;
+    expect(exp).toBeInstanceOf(PrefixExpression);
+
+    const prefixExp = exp as PrefixExpression;
+    expect(prefixExp.operator).toBe(tt.operator);
+    expect(testIntegerLiteral(prefixExp.right, tt.integerValue)).toBe(true);
+  });
 });
