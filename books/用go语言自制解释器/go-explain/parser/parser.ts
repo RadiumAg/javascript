@@ -268,7 +268,6 @@ class Parser {
     if (this.peekToken && Precedence[this.peekToken.type]) {
       return this;
     }
-
     return Precedence.LOWEST;
   }
 }
