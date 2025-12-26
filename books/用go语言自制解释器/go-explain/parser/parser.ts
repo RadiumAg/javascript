@@ -16,15 +16,28 @@ type PrefixParseFn = () => Expression | null;
 
 type InfixParseFn = (expression: Expression) => Expression | null;
 
-enum Precedence {
-  LOWEST,
-  EQUALS, // ==
-  LESSGREATER, // > or <
-  SUM, // +
-  PRODUCT, // *
-  PREFIX, // -X or !X
-  CALL, // myFunction(X)
-}
+const Precedence = {
+  LOWEST: 0,
+
+  EQUALS: 1, // ==
+  EQ: 1,
+  NOT_EQ: 1,
+
+  LESSGREATER: 2, // > or <
+  LT: 2,
+  GT: 2,
+
+  SUM: 3, // +
+  PLUS: 3,
+  MINUS: 3,
+
+  PRODUCT: 4, // *
+  SLASH: 4,
+  ASTERISK: 4,
+
+  PREFIX: 5, // -X or !X
+  CALL: 6, // myFunction(X)
+} as Record<string, any>;
 
 /**
  * 递归下降语法
@@ -249,6 +262,14 @@ class Parser {
     expression.right = this.parseExpression(Precedence.PREFIX);
 
     return expression;
+  }
+
+  peekPrecedence() {
+    if (this.peekToken && Precedence[this.peekToken.type]) {
+      return this;
+    }
+
+    return Precedence.LOWEST;
   }
 }
 
