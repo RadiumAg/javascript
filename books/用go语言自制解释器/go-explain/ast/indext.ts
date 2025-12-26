@@ -171,6 +171,30 @@ class PrefixExpression implements Expression {
   expressionNode(): void {}
 }
 
+class InfixExpression implements Expression {
+  token: Token | null;
+  left: Expression | null;
+  operator: string;
+  right: Expression | null;
+
+  constructor(token: Token | null, operator: string) {
+    this.token = token;
+    this.operator = operator;
+    this.left = null;
+    this.right = null;
+  }
+
+  string(): string {
+    return `(${this.left?.string()} ${this.operator} ${this.right?.string()})`;
+  }
+
+  tokenLiteral(): string {
+    return this.token?.literal as string;
+  }
+
+  expressionNode(): void {}
+}
+
 export {
   Node,
   Statement,
@@ -182,4 +206,5 @@ export {
   IntegerLiteral,
   ExpressionStatement,
   PrefixExpression,
+  InfixExpression,
 };

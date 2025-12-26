@@ -10,6 +10,7 @@ import {
   ExpressionStatement,
   IntegerLiteral,
   PrefixExpression,
+  InfixExpression,
 } from '../ast/indext';
 
 describe('Parser', () => {
@@ -207,5 +208,41 @@ test('TestParsingPrefixExpressions', () => {
     const prefixExp = exp as PrefixExpression;
     expect(prefixExp.operator).toBe(tt.operator);
     expect(testIntegerLiteral(prefixExp.right, tt.integerValue)).toBe(true);
+  });
+});
+
+test('TestParsingInfixExpressions', () => {
+  const infixTests = [
+    { input: '5 + 5;', leftValue: 5, operator: '+', rightValue: 5 },
+    { input: '5 - 5;', leftValue: 5, operator: '-', rightValue: 5 },
+    { input: '5 * 5;', leftValue: 5, operator: '*', rightValue: 5 },
+    { input: '5 / 5;', leftValue: 5, operator: '/', rightValue: 5 },
+    { input: '5 > 5;', leftValue: 5, operator: '>', rightValue: 5 },
+    { input: '5 < 5;', leftValue: 5, operator: '<', rightValue: 5 },
+    { input: '5 == 5;', leftValue: 5, operator: '==', rightValue: 5 },
+    { input: '5 != 5;', leftValue: 5, operator: '!=', rightValue: 5 },
+  ];
+
+  infixTests.forEach((tt) => {
+    const lexer = createLexer(tt.input);
+    const parser = createParser(lexer);
+    const program = parser.parseProgram();
+    checkParserErrors(parser);
+
+    expect(program).not.toBeNull();
+    expect(program?.statements).toHaveLength(1);
+
+    const stmt = program?.statements[0];
+    expect(stmt).toBeInstanceOf(ExpressionStatement);
+
+    const exprStmt = stmt as ExpressionStatement;
+    const exp = exprStmt.expression;
+    expect(exp).toBeInstanceOf(InfixExpression);
+
+    const infixExp = exp as InfixExpression;
+
+    expect(testIntegerLiteral(infixExp.left, tt.leftValue)).toBe(true);
+    expect(infixExp.operator).toBe(tt.operator);
+    expect(testIntegerLiteral(infixExp.right, tt.rightValue)).toBe(true);
   });
 });
