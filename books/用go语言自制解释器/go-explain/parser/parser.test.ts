@@ -112,24 +112,27 @@ function checkParserErrors(parser: Parser) {
   throw new Error('parser has errors');
 }
 
-function testIntegerLiteral(expression: any, value: number): boolean {
-  if (!(expression instanceof IntegerLiteral)) {
-    console.error(`expression not IntegerLiteral. got=${typeof expression}`);
-    return false;
-  }
-
-  const integerLiteral = expression as IntegerLiteral;
-
-  if (integerLiteral.value !== value) {
+function testIntegerLiteral(il: any, value: number): boolean {
+  // 检查是否为 IntegerLiteral 类型 (对应 Go 中的类型断言)
+  if (!(il instanceof IntegerLiteral)) {
     console.error(
-      `integerLiteral.value not ${value}. got=${integerLiteral.value}`
+      `il not IntegerLiteral. got=${il?.constructor?.name || typeof il}`
     );
     return false;
   }
 
-  if (integerLiteral.tokenLiteral() !== value.toString()) {
+  const integ = il as IntegerLiteral;
+
+  // 检查 value 属性
+  if (integ.value !== value) {
+    console.error(`integ.value not ${value}. got=${integ.value}`);
+    return false;
+  }
+
+  // 检查 TokenLiteral() 方法返回值
+  if (integ.tokenLiteral() !== value.toString()) {
     console.error(
-      `integerLiteral.tokenLiteral() not ${value}. got=${integerLiteral.tokenLiteral()}`
+      `integ.tokenLiteral not ${value}. got=${integ.tokenLiteral()}`
     );
     return false;
   }
