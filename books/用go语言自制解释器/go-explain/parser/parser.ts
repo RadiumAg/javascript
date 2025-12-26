@@ -9,6 +9,7 @@ import {
   Expression,
   ExpressionStatement,
   IntegerLiteral,
+  PrefixExpression,
 } from '../ast/indext';
 
 type PrefixParseFn = () => Expression | null;
@@ -108,6 +109,7 @@ class Parser {
     if (this.curToken == null) return null;
     const prefix = this.prefixParseFns[this.curToken?.type];
     if (!prefix) {
+      this.noPrefixParseFnError(this.curToken.type);
       return null;
     }
     const leftExp = prefix();
@@ -230,6 +232,24 @@ class Parser {
     list.value = value;
     return list;
   }
+
+  noPrefixParseFnError(tokenType: TokenType) {
+    let mst = `no prefix parse function for ${tokenType} found `;
+    this.errors.push(mst);
+  }
+
+  parsePrefixExpression() {
+    const expression = new PrefixExpression(
+      this.curToken,
+      this.curToken?.literal || null
+    );
+
+    this.nextToken();
+
+    expression.right = this.parseExpression(Precedence.PREFIX);
+
+    return expression;
+  }
 }
 
 function createParser(lexer: Lexer): Parser {
@@ -242,6 +262,8 @@ function createParser(lexer: Lexer): Parser {
   p.prefixParseFns = {};
   p.registerPrefix(TokenType.IDENT, p.parseIdentifier.bind(p));
   p.registerPrefix(TokenType.INT, p.parseIntegerLiteral.bind(p));
+  p.registerPrefix(TokenType.BANG, p.parsePrefixExpression.bind(p));
+  p.registerPrefix(TokenType.MINUS, p.parsePrefixExpression.bind(p));
 
   return p;
 }

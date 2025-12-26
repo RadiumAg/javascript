@@ -151,10 +151,10 @@ class IntegerLiteral implements Expression {
 
 class PrefixExpression implements Expression {
   token: Token | null;
-  operator: string;
+  operator: string | null;
   right: Expression | null;
 
-  constructor(token: Token | null, operator: string) {
+  constructor(token: Token | null, operator: string | null) {
     this.token = token;
     this.operator = operator;
     this.right = null;
