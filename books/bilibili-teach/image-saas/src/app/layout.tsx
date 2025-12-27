@@ -4,7 +4,7 @@ import { trpcClient, trpcClientReact } from '@/utils/api';
 import { TrpcProvider } from './trpc-provider';
 import { Toaster } from '@/components/ui/Sonner';
 import './globals.css';
-import './rc-image.sass';
+import './rc-image.scss';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

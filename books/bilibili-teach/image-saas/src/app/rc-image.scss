@@ -1,0 +1,394 @@
+@use 'sass:color';
+
+$prefixCls: rc-image;
+$zindex-preview-mask: 1000;
+$preview-mask-bg: rgba(#000, 1);
+$text-color: #bbb;
+$text-color-disabled: color.adjust($text-color, $lightness: -30%);
+$background-color: #f3f3f3;
+
+@mixin reset() {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@mixin box() {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.#{$prefixCls} {
+  position: relative;
+  display: inline-flex;
+
+  &-img {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    &-placeholder {
+      background-color: $background-color;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+  }
+
+  &-cover {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s;
+
+    &-top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: max-content;
+      justify-content: flex-start;
+      padding: 5px;
+    }
+    &-bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: max-content;
+      justify-content: flex-end;
+      padding: 5px;
+    }
+    &-center {
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &-placeholder {
+    @include box;
+  }
+
+  // >>> Mask
+  &-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  &:hover &-mask {
+    opacity: 1;
+  }
+
+  &-preview {
+    height: 100%;
+    text-align: center;
+    pointer-events: none;
+
+    &-body {
+      @include box;
+      overflow: hidden;
+    }
+
+    &.zoom-enter,
+    &.zoom-appear {
+      transform: none;
+      opacity: 1;
+      animation-duration: 0.3s;
+    }
+
+    &-mask {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: $zindex-preview-mask;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.45);
+
+      &-hidden {
+        display: none;
+      }
+    }
+
+    &-img {
+      max-width: 100%;
+      max-height: 70%;
+      vertical-align: middle;
+      transform: scale3d(1, 1, 1);
+      cursor: grab;
+      transition: transform 0.3s cubic-bezier(0, 0, 0.25, 1) 0s;
+      user-select: none;
+
+      &-wrapper {
+        @include box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > * {
+          pointer-events: auto;
+        }
+      }
+    }
+
+    &-moving {
+      .#{$prefixCls}-preview-img {
+        cursor: grabbing;
+        &-wrapper {
+          transition-duration: 0s;
+        }
+      }
+    }
+
+    &-wrap {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: $zindex-preview-mask;
+      overflow: auto;
+      outline: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    &-close {
+      position: fixed;
+      top: 32px;
+      right: 32px;
+      display: flex;
+      padding: 15px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 0;
+      border-radius: 50%;
+      outline: 0;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.3;
+      }
+    }
+
+    &-operations-wrapper {
+      position: fixed;
+      z-index: $zindex-preview-mask + 1;
+    }
+
+    &-footer {
+      position: fixed;
+      bottom: 32px;
+      left: 0;
+      z-index: $zindex-preview-mask + 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    &-progress {
+      margin-bottom: 20px;
+    }
+
+    &-operations {
+      display: flex;
+      padding: 0 20px;
+      color: $text-color;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 100px;
+
+      &-operation {
+        margin-left: 10px;
+        padding: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        &-disabled {
+          color: $text-color-disabled;
+          pointer-events: none;
+        }
+        &:first-of-type {
+          margin-left: 0;
+        }
+      }
+    }
+
+    &-switch-left {
+      position: fixed;
+      top: 50%;
+      left: 10px;
+      z-index: $zindex-preview-mask + 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin-top: -22px;
+      color: $text-color;
+      background: rgba(187, 187, 187, 0.45);
+      border-radius: 50%;
+      cursor: pointer;
+      &-disabled {
+        color: $text-color-disabled;
+        background: rgba(187, 187, 187, 0.3);
+        cursor: not-allowed;
+        > .anticon {
+          cursor: not-allowed;
+        }
+      }
+      > .anticon {
+        font-size: 24px;
+      }
+    }
+
+    &-switch-right {
+      position: fixed;
+      top: 50%;
+      right: 10px;
+      z-index: $zindex-preview-mask + 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin-top: -22px;
+      color: $text-color;
+      background: rgba(187, 187, 187, 0.45);
+      border-radius: 50%;
+      cursor: pointer;
+      &-disabled {
+        color: $text-color-disabled;
+        background: rgba(187, 187, 187, 0.2);
+        cursor: not-allowed;
+        > .anticon {
+          cursor: not-allowed;
+        }
+      }
+      > .anticon {
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+.fade-enter,
+.fade-appear {
+  animation-duration: 0.3s;
+  animation-play-state: paused;
+  animation-fill-mode: both;
+}
+.fade-leave {
+  animation-duration: 0.3s;
+  animation-play-state: paused;
+  animation-fill-mode: both;
+}
+.fade-enter.fade-enter-active,
+.fade-appear.fade-appear-active {
+  animation-name: rcImageFadeIn;
+  animation-play-state: running;
+}
+.fade-leave.fade-leave-active {
+  animation-name: rcImageFadeOut;
+  animation-play-state: running;
+  pointer-events: none;
+}
+.fade-enter,
+.fade-appear {
+  opacity: 0;
+  animation-timing-function: linear;
+}
+.fade-leave {
+  animation-timing-function: linear;
+}
+
+@keyframes rcImageFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes rcImageFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes rcImageZoomIn {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes rcImageZoomOut {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+
+.zoom-enter,
+.zoom-appear {
+  animation-duration: 0.3s;
+  animation-play-state: paused;
+  animation-fill-mode: both;
+}
+.zoom-leave {
+  animation-duration: 0.3s;
+  animation-play-state: paused;
+  animation-fill-mode: both;
+}
+.zoom-enter.zoom-enter-active,
+.zoom-appear.zoom-appear-active {
+  animation-name: rcImageZoomIn;
+  animation-play-state: running;
+}
+.zoom-leave.zoom-leave-active {
+  animation-name: rcImageZoomOut;
+  animation-play-state: running;
+  pointer-events: none;
+}
+.zoom-enter,
+.zoom-appear {
+  transform: scale(0);
+  opacity: 0;
+  animation-timing-function: cubic-bezier(0.08, 0.82, 0.17, 1);
+}
+.zoom-leave {
+  animation-timing-function: cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}

@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import RcImage from 'rc-image';
 import React, { useMemo } from 'react';
+import ImageReview from '../ui/ImageReview';
 
 type Children = (options: {
   setPreview: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,13 +22,14 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   return (
     <div className="flex justify-center items-center border relative">
       {isImage ? (
-        <RcImage
+        <ImageReview
           src={url}
           alt={name}
           preview={{
             zIndex: 999,
             visible: preview,
             onVisibleChange(value) {
+              debugger;
               if (!value) {
                 setPreview(false);
               }
@@ -41,7 +42,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           height={100}
           className="w-full"
           src="/file.png"
-          alt="unknew file type"
+          alt="unknow file type"
         />
       )}
 

@@ -209,7 +209,7 @@ const FileList: React.FC<FileListProps> = (props) => {
                     height={100}
                     className="w-full"
                     src="/file.png"
-                    alt="unknew file type"
+                    alt="unknow file type"
                   />
                 )}
               </div>
