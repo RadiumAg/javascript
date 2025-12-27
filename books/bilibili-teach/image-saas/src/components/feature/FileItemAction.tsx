@@ -1,7 +1,7 @@
 import React from 'react';
 import { trpcClientReact } from '@/utils/api';
 import { Button } from '../ui/Button';
-import { Trash2, Copy } from 'lucide-react';
+import { Trash2, Eye, Copy } from 'lucide-react';
 import copy from 'copy-to-clipboard';
 import { toast } from 'sonner';
 
@@ -21,7 +21,7 @@ const DeleteFileAction: React.FC<FileItemActionProps> = (props) => {
 
   const handleRemoveFile = () => {
     deleteFile(fileId);
-    toast('Delete Success!')
+    toast('Delete Success!');
   };
 
   return (
@@ -43,7 +43,7 @@ const CopyUrl: React.FC<{ url: string }> = (props) => {
       variant="ghost"
       onClick={() => {
         copy(url);
-        toast('Url Copy Success')
+        toast('Url Copy Success');
       }}
     >
       <Copy></Copy>
@@ -51,6 +51,18 @@ const CopyUrl: React.FC<{ url: string }> = (props) => {
   );
 };
 
-export { CopyUrl };
+type PreviewProps = {
+  onClick: () => void;
+};
 
-export default DeleteFileAction;
+const PreView: React.FC<PreviewProps> = (props) => {
+  const { onClick } = props;
+
+  return (
+    <Button className="cursor-pointer" variant="ghost" onClick={onClick}>
+      <Eye />
+    </Button>
+  );
+};
+
+export { CopyUrl, PreView, DeleteFileAction };

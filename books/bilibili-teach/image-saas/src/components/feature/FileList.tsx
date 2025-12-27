@@ -8,7 +8,7 @@ import { inferRouterOutputs } from '@trpc/server';
 import { Button } from '../ui/Button';
 import { ScrollArea } from '../ui/ScrollArea';
 import { FilesOrderByColumn } from '@/server/routes/file';
-import DeleteFileAction, { CopyUrl } from './FileItemAction';
+import { DeleteFileAction, CopyUrl, PreView } from './FileItemAction';
 import { cn } from '@/lib/utils';
 
 interface FileListProps {
@@ -147,25 +147,33 @@ const FileList: React.FC<FileListProps> = (props) => {
 
   const fileListEle = fileList?.map((file) => {
     return (
-      <div
-        className="flex justify-center items-center border relative"
+      <RemoteFileItem
         key={file.id}
+        id={file.id}
+        name={file.name}
+        contentType={file.contentType}
       >
-        <div className="w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200">
-          <CopyUrl url={`${location.host}/image/${file.id}`}></CopyUrl>
+        {(props) => {
+          const { setPreview } = props;
 
-          <DeleteFileAction
-            onDeleteSuccess={handleFileDelete}
-            fileId={file.id}
-          ></DeleteFileAction>
-        </div>
+          return (
+            <div className="w-full h-full cursor-pointer absolute insert-0 bg-background/30 justify-center items-center flex opacity-0 hover:opacity-100 transition-opacity duration-200">
+              <CopyUrl url={`${location.host}/image/${file.id}`} />
 
-        <RemoteFileItem
-          contentType={file.contentType}
-          id={file.id}
-          name={file.name}
-        ></RemoteFileItem>
-      </div>
+              <DeleteFileAction
+                onDeleteSuccess={handleFileDelete}
+                fileId={file.id}
+              />
+
+              <PreView
+                onClick={() => {
+                  setPreview(true);
+                }}
+              />
+            </div>
+          );
+        }}
+      </RemoteFileItem>
     );
   });
 
@@ -177,7 +185,11 @@ const FileList: React.FC<FileListProps> = (props) => {
       }}
     >
       {isPending && <div className="text-center">Loading...</div>}
-      <div className={cn("grid @sm:grid-cols-1 @md:grid-cols-2 @lg:grid-cols-4 gap-4 relative container")}>
+      <div
+        className={cn(
+          'grid @sm:grid-cols-1 @md:grid-cols-2 @lg:grid-cols-4 gap-4 relative container',
+        )}
+      >
         {uploadingFilesIds.length > 0 &&
           uploadingFilesIds.map((fileId) => {
             const file = uppyFiles[fileId];

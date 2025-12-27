@@ -13,7 +13,6 @@ import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import { MoveUp, MoveDown, Settings } from 'lucide-react';
 import Link from 'next/link';
-import app from 'next/app';
 
 interface AppPageProps {
   params: Promise<{ appId: string }>;
@@ -71,7 +70,9 @@ export default function AppPage(props: AppPageProps) {
   let children: ReactNode;
 
   if (isPending) {
-    children = <div className='flex justify-center items-center'>Loading...</div>;
+    children = (
+      <div className="flex justify-center items-center">Loading...</div>
+    );
   } else if (currentApp == null) {
     children = (
       <div className="flex flex-col mt-10 p-4 border rounded-md max-w-48 mx-auto items-center">
