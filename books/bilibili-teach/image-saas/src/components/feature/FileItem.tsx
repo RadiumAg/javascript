@@ -28,6 +28,15 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           preview={{
             zIndex: 999,
             visible: preview,
+            imageRender(props) {
+              const { props: imageProps } = props;
+              return (
+                <img
+                  {...(imageProps as any)}
+                  src={`${(imageProps as any).src}?_width=${1000}&_height=${1000}`}
+                />
+              );
+            },
             onVisibleChange(value) {
               if (!value) {
                 setPreview(false);

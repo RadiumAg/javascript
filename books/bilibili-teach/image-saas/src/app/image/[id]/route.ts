@@ -1,11 +1,19 @@
 import { db } from '@/server/db/db';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { TRPCError } from '@trpc/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 
-const GET = async (request: NextRequest, data: { params: { id: string } }) => {
-  const { id } = await data.params;
+const GET = async (
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) => {
+  const { id } = params;
+  const { searchParams } = new URL(request.url);
+
+  const width = searchParams.get('_width');
+  const height = searchParams.get('_height');
   const file = await db.query.files.findFirst({
     where: (files, { eq }) => eq(files.id, id),
     with: {
@@ -62,8 +70,8 @@ const GET = async (request: NextRequest, data: { params: { id: string } }) => {
   const image = sharp(byteArray);
 
   image.resize({
-    width: 250,
-    height: 250,
+    width: width ? +width : 250,
+    height: height ? +height : 250,
   });
 
   const buffer = await image.webp().toBuffer();
