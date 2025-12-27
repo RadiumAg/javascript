@@ -38,6 +38,7 @@ export const usersRelation = relations(users, ({ many }) => ({
   files: many(files),
   apps: many(apps),
   storgages: many(storageConfiguration),
+  tags: many(tags),
 }));
 
 export const accounts = pgTable(
@@ -130,9 +131,10 @@ export const files = pgTable(
   (table) => [index('cursor_idx').on(table.id, table.createdAt)],
 );
 
-export const filesRelations = relations(files, ({ one }) => ({
-  files: one(users, { fields: [files.userId], references: [users.id] }),
+export const filesRelations = relations(files, ({ one, many }) => ({
+  user: one(users, { fields: [files.userId], references: [users.id] }),
   app: one(apps, { fields: [files.appId], references: [apps.id] }),
+  tags: many(files_tags),
 }));
 
 export const appRelations = relations(apps, ({ one, many }) => ({
@@ -190,5 +192,57 @@ export const apiKeysRelation = relations(apiKeys, ({ one }) => ({
   app: one(apps, {
     fields: [apiKeys.appId],
     references: [apps.id],
+  }),
+}));
+
+export const tags = pgTable(
+  'tags',
+  {
+    id: uuid('id').notNull().primaryKey().defaultRandom(),
+    name: varchar('name', { length: 100 }).notNull().unique(),
+    color: varchar('color', { length: 7 }),
+    userId: text('user_id').notNull(),
+    createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
+  },
+  (table) => [
+    index('tags_user_idx').on(table.userId),
+    index('tags_name_idx').on(table.name),
+  ],
+);
+
+export const tagsRelations = relations(tags, ({ many, one }) => ({
+  user: one(users, {
+    fields: [tags.userId],
+    references: [users.id],
+  }),
+  files: many(files_tags),
+}));
+
+export const files_tags = pgTable(
+  'files_tags',
+  {
+    fileId: uuid('file_id')
+      .notNull()
+      .references(() => files.id, { onDelete: 'cascade' }),
+    tagId: uuid('tag_id')
+      .notNull()
+      .references(() => tags.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { mode: 'date' }).defaultNow(),
+  },
+  (table) => [
+    { pk: primaryKey({ columns: [table.fileId, table.tagId] }) },
+    index('files_tags_file_idx').on(table.fileId),
+    index('files_tags_tag_idx').on(table.tagId),
+  ],
+);
+
+export const files_tagsRelations = relations(files_tags, ({ one }) => ({
+  file: one(files, {
+    fields: [files_tags.fileId],
+    references: [files.id],
+  }),
+  tag: one(tags, {
+    fields: [files_tags.tagId],
+    references: [tags.id],
   }),
 }));
