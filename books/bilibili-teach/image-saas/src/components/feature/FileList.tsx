@@ -3,7 +3,7 @@ import { AppRouter, trpcClientReact, trpcPureClient } from '@/utils/api';
 import Uppy from '@uppy/core';
 import Image from 'next/image';
 import React from 'react';
-import { RemoteFileItem } from './FileItem';
+import { RemoteFileItem, RemoteFileItemWithTags } from './FileItem';
 import { inferRouterOutputs } from '@trpc/server';
 import { Button } from '../ui/Button';
 import { ScrollArea } from '../ui/ScrollArea';
@@ -92,7 +92,7 @@ const FileList: React.FC<FileListProps> = (props) => {
   }, [fetchNextPage]);
 
   React.useEffect(() => {
-    const handler = (file, resp) => {
+    const handler = (file: any, resp: any) => {
       if (file) {
         trpcPureClient.file.saveFile
           .mutate({
@@ -123,10 +123,10 @@ const FileList: React.FC<FileListProps> = (props) => {
       }
     };
 
-    const uploadProgressHandler = (_, resp) => {
+    const uploadProgressHandler = (_: any, resp: any) => {
       setUploadingFilesIds((currentFiles) => [
         ...currentFiles,
-        ...resp.map((file) => file.id),
+        ...resp.map((file: any) => file.id),
       ]);
     };
 
@@ -147,11 +147,12 @@ const FileList: React.FC<FileListProps> = (props) => {
 
   const fileListEle = fileList?.map((file) => {
     return (
-      <RemoteFileItem
+      <RemoteFileItemWithTags
         key={file.id}
         id={file.id}
         name={file.name}
         contentType={file.contentType}
+        tags={file.tags}
       >
         {(props) => {
           const { setPreview } = props;
@@ -173,7 +174,7 @@ const FileList: React.FC<FileListProps> = (props) => {
             </div>
           );
         }}
-      </RemoteFileItem>
+      </RemoteFileItemWithTags>
     );
   });
 
