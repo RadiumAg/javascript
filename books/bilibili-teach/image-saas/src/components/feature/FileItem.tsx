@@ -29,7 +29,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             zIndex: 999,
             visible: preview,
             onVisibleChange(value) {
-              debugger;
               if (!value) {
                 setPreview(false);
               }

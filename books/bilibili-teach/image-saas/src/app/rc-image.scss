@@ -111,13 +111,6 @@ $background-color: #f3f3f3;
       overflow: hidden;
     }
 
-    &.zoom-enter,
-    &.zoom-appear {
-      transform: none;
-      opacity: 1;
-      animation-duration: 0.3s;
-    }
-
     &-mask {
       position: fixed;
       top: 0;
