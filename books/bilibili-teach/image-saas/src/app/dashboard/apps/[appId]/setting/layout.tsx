@@ -32,6 +32,16 @@ export default function SettingLayout(props: Props) {
         >
           <Link href={`/dashboard/apps/${appId}/setting/api-key`}>Api Key</Link>
         </Button>
+
+        <Button
+          size="lg"
+          variant="ghost"
+          disabled={path === `/dashboard/apps/${appId}/setting/api-key`}
+        >
+          <Link href={`/dashboard/apps/${appId}/setting/tag-manager`}>
+            Tag Manager
+          </Link>
+        </Button>
       </div>
       <div className="flex-grow">{children}</div>
     </div>

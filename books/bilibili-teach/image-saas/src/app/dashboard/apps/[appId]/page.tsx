@@ -120,7 +120,7 @@ export default function AppPage(props: AppPageProps) {
         </div>
 
         <div className="container mx-auto mb-5">
-          <Tabs>
+          <Tabs defaultValue="all">
             <TabsList>
               <TabsTrigger value="all">全部</TabsTrigger>
               <TabsTrigger value="people">人物</TabsTrigger>
@@ -144,11 +144,7 @@ export default function AppPage(props: AppPageProps) {
                         </div>
                       )}
 
-                      <FileList
-                        appId={appId}
-                        orderBy={orderBy}
-                        uppy={uppy}
-                      ></FileList>
+                      <FileList appId={appId} orderBy={orderBy} uppy={uppy} />
                     </div>
                   );
                 }}
