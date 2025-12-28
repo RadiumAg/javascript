@@ -71,7 +71,11 @@ const LocalFileItem = (option: { file: File | Blob; children?: Children }) => {
   }, [isImage, file]);
 
   return (
-    <FileItem isImage={isImage} url={url} name={file instanceof File ? file.name : 'file'}>
+    <FileItem
+      isImage={isImage}
+      url={url}
+      name={file instanceof File ? file.name : 'file'}
+    >
       {children}
     </FileItem>
   );
@@ -108,24 +112,6 @@ const RemoteFileItemWithTags = (option: {
   return (
     <FileItem isImage={isImage} url={imageUrl} name={name}>
       {children}
-      {tags && tags.length > 0 && (
-        <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
-          {tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag.id}
-              className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium text-white"
-              style={{ backgroundColor: tag.color }}
-            >
-              {tag.name}
-            </span>
-          ))}
-          {tags.length > 3 && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-800 text-white">
-              +{tags.length - 3}
-            </span>
-          )}
-        </div>
-      )}
     </FileItem>
   );
 };

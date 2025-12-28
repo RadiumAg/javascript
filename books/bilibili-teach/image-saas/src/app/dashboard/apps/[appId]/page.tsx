@@ -13,6 +13,8 @@ import FileList from '@/components/feature/FileList';
 import { FilesOrderByColumn } from '@/server/routes/file';
 import { MoveUp, MoveDown, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { TabsContent } from '@radix-ui/react-tabs';
 
 interface AppPageProps {
   params: Promise<{ appId: string }>;
@@ -101,6 +103,7 @@ export default function AppPage(props: AppPageProps) {
           >
             Created At {orderBy.order === 'desc' ? <MoveUp /> : <MoveDown />}
           </Button>
+
           <div className="flex items-center gap-2">
             <UploadButton uppy={uppy}></UploadButton>
 
@@ -116,31 +119,44 @@ export default function AppPage(props: AppPageProps) {
           </div>
         </div>
 
-        <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
-          {(draggling) => {
-            return (
-              <div
-                className={cn(
-                  'flex flex-wrap gap-4 relative h-full container mx-auto',
-                  draggling && 'border border-dashed',
-                )}
-              >
-                {draggling && (
-                  <div className="absolute inset-0 bg-secondary/50 z-10 flex justify-center items-center">
-                    Drop File Here To Upload
-                  </div>
-                )}
+        <div className="container mx-auto mb-5">
+          <Tabs>
+            <TabsList>
+              <TabsTrigger value="all">全部</TabsTrigger>
+              <TabsTrigger value="people">人物</TabsTrigger>
+              <TabsTrigger value="area">地点</TabsTrigger>
+              <TabsTrigger value="password">事务</TabsTrigger>
+            </TabsList>
 
-                <FileList
-                  appId={appId}
-                  orderBy={orderBy}
-                  uppy={uppy}
-                ></FileList>
-              </div>
-            );
-          }}
-        </Dropzone>
-        <UploadPreview uppy={uppy}></UploadPreview>
+            <TabsContent value="all">
+              <Dropzone uppy={uppy} className="w-full h-[calc(100%-60px)]">
+                {(draggling) => {
+                  return (
+                    <div
+                      className={cn(
+                        'flex flex-wrap gap-4 relative h-full container mx-auto',
+                        draggling && 'border border-dashed',
+                      )}
+                    >
+                      {draggling && (
+                        <div className="absolute inset-0 bg-secondary/50 z-10 flex justify-center items-center">
+                          Drop File Here To Upload
+                        </div>
+                      )}
+
+                      <FileList
+                        appId={appId}
+                        orderBy={orderBy}
+                        uppy={uppy}
+                      ></FileList>
+                    </div>
+                  );
+                }}
+              </Dropzone>
+              <UploadPreview uppy={uppy} />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     );
   }
