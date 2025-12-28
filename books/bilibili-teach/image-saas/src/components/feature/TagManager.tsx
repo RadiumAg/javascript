@@ -40,9 +40,10 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
   const [editTagName, setEditTagName] = useState('');
   const [editTagColor, setEditTagColor] = useState('#3b82f6');
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [operationLoading, setOperationLoading] = useState<string | null>(null);
+
+  console.log('[DEUBG] user tag', userTags);
 
   // 获取用户所有标签
   const fetchUserTags = async () => {
@@ -105,8 +106,8 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
       if (response.ok) {
         const data = await response.json();
         // 优化：直接更新本地状态，避免重新获取
-        setFileTags(prev => [...prev, ...data.addedTags]);
-        setSelectedTags(prev => [...prev, ...tagNames]);
+        setFileTags((prev) => [...prev, ...data.addedTags]);
+        setSelectedTags((prev) => [...prev, ...tagNames]);
         setError(null);
         onTagsChange?.(selectedTags.concat(tagNames));
       } else {
@@ -138,17 +139,21 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
         // 优化：直接更新本地状态，避免重新获取
         if (tagIds) {
           const removedTagIds = new Set(tagIds);
-          setFileTags(prev => prev.filter(tag => !removedTagIds.has(tag.id)));
+          setFileTags((prev) =>
+            prev.filter((tag) => !removedTagIds.has(tag.id)),
+          );
           const removedNames = fileTags
-            .filter(tag => removedTagIds.has(tag.id))
-            .map(tag => tag.name);
-          setSelectedTags(prev => prev.filter(name => !removedNames.includes(name)));
+            .filter((tag) => removedTagIds.has(tag.id))
+            .map((tag) => tag.name);
+          setSelectedTags((prev) =>
+            prev.filter((name) => !removedNames.includes(name)),
+          );
         } else {
           setFileTags([]);
           setSelectedTags([]);
         }
         setError(null);
-        onTagsChange?.(selectedTags.filter(name => !tagIds?.includes(name)));
+        onTagsChange?.(selectedTags.filter((name) => !tagIds?.includes(name)));
       } else {
         setError('移除标签失败');
       }
@@ -183,9 +188,9 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
         setNewTagColor('#3b82f6');
         setIsAddDialogOpen(false);
         // 优化：直接更新本地状态
-        setUserTags(prev => [...prev, newTag]);
+        setUserTags((prev) => [...prev, newTag]);
         setError(null);
-        
+
         if (fileId) {
           await addTagsToFile([newTag.name]);
         }
@@ -219,11 +224,11 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
         const updatedTag = await response.json();
         setEditingTag(null);
         // 优化：直接更新本地状态
-        setUserTags(prev => 
-          prev.map(tag => tag.id === tagId ? { ...tag, ...updates } : tag)
+        setUserTags((prev) =>
+          prev.map((tag) => (tag.id === tagId ? { ...tag, ...updates } : tag)),
         );
-        setFileTags(prev => 
-          prev.map(tag => tag.id === tagId ? { ...tag, ...updates } : tag)
+        setFileTags((prev) =>
+          prev.map((tag) => (tag.id === tagId ? { ...tag, ...updates } : tag)),
         );
         setError(null);
       } else {
@@ -240,7 +245,9 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
   // 删除标签
   const deleteTag = async (tagId: string) => {
     // 添加确认机制
-    if (!window.confirm('确定要删除这个标签吗？这将同时从所有文件中移除此标签。')) {
+    if (
+      !window.confirm('确定要删除这个标签吗？这将同时从所有文件中移除此标签。')
+    ) {
       return;
     }
 
@@ -252,10 +259,12 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
 
       if (response.ok) {
         // 优化：直接更新本地状态
-        const deletedTag = userTags.find(tag => tag.id === tagId);
-        setUserTags(prev => prev.filter(tag => tag.id !== tagId));
-        setFileTags(prev => prev.filter(tag => tag.id !== tagId));
-        setSelectedTags(prev => prev.filter(name => name !== deletedTag?.name));
+        const deletedTag = userTags.find((tag) => tag.id === tagId);
+        setUserTags((prev) => prev.filter((tag) => tag.id !== tagId));
+        setFileTags((prev) => prev.filter((tag) => tag.id !== tagId));
+        setSelectedTags((prev) =>
+          prev.filter((name) => name !== deletedTag?.name),
+        );
         setError(null);
       } else {
         setError('删除标签失败');
@@ -276,218 +285,245 @@ export function TagManager({ fileId, onTagsChange, trigger }: TagManagerProps) {
   };
 
   const defaultTrigger = (
-    <Button variant="outline" size="sm">
+    <Button className="cursor-pointer" variant="outline" size="sm">
       <Plus size={16} className="mr-1" />
       管理标签
     </Button>
   );
 
   return (
-    <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
-      <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>标签管理</DialogTitle>
-        </DialogHeader>
+    <div className="container mx-auto mt-10">
+      <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
+        <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>标签管理</DialogTitle>
+          </DialogHeader>
 
-        {/* 错误提示 */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3">
-            <div className="text-sm text-red-600">{error}</div>
-          </div>
-        )}
-
-        <div className="space-y-6">
-          {/* 当前文件标签 */}
-          {fileId && (
-            <div>
-              <Label className="text-sm font-medium">当前文件标签</Label>
-              <div className="mt-2">
-                {fileTags.length > 0 ? (
-                  <TagList
-                    tags={fileTags}
-                    removable
-                    onRemoveTag={(tagId) => {
-                      const tagToRemove = fileTags.find((t) => t.id === tagId);
-                      if (tagToRemove) {
-                        removeTagsFromFile([tagId]);
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="text-gray-500 text-sm">暂无标签</div>
-                )}
-              </div>
+          {/* 错误提示 */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <div className="text-sm text-red-600">{error}</div>
             </div>
           )}
 
-          {/* 添加标签 */}
-          <div>
-            <Label className="text-sm font-medium">添加标签</Label>
-            <TagInput
-              value={selectedTags}
-              onChange={handleTagSelection}
-              suggestions={userTags.map((tag) => tag.name)}
-              placeholder="输入标签名称或从现有标签中选择..."
-            />
-          </div>
+          <div className="space-y-6">
+            {/* 当前文件标签 */}
+            {fileId && (
+              <div>
+                <Label className="text-sm font-medium">当前文件标签</Label>
+                <div className="mt-2">
+                  {fileTags.length > 0 ? (
+                    <TagList
+                      tags={fileTags}
+                      removable
+                      onRemoveTag={(tagId) => {
+                        const tagToRemove = fileTags.find(
+                          (t) => t.id === tagId,
+                        );
+                        if (tagToRemove) {
+                          removeTagsFromFile([tagId]);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="text-gray-500 text-sm">暂无标签</div>
+                  )}
+                </div>
+              </div>
+            )}
 
-          {/* 标签列表 */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <Label className="text-sm font-medium">所有标签</Label>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Plus size={16} className="mr-1" />
-                    新建标签
-                  </Button>
-                </DialogTrigger>
+            {/* 添加标签 */}
+            <div>
+              <Label className="text-sm font-medium mb-4">添加标签</Label>
+              <TagInput
+                value={selectedTags}
+                onChange={handleTagSelection}
+                suggestions={userTags.map((tag) => tag.name)}
+                placeholder="输入标签名称或从现有标签中选择..."
+              />
+            </div>
+
+            {/* 标签列表 */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-sm font-medium">所有标签</Label>
+                <Dialog
+                  open={isAddDialogOpen}
+                  onOpenChange={setIsAddDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Plus size={16} className="mr-1" />
+                      新建标签
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>创建新标签</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="mb-4" htmlFor="tagName">
+                          标签名称
+                        </Label>
+                        <Input
+                          id="tagName"
+                          value={newTagName}
+                          onChange={(e) => setNewTagName(e.target.value)}
+                          placeholder="输入标签名称"
+                          maxLength={20}
+                        />
+                      </div>
+                      <div>
+                        <Label className="mb-4" htmlFor="tagColor">
+                          标签颜色
+                        </Label>
+                        <Input
+                          id="tagColor"
+                          type="color"
+                          value={newTagColor}
+                          onChange={(e) => setNewTagColor(e.target.value)}
+                          className="w-20 h-10"
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsAddDialogOpen(false)}
+                        >
+                          取消
+                        </Button>
+                        <Button
+                          onClick={createTag}
+                          disabled={
+                            operationLoading === 'create' || !newTagName.trim()
+                          }
+                        >
+                          {operationLoading === 'create' ? '创建中...' : '创建'}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {userTags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-2 border rounded-lg"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Tag name={tag.name} color={tag.color} size="sm" />
+                      <span className="text-xs text-gray-500">
+                        {tag.count} 个文件
+                      </span>
+                    </div>
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingTag(tag);
+                          setEditTagName(tag.name);
+                          setEditTagColor(tag.color);
+                          setIsEditDialogOpen(true);
+                        }}
+                        disabled={operationLoading === 'update'}
+                      >
+                        <Edit2 size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteTag(tag.id)}
+                        className="text-red-600 hover:text-red-700"
+                        disabled={operationLoading === 'delete'}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 编辑标签对话框 */}
+            {editingTag && (
+              <Dialog
+                open={isEditDialogOpen}
+                onOpenChange={setIsEditDialogOpen}
+              >
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>创建新标签</DialogTitle>
+                    <DialogTitle>编辑标签</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="tagName">标签名称</Label>
+                      <Label className="mb-4" htmlFor="editTagName">
+                        标签名称
+                      </Label>
                       <Input
-                        id="tagName"
-                        value={newTagName}
-                        onChange={(e) => setNewTagName(e.target.value)}
+                        id="editTagName"
+                        value={editTagName}
+                        onChange={(e) => setEditTagName(e.target.value)}
                         placeholder="输入标签名称"
                         maxLength={20}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="tagColor">标签颜色</Label>
+                      <Label className="mb-4" htmlFor="editTagColor">
+                        标签颜色
+                      </Label>
                       <Input
-                        id="tagColor"
+                        id="editTagColor"
                         type="color"
-                        value={newTagColor}
-                        onChange={(e) => setNewTagColor(e.target.value)}
+                        value={editTagColor}
+                        onChange={(e) => setEditTagColor(e.target.value)}
                         className="w-20 h-10"
                       />
                     </div>
                     <div className="flex justify-end space-x-2">
                       <Button
                         variant="outline"
-                        onClick={() => setIsAddDialogOpen(false)}
+                        onClick={() => {
+                          setIsEditDialogOpen(false);
+                          setEditingTag(null);
+                        }}
                       >
                         取消
                       </Button>
-                      <Button 
-                        onClick={createTag}
-                        disabled={operationLoading === 'create' || !newTagName.trim()}
+                      <Button
+                        onClick={() => {
+                          if (
+                            editTagName.trim() &&
+                            editTagName !== editingTag.name
+                          ) {
+                            updateTag(editingTag.id, {
+                              name: editTagName.trim(),
+                            });
+                          }
+                          if (editTagColor !== editingTag.color) {
+                            updateTag(editingTag.id, { color: editTagColor });
+                          }
+                          setIsEditDialogOpen(false);
+                          setEditingTag(null);
+                        }}
+                        disabled={
+                          operationLoading === 'update' || !editTagName.trim()
+                        }
                       >
-                        {operationLoading === 'create' ? '创建中...' : '创建'}
+                        {operationLoading === 'update' ? '保存中...' : '保存'}
                       </Button>
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
-            </div>
-
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {userTags.map((tag) => (
-                <div
-                  key={tag.id}
-                  className="flex items-center justify-between p-2 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Tag name={tag.name} color={tag.color} size="sm" />
-                    <span className="text-xs text-gray-500">
-                      {tag.count} 个文件
-                    </span>
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setEditingTag(tag);
-                        setEditTagName(tag.name);
-                        setEditTagColor(tag.color);
-                        setIsEditDialogOpen(true);
-                      }}
-                      disabled={operationLoading === 'update'}
-                    >
-                      <Edit2 size={14} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteTag(tag.id)}
-                      className="text-red-600 hover:text-red-700"
-                      disabled={operationLoading === 'delete'}
-                    >
-                      <Trash2 size={14} />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
-
-          {/* 编辑标签对话框 */}
-          {editingTag && (
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>编辑标签</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="editTagName">标签名称</Label>
-                    <Input
-                      id="editTagName"
-                      value={editTagName}
-                      onChange={(e) => setEditTagName(e.target.value)}
-                      placeholder="输入标签名称"
-                      maxLength={20}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="editTagColor">标签颜色</Label>
-                    <Input
-                      id="editTagColor"
-                      type="color"
-                      value={editTagColor}
-                      onChange={(e) => setEditTagColor(e.target.value)}
-                      className="w-20 h-10"
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setIsEditDialogOpen(false);
-                        setEditingTag(null);
-                      }}
-                    >
-                      取消
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        if (editTagName.trim() && editTagName !== editingTag.name) {
-                          updateTag(editingTag.id, { name: editTagName.trim() });
-                        }
-                        if (editTagColor !== editingTag.color) {
-                          updateTag(editingTag.id, { color: editTagColor });
-                        }
-                        setIsEditDialogOpen(false);
-                        setEditingTag(null);
-                      }}
-                      disabled={operationLoading === 'update' || !editTagName.trim()}
-                    >
-                      {operationLoading === 'update' ? '保存中...' : '保存'}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

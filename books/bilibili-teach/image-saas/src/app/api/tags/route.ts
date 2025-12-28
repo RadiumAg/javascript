@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching tags:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     const body = await request.json();
     const { name, color, fileId, tagNames } = body;
 
@@ -38,15 +37,12 @@ export async function POST(request: NextRequest) {
       if (!name.trim() || name.length > 20) {
         return NextResponse.json(
           { error: 'Invalid tag name. Must be 1-20 characters.' },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       const tagService = new TagService({ userId: session.user.id });
-      const newTag = await tagService.createTag({
-        name: name.trim(),
-        color,
-      });
+      const newTag = await tagService.createOrGetTags([name.trim()]);
 
       return NextResponse.json(newTag);
     }
@@ -55,7 +51,7 @@ export async function POST(request: NextRequest) {
       if (tagNames.length === 0) {
         return NextResponse.json(
           { error: 'tagNames array cannot be empty' },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -65,15 +61,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, addedTags });
     } else {
       return NextResponse.json(
-        { error: 'Invalid request body. Use { name, color } to create tag or { fileId, tagNames } to add tags to file.' },
-        { status: 400 }
+        {
+          error:
+            'Invalid request body. Use { name, color } to create tag or { fileId, tagNames } to add tags to file.',
+        },
+        { status: 400 },
       );
     }
   } catch (error) {
     console.error('Error in POST /api/tags:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -87,12 +86,9 @@ export async function PUT(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const tagId = searchParams.get('tagId');
-    
+
     if (!tagId) {
-      return NextResponse.json(
-        { error: 'tagId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'tagId is required' }, { status: 400 });
     }
 
     const body = await request.json();
@@ -101,20 +97,20 @@ export async function PUT(request: NextRequest) {
     if (!name && !color) {
       return NextResponse.json(
         { error: 'At least one of name or color must be provided' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (name && (!name.trim() || name.length > 20)) {
       return NextResponse.json(
         { error: 'Invalid tag name. Must be 1-20 characters.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const tagService = new TagService({ userId: session.user.id });
     const updates: { name?: string; color?: string } = {};
-    
+
     if (name) updates.name = name.trim();
     if (color) updates.color = color;
 
@@ -125,7 +121,7 @@ export async function PUT(request: NextRequest) {
     console.error('Error updating tag:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -154,7 +150,7 @@ export async function DELETE(request: NextRequest) {
       if (!tagIds || tagIds.length === 0) {
         return NextResponse.json(
           { error: 'tagIds is required when removing tags from file' },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -162,15 +158,18 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json(
-        { error: 'Either tagId (to delete tag) or fileId with tagIds (to remove from file) is required' },
-        { status: 400 }
+        {
+          error:
+            'Either tagId (to delete tag) or fileId with tagIds (to remove from file) is required',
+        },
+        { status: 400 },
       );
     }
   } catch (error) {
     console.error('Error in DELETE /api/tags:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

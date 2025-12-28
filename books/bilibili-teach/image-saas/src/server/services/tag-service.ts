@@ -17,13 +17,15 @@ export class TagService {
   /**
    * 为文件创建或获取标签
    */
-  async createOrGetTags(tagNames: string[]): Promise<Array<{ id: string; name: string }>> {
+  async createOrGetTags(
+    tagNames: string[],
+  ): Promise<Array<{ id: string; name: string }>> {
     if (!tagNames.length) return [];
 
     // 清理标签名称
     const cleanTagNames = tagNames
-      .map(name => name.trim().toLowerCase())
-      .filter(name => name.length > 0 && name.length <= 20);
+      .map((name) => name.trim().toLowerCase())
+      .filter((name) => name.length > 0 && name.length <= 20);
 
     if (!cleanTagNames.length) return [];
 
@@ -31,12 +33,14 @@ export class TagService {
     const existingTags = await db.query.tags.findMany({
       where: and(
         eq(tags.userId, this.userId),
-        inArray(tags.name, cleanTagNames)
+        inArray(tags.name, cleanTagNames),
       ),
     });
 
-    const existingTagNames = new Set(existingTags.map(tag => tag.name));
-    const newTagNames = cleanTagNames.filter(name => !existingTagNames.has(name));
+    const existingTagNames = new Set(existingTags.map((tag) => tag.name));
+    const newTagNames = cleanTagNames.filter(
+      (name) => !existingTagNames.has(name),
+    );
 
     // 创建新标签
     const newTags = [];
@@ -44,15 +48,15 @@ export class TagService {
       const insertedTags = await db
         .insert(tags)
         .values(
-          newTagNames.map(name => ({
+          newTagNames.map((name) => ({
             id: uuid(),
             name,
             userId: this.userId,
             color: this.generateRandomColor(),
-          }))
+          })),
         )
         .returning();
-      
+
       newTags.push(...insertedTags);
     }
 
@@ -72,10 +76,10 @@ export class TagService {
     await db
       .insert(files_tags)
       .values(
-        tagRecords.map(tag => ({
+        tagRecords.map((tag) => ({
           fileId,
           tagId: tag.id,
-        }))
+        })),
       )
       .onConflictDoNothing(); // 避免重复关联
   }
@@ -83,7 +87,7 @@ export class TagService {
   /**
    * 获取文件的所有标签
    */
-  async getFileTags(fileId: string): Promise<Array<{ id: string; name: string; color: string }>> {
+  async getFileTags(fileId: string) {
     const result = await db.query.files_tags.findMany({
       where: eq(files_tags.fileId, fileId),
       with: {
@@ -91,13 +95,13 @@ export class TagService {
       },
     });
 
-    return result.map(ft => ft.tag);
+    return result.map((ft) => ft.tag);
   }
 
   /**
    * 获取用户的所有标签
    */
-  async getUserTags(): Promise<Array<{ id: string; name: string; color: string; count: number }>> {
+  async getUserTags() {
     // 使用原生SQL查询以获取标签使用次数
     const result = await db.execute(`
       SELECT 
@@ -107,16 +111,16 @@ export class TagService {
         COUNT(ft.file_id) as count
       FROM tags t
       LEFT JOIN files_tags ft ON t.id = ft.tag_id
-      WHERE t.user_id = ${this.userId}
+      WHERE t.user_id = '${this.userId}'
       GROUP BY t.id, t.name, t.color
       ORDER BY count DESC, t.name ASC
     `);
 
-    return result.rows.map(row => ({
+    return result.map((row) => ({
       id: row.id,
       name: row.name,
       color: row.color,
-      count: parseInt(row.count),
+      count: result.length,
     }));
   }
 
@@ -133,7 +137,7 @@ export class TagService {
       },
     });
 
-    return [...new Set(result.map(ft => ft.fileId))];
+    return [...new Set(result.map((ft) => ft.fileId))];
   }
 
   /**
@@ -145,10 +149,7 @@ export class TagService {
       await db
         .delete(files_tags)
         .where(
-          and(
-            eq(files_tags.fileId, fileId),
-            inArray(files_tags.tagId, tagIds)
-          )
+          and(eq(files_tags.fileId, fileId), inArray(files_tags.tagId, tagIds)),
         );
     } else {
       // 删除所有标签
@@ -159,18 +160,16 @@ export class TagService {
   /**
    * 更新标签信息
    */
-  async updateTag(tagId: string, updates: { name?: string; color?: string }): Promise<boolean> {
+  async updateTag(
+    tagId: string,
+    updates: { name?: string; color?: string },
+  ): Promise<boolean> {
     const result = await db
       .update(tags)
       .set(updates)
-      .where(
-        and(
-          eq(tags.id, tagId),
-          eq(tags.userId, this.userId)
-        )
-      );
+      .where(and(eq(tags.id, tagId), eq(tags.userId, this.userId)));
 
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   /**
@@ -179,18 +178,13 @@ export class TagService {
   async deleteTag(tagId: string): Promise<boolean> {
     // 先删除所有关联
     await db.delete(files_tags).where(eq(files_tags.tagId, tagId));
-    
+
     // 再删除标签
     const result = await db
       .delete(tags)
-      .where(
-        and(
-          eq(tags.id, tagId),
-          eq(tags.userId, this.userId)
-        )
-      );
+      .where(and(eq(tags.id, tagId), eq(tags.userId, this.userId)));
 
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   /**
@@ -198,12 +192,25 @@ export class TagService {
    */
   private generateRandomColor(): string {
     const colors = [
-      '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
-      '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
-      '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
-      '#ec4899', '#f43f5e'
+      '#ef4444',
+      '#f97316',
+      '#f59e0b',
+      '#eab308',
+      '#84cc16',
+      '#22c55e',
+      '#10b981',
+      '#14b8a6',
+      '#06b6d4',
+      '#0ea5e9',
+      '#3b82f6',
+      '#6366f1',
+      '#8b5cf6',
+      '#a855f7',
+      '#d946ef',
+      '#ec4899',
+      '#f43f5e',
     ];
-    
+
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
@@ -221,6 +228,6 @@ export class TagService {
       )
     `);
 
-    return result.rowCount;
+    return result.length;
   }
 }

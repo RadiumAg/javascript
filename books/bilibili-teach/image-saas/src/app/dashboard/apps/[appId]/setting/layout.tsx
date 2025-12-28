@@ -36,7 +36,7 @@ export default function SettingLayout(props: Props) {
         <Button
           size="lg"
           variant="ghost"
-          disabled={path === `/dashboard/apps/${appId}/setting/api-key`}
+          disabled={path === `/dashboard/apps/${appId}/setting/tag-manager`}
         >
           <Link href={`/dashboard/apps/${appId}/setting/tag-manager`}>
             Tag Manager
