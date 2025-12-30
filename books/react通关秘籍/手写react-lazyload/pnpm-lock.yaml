@@ -33,7 +33,7 @@ devDependencies:
     version: 5.1.0-rc-fb9a90fa48-20240614(eslint@9.10.0)
   eslint-plugin-react-refresh:
     specifier: ^0.4.9
-    version: 0.4.12(eslint@9.10.0)
+    version: 0.4.26(eslint@9.10.0)
   globals:
     specifier: ^15.9.0
     version: 15.9.0
@@ -653,6 +653,14 @@ packages:
     dev: true
     optional: true
 
+  /@rollup/rollup-linux-riscv64-gnu@4.21.3:
+    resolution: {integrity: sha512-yXH6K6KfqGXaxHrtr+Uoy+JpNlUlI46BKVyonGiaD74ravdnF9BUNC+vV+SIuB96hUMGShhKV693rF9QDfO6nQ==}
+    cpu: [riscv64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
   /@rollup/rollup-linux-s390x-gnu@4.21.3:
     resolution: {integrity: sha512-R8cwY9wcnApN/KDYWTH4gV/ypvy9yZUHlbJvfaiXSB48JO3KpwSpjOGqO4jnGkLDSk1hgjYkTbTt6Q7uvPf8eg==}
     cpu: [s390x]
@@ -1120,10 +1128,10 @@ packages:
       eslint: 9.10.0
     dev: true
 
-  /eslint-plugin-react-refresh@0.4.12(eslint@9.10.0):
-    resolution: {integrity: sha512-9neVjoGv20FwYtCP6CB1dzR1vr57ZDNOXst21wd2xJ/cTlM2xLq0GWVlSNTdMn/4BtP6cHYBMCSp1wFBJ9jBsg==}
+  /eslint-plugin-react-refresh@0.4.26(eslint@9.10.0):
+    resolution: {integrity: sha512-1RETEylht2O6FM/MvgnyvT+8K21wLqDNg4qD51Zj3guhjt433XbnnkVttHMyaVyAFD03QSV4LPS5iE3VQmO7XQ==}
     peerDependencies:
-      eslint: '>=7'
+      eslint: '>=8.40'
     dependencies:
       eslint: 9.10.0
     dev: true
@@ -1629,6 +1637,7 @@ packages:
       '@rollup/rollup-linux-arm64-gnu': 4.21.3
       '@rollup/rollup-linux-arm64-musl': 4.21.3
       '@rollup/rollup-linux-powerpc64le-gnu': 4.21.3
+      '@rollup/rollup-linux-riscv64-gnu': 4.21.3
       '@rollup/rollup-linux-s390x-gnu': 4.21.3
       '@rollup/rollup-linux-x64-gnu': 4.21.3
       '@rollup/rollup-linux-x64-musl': 4.21.3
