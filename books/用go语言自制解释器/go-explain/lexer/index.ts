@@ -18,18 +18,18 @@ class Lexer {
     let token: Token = { type: TokenType.ILLEGAL, literal: '' };
 
     switch (ch) {
-      case '=':
-        token = { type: TokenType.ASSIGN, literal: '=' };
-        break;
+      // case '=':
+      //   token = { type: TokenType.ASSIGN, literal: '=' };
+      //   break;
       case '+':
         token = { type: TokenType.PLUS, literal: '+' };
         break;
       case '-':
         token = { type: TokenType.MINUS, literal: '-' };
         break;
-      case '!':
-        token = { type: TokenType.BANG, literal: '!' };
-        break;
+      // case '!':
+      //   token = { type: TokenType.BANG, literal: '!' };
+      //   break;
       case '*':
         token = { type: TokenType.ASTERISK, literal: '*' };
         break;
@@ -69,7 +69,6 @@ class Lexer {
           token = { type: TokenType.ASSIGN, literal: '=' };
         }
         break;
-
       case '!':
         if (peekChar(this) === '=') {
           const ch = this.ch;

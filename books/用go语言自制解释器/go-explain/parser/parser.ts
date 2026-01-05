@@ -315,6 +315,7 @@ function createParser(lexer: Lexer): Parser {
   p.registerPrefix(TokenType.IDENT, p.parseIdentifier.bind(p));
   p.registerPrefix(TokenType.INT, p.parseIntegerLiteral.bind(p));
   p.registerPrefix(TokenType.BANG, p.parsePrefixExpression.bind(p));
+  p.registerPrefix(TokenType.MINUS, p.parsePrefixExpression.bind(p));
 
   p.registerInfix(TokenType.MINUS, p.parseInfixExpression.bind(p));
   p.registerInfix(TokenType.PLUS, p.parseInfixExpression.bind(p));
