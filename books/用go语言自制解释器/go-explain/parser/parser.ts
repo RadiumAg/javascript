@@ -202,6 +202,14 @@ class Parser {
     return this.peekToken?.type === tokenType;
   }
 
+  curPrecedence() {
+    if (this.peekToken?.type && Precedence[this.peekToken.type]) {
+      return Precedence[this.peekToken.type];
+    }
+
+    return Precedence.LOWEST;
+  }
+
   /**
    * 断言函数主要的目的是通过检查下一个词法单元的类型，
    * 确保词法单元顺序的正确性
@@ -299,6 +307,11 @@ function createParser(lexer: Lexer): Parser {
   p.registerPrefix(TokenType.BANG, p.parsePrefixExpression.bind(p));
   p.registerPrefix(TokenType.MINUS, p.parsePrefixExpression.bind(p));
   p.registerInfix(TokenType.SLASH, p.parseInfixExpression.bind(p));
+  p.registerInfix(TokenType.ASTERISK, p.parseInfixExpression.bind(p));
+  p.registerInfix(TokenType.EQ, p.parseInfixExpression.bind(p));
+  p.registerInfix(TokenType.NOT_EQ, p.parseInfixExpression.bind(p));
+  p.registerInfix(TokenType.LT, p.parseInfixExpression.bind(p));
+  p.registerInfix(TokenType.GT, p.parseInfixExpression.bind(p));
 
   return p;
 }
