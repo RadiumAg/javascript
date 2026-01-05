@@ -38,7 +38,7 @@ const Precedence = {
 
   PREFIX: 5, // -X or !X
   CALL: 6, // myFunction(X)
-} as Record<string, any>;
+} as Record<string, number>;
 
 /**
  * 递归下降语法
@@ -119,14 +119,18 @@ class Parser {
     return stmt;
   }
 
-  parseExpression(precedence: Precedence): Expression | null {
+  parseExpression(precedence: number): Expression | null {
     if (this.curToken == null) return null;
-    const prefix = this.prefixParseFns[this.curToken?.type];
+    const prefix = this.prefixParseFns[this.curToken.type];
     if (!prefix) {
       this.noPrefixParseFnError(this.curToken.type);
       return null;
     }
     const leftExp = prefix();
+    while (
+      this.peekTokenIs(TokenType.SEMICOLON) &&
+      precedence < this.peekPrecedence()
+    ) {}
     return leftExp;
   }
 
@@ -275,7 +279,7 @@ class Parser {
 
   peekPrecedence() {
     if (this.peekToken && Precedence[this.peekToken.type]) {
-      return this;
+      return Precedence[this.peekToken.type];
     }
     return Precedence.LOWEST;
   }
