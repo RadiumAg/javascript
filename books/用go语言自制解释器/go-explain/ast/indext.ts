@@ -15,7 +15,7 @@ interface Expression extends Node {
 
 class Program implements Node {
   string(): string {
-    return this.statements.toString();
+    return this.statements.map((statement) => statement.string()).join('');
   }
 
   statements: Statement[] = [];
