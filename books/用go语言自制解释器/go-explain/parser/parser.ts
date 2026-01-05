@@ -10,6 +10,7 @@ import {
   ExpressionStatement,
   IntegerLiteral,
   PrefixExpression,
+  InfixExpression,
 } from '../ast/indext';
 
 type PrefixParseFn = () => Expression | null;
@@ -270,6 +271,19 @@ class Parser {
     }
     return Precedence.LOWEST;
   }
+
+  parseInfixExpression(left: Expression) {
+    const expression = new InfixExpression(
+      this.curToken,
+      this.curToken?.literal!,
+      left
+    );
+    const precedence = this.curPrecedence();
+    this.nextToken();
+    expression.right = this.parseExpression(precedence);
+
+    return expression;
+  }
 }
 
 function createParser(lexer: Lexer): Parser {
@@ -284,6 +298,7 @@ function createParser(lexer: Lexer): Parser {
   p.registerPrefix(TokenType.INT, p.parseIntegerLiteral.bind(p));
   p.registerPrefix(TokenType.BANG, p.parsePrefixExpression.bind(p));
   p.registerPrefix(TokenType.MINUS, p.parsePrefixExpression.bind(p));
+  p.registerInfix(TokenType.SLASH, p.parseInfixExpression.bind(p));
 
   return p;
 }

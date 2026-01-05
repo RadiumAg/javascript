@@ -174,13 +174,17 @@ class PrefixExpression implements Expression {
 class InfixExpression implements Expression {
   token: Token | null;
   left: Expression | null;
-  operator: string;
+  operator: string | null;
   right: Expression | null;
 
-  constructor(token: Token | null, operator: string) {
+  constructor(
+    token: Token | null,
+    operator: string | null,
+    left: Expression | null
+  ) {
     this.token = token;
     this.operator = operator;
-    this.left = null;
+    this.left = left;
     this.right = null;
   }
 
