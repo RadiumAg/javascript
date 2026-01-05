@@ -17,27 +17,26 @@ type PrefixParseFn = () => Expression | null;
 
 type InfixParseFn = (expression: Expression | null) => Expression | null;
 
+const LESSGREATER = 2;
+const EQUALS = 1;
+const LOWEST = 0;
+const SUM = 3;
+const PERODUCT = 4;
+const PREFIX = 5; // -X or !X
+const CALL = 6; // myFunction(X)
+
 const Precedence = {
-  LOWEST: 0,
+  [TokenType.EQ]: EQUALS,
+  [TokenType.NOT_EQ]: EQUALS,
 
-  EQUALS: 1, // ==
-  EQ: 1,
-  NOT_EQ: 1,
+  [TokenType.LT]: LESSGREATER,
+  [TokenType.GT]: LESSGREATER,
 
-  LESSGREATER: 2, // > or <
-  LT: 2,
-  GT: 2,
+  [TokenType.PLUS]: SUM,
+  [TokenType.MINUS]: SUM,
 
-  SUM: 3, // +
-  PLUS: 3,
-  MINUS: 3,
-
-  PRODUCT: 4, // *
-  SLASH: 4,
-  ASTERISK: 4,
-
-  PREFIX: 5, // -X or !X
-  CALL: 6, // myFunction(X)
+  [TokenType.SLASH]: PERODUCT,
+  [TokenType.ASTERISK]: PERODUCT,
 } as Record<string, number>;
 
 /**
@@ -111,7 +110,7 @@ class Parser {
 
   parseExpressionStatement(): ExpressionStatement | null {
     const stmt = new ExpressionStatement(this.curToken);
-    stmt.expression = this.parseExpression(Precedence.LOWEST);
+    stmt.expression = this.parseExpression(LOWEST);
 
     if (this.peekTokenIs(TokenType.SEMICOLON)) {
       this.nextToken();
@@ -128,7 +127,7 @@ class Parser {
     }
     let leftExp = prefix();
     while (
-      this.peekTokenIs(TokenType.SEMICOLON) &&
+      !this.peekTokenIs(TokenType.SEMICOLON) &&
       precedence < this.peekPrecedence()
     ) {
       const infix = this.infixParseFns[this.peekToken?.type!];
@@ -214,11 +213,11 @@ class Parser {
   }
 
   curPrecedence() {
-    if (this.peekToken?.type && Precedence[this.peekToken.type]) {
-      return Precedence[this.peekToken.type];
+    if (this.curToken?.type && Precedence[this.curToken?.type!]) {
+      return Precedence[this.curToken?.type!];
     }
 
-    return Precedence.LOWEST;
+    return LOWEST;
   }
 
   /**
@@ -279,7 +278,7 @@ class Parser {
 
     this.nextToken();
 
-    expression.right = this.parseExpression(Precedence.PREFIX);
+    expression.right = this.parseExpression(PREFIX);
 
     return expression;
   }
@@ -288,7 +287,7 @@ class Parser {
     if (this.peekToken && Precedence[this.peekToken.type]) {
       return Precedence[this.peekToken.type];
     }
-    return Precedence.LOWEST;
+    return LOWEST;
   }
 
   parseInfixExpression(left: Expression | null) {
