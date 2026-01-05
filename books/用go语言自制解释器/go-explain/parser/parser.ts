@@ -15,7 +15,7 @@ import {
 
 type PrefixParseFn = () => Expression | null;
 
-type InfixParseFn = (expression: Expression) => Expression | null;
+type InfixParseFn = (expression: Expression | null) => Expression | null;
 
 const Precedence = {
   LOWEST: 0,
@@ -126,11 +126,18 @@ class Parser {
       this.noPrefixParseFnError(this.curToken.type);
       return null;
     }
-    const leftExp = prefix();
+    let leftExp = prefix();
     while (
       this.peekTokenIs(TokenType.SEMICOLON) &&
       precedence < this.peekPrecedence()
-    ) {}
+    ) {
+      const infix = this.infixParseFns[this.peekToken?.type!];
+      if (infix == null) {
+        return leftExp;
+      }
+      this.nextToken();
+      leftExp = infix(leftExp);
+    }
     return leftExp;
   }
 
@@ -284,7 +291,7 @@ class Parser {
     return Precedence.LOWEST;
   }
 
-  parseInfixExpression(left: Expression) {
+  parseInfixExpression(left: Expression | null) {
     const expression = new InfixExpression(
       this.curToken,
       this.curToken?.literal!,
@@ -308,8 +315,11 @@ function createParser(lexer: Lexer): Parser {
   p.prefixParseFns = {};
   p.registerPrefix(TokenType.IDENT, p.parseIdentifier.bind(p));
   p.registerPrefix(TokenType.INT, p.parseIntegerLiteral.bind(p));
+
   p.registerPrefix(TokenType.BANG, p.parsePrefixExpression.bind(p));
   p.registerPrefix(TokenType.MINUS, p.parsePrefixExpression.bind(p));
+
+  p.registerInfix(TokenType.PLUS, p.parseInfixExpression.bind(p));
   p.registerInfix(TokenType.SLASH, p.parseInfixExpression.bind(p));
   p.registerInfix(TokenType.ASTERISK, p.parseInfixExpression.bind(p));
   p.registerInfix(TokenType.EQ, p.parseInfixExpression.bind(p));
