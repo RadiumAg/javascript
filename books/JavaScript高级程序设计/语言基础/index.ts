@@ -183,10 +183,33 @@
 };
 
 // 变量
-(() => {
+() => {
   for (var i = 0; i < 5; i++) {
     setTimeout(() => {
       console.log(i);
     }, 1000);
+  }
+};
+
+(() => {
+  for (let i = 0; i < 5; i++) {
+    console.log(i);
+  }
+
+  for (let i = 0; i < 5; ++i) {
+    console.log(i);
+  }
+
+  let i = 0;
+  for (const j = 7; i < 5; ++i) {
+    console.log(j);
+  }
+
+  for (const key in { a: 1, b: 2 }) {
+    console.log(key);
+  }
+
+  for (const value of [1, 2, 3, 4, 5]) {
+    console.log(vlaue);
   }
 })();
