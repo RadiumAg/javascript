@@ -213,3 +213,8 @@
     console.log(value);
   }
 })();
+
+// typeof
+(() => {
+  console.log(typeof a); // undefined 对于未定义的值唯一合理的操作
+})();
