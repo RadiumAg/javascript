@@ -181,3 +181,12 @@
   console.log(!'');
   console.log(!1234);
 };
+
+// 变量
+(() => {
+  for (var i = 0; i < 5; i++) {
+    setTimeout(() => {
+      console.log(i);
+    }, 1000);
+  }
+})();
