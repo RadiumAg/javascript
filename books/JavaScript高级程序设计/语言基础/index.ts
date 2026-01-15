@@ -221,5 +221,9 @@
 
 // Number类型
 (() => {
-  const octalNum1 = 070; // 八进制的56
+  //@ts-nocheck
+  const octalNum1 = 0o70; // 八进制的56
+  const hexNum1 = 0xa;
+  console.log(Number.MAX_VALUE);
+  console.log(Number.MIN_VALUE);
 })();
