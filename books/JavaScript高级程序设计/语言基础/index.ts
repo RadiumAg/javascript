@@ -218,3 +218,8 @@
 (() => {
   console.log(typeof a); // undefined 对于未定义的值唯一合理的操作
 })();
+
+// Number类型
+(() => {
+  const octalNum1 = 070; // 八进制的56
+})();
