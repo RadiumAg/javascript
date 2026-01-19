@@ -226,3 +226,8 @@
   console.log(Number.MAX_VALUE);
   console.log(Number.MIN_VALUE);
 })();
+
+// 数值转换
+(() => {
+  // Number,parseInt,parseFloat可以将非数值转换为数值
+})();
