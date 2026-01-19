@@ -243,4 +243,23 @@
   Number(false); // 0
   Number(null); // 0
   Number(undefined); // NaN
+
+  Number.parseInt('1234blue'); // 1234
+  Number.parseInt(''); // NaN
+  Number.parseInt('0xA'); // 10，解释为十六进制整数
+  Number.parseInt(22.5); // 22
+  Number.parseInt('70'); // 70，解释为十进制数
+  Number.parseInt('0xf'); // 15，解释为十六进制整数
+  Number.parseInt('10', 2); // 2, 按二进制解析
+  Number.parseInt('10', 8); // 8, 按八进制解析
+  Number.parseInt('10', 10); // 10, 按十进制解析
+  Number.parseInt('10', 16); // 16, 按十六进制解析
+
+  // Number.parseFloat始终忽略字符串开头的0.十六进制始终会返回01，
+  Number.parseFloat('1234blue'); // 1234
+  Number.parseFloat('0xA'); // 0
+  Number.parseFloat('22.5'); // 22.5
+  Number.parseFloat('22.5.5'); // 22.5
+  Number.parseFloat('022.5'); // 22.5
+  Number.parseFloat('3.125e7'); // 31250000
 })();
