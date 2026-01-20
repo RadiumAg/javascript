@@ -228,7 +228,7 @@
 })();
 
 // 数值转换
-(() => {
+() => {
   // Number,parseInt,parseFloat可以将非数值转换为数值
   // 布尔值，true转换为1,false转换为0
   // 数值，直接返回
@@ -262,4 +262,10 @@
   Number.parseFloat('22.5.5'); // 22.5
   Number.parseFloat('022.5'); // 22.5
   Number.parseFloat('3.125e7'); // 31250000
+};
+
+(() => {
+  // 通过传入参数，可以得到数值的各种进制
+  const num = 10;
+  console.log(num.toString(2)); // 1010
 })();
