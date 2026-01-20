@@ -268,4 +268,7 @@
   // 通过传入参数，可以得到数值的各种进制
   const num = 10;
   console.log(num.toString(2)); // 1010
+  console.log(num.toString(8)); // 12
+  console.log(num.toString(10)); // 10
+  console.log(num.toString(167)); // a
 })();
