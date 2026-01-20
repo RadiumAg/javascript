@@ -274,4 +274,7 @@
 };
 
 // 原始字符串
-(() => {})();
+(() => {
+  console.log('\u00A9');
+  console.log(String.raw`\u00A9`);
+})();
