@@ -191,7 +191,7 @@
   }
 };
 
-(() => {
+() => {
   for (let i = 0; i < 5; i++) {
     console.log(i);
   }
@@ -212,20 +212,20 @@
   for (const value of [1, 2, 3, 4, 5]) {
     console.log(value);
   }
-})();
+};
 
 // typeof
-(() => {
+() => {
   console.log(typeof a); // undefined 对于未定义的值唯一合理的操作
-})();
+};
 
 // Number类型
-(() => {
+() => {
   const octalNum1 = 0o70; // 八进制的56
   const hexNum1 = 0xa;
   console.log(Number.MAX_VALUE);
   console.log(Number.MIN_VALUE);
-})();
+};
 
 // 数值转换
 () => {
@@ -274,7 +274,13 @@
 };
 
 // 原始字符串
-(() => {
+() => {
   console.log('\u00A9');
   console.log(String.raw`\u00A9`);
+};
+
+// symbol
+
+(() => {
+  console.log(Object(Symbol()));
 })();
