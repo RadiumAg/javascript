@@ -296,7 +296,7 @@
 
 // Array.from
 // Array.of
-(() => {
+() => {
   // 字符串会被拆分为单字符数组
   console.log(Array.from('Matt'));
   // 可以使用from()将集合和映射转换为一个新数组
@@ -333,4 +333,7 @@
     length: 4,
   };
   console.log(Array.from(arrayLikeObject));
-})();
+};
+
+// 数组空位
+() => {};
