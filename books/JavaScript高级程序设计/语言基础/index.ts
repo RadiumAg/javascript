@@ -284,3 +284,12 @@
 (() => {
   console.log(Object(Symbol()));
 })();
+
+// Array
+(() => {
+  // 创建一个初始为20的数组
+  console.log(new Array(20));
+  console.log(new Array('red', 'blue', 'green'));
+  console.log(Array(3));
+  console.log(Array('Greg'));
+})();
