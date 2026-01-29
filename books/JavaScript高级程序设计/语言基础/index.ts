@@ -336,8 +336,23 @@
 };
 
 // 检测数组
-(() => {
+() => {
   // 1.instanceOf:只有在一个网页（一个全局作用域）的情况下，使用instancef足矣
   if ([] instanceof Array) {
   }
+
+  // Array.isArray(推荐)
+  if (Array.isArray([])) {
+  }
+};
+
+// 迭代器方法
+(() => {
+  const a = ['foo', 'bar', 'baz', 'qux'];
+  const aKeys = Array.from(a.keys());
+  const aValues = Array.from(a.values());
+  const aEntries = Array.from(a.entries());
+  console.log(aKeys);
+  console.log(aValues);
+  console.log(aEntries);
 })();
