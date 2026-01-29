@@ -335,5 +335,9 @@
   console.log(Array.from(arrayLikeObject));
 };
 
-// 数组空位
-() => {};
+// 检测数组
+(() => {
+  // 1.instanceOf:只有在一个网页（一个全局作用域）的情况下，使用instancef足矣
+  if ([] instanceof Array) {
+  }
+})();
