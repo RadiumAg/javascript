@@ -380,7 +380,7 @@
     [Symbol.iterator]: function* () {
       yield ['key1', 'val1'];
       yield ['key2', 'val2'];
-      yield ['key3', 'val3'];
+      yield ['key3', 'val3'];                            
     },
   });
   console.log(m2.size);
