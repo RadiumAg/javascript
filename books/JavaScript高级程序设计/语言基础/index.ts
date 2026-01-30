@@ -347,7 +347,7 @@
 };
 
 // 迭代器方法
-(() => {
+() => {
   const a = ['foo', 'bar', 'baz', 'qux'];
   const aKeys = Array.from(a.keys());
   const aValues = Array.from(a.values());
@@ -355,4 +355,13 @@
   console.log(aKeys);
   console.log(aValues);
   console.log(aEntries);
+};
+
+// 排序方法
+(() => {
+  let values = [1, 2, 3, 4, 5];
+  // 如果第一个参数应该排在第二个参数前面，旧返回负值
+  // 如果第一个参数应该排在第二个参数后面，旧返回正值
+  console.log(values.sort()); // 默认正值
+  console.log(values.sort((a, b) => a - b)); // 默认正值
 })();
