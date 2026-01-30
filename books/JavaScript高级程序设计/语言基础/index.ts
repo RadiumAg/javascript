@@ -364,4 +364,7 @@
   // 如果第一个参数应该排在第二个参数后面，旧返回正值
   console.log(values.sort()); // 默认正值
   console.log(values.sort((a, b) => a - b)); // 默认正值
+
+  console.log(values.concat([1, 2232323]));
 })();
+``;
