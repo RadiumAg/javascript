@@ -390,3 +390,52 @@
 
   // 使用get()和has()进行查询
 };
+
+// WeakMap
+// 键只能是对象
+() => {
+  const vm = new WeakMap();
+  const container = {
+    key: {},
+  };
+  vm.set(container.key, 'val');
+  function removeReference() {
+    container.key = null;
+  }
+};
+
+() => {
+  const vm = new WeakMap();
+  class User {
+    idProperty: Symbol;
+
+    constructor(id: string) {
+      this.idProperty = Symbol('id');
+      this.setId(id);
+    }
+
+    setPrivate(property: Symbol, value: any) {
+      const privateMembers = vm.get(this) || {};
+      privateMembers[property] = value;
+      vm.set(this, privateMembers);
+    }
+
+    getPrivate(property: Symbol) {
+      return vm.get(this)[property];
+    }
+
+    setId(id: string) {
+      this.setPrivate(this.idProperty, id);
+    }
+
+    getId() {
+      return this.getPrivate(this.idProperty);
+    }
+  }
+
+  const user = new User(123);
+  console.log(user.getId());
+  user.setId(456);
+  console.log(user.getId());
+  console.log(vm.get(user)[user.idProperty]);
+};
