@@ -247,7 +247,7 @@
 // 提前终止迭代器
 // 可选的return()方法用于指定在迭代器提前关闭时执行的逻辑。执行跌代的结构在想让迭代器知道它不想便利到
 // 可迭代对象耗尽时，就可以关闭迭代器。
-(() => {
+() => {
   class Counter {
     constructor(limit) {
       this.limit = limit;
@@ -297,4 +297,4 @@
   let counter3 = new Counter(5);
   let [a, b] = counter3;
   //Exitingearly
-})();
+};
