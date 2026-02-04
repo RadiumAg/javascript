@@ -1,27 +1,27 @@
 // Promise.race
-(() => {
+() => {
   const p = Promise.race([
     fetch('/resource-that-may-take-a-while'),
     new Promise((resolve, reject) => {
       setTimeout(() => reject(new Error('request timeout')), 5000);
     }),
   ]);
-})();
+};
 
 // Promise.any
-(() => {
+() => {
   Promise.any([
     fetch('https://v8.dev/').then(() => 'home'),
     fetch('https://v8.dev/blog').then(() => 'blog'),
     fetch('https://v8.dev/docs').then(() => 'docs'),
   ])
-    .then(first => {
+    .then((first) => {
       console.log(first);
     })
-    .catch(error => {
+    .catch((error) => {
       console.log(error);
     });
-})();
+};
 
 // 异步加载图片
 () => {
@@ -49,8 +49,8 @@
     setTimeout(() => resolve(p1), 1000);
   });
 
-  p2.then(result => console.log(result));
-  p2.catch(error => console.log(error));
+  p2.then((result) => console.log(result));
+  p2.catch((error) => console.log(error));
 };
 
 // catch
@@ -60,7 +60,7 @@
   });
 
   // 虽然 Promise里运行的是同步的代码，但是也能抛出错误
-  promise.catch(error => {
+  promise.catch((error) => {
     console.log(error);
   });
 })();
@@ -69,12 +69,12 @@
 
 (() => {
   Promise.resolve('foo');
-  new Promise(resolve => resolve('foo'));
+  new Promise((resolve) => resolve('foo'));
   // 两个等价
 })();
 
 // generator 函数与 Promise的结合
-(() => {
+() => {
   function getFoo() {
     return new Promise((resolve, reject) => {
       resolve('foo');
@@ -97,10 +97,10 @@
       if (result.done) return result.value;
 
       return result.value.then(
-        value => {
+        (value) => {
           return go(it.next(value));
         },
-        error => {
+        (error) => {
           return go(it.throw(error));
         },
       );
@@ -110,11 +110,11 @@
   }
 
   run(g);
-})();
+};
 
 // Generator 类似协程 yield表示暂停的地方
 // 向Generator函数体内输入数据
-(() => {
+() => {
   function* gen(x) {
     const y = yield x + 2; // y 会变成输入的2
     return y;
@@ -123,7 +123,7 @@
   const g = gen(1);
   g.next();
   g.next(2);
-})();
+};
 
 // 捕获函数体外抛出的错误
 (() => {
@@ -142,19 +142,19 @@
 })();
 
 // Thunk 函数
-(() => {
-  const Thunk = fn => {
+() => {
+  const Thunk = (fn) => {
     return (...args) => {
-      return callback => {
+      return (callback) => {
         args.push(callback);
         return fn.apply(this, args);
       };
     };
   };
-})();
+};
 
 // 实现async
-(() => {
+() => {
   async function fn(args) {
     // ...
   }
@@ -168,7 +168,7 @@
     return new Promise((resolve, reject) => {
       const gen = genF();
 
-      const step = nextF => {
+      const step = (nextF) => {
         try {
           const next = nextF();
 
@@ -177,12 +177,12 @@
           }
 
           Promise.resolve(next.value).then(
-            v => {
+            (v) => {
               step(() => {
                 return gen.next(v);
               });
             },
-            e => {
+            (e) => {
               step(() => {
                 return gen.throw(e);
               });
@@ -198,4 +198,21 @@
       });
     });
   }
+};
+
+(() => {
+  Promise.prototype.finally = function (
+    this: typeof Promise.prototype,
+    callback,
+  ) {
+    const P = this.constructor as unknown as PromiseConstructor;
+
+    return this.then(
+      (value) => P.resolve(callback).then(() => value),
+      (reason) =>
+        P.resolve(callback).then(() => {
+          throw reason;
+        }),
+    );
+  };
 })();
