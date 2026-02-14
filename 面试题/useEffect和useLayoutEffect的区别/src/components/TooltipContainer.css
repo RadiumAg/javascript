@@ -1,0 +1,12 @@
+.tooltip-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  background: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+}
