@@ -1,0 +1,345 @@
+version: '3.8'
+
+services:
+  # ============ Redis 单机模式 ============
+  redis-standalone:
+    image: redis:7-alpine
+    container_name: redis-standalone
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass password123
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - standalone-data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - redis-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "password123", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # ============ Redis 主从复制 ============
+  # 主节点
+  redis-master:
+    image: redis:7-alpine
+    container_name: redis-master
+    ports:
+      - "6380:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass master123
+      --masterauth master123
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - master-data:/data
+    networks:
+      - redis-network
+
+  # 从节点 1
+  redis-slave1:
+    image: redis:7-alpine
+    container_name: redis-slave1
+    ports:
+      - "6381:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass slave123
+      --masterauth master123
+      --replicaof redis-master 6379
+      --replica-read-only yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - slave1-data:/data
+    depends_on:
+      - redis-master
+    networks:
+      - redis-network
+
+  # 从节点 2
+  redis-slave2:
+    image: redis:7-alpine
+    container_name: redis-slave2
+    ports:
+      - "6382:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass slave123
+      --masterauth master123
+      --replicaof redis-master 6379
+      --replica-read-only yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - slave2-data:/data
+    depends_on:
+      - redis-master
+    networks:
+      - redis-network
+
+  # ============ Redis Sentinel 哨兵 ============
+  redis-sentinel1:
+    image: redis:7-alpine
+    container_name: redis-sentinel1
+    ports:
+      - "26379:26379"
+    command: >
+      sh -c "
+      echo 'port 26379' > /tmp/sentinel.conf &&
+      echo 'sentinel monitor mymaster redis-master 6379 2' >> /tmp/sentinel.conf &&
+      echo 'sentinel auth-pass mymaster master123' >> /tmp/sentinel.conf &&
+      echo 'sentinel down-after-milliseconds mymaster 5000' >> /tmp/sentinel.conf &&
+      echo 'sentinel failover-timeout mymaster 10000' >> /tmp/sentinel.conf &&
+      echo 'sentinel parallel-syncs mymaster 1' >> /tmp/sentinel.conf &&
+      echo 'sentinel announce-ip redis-sentinel1' >> /tmp/sentinel.conf &&
+      redis-server /tmp/sentinel.conf --sentinel
+      "
+    depends_on:
+      - redis-master
+    networks:
+      - redis-network
+
+  redis-sentinel2:
+    image: redis:7-alpine
+    container_name: redis-sentinel2
+    ports:
+      - "26380:26379"
+    command: >
+      sh -c "
+      echo 'port 26379' > /tmp/sentinel.conf &&
+      echo 'sentinel monitor mymaster redis-master 6379 2' >> /tmp/sentinel.conf &&
+      echo 'sentinel auth-pass mymaster master123' >> /tmp/sentinel.conf &&
+      echo 'sentinel down-after-milliseconds mymaster 5000' >> /tmp/sentinel.conf &&
+      echo 'sentinel failover-timeout mymaster 10000' >> /tmp/sentinel.conf &&
+      echo 'sentinel parallel-syncs mymaster 1' >> /tmp/sentinel.conf &&
+      echo 'sentinel announce-ip redis-sentinel2' >> /tmp/sentinel.conf &&
+      redis-server /tmp/sentinel.conf --sentinel
+      "
+    depends_on:
+      - redis-master
+    networks:
+      - redis-network
+
+  redis-sentinel3:
+    image: redis:7-alpine
+    container_name: redis-sentinel3
+    ports:
+      - "26381:26379"
+    command: >
+      sh -c "
+      echo 'port 26379' > /tmp/sentinel.conf &&
+      echo 'sentinel monitor mymaster redis-master 6379 2' >> /tmp/sentinel.conf &&
+      echo 'sentinel auth-pass mymaster master123' >> /tmp/sentinel.conf &&
+      echo 'sentinel down-after-milliseconds mymaster 5000' >> /tmp/sentinel.conf &&
+      echo 'sentinel failover-timeout mymaster 10000' >> /tmp/sentinel.conf &&
+      echo 'sentinel parallel-syncs mymaster 1' >> /tmp/sentinel.conf &&
+      echo 'sentinel announce-ip redis-sentinel3' >> /tmp/sentinel.conf &&
+      redis-server /tmp/sentinel.conf --sentinel
+      "
+    depends_on:
+      - redis-master
+    networks:
+      - redis-network
+
+  # ============ Redis Cluster 集群 ============
+  redis-cluster-node1:
+    image: redis:7-alpine
+    container_name: redis-cluster-node1
+    ports:
+      - "7001:6379"
+      - "17001:16379"
+    command: >
+      redis-server
+      --appendonly yes
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --cluster-announce-ip redis-cluster-node1
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+      --requirepass cluster123
+      --masterauth cluster123
+    volumes:
+      - cluster-node1-data:/data
+    networks:
+      - redis-network
+
+  redis-cluster-node2:
+    image: redis:7-alpine
+    container_name: redis-cluster-node2
+    ports:
+      - "7002:6379"
+      - "17002:16379"
+    command: >
+      redis-server
+      --appendonly yes
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --cluster-announce-ip redis-cluster-node2
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+      --requirepass cluster123
+      --masterauth cluster123
+    volumes:
+      - cluster-node2-data:/data
+    networks:
+      - redis-network
+
+  redis-cluster-node3:
+    image: redis:7-alpine
+    container_name: redis-cluster-node3
+    ports:
+      - "7003:6379"
+      - "17003:16379"
+    command: >
+      redis-server
+      --appendonly yes
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --cluster-announce-ip redis-cluster-node3
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+      --requirepass cluster123
+      --masterauth cluster123
+    volumes:
+      - cluster-node3-data:/data
+    networks:
+      - redis-network
+
+  redis-cluster-node4:
+    image: redis:7-alpine
+    container_name: redis-cluster-node4
+    ports:
+      - "7004:6379"
+      - "17004:16379"
+    command: >
+      redis-server
+      --appendonly yes
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --cluster-announce-ip redis-cluster-node4
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+      --requirepass cluster123
+      --masterauth cluster123
+    volumes:
+      - cluster-node4-data:/data
+    networks:
+      - redis-network
+
+  redis-cluster-node5:
+    image: redis:7-alpine
+    container_name: redis-cluster-node5
+    ports:
+      - "7005:6379"
+      - "17005:16379"
+    command: >
+      redis-server
+      --appendonly yes
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --cluster-announce-ip redis-cluster-node5
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+      --requirepass cluster123
+      --masterauth cluster123
+    volumes:
+      - cluster-node5-data:/data
+    networks:
+      - redis-network
+
+  redis-cluster-node6:
+    image: redis:7-alpine
+    container_name: redis-cluster-node6
+    ports:
+      - "7006:6379"
+      - "17006:16379"
+    command: >
+      redis-server
+      --appendonly yes
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --cluster-announce-ip redis-cluster-node6
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+      --requirepass cluster123
+      --masterauth cluster123
+    volumes:
+      - cluster-node6-data:/data
+    networks:
+      - redis-network
+
+  # ============ Redis 可视化工具 ============
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis-standalone:6379:0:password123,master:redis-master:6379:0:master123
+    depends_on:
+      - redis-standalone
+      - redis-master
+    networks:
+      - redis-network
+
+  # ============ 集群初始化工具 ============
+  redis-cluster-init:
+    image: redis:7-alpine
+    container_name: redis-cluster-init
+    depends_on:
+      - redis-cluster-node1
+      - redis-cluster-node2
+      - redis-cluster-node3
+      - redis-cluster-node4
+      - redis-cluster-node5
+      - redis-cluster-node6
+    networks:
+      - redis-network
+    command: >
+      sh -c "
+      sleep 10 &&
+      redis-cli -a cluster123 --cluster create
+      redis-cluster-node1:6379
+      redis-cluster-node2:6379
+      redis-cluster-node3:6379
+      redis-cluster-node4:6379
+      redis-cluster-node5:6379
+      redis-cluster-node6:6379
+      --cluster-replicas 1
+      --cluster-yes
+      "
+
+volumes:
+  # 单机模式
+  standalone-data:
+  # 主从复制
+  master-data:
+  slave1-data:
+  slave2-data:
+  # Cluster 集群
+  cluster-node1-data:
+  cluster-node2-data:
+  cluster-node3-data:
+  cluster-node4-data:
+  cluster-node5-data:
+  cluster-node6-data:
+
+networks:
+  redis-network:
+    driver: bridge
