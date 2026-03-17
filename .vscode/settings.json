@@ -18,5 +18,11 @@
   },
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "compile-hero.disable-compile-files-on-did-save-code": true,
-  "i18next.i18nPaths": "/Users/agradium/Desktop/work/javascript/books/react通关秘籍/calendar-component/src/components/calendar/locale"
+  "i18next.i18nPaths": "/Users/agradium/Desktop/work/javascript/books/react通关秘籍/calendar-component/src/components/calendar/locale",
+  "git.autoRepositoryDetection": "openEditors",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true
+  }
 }
