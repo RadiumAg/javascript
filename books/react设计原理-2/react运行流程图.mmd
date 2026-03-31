@@ -1,0 +1,64 @@
+flowchart TD
+    A[JSX / App] --> B[jsx<br/>packages/react/src/jsx.ts]
+    B --> C[ReactElement]
+    C --> D[createRoot(container).render(element)<br/>packages/react-dom/src/root.ts]
+    D --> E[initEvent(container, click)]
+    E --> F[updateContainer(element, root)<br/>packages/react-reconciler/src/fiberReconciler.ts]
+
+    F --> G[requestUpdateLanes]
+    G --> H[createUpdate]
+    H --> I[enqueueUpdate]
+    I --> J[scheduleUpdateOnFiber<br/>packages/react-reconciler/src/workLoop.ts]
+
+    J --> K[markUpdateFromFiberToRoot]
+    K --> L[markRootUpdated]
+    L --> M[ensureRootIsSchedule]
+
+    M --> N{是否为 SyncLane}
+    N -->|是| O[微任务调度<br/>performSyncWorkOnRoot]
+    N -->|否| P[宏任务调度<br/>performConcurrentWorkOnRoot]
+
+    O --> Q[renderRoot]
+    P --> Q
+
+    Q --> R[prepareFreshStack]
+    R --> S{是否时间切片}
+    S -->|否| T[workLoopSync]
+    S -->|是| U[workLoopConcurrent]
+
+    T --> V[performUnitOfWork]
+    U --> V
+
+    V --> W[beginWork]
+    W --> X[根据 Fiber 类型构建/递归子 Fiber]
+
+    X --> Y{是否存在 next}
+    Y -->|有| V
+    Y -->|无| Z[completeUnitOfWork]
+
+    Z --> AA[completeWork]
+    AA --> AB{是否存在 sibling}
+    AB -->|有| V
+    AB -->|无| AC[return 回溯]
+    AC --> AD{是否回溯结束}
+    AD -->|否| AA
+    AD -->|是| AE[render 阶段完成<br/>finishedWork]
+
+    AE --> AF[commitRoot]
+    AF --> AG{是否有 MutationMask}
+    AG -->|有| AH[commitMutationEffect]
+    AH --> AI[DOM 更新]
+    AG -->|无| AJ[root.current = finishedWork]
+
+    AI --> AJ
+    AJ --> AK[commitLayoutEffect]
+
+    AF --> AL{是否存在 PassiveEffect}
+    AL -->|是| AM[调度 flushPassiveEffects]
+    AL -->|否| AN[结束]
+
+    AM --> AO[unmount destroy]
+    AO --> AP[update destroy]
+    AP --> AQ[update create]
+    AQ --> AR[flushSyncCallbacks]
+    AR --> AN
