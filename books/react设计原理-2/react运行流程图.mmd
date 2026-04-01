@@ -34,10 +34,12 @@ flowchart TD
     G --> H2["renderRoot(root, lane, !needSync)\n── shouldTimeSlice 取决于是否需要同步\n── 超时或 SyncLane 时退化为同步渲染\n── 否则启用时间切片的并发渲染"]
 
     H --> I["workLoopSync()\n── while (workInProgress !== null) 循环\n── 不检查时间片，一口气处理完所有 fiber\n── 适用于同步优先级的更新"]
-    H2 --> I2["workLoopConcurrent()\n── while (wip !== null && !shouldYield()) 循环\n── 每处理一个 fiber 后检查是否超过 5ms\n── 超时则让出主线程，等待下次调度继续"]
+    H2 --> I2["workLoopConcurrent()\n── while (wip !== null && !shouldYield()) 循环\n── 每处理一个 fiber 后检查是否超过 5ms"]
 
     I --> J["performUnitOfWork(fiber)\n── 处理单个 fiber 的工作单元\n── 调用 beginWork 获取子 fiber\n── 无子节点时进入 completeUnitOfWork"]
-    I2 --> J
+    I2 -->|"shouldYield() === false\n时间片未用完，继续工作"| J
+    I2 -->|"shouldYield() === true\n⏱️ 时间片耗尽（约5ms）"| Y["跳出 while 循环\n── workInProgress 仍不为 null\n── 当前处理到的 fiber 位置被保留\n── 已完成的工作不会丢失"]
+    Y --> K
 
     J --> J1["beginWork(fiber, wipRootRenderLane)\n── 【递阶段】根据 fiber.tag 分发处理\n── FunctionComponent: 执行函数组件，处理 hooks\n── HostComponent: 协调子元素 reconcileChildren\n── 标记 flags: Placement / Update / ChildDeletion\n📄 beginWork.ts"]
     J1 -->|"返回 child !== null\n有子节点需要处理"| J["workInProgress = next\n继续向下递归处理子 fiber"]
