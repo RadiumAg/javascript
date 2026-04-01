@@ -45,7 +45,11 @@ flowchart TD
     J1 -->|"返回 child !== null\n有子节点需要处理"| J["workInProgress = next\n继续向下递归处理子 fiber"]
     J1 -->|"返回 null\n已到叶子节点"| J2["completeUnitOfWork(fiber)\n── 【归阶段】为 fiber 创建/更新真实 DOM\n── HostComponent: 创建 DOM 元素，设置属性\n── 将子树的 flags 通过 subtreeFlags 冒泡到父节点\n── 按 child → sibling → return 顺序遍历\n📄 completeWork.ts"]
     J2 -->|"sibling !== null\n有兄弟节点"| J["workInProgress = sibling\n转向处理兄弟 fiber"]
-    J2 -->|"回到 root\nnode.return === null"| K{"render 阶段结果判断"}
+
+    J2 -->|"wip === null\n所有 fiber 处理完毕"| K{"render 阶段结果判断"}
+
+    %% 并发模式：每处理完一个 fiber 后回到 workLoopConcurrent 重新检查 shouldYield
+    J -->|"并发模式下\n回到 while 循环头部\n重新检查 shouldYield()"| I2
 
     K -->|"RootInComplete\n── shouldTimeSlice && wip !== null\n── 时间片用完但还有 fiber 未处理"| G["返回 performConcurrentWorkOnRoot.bind\n── 将自身作为 continuation 返回给 Scheduler\n── Scheduler 在下一个时间片继续调用\n── 实现可中断的渲染"]
     K -->|"RootCompleted\n── workInProgress === null\n── 所有 fiber 都已处理完毕"| L["commitRoot(root)\n── 进入 commit 阶段，同步不可中断\n── 获取 finishedWork 和 finishedLane\n── 清除已完成的 lane: markRootFinished\n📄 workLoop.ts:230"]
