@@ -1,55 +1,59 @@
+%% setState 工作流程图 - React 调度与渲染全链路
+%% 基于 packages/react-reconciler/src 源码分析
+
 flowchart TD
-    A["🖱️ 用户调用 setState(action)\n用户在组件中触发状态更新"] --> B["dispatchSetState\n<i>fiberHooks.ts:304</i>\n接收 fiber、updateQueue、action 三个参数"]
+    A["🖱️ 用户调用 setState(action)\n── 用户在组件中触发状态更新\n── 例如 onClick 回调中调用 setState(!state)"] --> B["dispatchSetState(fiber, updateQueue, action)\n── 在 mountState 时通过 bind 预绑定了 fiber 和 queue\n── 是 useState 返回的 dispatch 函数的真实实现\n📄 fiberHooks.ts:304"]
 
-    B --> B1["requestUpdateLanes()\n根据当前上下文（事件类型等）\n确定本次更新的优先级 Lane"]
-    B1 --> B2["createUpdate(action, lane)\n将 action 和 lane 包装成\nUpdate 数据结构"]
-    B2 --> B3["enqueueUpdate(updateQueue, update)\n将 Update 挂载到 hook 的\n环形链表 updateQueue 上"]
-    B3 --> C["scheduleUpdateOnFiber(fiber, lane)\n<i>workLoop.ts:53</i>\n从触发更新的 fiber 开始，启动调度流程"]
+    B --> B1["requestUpdateLanes()\n── 根据当前执行上下文判断优先级\n── 普通事件触发返回 SyncLane\n── Transition 中触发返回较低优先级 Lane"]
+    B1 --> B2["createUpdate(action, lane)\n── 将用户传入的 action（值或函数）\n── 和优先级 lane 包装成 Update 对象"]
+    B2 --> B3["enqueueUpdate(updateQueue, update)\n── 将 Update 插入 hook 的 updateQueue\n── updateQueue 是环形链表结构\n── shared.pending 指向最新的 Update"]
+    B3 --> C["scheduleUpdateOnFiber(fiber, lane)\n── 从触发更新的 fiber 开始\n── 启动整个调度流程的入口\n📄 workLoop.ts:53"]
 
-    C --> C1["markUpdateFromFiberToRoot(fiber)\n从当前 fiber 沿 return 指针\n一路向上遍历，找到 FiberRootNode"]
-    C1 --> C2["markRootUpdated(root, lane)\n将本次更新的 lane 合并到\nroot.pendingLanes 位掩码中"]
-    C2 --> D["ensureRootIsSchedule(root)\n<i>workLoop.ts:76</i>\n确保 root 上的更新被正确调度"]
+    C --> C1["markUpdateFromFiberToRoot(fiber)\n── 从当前 fiber 沿 return 指针向上遍历\n── 直到找到 tag === HostRoot 的节点\n── 返回其 stateNode 即 FiberRootNode"]
+    C1 --> C2["markRootUpdated(root, lane)\n── 执行 root.pendingLanes = mergeLanes(...)\n── 用位运算将本次 lane 合并到待处理集合中\n── 后续调度时从中取最高优先级"]
+    C2 --> D["ensureRootIsSchedule(root)\n── 核心调度决策函数\n── 决定用微任务还是宏任务调度\n── 实现批处理和优先级抢占\n📄 workLoop.ts:76"]
 
-    D --> D1{"getHighestPriorityLane\n从 pendingLanes 中\n取出最高优先级的 Lane"}
-    D1 -->|"NoLane · 无更新"| D2["取消已有回调，重置状态\n⛔ return"]
-    D1 -->|"有更新"| D3{"curPriority === prevPriority?\n新更新优先级是否和\n已调度的优先级相同？"}
+    D --> D1{"getHighestPriorityLane(root.pendingLanes)\n── 从 pendingLanes 位掩码中\n── 取出数值最小（优先级最高）的 Lane\n── 返回 NoLane 表示无待处理更新"}
+    D1 -->|"NoLane · 无待处理更新"| D2["取消已有回调 unstable_cancelCallback\n重置 root.callbackNode = null\n重置 root.callbackPriority = NoLane\n⛔ return 退出"]
+    D1 -->|"有待处理更新"| D3{"curPriority === prevPriority?\n── 比较本次最高优先级 Lane\n── 和上次已调度的优先级\n── 判断是否需要新的调度"}
 
-    D3 -->|"相同 · 已有调度在跑"| D4["无需重复调度，复用已有调度\n⛔ return（批处理优化）"]
-    D3 -->|"不同 · 更高优先级进来"| D5["unstable_cancelCallback\n取消旧的低优先级调度回调\n让高优先级抢占"]
+    D3 -->|"相同 · 已有同优先级调度"| D4["直接 return，复用已有调度\n── 这是批处理优化的关键\n── 同一事件中多次 setState\n── 只会触发一次调度\n⛔ return"]
+    D3 -->|"不同 · 有更高优先级"| D5["unstable_cancelCallback(existingCallback)\n── 取消之前已调度的低优先级回调\n── 让更高优先级的更新抢占执行\n── 被取消的更新不会丢失，仍在 pendingLanes 中"]
 
-    D5 --> D6{"updateLane === SyncLane?\n判断是同步还是并发优先级"}
+    D5 --> D6{"updateLane === SyncLane?\n── 判断最高优先级是否为同步\n── SyncLane 是最高优先级（值为 1）\n── 决定调度方式"}
 
-    D6 -->|"SyncLane · 同步"| E1["scheduleSyncCallback\n将 performSyncWorkOnRoot\n推入同步回调队列 syncQueue"]
-    E1 --> E2["scheduleMicroTask\n用微任务调度 flushSyncCallbacks\n确保在本轮事件循环末尾执行"]
-    E2 --> F["performSyncWorkOnRoot\n<i>workLoop.ts:162</i>\n同步、不可中断地执行 render"]
+    D6 -->|"SyncLane · 同步优先级"| E1["scheduleSyncCallback(bindedFn)\n── 将 performSyncWorkOnRoot.bindnull, root\n── 推入全局同步回调队列 syncQueue\n── 支持同一微任务中批量执行多个同步更新"]
+    E1 --> E2["scheduleMicroTask(flushSyncCallbacks)\n── 用 Promise.resolve().then 或 queueMicrotask\n── 在当前事件循环末尾调度\n── 确保同步更新在用户代码执行完后立即处理"]
+    E2 --> F["performSyncWorkOnRoot(root)\n── 同步、不可中断地执行完整 render\n── 获取 SyncLane 作为本次渲染优先级\n── 如果优先级不是 SyncLane 则重新调度\n📄 workLoop.ts:162"]
 
-    D6 -->|"其他 · 并发"| E3["lanesToSchedulePriority\n将 Lane 优先级转换为\nScheduler 的 5 级优先级"]
-    E3 --> E4["scheduleCallback\n通过 Scheduler 以宏任务方式\n调度，支持时间切片"]
-    E4 --> G["performConcurrentWorkOnRoot\n<i>workLoop.ts:129</i>\n并发、可中断地执行 render"]
+    D6 -->|"非 SyncLane · 并发优先级"| E3["lanesToSchedulePriority(updateLane)\n── 将 React 的 Lane 优先级模型\n── 映射为 Scheduler 的 5 级优先级\n── ImmediatePriority / UserBlockingPriority / NormalPriority 等"]
+    E3 --> E4["scheduleCallback(schedulePriority, bindedFn)\n── 通过 Scheduler 包以宏任务方式调度\n── 内部使用 MessageChannel 实现\n── 支持时间切片，每帧 5ms 工作时间"]
+    E4 --> G["performConcurrentWorkOnRoot(root, didTimeout)\n── 并发模式入口，可被中断和恢复\n── 先 flushPassiveEffects 确保 useEffect 执行\n── 根据是否超时决定同步还是并发渲染\n📄 workLoop.ts:129"]
 
-    F --> H["renderRoot(root, lane, false)\n同步 render：初始化 workInProgress\n然后进入 workLoop"]
-    G --> H2["renderRoot(root, lane, !needSync)\n并发 render：支持时间切片\n可被更高优先级打断"]
+    F --> H["renderRoot(root, lane, false)\n── 第三个参数 shouldTimeSlice = false\n── 如果 lane 变化则 prepareFreshStack 初始化\n── 创建 workInProgress 树的根节点\n📄 workLoop.ts:199"]
+    G --> H2["renderRoot(root, lane, !needSync)\n── shouldTimeSlice 取决于是否需要同步\n── 超时或 SyncLane 时退化为同步渲染\n── 否则启用时间切片的并发渲染"]
 
-    H --> I["workLoopSync\nwhile 循环，逐个处理 fiber\n不检查时间，一口气跑完"]
-    H2 --> I2["workLoopConcurrent\nwhile 循环 + shouldYield() 检查\n每处理一个 fiber 判断是否超时"]
+    H --> I["workLoopSync()\n── while (workInProgress !== null) 循环\n── 不检查时间片，一口气处理完所有 fiber\n── 适用于同步优先级的更新"]
+    H2 --> I2["workLoopConcurrent()\n── while (wip !== null && !shouldYield()) 循环\n── 每处理一个 fiber 后检查是否超过 5ms\n── 超时则让出主线程，等待下次调度继续"]
 
-    I --> J["performUnitOfWork(fiber)\n处理单个 fiber 的工作单元"]
+    I --> J["performUnitOfWork(fiber)\n── 处理单个 fiber 的工作单元\n── 调用 beginWork 获取子 fiber\n── 无子节点时进入 completeUnitOfWork"]
     I2 --> J
 
-    J --> J1["beginWork(fiber)\n【递阶段】根据 fiber.tag 类型\n创建/复用子 fiber，标记 flags\n（Placement/Update/Deletion）"]
-    J1 -->|"有子节点"| J["继续向下处理 child"]
-    J1 -->|"无子节点"| J2["completeUnitOfWork\n【归阶段】创建/更新真实 DOM 节点\n将子树的 flags 冒泡到父节点"]
-    J2 -->|"有兄弟节点"| J["转向处理 sibling"]
-    J2 -->|"回到根节点"| K{"render 结果？"}
+    J --> J1["beginWork(fiber, wipRootRenderLane)\n── 【递阶段】根据 fiber.tag 分发处理\n── FunctionComponent: 执行函数组件，处理 hooks\n── HostComponent: 协调子元素 reconcileChildren\n── 标记 flags: Placement / Update / ChildDeletion\n📄 beginWork.ts"]
+    J1 -->|"返回 child !== null\n有子节点需要处理"| J["workInProgress = next\n继续向下递归处理子 fiber"]
+    J1 -->|"返回 null\n已到叶子节点"| J2["completeUnitOfWork(fiber)\n── 【归阶段】为 fiber 创建/更新真实 DOM\n── HostComponent: 创建 DOM 元素，设置属性\n── 将子树的 flags 通过 subtreeFlags 冒泡到父节点\n── 按 child → sibling → return 顺序遍历\n📄 completeWork.ts"]
+    J2 -->|"sibling !== null\n有兄弟节点"| J["workInProgress = sibling\n转向处理兄弟 fiber"]
+    J2 -->|"回到 root\nnode.return === null"| K{"render 阶段结果判断"}
 
-    K -->|"RootInComplete\n时间片用完，还没处理完"| G["返回自身函数引用\n等待 Scheduler 下次调度继续"]
-    K -->|"RootCompleted\n所有 fiber 处理完毕"| L["commitRoot(root)\n<i>workLoop.ts:230</i>\n进入 commit 阶段，同步执行"]
+    K -->|"RootInComplete\n── shouldTimeSlice && wip !== null\n── 时间片用完但还有 fiber 未处理"| G["返回 performConcurrentWorkOnRoot.bind\n── 将自身作为 continuation 返回给 Scheduler\n── Scheduler 在下一个时间片继续调用\n── 实现可中断的渲染"]
+    K -->|"RootCompleted\n── workInProgress === null\n── 所有 fiber 都已处理完毕"| L["commitRoot(root)\n── 进入 commit 阶段，同步不可中断\n── 获取 finishedWork 和 finishedLane\n── 清除已完成的 lane: markRootFinished\n📄 workLoop.ts:230"]
 
-    L --> L1["commitMutationEffect\n【mutation 子阶段】\n执行 DOM 插入/更新/删除操作"]
-    L1 --> L2["Fiber Tree 切换\nroot.current = finishedWork\n将 workInProgress 树变为 current 树"]
-    L2 --> L3["commitLayoutEffect\n【layout 子阶段】\n执行 useLayoutEffect 回调\n更新 ref"]
-    L3 --> L4["scheduleCallback 调度 flushPassiveEffects\n【异步】在下一个宏任务中\n执行 useEffect 的 destroy 和 create"]
-    L4 --> M["✅ 更新完成\nDOM 已变更，UI 已刷新"]
+    L --> L0["调度 useEffect\n── 检查 finishedWork 是否有 PassiveMask flags\n── 如有则 scheduleCallback(NormalPriority, flushPassiveEffects)\n── useEffect 回调将在 commit 完成后异步执行"]
+    L0 --> L1["commitMutationEffect(finishedWork, root)\n── 【mutation 子阶段】\n── 遍历 fiber 树执行 DOM 操作\n── Placement: appendChild / insertBefore\n── Update: 更新 DOM 属性和文本\n── ChildDeletion: removeChild\n── 收集 useEffect 的 update 回调"]
+    L1 --> L2["Fiber Tree 切换\n── root.current = finishedWork\n── 将 workInProgress 树变为 current 树\n── 下次更新时旧 current 成为 workInProgress 的基础\n── 这就是 React 的双缓冲机制"]
+    L2 --> L3["commitLayoutEffect(finishedWork, root)\n── 【layout 子阶段】\n── 执行 useLayoutEffect 的 create 回调\n── 更新 ref 指向最新的 DOM 节点\n── 此时 DOM 已更新但浏览器尚未绘制"]
+    L3 --> L4["flushPassiveEffects（异步执行）\n── 在下一个宏任务中由 Scheduler 调度\n── 先执行上一轮 useEffect 的 destroy 回调\n── 再执行本轮 useEffect 的 create 回调\n── 最后调用 flushSyncCallbacks 处理可能产生的同步更新"]
+    L4 --> M["✅ 更新完成\n── DOM 已变更，浏览器完成绘制\n── useEffect 回调已异步执行\n── 新的 current 树已就位"]
 
     style A fill:#e1f5fe
     style M fill:#e8f5e9
