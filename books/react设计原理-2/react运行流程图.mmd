@@ -1,64 +1,58 @@
 flowchart TD
-    A[JSX / App] --> B[jsx<br/>packages/react/src/jsx.ts]
-    B --> C[ReactElement]
-    C --> D[createRoot(container).render(element)<br/>packages/react-dom/src/root.ts]
-    D --> E[initEvent(container, click)]
-    E --> F[updateContainer(element, root)<br/>packages/react-reconciler/src/fiberReconciler.ts]
+    A["🖱️ 用户调用 setState(action)\n用户在组件中触发状态更新"] --> B["dispatchSetState\n<i>fiberHooks.ts:304</i>\n接收 fiber、updateQueue、action 三个参数"]
 
-    F --> G[requestUpdateLanes]
-    G --> H[createUpdate]
-    H --> I[enqueueUpdate]
-    I --> J[scheduleUpdateOnFiber<br/>packages/react-reconciler/src/workLoop.ts]
+    B --> B1["requestUpdateLanes()\n根据当前上下文（事件类型等）\n确定本次更新的优先级 Lane"]
+    B1 --> B2["createUpdate(action, lane)\n将 action 和 lane 包装成\nUpdate 数据结构"]
+    B2 --> B3["enqueueUpdate(updateQueue, update)\n将 Update 挂载到 hook 的\n环形链表 updateQueue 上"]
+    B3 --> C["scheduleUpdateOnFiber(fiber, lane)\n<i>workLoop.ts:53</i>\n从触发更新的 fiber 开始，启动调度流程"]
 
-    J --> K[markUpdateFromFiberToRoot]
-    K --> L[markRootUpdated]
-    L --> M[ensureRootIsSchedule]
+    C --> C1["markUpdateFromFiberToRoot(fiber)\n从当前 fiber 沿 return 指针\n一路向上遍历，找到 FiberRootNode"]
+    C1 --> C2["markRootUpdated(root, lane)\n将本次更新的 lane 合并到\nroot.pendingLanes 位掩码中"]
+    C2 --> D["ensureRootIsSchedule(root)\n<i>workLoop.ts:76</i>\n确保 root 上的更新被正确调度"]
 
-    M --> N{是否为 SyncLane}
-    N -->|是| O[微任务调度<br/>performSyncWorkOnRoot]
-    N -->|否| P[宏任务调度<br/>performConcurrentWorkOnRoot]
+    D --> D1{"getHighestPriorityLane\n从 pendingLanes 中\n取出最高优先级的 Lane"}
+    D1 -->|"NoLane · 无更新"| D2["取消已有回调，重置状态\n⛔ return"]
+    D1 -->|"有更新"| D3{"curPriority === prevPriority?\n新更新优先级是否和\n已调度的优先级相同？"}
 
-    O --> Q[renderRoot]
-    P --> Q
+    D3 -->|"相同 · 已有调度在跑"| D4["无需重复调度，复用已有调度\n⛔ return（批处理优化）"]
+    D3 -->|"不同 · 更高优先级进来"| D5["unstable_cancelCallback\n取消旧的低优先级调度回调\n让高优先级抢占"]
 
-    Q --> R[prepareFreshStack]
-    R --> S{是否时间切片}
-    S -->|否| T[workLoopSync]
-    S -->|是| U[workLoopConcurrent]
+    D5 --> D6{"updateLane === SyncLane?\n判断是同步还是并发优先级"}
 
-    T --> V[performUnitOfWork]
-    U --> V
+    D6 -->|"SyncLane · 同步"| E1["scheduleSyncCallback\n将 performSyncWorkOnRoot\n推入同步回调队列 syncQueue"]
+    E1 --> E2["scheduleMicroTask\n用微任务调度 flushSyncCallbacks\n确保在本轮事件循环末尾执行"]
+    E2 --> F["performSyncWorkOnRoot\n<i>workLoop.ts:162</i>\n同步、不可中断地执行 render"]
 
-    V --> W[beginWork]
-    W --> X[根据 Fiber 类型构建/递归子 Fiber]
+    D6 -->|"其他 · 并发"| E3["lanesToSchedulePriority\n将 Lane 优先级转换为\nScheduler 的 5 级优先级"]
+    E3 --> E4["scheduleCallback\n通过 Scheduler 以宏任务方式\n调度，支持时间切片"]
+    E4 --> G["performConcurrentWorkOnRoot\n<i>workLoop.ts:129</i>\n并发、可中断地执行 render"]
 
-    X --> Y{是否存在 next}
-    Y -->|有| V
-    Y -->|无| Z[completeUnitOfWork]
+    F --> H["renderRoot(root, lane, false)\n同步 render：初始化 workInProgress\n然后进入 workLoop"]
+    G --> H2["renderRoot(root, lane, !needSync)\n并发 render：支持时间切片\n可被更高优先级打断"]
 
-    Z --> AA[completeWork]
-    AA --> AB{是否存在 sibling}
-    AB -->|有| V
-    AB -->|无| AC[return 回溯]
-    AC --> AD{是否回溯结束}
-    AD -->|否| AA
-    AD -->|是| AE[render 阶段完成<br/>finishedWork]
+    H --> I["workLoopSync\nwhile 循环，逐个处理 fiber\n不检查时间，一口气跑完"]
+    H2 --> I2["workLoopConcurrent\nwhile 循环 + shouldYield() 检查\n每处理一个 fiber 判断是否超时"]
 
-    AE --> AF[commitRoot]
-    AF --> AG{是否有 MutationMask}
-    AG -->|有| AH[commitMutationEffect]
-    AH --> AI[DOM 更新]
-    AG -->|无| AJ[root.current = finishedWork]
+    I --> J["performUnitOfWork(fiber)\n处理单个 fiber 的工作单元"]
+    I2 --> J
 
-    AI --> AJ
-    AJ --> AK[commitLayoutEffect]
+    J --> J1["beginWork(fiber)\n【递阶段】根据 fiber.tag 类型\n创建/复用子 fiber，标记 flags\n（Placement/Update/Deletion）"]
+    J1 -->|"有子节点"| J["继续向下处理 child"]
+    J1 -->|"无子节点"| J2["completeUnitOfWork\n【归阶段】创建/更新真实 DOM 节点\n将子树的 flags 冒泡到父节点"]
+    J2 -->|"有兄弟节点"| J["转向处理 sibling"]
+    J2 -->|"回到根节点"| K{"render 结果？"}
 
-    AF --> AL{是否存在 PassiveEffect}
-    AL -->|是| AM[调度 flushPassiveEffects]
-    AL -->|否| AN[结束]
+    K -->|"RootInComplete\n时间片用完，还没处理完"| G["返回自身函数引用\n等待 Scheduler 下次调度继续"]
+    K -->|"RootCompleted\n所有 fiber 处理完毕"| L["commitRoot(root)\n<i>workLoop.ts:230</i>\n进入 commit 阶段，同步执行"]
 
-    AM --> AO[unmount destroy]
-    AO --> AP[update destroy]
-    AP --> AQ[update create]
-    AQ --> AR[flushSyncCallbacks]
-    AR --> AN
+    L --> L1["commitMutationEffect\n【mutation 子阶段】\n执行 DOM 插入/更新/删除操作"]
+    L1 --> L2["Fiber Tree 切换\nroot.current = finishedWork\n将 workInProgress 树变为 current 树"]
+    L2 --> L3["commitLayoutEffect\n【layout 子阶段】\n执行 useLayoutEffect 回调\n更新 ref"]
+    L3 --> L4["scheduleCallback 调度 flushPassiveEffects\n【异步】在下一个宏任务中\n执行 useEffect 的 destroy 和 create"]
+    L4 --> M["✅ 更新完成\nDOM 已变更，UI 已刷新"]
+
+    style A fill:#e1f5fe
+    style M fill:#e8f5e9
+    style D2 fill:#fff3e0
+    style D4 fill:#fff3e0
+    style L fill:#fce4ec
