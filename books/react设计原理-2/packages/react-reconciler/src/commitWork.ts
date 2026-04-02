@@ -439,12 +439,12 @@ function insertOrAppendPlacementNodeInToContainer(
   const child = finishedWork.child;
 
   if (child !== null) {
-    insertOrAppendPlacementNodeInToContainer(child, hostParent);
-    let sibing = child.sibling;
+    insertOrAppendPlacementNodeInToContainer(child, hostParent, before);
+    let sibling = child.sibling;
 
-    if (sibing !== null) {
-      insertOrAppendPlacementNodeInToContainer(sibing, hostParent);
-      sibing = sibing.sibling;
+    while (sibling !== null) {
+      insertOrAppendPlacementNodeInToContainer(sibling, hostParent, before);
+      sibling = sibling.sibling;
     }
   }
 }

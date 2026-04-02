@@ -126,11 +126,11 @@ export const processUpdateQueue = <State>(
           newBaseQueueLast = clone;
         }
 
-        const action = pendingUpdate.action;
+        const action = pending.action;
 
         if (action instanceof Function) {
           // baseState 1 update2 => memoizedState 2
-          newState = action(baseState);
+          newState = action(newState);
         } else {
           // baseState 1 update (x) => memoizedState 2
           newState = action;
