@@ -3,7 +3,7 @@ import { ChatOpenAI } from '@langchain/openai';
 process.loadEnvFile(path.resolve(import.meta.dirname, './', '.env'));
 
 const model = new ChatOpenAI({
-  model: 'gpt-5.4',
+  model: 'qwen-vl-plus-2025-05-07',
   openAIApiKey: process.env.OPENAI_API_KEY,
   streaming: false,
   configuration: {
