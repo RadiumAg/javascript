@@ -3,8 +3,8 @@ import { ChatOpenAI } from '@langchain/openai';
 process.loadEnvFile(path.resolve(import.meta.dirname, './', '.env'));
 
 const model = new ChatOpenAI({
-  model: 'qwen-turbo',
-  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-5.4',
+  openAIApiKey: process.env.OPENAI_API_KEY,
   streaming: false,
   configuration: {
     baseURL: process.env.OPENAI_API_BASE_URL,
