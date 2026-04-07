@@ -11,7 +11,8 @@ const model = new ChatOpenAI({
   },
 });
 
-model.invoke('Hello, how are you?')
+model
+  .invoke('Hello, how are you?')
   .then((response) => {
     console.log('Response:', response);
     console.log('Content:', response.content);
