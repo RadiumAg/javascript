@@ -1,4 +1,18 @@
+import 'dotenv/config'; // 自动加载 .env 文件中的环境变量
 import { StateGraph, END, START, Annotation } from '@langchain/langgraph';
+import { ChatOpenAI } from '@langchain/openai';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+
+// 初始化通义千问大模型（使用 OpenAI 兼容接口）
+// 文档: https://help.aliyun.com/zh/model-studio/
+const llm = new ChatOpenAI({
+  model: 'qwen-turbo', // 可选: qwen-turbo, qwen-plus, qwen-max, qwen-long 等
+  temperature: 0.7, // 控制创造性 (0-1)
+  configuration: {
+    baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1', // 通义千问 OpenAI 兼容接口
+    apiKey: process.env.DASHSCOPE_API_KEY, // 通义千问 API 密钥
+  },
+});
 
 // 使用 Annotation 定义状态（LangGraph 推荐方式）
 const AgentStateAnnotation = Annotation.Root({
@@ -20,16 +34,19 @@ function preprocessNode(state: AgentState): Partial<AgentState> {
   return { query, standardized };
 }
 
-// 定义第二个节点: 检索文献(这里用简单的数据库代替)
-function retrieveNode(state: AgentState): Partial<AgentState> {
-  const database: Record<string, string> = {
-    langgraph: 'LangGraph是一种任务图编排框架,擅长复杂流程管理',
-    agent: '智能体系统依赖任务调度与状态管理实现高效运行',
-  };
+// 定义第二个节点: 使用大模型检索文献并生成回答
+async function retrieveNode(state: AgentState): Promise<Partial<AgentState>> {
+  const query = state.standardized || '';
 
-  const keyword = state.standardized || '';
-  const result = database[keyword] || '未找到相关文献';
-  return { retrieved: result };
+  // 使用大模型进行智能检索和回答
+  const response = await llm.invoke([
+    new SystemMessage(
+      '你是一个专业的文献检索助手。根据用户的问题，提供准确、简洁的回答。',
+    ),
+    new HumanMessage(`请回答以下问题：${query}`),
+  ]);
+
+  return { retrieved: response.content as string };
 }
 
 // 定义第三个节点: 摘要生成
@@ -77,8 +94,16 @@ const graph = workflow.compile();
 
 // 执行示例任务
 async function main() {
-  const result = await graph.invoke({ query: 'LangGraph?' });
-  console.log(result);
+  console.log('开始执行 AI Agent 任务...\n');
+
+  const result = await graph.invoke({ query: 'LangGraph是什么？' });
+
+  console.log('=== 执行结果 ===');
+  console.log('原始问题:', result.query);
+  console.log('标准化后:', result.standardized);
+  console.log('AI 回答:', result.retrieved);
+  console.log('摘要:', result.summary);
+  console.log('结论:', result.conclusion);
 }
 
 main().catch(console.error);
