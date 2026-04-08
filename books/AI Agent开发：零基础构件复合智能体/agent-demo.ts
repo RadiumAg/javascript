@@ -1,18 +1,7 @@
 import 'dotenv/config'; // 自动加载 .env 文件中的环境变量
 import { StateGraph, END, START, Annotation } from '@langchain/langgraph';
-import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-
-// 初始化通义千问大模型（使用 OpenAI 兼容接口）
-// 文档: https://help.aliyun.com/zh/model-studio/
-const llm = new ChatOpenAI({
-  model: 'qwen-turbo', // 可选: qwen-turbo, qwen-plus, qwen-max, qwen-long 等
-  temperature: 0.7, // 控制创造性 (0-1)
-  configuration: {
-    baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1', // 通义千问 OpenAI 兼容接口
-    apiKey: process.env.DASHSCOPE_API_KEY, // 通义千问 API 密钥
-  },
-});
+import { llm } from './util';
 
 // 使用 Annotation 定义状态（LangGraph 推荐方式）
 const AgentStateAnnotation = Annotation.Root({

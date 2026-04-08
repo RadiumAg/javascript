@@ -1,10 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ChatOpenAI } from '@langchain/openai';
-import {
-  HumanMessage,
-  SystemMessage,
-  AIMessage,
-} from '@langchain/core/messages';
+import { HumanMessage } from '@langchain/core/messages';
+import { llm } from './util';
 
 // ========== 状态定义 ==========
 enum AgentState {
@@ -50,14 +46,7 @@ class StatefulAgent {
     this.taskId = uuidv4();
     this.state = AgentState.INITIALIZED;
     this.history = [];
-    this.agent = new ChatOpenAI({
-      model: 'qwen-turbo',
-      temperature: 0.7,
-      configuration: {
-        baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-        apiKey: process.env.DASHSCOPE_API_KEY,
-      },
-    });
+    this.agent = llm;
     this.tool = tools[0];
   }
 
