@@ -1,14 +1,16 @@
-import { StateGraph, END } from '@langchain/langgraph';
+import { StateGraph, END, START, Annotation } from '@langchain/langgraph';
 
-// 定义状态接口
-interface AgentState {
-  query?: string;
-  standardized?: string;
-  retrieved?: string;
-  summary?: string;
-  conclusion?: string;
-  [key: string]: any;
-}
+// 使用 Annotation 定义状态（LangGraph 推荐方式）
+const AgentStateAnnotation = Annotation.Root({
+  query: Annotation<string>(),
+  standardized: Annotation<string>(),
+  retrieved: Annotation<string>(),
+  summary: Annotation<string>(),
+  conclusion: Annotation<string>(),
+});
+
+// 从 Annotation 推导类型
+type AgentState = typeof AgentStateAnnotation.State;
 
 // 定义第一个节点: 接收用户输入并标准化问题
 function preprocessNode(state: AgentState): Partial<AgentState> {
@@ -58,29 +60,17 @@ function concludeNode(state: AgentState): Partial<AgentState> {
   return { conclusion };
 }
 
-// 构建任务图
-const workflow = new StateGraph<AgentState>({
-  channels: {
-    query: null,
-    standardized: null,
-    retrieved: null,
-    summary: null,
-    conclusion: null,
-  },
-});
-
-// 添加节点
-workflow.addNode('preprocess', preprocessNode);
-workflow.addNode('retrieve', retrieveNode);
-workflow.addNode('summarize', summarizeNode);
-workflow.addNode('conclude', concludeNode);
-
-// 设置节点间的执行路径
-workflow.setEntryPoint('preprocess');
-workflow.addEdge('preprocess', 'retrieve');
-workflow.addEdge('retrieve', 'summarize');
-workflow.addEdge('summarize', 'conclude');
-workflow.addEdge('conclude', END);
+// 构建任务图并使用链式调用添加节点和边
+const workflow = new StateGraph(AgentStateAnnotation)
+  .addNode('preprocess', preprocessNode)
+  .addNode('retrieve', retrieveNode)
+  .addNode('summarize', summarizeNode)
+  .addNode('conclude', concludeNode)
+  .addEdge(START, 'preprocess')
+  .addEdge('preprocess', 'retrieve')
+  .addEdge('retrieve', 'summarize')
+  .addEdge('summarize', 'conclude')
+  .addEdge('conclude', END);
 
 // 编译任务流
 const graph = workflow.compile();
