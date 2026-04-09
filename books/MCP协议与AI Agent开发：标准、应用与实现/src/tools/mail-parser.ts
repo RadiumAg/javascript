@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { MailContext } from '../server/context-type';
+import type { MailContext } from '../context-type';
 
 /**
  * 邮件解析器输入参数

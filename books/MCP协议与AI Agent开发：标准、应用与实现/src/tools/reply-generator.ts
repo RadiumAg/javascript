@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { ReplyCandidate } from '../server/context-type.js';
+import type { ReplyCandidate } from '../context-type.js';
 
 /**
  * 回复生成器输入参数

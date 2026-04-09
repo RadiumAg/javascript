@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { ArchiveMetadata } from '../server/context-type.js';
+import type { ArchiveMetadata } from '../context-type.js';
 
 /**
  * 归档器输入参数

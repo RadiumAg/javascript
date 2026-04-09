@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { SummaryResult } from '../server/context-type.js';
+import type { SummaryResult } from '../context-type.js';
 
 /**
  * 摘要器输入参数
