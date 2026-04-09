@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { SummaryResult } from '../context-type.js';
+import type { SummaryResult } from '../server/context-type.js';
 
 /**
  * 摘要器输入参数
@@ -16,7 +16,7 @@ export interface SummarizerInput {
 /**
  * 邮件摘要器
  * 简单截取前60个字符作为摘要，超过则添加省略号
- * 
+ *
  * @param input - 摘要器输入参数
  * @returns 摘要结果
  */

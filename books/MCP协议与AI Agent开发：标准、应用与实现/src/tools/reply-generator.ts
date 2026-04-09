@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { ReplyCandidate } from '../context-type.js';
+import type { ReplyCandidate } from '../server/context-type.js';
 
 /**
  * 回复生成器输入参数
@@ -16,7 +16,7 @@ export interface ReplyInput {
 /**
  * 邮件回复生成器
  * 生成标准的确认回复
- * 
+ *
  * @param input - 回复生成器输入参数
  * @returns 回复建议
  */

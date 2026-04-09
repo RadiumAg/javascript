@@ -3,7 +3,7 @@
  * 从 Python 翻译而来
  */
 
-import type { ClassificationResult } from '../context-type.js';
+import type { ClassificationResult } from '../server/context-type.js';
 
 /**
  * 分类器输入参数
