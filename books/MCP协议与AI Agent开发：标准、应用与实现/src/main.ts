@@ -87,6 +87,7 @@ async function main(): Promise<void> {
     },
   );
 
+  // 注册其它tools
   registerAllTools(server);
 
   // 创建 stdio 传输层
