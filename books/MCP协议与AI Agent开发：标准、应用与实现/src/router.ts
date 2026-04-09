@@ -50,6 +50,7 @@ async function routeMessage(
     tool_input: { text: text },
   });
 
+  console.error(`[路由结构] ${intent}`, response);
   return {
     role: 'assistant',
     content: {
@@ -62,3 +63,4 @@ async function routeMessage(
 }
 
 export { classifyIntent, routeMessage };
+export type { Context, TextContent, CreateMessageResult };

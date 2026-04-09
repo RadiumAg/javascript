@@ -12,8 +12,63 @@ import { classifier } from './tools/classifier';
 import { summarizer } from './tools/summarizer';
 import { replyGenerator } from './tools/reply-generator';
 import { archiver } from './tools/archiver';
+import { TextContent } from '@modelcontextprotocol/sdk/types';
+import { Context, routeMessage } from './router';
+
+// 创建一个模拟的 context 对象
+const createContext = (): Context => {
+  return {
+    session: {
+      call_tool: async (params) => {
+        // 这里应该实现实际的工具调用逻辑
+        // 目前返回一个模拟响应
+        return {
+          content: [
+            {
+              text: `工具 ${params.tool_name} 处理结果: ${JSON.stringify(params.tool_input)}`,
+            },
+          ],
+        };
+      },
+    },
+  };
+};
+
+// 任务处理函数
+async function processInput(
+  messageText: string,
+): Promise<{ content: TextContent[] }> {
+  // 获取用户输入内容（如邮件内容文本）
+  const text = messageText.trim();
+
+  // 创建 context
+  const context = createContext();
+
+  // 通过路由器进行意图判断与任务分发
+  const result = await routeMessage(context, text);
+
+  return {
+    content: [result.content],
+  };
+}
 
 const registerAllTools = (app: McpServer) => {
+  app.registerTool(
+    'process_message',
+    {
+      description: '处理用户输入的消息并通过路由器进行任务分发',
+      inputSchema: z.object({
+        message: z.string().describe('用户输入的消息文本'),
+      }),
+    },
+    async ({ message }) => {
+      const result = await processInput(message);
+      return {
+        content: result.content,
+      };
+    },
+  );
+
   // 注册工具：邮件解析器
   app.registerTool(
     'mail_parser',
