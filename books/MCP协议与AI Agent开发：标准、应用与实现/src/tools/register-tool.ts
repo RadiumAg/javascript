@@ -7,13 +7,13 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { z } from 'zod';
 
 // 导入各类 MCP 工具
-import { mailParser } from './tools/mail-parser';
-import { classifier } from './tools/classifier';
-import { summarizer } from './tools/summarizer';
-import { replyGenerator } from './tools/reply-generator';
-import { archiver } from './tools/archiver';
+import { mailParser } from './mail-parser';
+import { classifier } from './classifier';
+import { summarizer } from './summarizer';
+import { replyGenerator } from './reply-generator';
+import { archiver } from './archiver';
 import { TextContent } from '@modelcontextprotocol/sdk/types';
-import { Context, routeMessage } from './router';
+import { Context, routeMessage } from '../router';
 
 // 创建一个模拟的 context 对象
 const createContext = (): Context => {
@@ -53,6 +53,7 @@ async function processInput(
 }
 
 const registerAllTools = (app: McpServer) => {
+  // 意图识别
   app.registerTool(
     'process_message',
     {
@@ -123,8 +124,8 @@ const registerAllTools = (app: McpServer) => {
       }),
     },
     async ({ text }) => {
-      console.log('[DEBUG] summarizer input:', text);
       const result = await summarizer({ text });
+      console.error('summarizer 执行', text);
       return {
         content: [
           {

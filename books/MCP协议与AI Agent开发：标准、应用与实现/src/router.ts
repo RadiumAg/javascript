@@ -47,7 +47,7 @@ async function routeMessage(
 
   const response = await context.session.call_tool({
     tool_name: intent,
-    tool_input: { text: text },
+    tool_input: { text },
   });
 
   console.error(`[路由结构] ${intent}`, response);
