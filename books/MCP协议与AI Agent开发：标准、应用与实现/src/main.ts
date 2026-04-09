@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
 import { routeMessage } from './router';
 import { z } from 'zod';
-import { mailParser } from './tools/mail-parser';
+import { registerAllTools } from './app';
 
 // 定义 TextContent 类型
 interface TextContent {
@@ -60,7 +60,7 @@ async function processInput(
 async function main(): Promise<void> {
   const server = new McpServer(
     {
-      name: 'mcp-router-server',
+      name: 'mail-agent',
       version: '1.0.0',
     },
     {
@@ -87,22 +87,7 @@ async function main(): Promise<void> {
     },
   );
 
-  server.registerTool(
-    'mail_parser',
-    {
-      description: 'mail_parser',
-      inputSchema: z.object({
-        text: z.string().describe('email内容'),
-      }),
-    },
-    async ({ text }) => {
-      const result = await mailParser({ raw_text: text });
-
-      return {
-        content:,
-      };
-    },
-  );
+  registerAllTools(server);
 
   // 创建 stdio 传输层
   const transport = new StdioServerTransport();
