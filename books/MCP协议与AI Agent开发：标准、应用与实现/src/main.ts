@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
-import { routeMessage } from './router.js';
+import { routeMessage } from './router';
 import { z } from 'zod';
 
 // 定义 TextContent 类型
@@ -49,6 +49,7 @@ async function processInput(
 
   // 通过路由器进行意图判断与任务分发
   const result = await routeMessage(context, text);
+  console.log('[DEBUGGER] Result', result);
 
   return {
     content: [result.content],

@@ -9,9 +9,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "run": "npx @modelcontextprotocol/inspector pnpm dev",
-    "dev": "tsx ./src/main.ts",
-    "start": "node dist/main.js",
+    "dev": "npx @modelcontextprotocol/inspector pnpm start",
+    "start": "tsx ./src/main.ts",
     "watch": "tsc --watch"
   },
   "keywords": [
