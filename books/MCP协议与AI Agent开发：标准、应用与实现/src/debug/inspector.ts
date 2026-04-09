@@ -11,7 +11,7 @@ import {
   CreateMessageResult,
   TextContent,
 } from '@modelcontextprotocol/sdk/types';
-import logger from '../debugger/logger.js';
+import logger from '../debugger/logger';
 
 // 调试回调函数类型
 type DebugCallback = (
@@ -37,18 +37,17 @@ async function debugCallback(
       arguments: { text: text },
     });
 
+    const responseContent = response.content as any;
     const responseText =
-      (response.content[0] as TextContent).text || '无返回内容';
+      (responseContent[0] as TextContent).text || '无返回内容';
     logger.info(`[调用成功] tool=summarizer → ${responseText}`);
 
     return {
       role: 'assistant',
-      content: [
-        {
-          type: 'text',
-          text: responseText,
-        } as TextContent,
-      ],
+      content: {
+        type: 'text',
+        text: responseText,
+      } as TextContent,
       model: 'debug-agent',
       stopReason: 'endTurn',
     };
@@ -58,12 +57,10 @@ async function debugCallback(
 
     return {
       role: 'assistant',
-      content: [
-        {
-          type: 'text',
-          text: '处理失败,请检查日志',
-        } as TextContent,
-      ],
+      content: {
+        type: 'text',
+        text: '处理失败,请检查日志',
+      } as TextContent,
       model: 'debug-agent',
       stopReason: 'error',
     };
@@ -94,7 +91,6 @@ async function debugMain() {
   try {
     // 连接并初始化
     await session.connect(transport);
-    await session.initialize();
 
     console.log(
       '[调试模式] 输入任意内容触发 summarizer 工具调用,输入 quit 退出'
@@ -133,14 +129,17 @@ async function debugMain() {
             },
           },
         ],
+        maxTokens: 1000,
       };
 
       // 调用调试回调
       const result = await debugCallback({ session }, messageParams);
 
       // 输出结果
-      if (result.content[0].type === 'text') {
-        console.log((result.content[0] as TextContent).text);
+      const content = result.content;
+      const contentArray = Array.isArray(content) ? content : [content];
+      if (contentArray.length > 0 && contentArray[0].type === 'text') {
+        console.log((contentArray[0] as TextContent).text);
       }
     }
 
