@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
 import { routeMessage } from './router';
 import { z } from 'zod';
+import { mailParser } from './tools/mail-parser';
 
 // 定义 TextContent 类型
 interface TextContent {
@@ -49,7 +50,6 @@ async function processInput(
 
   // 通过路由器进行意图判断与任务分发
   const result = await routeMessage(context, text);
-  console.log('[DEBUGGER] Result', result);
 
   return {
     content: [result.content],
@@ -83,6 +83,23 @@ async function main(): Promise<void> {
       const result = await processInput(message);
       return {
         content: result.content,
+      };
+    },
+  );
+
+  server.registerTool(
+    'mail_parser',
+    {
+      description: 'mail_parser',
+      inputSchema: z.object({
+        text: z.string().describe('email内容'),
+      }),
+    },
+    async ({ text }) => {
+      const result = await mailParser({ raw_text: text });
+
+      return {
+        content:,
       };
     },
   );
