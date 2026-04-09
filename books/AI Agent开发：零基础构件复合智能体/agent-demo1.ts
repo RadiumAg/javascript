@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { HumanMessage } from '@langchain/core/messages';
 import { llm } from './util';
+import { ChatOpenAI } from '@langchain/openai';
 
 // ========== 状态定义 ==========
 enum AgentState {
