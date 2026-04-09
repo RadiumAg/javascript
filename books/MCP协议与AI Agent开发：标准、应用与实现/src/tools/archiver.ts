@@ -16,13 +16,11 @@ export interface ArchiveInput {
 /**
  * 邮件归档器
  * 生成归档文件夹和标签建议
- * 
+ *
  * @param input - 归档器输入参数
  * @returns 归档元数据
  */
-export async function archiver(
-  input: ArchiveInput,
-): Promise<ArchiveMetadata> {
+export async function archiver(input: ArchiveInput): Promise<ArchiveMetadata> {
   const folder = '事务归档';
   const tags = ['项目', '总结', '处理完毕'];
 
