@@ -12,6 +12,11 @@
   "packageManager": "pnpm@10.21.0",
   "dependencies": {
     "@langchain/core": "^1.1.39",
-    "@langchain/langgraph": "^1.2.8"
+    "@langchain/langgraph": "^1.2.8",
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "typescript": "^6.0.2"
   }
 }
