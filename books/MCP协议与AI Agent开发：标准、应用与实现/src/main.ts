@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
-import { routeMessage } from './router';
+import { routeMessage } from './router.js';
 import { z } from 'zod';
 
 // 定义 TextContent 类型

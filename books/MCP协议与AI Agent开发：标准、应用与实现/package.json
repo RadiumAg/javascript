@@ -9,10 +9,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsx main.ts",
+    "run": "npx @modelcontextprotocol/inspector pnpm dev",
+    "dev": "tsx ./src/main.ts",
     "start": "node dist/main.js",
-    "watch": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "tsc --watch"
   },
   "keywords": [
     "mcp",

@@ -23,6 +23,7 @@ interface Context {
 
 // 简易意图识别函数
 function classifyIntent(text: string): string {
+  console.log('message', text);
   if (text.includes('总结') || text.includes('概括')) {
     return 'summarizer';
   } else if (text.includes('归档') || text.includes('标签')) {
