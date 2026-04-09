@@ -1,13 +1,25 @@
 {
-  "name": "MCP协议与AI Agent开发：标准、应用与实现",
+  "name": "mcp-router-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "MCP 路由服务器 - 消息意图识别与任务分发",
+  "type": "module",
+  "main": "dist/main.js",
+  "bin": {
+    "mcp-router-server": "dist/main.js"
+  },
   "scripts": {
-    "dev": "npx esno main.ts",
+    "build": "tsc",
+    "dev": "tsx main.ts",
+    "start": "node dist/main.js",
+    "watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "mcp",
+    "router",
+    "ai",
+    "agent"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.21.0",
@@ -19,6 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }
 }
