@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mail-mcp": {
+      "command": "/Users/zly/.nvm/versions/node/v20.19.4/bin/npx",
+      "args": [
+        "tsx",
+        "/Users/zly/Desktop/work/javascript/books/MCP协议与AI Agent开发：标准、应用与实现/src/server/main.ts"
+      ]
+    }
+  }
+}
