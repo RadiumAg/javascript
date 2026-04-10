@@ -1,5 +1,5 @@
 /**
- * MCP 客户端会话管理
+ * MCP 客户端会话管理，这段是模拟cursor client的实现
  * 从 Python client/session.py 翻译而来
  * 用于创建和管理与 MCP 服务器的客户端会话
  */
@@ -17,8 +17,8 @@ import {
  * 对应 Python 的 StdioServerParameters
  */
 export const serverParams = {
-  command: 'node',
-  args: ['dist/server/main.js'],
+  command: 'npx esno',
+  args: ['../server/main.ts'],
 };
 
 /**
@@ -123,20 +123,6 @@ export async function createSession(
   return session;
 }
 
-/**
- * 使用会话执行采样回调
- *
- * @param session - MCP 客户端实例
- * @param params - 消息请求参数
- * @returns 采样结果
- */
-export async function executeSampling(
-  session: Client,
-  params: CreateMessageRequestParams,
-): Promise<CreateMessageResult> {
-  const callback = (session as any)._callback as SamplingCallback;
-  if (!callback) {
-    throw new Error('会话未配置采样回调函数');
-  }
-  return callback({ session }, params);
-}
+createSession().catch((error) => {
+  console.error(error);
+});

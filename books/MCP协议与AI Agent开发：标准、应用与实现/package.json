@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "npx @modelcontextprotocol/inspector pnpm start",
-    "start": "tsx ./src/main.ts",
+    "start": "tsx ./src/server/main.ts",
     "watch": "tsc --watch"
   },
   "keywords": [
