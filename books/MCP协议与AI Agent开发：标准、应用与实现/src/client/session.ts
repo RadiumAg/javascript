@@ -27,7 +27,7 @@ export const serverParams = {
  */
 export async function defaultCallback(
   context: { session: Client },
-  params: CreateMessageRequestParams
+  params: CreateMessageRequestParams,
 ): Promise<CreateMessageResult> {
   // 简单应答 - 回显用户输入
   const text = (params.messages[0].content as TextContent).text;
@@ -48,7 +48,7 @@ export async function defaultCallback(
  */
 export type SamplingCallback = (
   context: { session: Client },
-  params: CreateMessageRequestParams
+  params: CreateMessageRequestParams,
 ) => Promise<CreateMessageResult>;
 
 /**
@@ -91,7 +91,7 @@ export interface SessionOptions {
  * ```
  */
 export async function createSession(
-  options: SessionOptions = {}
+  options: SessionOptions = {},
 ): Promise<Client> {
   const { callback = defaultCallback, serverParams: params = serverParams } =
     options;
@@ -109,7 +109,7 @@ export async function createSession(
       capabilities: {
         sampling: {},
       },
-    }
+    },
   );
 
   // 连接服务器
@@ -132,7 +132,7 @@ export async function createSession(
  */
 export async function executeSampling(
   session: Client,
-  params: CreateMessageRequestParams
+  params: CreateMessageRequestParams,
 ): Promise<CreateMessageResult> {
   const callback = (session as any)._callback as SamplingCallback;
   if (!callback) {

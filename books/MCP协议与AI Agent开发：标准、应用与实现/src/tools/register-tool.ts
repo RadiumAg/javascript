@@ -13,7 +13,7 @@ import { summarizer } from './summarizer';
 import { replyGenerator } from './reply-generator';
 import { archiver } from './archiver';
 import { TextContent } from '@modelcontextprotocol/sdk/types';
-import { Context, routeMessage } from '../server/router';
+import { Context, routeMessage } from '../router';
 
 // 创建一个模拟的 context 对象
 const createContext = (): Context => {
