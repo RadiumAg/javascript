@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio';
-import { registerAllTools } from './tools/register-tool';
+import { registerAllTools } from '../tools/register-tool';
 
 // 启动主入口函数
 async function main(): Promise<void> {
