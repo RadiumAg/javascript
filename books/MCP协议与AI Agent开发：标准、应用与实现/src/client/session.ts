@@ -18,7 +18,7 @@ import {
  */
 export const serverParams = {
   command: 'npx',
-  args: ['tsx', 'src/main.ts'],
+  args: ['tsx', '../server/main.ts'],
 };
 
 /**

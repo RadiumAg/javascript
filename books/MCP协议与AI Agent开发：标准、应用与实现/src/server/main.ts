@@ -25,9 +25,7 @@ async function main(): Promise<void> {
   try {
     // 连接服务器和传输层
     await server.connect(transport);
-    console.error('[系统已启动] 输入任意邮件内容开始处理，输入 quit 退出:');
-    // 保持进程运行
-    process.stdin.resume();
+    console.error('[MCP 服务器已启动] 等待客户端连接...');
   } catch (error) {
     console.error('Server error:', error);
     process.exit(1);
