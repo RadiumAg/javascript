@@ -15,17 +15,37 @@ import { archiver } from './archiver';
 import { TextContent } from '@modelcontextprotocol/sdk/types';
 import { Context, routeMessage } from '../router';
 
-// 创建一个模拟的 context 对象
+// 工具映射表：将工具名称映射到具体的工具函数
+const toolMap: Record<string, (input: any) => Promise<any>> = {
+  mail_parser: mailParser,
+  classifier: classifier,
+  summarizer: summarizer,
+  reply_generator: replyGenerator,
+  archiver: archiver,
+};
+
+// 创建 context 对象，实现真实的工具调用
 const createContext = (): Context => {
   return {
     session: {
       call_tool: async (params) => {
-        // 这里应该实现实际的工具调用逻辑
-        // 目前返回一个模拟响应
+        const { tool_name, tool_input } = params;
+
+        // 查找对应的工具函数
+        const tool = toolMap[tool_name];
+
+        if (!tool) {
+          throw new Error(`Unknown tool: ${tool_name}`);
+        }
+
+        // 调用工具函数
+        const result = await tool(tool_input);
+
+        // 返回标准格式的结果
         return {
           content: [
             {
-              text: `工具 ${params.tool_name} 处理结果: ${JSON.stringify(params.tool_input)}`,
+              text: JSON.stringify(result, null, 2),
             },
           ],
         };
