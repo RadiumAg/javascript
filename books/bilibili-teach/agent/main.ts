@@ -1,24 +1,48 @@
-import path from 'path';
-import { ChatOpenAI } from '@langchain/openai';
-process.loadEnvFile(path.resolve(import.meta.dirname, './', '.env'));
+import readline from 'readline';
+import { streamAgent } from './agent.js';
 
-const model = new ChatOpenAI({
-  model: 'qwen-vl-plus-2025-05-07',
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  streaming: false,
-  configuration: {
-    baseURL: process.env.OPENAI_API_BASE_URL,
-  },
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
 });
 
-model
-  .invoke('Hello, how are you?')
-  .then((response) => {
-    console.log('Response:', response);
-    console.log('Content:', response.content);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-    console.error('Error message:', error.message);
-    console.error('Error response:', error.response?.data);
+function prompt(question: string): Promise<string> {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
   });
+}
+
+async function main(): Promise<void> {
+  console.log('╔══════════════════════════════════════════╗');
+  console.log('║        🤖 Code Agent (LangGraph)        ║');
+  console.log('║                                          ║');
+  console.log('║  能力: 改代码 | 审核代码 | MCP | Skill   ║');
+  console.log('║  输入 "exit" 退出                        ║');
+  console.log('╚══════════════════════════════════════════╝');
+  console.log();
+
+  while (true) {
+    const userInput = await prompt('👤 You: ');
+    const trimmedInput = userInput.trim();
+
+    if (!trimmedInput) continue;
+    if (trimmedInput.toLowerCase() === 'exit') {
+      console.log('\n👋 再见！');
+      break;
+    }
+
+    try {
+      await streamAgent(trimmedInput);
+      console.log('\n');
+    } catch (error) {
+      console.error('\n❌ Agent 执行出错:', (error as Error).message);
+      console.log();
+    }
+  }
+
+  rl.close();
+}
+
+main();
