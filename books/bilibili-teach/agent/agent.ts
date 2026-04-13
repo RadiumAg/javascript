@@ -110,7 +110,9 @@ async function initializeAgent(): Promise<void> {
     systemPrompt: SYSTEM_PROMPT,
   });
 
-  console.log(`🛠️  共注册 ${allTools.length} 个工具 (本地: ${localTools.length}, MCP: ${mcpTools.length})`);
+  console.log(
+    `🛠️  共注册 ${allTools.length} 个工具 (本地: ${localTools.length}, MCP: ${mcpTools.length})`,
+  );
 }
 
 /**
