@@ -1,10 +1,10 @@
 import path from 'path';
 import { ChatOpenAI } from '@langchain/openai';
-import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import { createAgent } from 'langchain';
 import { MultiServerMCPClient } from '@langchain/mcp-adapters';
 import { localTools } from './tools.js';
 import type { BaseMessage } from '@langchain/core/messages';
-import type { CompiledStateGraph } from '@langchain/langgraph';
+import type { ReactAgent } from 'langchain';
 import type { ClientConfig } from '@langchain/mcp-adapters';
 
 process.loadEnvFile(path.resolve(import.meta.dirname, './', '.env'));
@@ -85,7 +85,7 @@ const MCP_CONFIG: ClientConfig = {
 
 let mcpClient: MultiServerMCPClient | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let agent: CompiledStateGraph<any, any, any, any, any> | null = null;
+let agent: ReactAgent<any> | null = null;
 
 /**
  * 初始化 Agent：连接 MCP Server，加载工具，创建 ReAct Agent
@@ -104,10 +104,10 @@ async function initializeAgent(): Promise<void> {
 
   const allTools = [...localTools, ...mcpTools];
 
-  agent = createReactAgent({
-    llm: model,
+  agent = createAgent({
+    model,
     tools: allTools,
-    prompt: SYSTEM_PROMPT,
+    systemPrompt: SYSTEM_PROMPT,
   });
 
   console.log(`🛠️  共注册 ${allTools.length} 个工具 (本地: ${localTools.length}, MCP: ${mcpTools.length})`);
