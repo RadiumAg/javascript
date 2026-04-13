@@ -129,7 +129,11 @@ export const runCommandTool = tool(
       if (stderr) result += `stderr:\n${stderr}\n`;
       return result || '命令执行成功（无输出）';
     } catch (error) {
-      const execError = error as { stdout?: string; stderr?: string; message: string };
+      const execError = error as {
+        stdout?: string;
+        stderr?: string;
+        message: string;
+      };
       return `命令执行失败:\n${execError.stderr || execError.message}${execError.stdout ? `\nstdout:\n${execError.stdout}` : ''}`;
     }
   },
@@ -256,7 +260,9 @@ export const callMcpTool = tool(
       params: z
         .string()
         .optional()
-        .describe('调用参数，JSON 字符串格式，如 {"name": "get_weather", "arguments": {"city": "杭州"}}'),
+        .describe(
+          '调用参数，JSON 字符串格式，如 {"name": "get_weather", "arguments": {"city": "杭州"}}',
+        ),
     }),
   },
 );
@@ -283,7 +289,9 @@ export const callSkillTool = tool(
       skillName: z.string().describe('Skill 的名称，如 react-best-practices'),
       skillFilePath: z
         .string()
-        .describe('Skill 文件的路径，如 /Users/xxx/.agents/skills/xxx/SKILL.md'),
+        .describe(
+          'Skill 文件的路径，如 /Users/xxx/.agents/skills/xxx/SKILL.md',
+        ),
     }),
   },
 );
