@@ -206,68 +206,6 @@ export const codeReviewTool = tool(
 );
 
 // ============================================================
-// MCP 调用工具
-// ============================================================
-
-export const callMcpTool = tool(
-  async ({ serverUrl, methodName, params }) => {
-    try {
-      const parsedParams = params ? JSON.parse(params) : {};
-
-      // 通过 HTTP 调用 MCP 服务（JSON-RPC 2.0 协议）
-      const requestBody = {
-        jsonrpc: '2.0',
-        id: Date.now(),
-        method: methodName,
-        params: parsedParams,
-      };
-
-      const response = await fetch(serverUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        return `MCP 调用失败: HTTP ${response.status} ${response.statusText}`;
-      }
-
-      const result = (await response.json()) as {
-        error?: unknown;
-        result?: unknown;
-      };
-
-      if (result.error) {
-        return `MCP 调用错误: ${JSON.stringify(result.error)}`;
-      }
-
-      return `MCP 调用成功:\n${JSON.stringify(result.result, null, 2)}`;
-    } catch (error) {
-      return `MCP 调用失败: ${(error as Error).message}`;
-    }
-  },
-  {
-    name: 'call_mcp',
-    description:
-      '调用 MCP (Model Context Protocol) 服务。通过 JSON-RPC 2.0 协议向 MCP 服务器发送请求。可用于获取外部数据、调用外部工具等。',
-    schema: z.object({
-      serverUrl: z
-        .string()
-        .describe('MCP 服务器的 URL 地址，如 http://localhost:3000/mcp'),
-      methodName: z
-        .string()
-        .describe('要调用的 MCP 方法名，如 tools/call、resources/read 等'),
-      params: z
-        .string()
-        .optional()
-        .describe(
-          '调用参数，JSON 字符串格式，如 {"name": "get_weather", "arguments": {"city": "杭州"}}',
-        ),
-    }),
-  },
-);
-
-// ============================================================
 // Skill 调用工具
 // ============================================================
 
@@ -300,12 +238,11 @@ export const callSkillTool = tool(
 // 导出所有工具
 // ============================================================
 
-export const allTools = [
+export const localTools = [
   readFileTool,
   writeFileTool,
   listFilesTool,
   runCommandTool,
   codeReviewTool,
-  callMcpTool,
   callSkillTool,
 ];

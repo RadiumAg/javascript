@@ -1,5 +1,5 @@
 import readline from 'readline';
-import { streamAgent } from './agent.js';
+import { streamAgent, shutdown } from './agent.js';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -29,7 +29,9 @@ async function main(): Promise<void> {
 
     if (!trimmedInput) continue;
     if (trimmedInput.toLowerCase() === 'exit') {
-      console.log('\n👋 再见！');
+      console.log('\n👋 正在关闭...');
+      await shutdown();
+      console.log('👋 再见！');
       break;
     }
 
