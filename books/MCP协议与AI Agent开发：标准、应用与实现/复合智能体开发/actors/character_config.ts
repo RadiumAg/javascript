@@ -3,6 +3,8 @@ class CharacterProfile {
   background: string;
   personality: string;
   speakingStyle: string;
+
+  CHARACTER_CONFIGS = [];
 }
 
 export { CharacterProfile };
