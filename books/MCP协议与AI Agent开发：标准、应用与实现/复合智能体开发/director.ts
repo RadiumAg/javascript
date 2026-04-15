@@ -35,6 +35,12 @@ class StoryDirector {
       }
     }
   }
+
+  advancePhase() {
+    if (this.phaseIndex < this.storyPhases.length - 1) {
+      this.phaseIndex++;
+    }
+  }
 }
 
 export { StoryDirector };
