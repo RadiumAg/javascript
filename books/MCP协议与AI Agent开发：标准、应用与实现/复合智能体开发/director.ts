@@ -29,7 +29,9 @@ class StoryDirector {
           '【系统】初始化完成，当参与角色',
           this.characterNames.join(`、`),
         );
-        console.log('\n【背景】再遥远的未来，艾琳与诺亚');
+        console.log(
+          '\n【背景】再遥远的未来，艾琳与诺亚,艾琳与诺亚在星舰上初次相遇，他们的名誉即将交汇...',
+        );
       }
     }
   }
