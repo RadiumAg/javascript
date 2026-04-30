@@ -116,7 +116,7 @@
   console.log(Object.getOwnPropertyDescriptors(obj));
 };
 
-(() => {
+() => {
   // Object.getOwnPropertyDescriptors和Object.defineProperties配合，实现拷贝get, set
   const source = {
     set foo(value) {
@@ -127,4 +127,22 @@
   const target2 = {};
   Object.defineProperties(target2, Object.getOwnPropertyDescriptors(source));
   console.log(Object.getOwnPropertyDescriptors(target2, 'foo'));
+
+  const shallowClone = (obj) => {
+    Object.create(
+      Object.getPrototypeOf(obj),
+      Object.getOwnPropertyDescriptors(obj),
+    );
+  };
+
+  shallowClone({ a: 1 });
+};
+
+(() => {
+  Object.defineProperty(Object.prototype, '__proto__', {
+    get() {
+      let _thisObj = Object(this);
+      return Object.getPrototypeOf(_thisObj);
+    },
+  });
 })();
