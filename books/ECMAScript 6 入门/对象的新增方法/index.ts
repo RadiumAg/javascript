@@ -138,7 +138,7 @@
   shallowClone({ a: 1 });
 };
 
-(() => {
+() => {
   Object.defineProperty(Object.prototype, '__proto__', {
     get() {
       let _thisObj = Object(this);
@@ -159,4 +159,10 @@
       }
     },
   });
+};
+
+(() => {
+  // Object.keys，返回一个数组
+  const obj = { foo: 'bar', baz: 42 };
+  console.log(Object.keys(obj));
 })();
