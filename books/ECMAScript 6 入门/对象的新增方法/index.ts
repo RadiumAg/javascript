@@ -144,5 +144,19 @@
       let _thisObj = Object(this);
       return Object.getPrototypeOf(_thisObj);
     },
+    set(proto) {
+      if (this === undefined || this == null) {
+        throw new TypeError();
+      }
+
+      if (!Object(this) === this) {
+        return undefined;
+      }
+
+      const status = Reflect.setPrototypeOf(this, proto);
+      if (!status) {
+        throw new TypeError();
+      }
+    },
   });
 })();
