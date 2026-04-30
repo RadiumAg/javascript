@@ -48,6 +48,6 @@
       new RangeError('Transaction value must be at least 1'),
       new URIError('User profile link must be https'),
     ],
-    'Transaction cannot be processed'
+    'Transaction cannot be processed',
   );
 })();

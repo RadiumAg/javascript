@@ -79,7 +79,7 @@
   Object.assign(target, source);
 };
 
-(() => {
+() => {
   const obj = {
     foo: 123,
     get bar() {
@@ -88,7 +88,7 @@
   };
 
   console.log(Object.getOwnPropertyDescriptors(obj));
-})();
+};
 
 // __proto__ 属性用 Object.setPrototypeOf(),Object.getPrototypeOf(),Object.create代替
 
@@ -104,4 +104,27 @@
   console.log(obj);
 };
 
-// Object.fromEntries 是 Object.entries的逆向操作
+() => {
+  // Object.getOwnPropertyDescriptors 返回指定对象所有自身属性（非继承属性）的描述对象
+  const obj = {
+    foo: 123,
+    get bar() {
+      return 'abc';
+    },
+  };
+
+  console.log(Object.getOwnPropertyDescriptors(obj));
+};
+
+(() => {
+  // Object.getOwnPropertyDescriptors和Object.defineProperties配合，实现拷贝get, set
+  const source = {
+    set foo(value) {
+      console.log(value);
+    },
+  };
+
+  const target2 = {};
+  Object.defineProperties(target2, Object.getOwnPropertyDescriptors(source));
+  console.log(Object.getOwnPropertyDescriptors(target2, 'foo'));
+})();
