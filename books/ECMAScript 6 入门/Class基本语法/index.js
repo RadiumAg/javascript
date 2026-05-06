@@ -1,5 +1,5 @@
 // 类所有方法都定义在类的prototype属性上
-(() => {
+() => {
   class Point {
     constructor() {}
 
@@ -10,12 +10,12 @@
 
   // 等同于
 
-  Point.prototype = { 
+  Point.prototype = {
     constructor() {},
     toString() {},
     toValue() {},
   };
-})();
+};
 
 (() => {
   class A {}
@@ -31,7 +31,7 @@
 /**
  * super表示父类的constructor
  */
-(() => {
+() => {
   class Point {}
   class ColorPoint extends Point {
     constructor(x, y, color) {
@@ -43,12 +43,12 @@
       return `${this.color} ${super.toString()}`; // 调用父类toString()
     }
   }
-})();
+};
 
 /**
  * 只有调用super之后，才可以使用this关键字
  */
-(() => {
+() => {
   class Point {
     constructor(x, y) {
       this.x = x;
@@ -66,12 +66,12 @@
       return `${this.color} ${super.toString()}`; // 调用父类toString()
     }
   }
-})();
+};
 
 /**
  * 只有调用super之后，才可以使用this关键字
  */
-(() => {
+() => {
   class Point {
     constructor(x, y) {
       this.x = x;
@@ -89,12 +89,12 @@
       return `${this.color} ${super.toString()}`; // 调用父类toString()
     }
   }
-})();
+};
 
 /**
  *  super既可以当函数使用，也可以当对象使用,但是定义在父类实例上的方法或属性，是无法通过super调用的。
  */
-(() => {
+() => {
   class A {
     P() {
       return 2;
@@ -108,20 +108,20 @@
   }
 
   console.log(new B());
-})();
+};
 
 // 类修饰器
-(() => {
+() => {
   function testable(target) {
     target.prototype.isTestable = true;
   }
 
   //@testable
   class MyTestableClass {}
-})();
+};
 
 // 继承
-(() => {
+() => {
   class Point {}
 
   class ColorPoint extends Point {
@@ -134,10 +134,10 @@
       return `${this.color}   ${super.toString()}`;
     }
   }
-})();
+};
 
 // 私有属性和私有方法的继承
-(() => {
+() => {
   class Foo {
     #p = 1;
 
@@ -153,10 +153,10 @@
       this.#m();
     }
   }
-})();
+};
 
 // 静态属性和静态方法的继承
-(() => {
+() => {
   class A {
     static hello() {
       console.log('hello world');
@@ -166,4 +166,4 @@
   class B extends A {}
 
   B.hello();
-})();
+};
