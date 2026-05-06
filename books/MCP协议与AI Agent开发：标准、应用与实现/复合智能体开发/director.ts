@@ -12,27 +12,34 @@ class StoryDirector {
   phaseIndex = 0;
 
   initializeCharacters() {
-    this.context = [];
-    this.phaseIndex = 0;
+    console.log('【系统】剧本角色初始化中...\n');
+    for (const name of this.characterNames) {
+      this.context[name] = new CharacterContextManager(name);
+      this.context[name].initializeContext();
+      console.log(
+        '【系统】初始化完成，当参与角色',
+        this.characterNames.join(`、`),
+      );
+      console.log(
+        '\n【背景】再遥远的未来，艾琳与诺亚,艾琳与诺亚在星舰上初次相遇，他们的名誉即将交汇...',
+      );
+    }
   }
 
   runStoryLoop() {
     console.log('\n【系统】剧情演化开始...\n');
-    for (let index = 0; index <= 3; index++) {
+    for (let index = 0; index < 3; index++) {
       const phase = this.storyPhases[this.phaseIndex];
       console.log(`\n--第${index + 1} . 剧情阶段【${phase}】--`);
 
       for (const name of this.characterNames) {
-        this.context[name] = new CharacterContextManager(name);
-        this.context[name].initializeContext();
-        console.log(
-          '【系统】初始化完成，当参与角色',
-          this.characterNames.join(`、`),
+        const response = this.context[name].generateResponse(
+          `你好，${name}，当前剧情阶段是${phase}，请发表你的想法。`,
         );
-        console.log(
-          '\n【背景】再遥远的未来，艾琳与诺亚,艾琳与诺亚在星舰上初次相遇，他们的名誉即将交汇...',
-        );
+        console.log(`\n【${name}】${response}`);
       }
+
+      this.advancePhase();
     }
   }
 
