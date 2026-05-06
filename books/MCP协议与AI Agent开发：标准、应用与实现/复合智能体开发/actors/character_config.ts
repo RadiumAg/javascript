@@ -6,9 +6,29 @@ class CharacterProfile {
     private speakingStyle: string,
     private emotion: string,
   ) {}
+
+  getName(): string {
+    return this.name;
+  }
+
+  getBackground(): string {
+    return this.background;
+  }
+
+  getPersonality(): string {
+    return this.personality;
+  }
+
+  getSpeakingStyle(): string {
+    return this.speakingStyle;
+  }
+
+  getEmotion(): string {
+    return this.emotion;
+  }
 }
 
-const CHARACTER_CONFIGS = {
+const CHARACTER_CONFIGS: Record<string, CharacterProfile> = {
   艾琳: new CharacterProfile(
     '艾琳',
     '银翼星舰的导航工程师，独立冷静，沉着果断',
@@ -25,4 +45,4 @@ const CHARACTER_CONFIGS = {
   ),
 };
 
-export { CHARACTER_CONFIGS };
+export { CharacterProfile, CHARACTER_CONFIGS };
