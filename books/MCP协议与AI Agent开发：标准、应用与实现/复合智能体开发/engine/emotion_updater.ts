@@ -20,6 +20,11 @@ function processMemories(memories: Memory[]): string {
     .join('\n');
 }
 
+function extractJSON(text: string): string {
+  const match = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+  return match ? match[1].trim() : text.trim();
+}
+
 class EmotionUpdate {
   async forward(
     name: string,
@@ -47,7 +52,7 @@ ${currentThoughts}
 `;
 
     const response = await callLLM(prompt);
-    const result: EmotionResult = JSON.parse(response);
+    const result: EmotionResult = JSON.parse(extractJSON(response));
     return result;
   }
 }

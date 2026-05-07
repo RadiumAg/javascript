@@ -23,6 +23,11 @@ interface EditHistoryEntry {
   result: string;
 }
 
+function extractJSON(text: string): string {
+  const match = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+  return match ? match[1].trim() : text.trim();
+}
+
 class DirectEdit {
   private editHistory: EditHistoryEntry[] = [];
 
@@ -45,7 +50,7 @@ ${storyText}
 `;
 
     const response = await callLLM(prompt);
-    const editData: { edit_operations: EditOperation[] } = JSON.parse(response);
+    const editData: { edit_operations: EditOperation[] } = JSON.parse(extractJSON(response));
 
     for (const op of editData.edit_operations) {
       if (!this.validateEdit(op)) {
