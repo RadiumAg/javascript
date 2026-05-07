@@ -1,51 +1,35 @@
-interface CharacterState {
-  [key: string]: unknown;
-}
-
-interface PlotThread {
-  [key: string]: unknown;
-}
-
-interface StorySummary {
-  current_scene: string;
-  characters_count: number;
-  plot_threads_count: number;
-  mood: string;
-}
-
 class StoryState {
-  private currentScene: string = '';
-  private characters: Record<string, CharacterState> = {};
-  private plotThreads: PlotThread[] = [];
-  private mood: string = 'neutral';
-  private history: string[] = [];
+  private phases: string[] = ['相遇', '冲突', '理解'];
+  private currentIndex: number = 0;
+  private flags: Record<string, boolean> = {
+    '冲突已触发': false,
+    '理解已建立': false,
+  };
 
-  updateScene(newScene: string): void {
-    this.history.push(this.currentScene);
-    this.currentScene = newScene;
+  getCurrentPhase(): string {
+    return this.phases[this.currentIndex];
   }
 
-  updateCharacterState(charName: string, state: CharacterState): void {
-    this.characters[charName] = state;
+  advancePhase(): void {
+    if (this.currentIndex < this.phases.length - 1) {
+      this.currentIndex++;
+    }
   }
 
-  addPlotThread(thread: PlotThread): void {
-    this.plotThreads.push(thread);
+  setFlag(key: string, value: boolean = true): void {
+    this.flags[key] = value;
   }
 
-  setMood(mood: string): void {
-    this.mood = mood;
+  getFlag(key: string): boolean {
+    return this.flags[key] ?? false;
   }
 
-  getSummary(): StorySummary {
-    return {
-      current_scene: this.currentScene,
-      characters_count: Object.keys(this.characters).length,
-      plot_threads_count: this.plotThreads.length,
-      mood: this.mood,
-    };
+  reset(): void {
+    this.currentIndex = 0;
+    for (const key of Object.keys(this.flags)) {
+      this.flags[key] = false;
+    }
   }
 }
 
 export { StoryState };
-export type { CharacterState, PlotThread, StorySummary };
