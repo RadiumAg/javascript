@@ -11,7 +11,7 @@ class StoryDirector {
   storyPhases = ['相遇', '冲突', '理解'];
   phaseIndex = 0;
 
-  initializeCharacters() {
+  async initializeCharacters() {
     console.log('【系统】剧本角色初始化中...\n');
     for (const name of this.characterNames) {
       this.context[name] = new CharacterContextManager(name);
@@ -26,17 +26,16 @@ class StoryDirector {
     );
   }
 
-  runStoryLoop() {
+  async runStoryLoop() {
     console.log('\n【系统】剧情演化开始...\n');
     for (let index = 0; index < 3; index++) {
       const phase = this.storyPhases[this.phaseIndex];
       console.log(`\n--第${index + 1} . 剧情阶段【${phase}】--`);
 
       for (const name of this.characterNames) {
-        const response = this.context[name].generateResponse(
+        const response = await this.context[name].generateResponse(
           `你好，${name}，当前剧情阶段是${phase}，请发表你的想法。`,
         );
-        this.context[name].addToContext(response);
         console.log(`\n【${name}】${response}`);
       }
 
