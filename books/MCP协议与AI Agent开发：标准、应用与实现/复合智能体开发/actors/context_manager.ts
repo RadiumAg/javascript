@@ -1,4 +1,16 @@
-import { CharacterProfile, CHARACTER_CONFIGS } from './character_config';
+import { CharacterPromptTemplates } from '../prompts/character_prompt_templates';
+
+interface LLMClient {
+  generate(prompt: string): string;
+}
+
+interface CharacterProfile {
+  name: string;
+  personality: string;
+  speaking_style: string;
+  current_emotion: string;
+  emotion_intensity: number;
+}
 
 interface ContextMessage {
   role: 'system' | 'user' | 'assistant';
@@ -6,52 +18,61 @@ interface ContextMessage {
 }
 
 class CharacterContextManager {
-  name: string;
-  private profile: CharacterProfile;
-  private contextHistory: ContextMessage[] = [];
+  private characterName: string;
+  private characterProfile: CharacterProfile;
+  private llm: LLMClient;
+  private context: string = '';
+  private history: ContextMessage[] = [];
 
-  constructor(name: string) {
-    this.name = name;
-    const config = CHARACTER_CONFIGS[name];
-    if (!config) {
-      throw new Error(`角色配置未找到: ${name}`);
-    }
-    this.profile = config;
+  constructor(
+    characterName: string,
+    characterProfile: CharacterProfile,
+    llm: LLMClient,
+  ) {
+    this.characterName = characterName;
+    this.characterProfile = characterProfile;
+    this.llm = llm;
   }
 
-  initializeContext(): void {
-    const background = this.profile.getBackground();
-    const personality = this.profile.getPersonality();
-    const speakingStyle = this.profile.getSpeakingStyle();
-    const emotion = this.profile.getEmotion();
-
-    this.contextHistory = [];
-
-    this.contextHistory.push({
-      role: 'system',
-      content: `你是${this.name}。${background}。你的性格是${personality}，说话风格是${speakingStyle}。你现在的情绪状态是${emotion}。`,
+  get systemPrompt(): string {
+    return CharacterPromptTemplates.formatSystemPrompt({
+      name: this.characterName,
+      personality: this.characterProfile.personality,
+      speaking_style: this.characterProfile.speaking_style,
+      current_emotion: this.characterProfile.current_emotion,
+      emotion_intensity: this.characterProfile.emotion_intensity,
     });
-
-    console.log(`【${this.name}】角色上下文已初始化`);
   }
 
-  addToContext(role: 'user' | 'assistant', content: string): void {
-    this.contextHistory.push({ role, content });
-  }
+  generateResponse(context: string): string {
+    this.context = context;
+    const userPrompt = CharacterPromptTemplates.formatResponsePrompt({
+      name: this.characterName,
+      plot_context: context,
+      scene_description: '',
+      other_characters: '',
+    });
+    const fullPrompt = `${this.systemPrompt}\n\n${userPrompt}`;
+    const response = this.llm.generate(fullPrompt);
 
-  getContextHistory(): ContextMessage[] {
-    return [...this.contextHistory];
-  }
-
-  generateResponse(prompt: string): string {
-    this.contextHistory.push({ role: 'user', content: prompt });
-
-    const response = `[${this.name}] 基于当前剧情发展和我的角色设定，我认为...`;
-
-    this.contextHistory.push({ role: 'assistant', content: response });
+    this.history.push({ role: 'user', content: context });
+    this.history.push({ role: 'assistant', content: response });
 
     return response;
+  }
+
+  updateContext(newContext: string): void {
+    this.context = newContext;
+  }
+
+  getHistory(): ContextMessage[] {
+    return [...this.history];
+  }
+
+  clearHistory(): void {
+    this.history = [];
   }
 }
 
 export { CharacterContextManager };
+export type { LLMClient, CharacterProfile, ContextMessage };

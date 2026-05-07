@@ -36,7 +36,7 @@ class StoryDirector {
         const response = this.context[name].generateResponse(
           `你好，${name}，当前剧情阶段是${phase}，请发表你的想法。`,
         );
-        this.context[name].updateContext(response);
+        this.context[name].addToContext(response);
         console.log(`\n【${name}】${response}`);
       }
 
