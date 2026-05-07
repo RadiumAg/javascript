@@ -8,7 +8,7 @@ const client = new OpenAI({
 
 export async function generateResponse(prompt: string): Promise<string> {
   const response = await client.chat.completions.create({
-    model: 'mimo-v2-pro',
+    model: 'mimo-v2.5-pro',
     messages: [{ role: 'user', content: prompt }],
   });
   return response.choices[0].message.content ?? '';
