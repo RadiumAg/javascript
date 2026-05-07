@@ -1,87 +1,34 @@
-interface LLMClient {
-  generate(prompt: string): string;
-}
+class InputRouter {
+  private validCommands: Record<string, (content: string) => string>;
 
-interface BranchOption {
-  description: string;
-  impact_analysis: string;
-}
-
-interface BranchResult {
-  selected_option: number;
-  reason: string;
-  score: number;
-}
-
-interface PlayerPreferences {
-  style?: string;
-  exploration_rate?: number;
-}
-
-class BranchController {
-  private llm: LLMClient;
-  private playerPreferences: PlayerPreferences;
-
-  constructor(llm: LLMClient) {
-    this.llm = llm;
-    this.playerPreferences = {};
+  constructor() {
+    this.validCommands = {
+      '切换情绪': this.routeEmotionSwitch.bind(this),
+      '注入剧情': this.routeStoryInjection.bind(this),
+      '查看状态': this.routeStatusView.bind(this),
+    };
   }
 
-  forward(
-    context: string,
-    currentStoryText: string,
-    branchOptions: BranchOption[],
-  ): BranchResult {
-    const playerStyle = this.playerPreferences.style ?? 'balanced';
-    const explorationRate = this.playerPreferences.exploration_rate ?? 0.3;
-
-    const optionsText = this.formatOptions(branchOptions);
-
-    const prompt = `
-当前剧情：${currentStoryText}
-
-场景上下文：${context}
-
-可选分支：
-${optionsText}
-
-玩家风格倾向：${playerStyle}
-探索倾向度：${explorationRate}
-
-请分析每个分支的利弊，并选择最适合当前情境的分支。
-返回JSON格式：
-- selected_option: 选择的分支序号（从1开始）
-- reason: 选择理由
-- score: 置信度（0.0到1.0）
-`;
-
-    const response = this.llm.generate(prompt);
-    const result: BranchResult = JSON.parse(response);
-    this.applyExplorationBias(result, playerStyle, explorationRate);
-    return result;
-  }
-
-  private formatOptions(options: BranchOption[]): string {
-    return options
-      .map(
-        (opt, index) =>
-          `${index + 1}. ${opt.description}\n   影响分析：${opt.impact_analysis}`,
-      )
-      .join('\n');
-  }
-
-  private applyExplorationBias(
-    result: BranchResult,
-    style: string,
-    explorationRate: number,
-  ): void {
-    if (style === 'conservative') {
-      result.score *= 1 - explorationRate * 0.5;
-    } else if (style === 'adventurous') {
-      result.score *= 1 + explorationRate * 0.5;
+  route(command: string, content: string): string {
+    for (const [keyword, handler] of Object.entries(this.validCommands)) {
+      if (command.startsWith(keyword)) {
+        return handler(content);
+      }
     }
+    return '【系统】未知指令，请重新输入';
+  }
+
+  private routeEmotionSwitch(emotion: string): string {
+    return `【系统】角色情绪已设定为: ${emotion}`;
+  }
+
+  private routeStoryInjection(plot: string): string {
+    return `【系统】已注入新剧情片段: ${plot}`;
+  }
+
+  private routeStatusView(_content: string): string {
+    return '【系统】当前状态，阶段-相遇，情绪-平静，角色-艾琳/诺亚';
   }
 }
 
-export { BranchController };
-export type { LLMClient, BranchOption, BranchResult, PlayerPreferences };
+export { InputRouter };
