@@ -1,28 +1,23 @@
 import { CharacterContextManager } from './actors/context_manager';
 
-interface Context {
-  name: string;
-  phase: string;
-}
-
 class StoryDirector {
   characterNames = ['艾琳', '诺亚'];
-  context: Record<string, any> = {};
+  contexts: Record<string, any> = {};
   storyPhases = ['相遇', '冲突', '理解'];
   phaseIndex = 0;
 
   async initializeCharacters() {
     console.log('【系统】剧本角色初始化中...\n');
     for (const name of this.characterNames) {
-      this.context[name] = new CharacterContextManager(name);
-      this.context[name].initializeContext();
+      this.contexts[name] = new CharacterContextManager(name);
+      this.contexts[name].initializeContext();
     }
     console.log(
-      '【系统】初始化完成，当参与角色',
+      '【系统】初始化完成，当前参与角色：',
       this.characterNames.join('、'),
     );
     console.log(
-      '\n【背景】再遥远的未来，艾琳与诺亚在星舰上初次相遇，他们的名誉即将交汇...',
+      '\n【背景】在遥远的未来，艾琳与诺亚在星舰上初次相遇，他们的命运即将交汇……',
     );
   }
 
@@ -33,10 +28,11 @@ class StoryDirector {
       console.log(`\n--第${index + 1} . 剧情阶段【${phase}】--`);
 
       for (const name of this.characterNames) {
-        const response = await this.context[name].generateResponse(
-          `你好，${name}，当前剧情阶段是${phase}，请发表你的想法。`,
-        );
-        console.log(`\n【${name}】${response}`);
+        const ctx = this.contexts[name];
+        const prompt = ctx.buildPrompt(phase);
+        const response = await ctx.generateResponse(prompt);
+        ctx.updateContext(response);
+        console.log(`${name}: ${response}`);
       }
 
       this.advancePhase();

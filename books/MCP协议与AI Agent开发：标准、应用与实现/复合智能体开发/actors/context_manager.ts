@@ -27,7 +27,7 @@ class CharacterContextManager {
     this.history.push(initialContext);
   }
 
-  private buildPrompt(phase: string): string {
+  buildPrompt(phase: string): string {
     const context = this.history.slice(-3).join('\n');
     return `
 当前剧情阶段：${phase}
@@ -44,13 +44,11 @@ ${context}
   }
 
   async generateResponse(prompt: string): Promise<string> {
-    const fullPrompt = this.buildPrompt(prompt);
-    const response = await callLLM(fullPrompt);
-    this.history.push(`${this.name}: ${response}`);
+    const response = await callLLM(prompt);
     return response;
   }
 
-  addToContext(response: string): void {
+  updateContext(response: string): void {
     this.history.push(`${this.name}: ${response}`);
   }
 
