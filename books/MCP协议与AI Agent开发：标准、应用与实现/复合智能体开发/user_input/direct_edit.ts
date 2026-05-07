@@ -1,6 +1,4 @@
-interface LLMClient {
-  generate(prompt: string): string;
-}
+import { generateResponse as callLLM } from '../engine/generator';
 
 interface EditOperation {
   type: 'character_replace' | 'event_insert' | 'scene_modify';
@@ -26,14 +24,9 @@ interface EditHistoryEntry {
 }
 
 class DirectEdit {
-  private llm: LLMClient;
   private editHistory: EditHistoryEntry[] = [];
 
-  constructor(llm: LLMClient) {
-    this.llm = llm;
-  }
-
-  forward(storyText: string, editInstructions: string): EditResult {
+  async forward(storyText: string, editInstructions: string): Promise<EditResult> {
     const prompt = `
 当前故事文本：
 ${storyText}
@@ -51,7 +44,7 @@ ${storyText}
 - new_scene: 新场景内容（scene_modify时使用）
 `;
 
-    const response = this.llm.generate(prompt);
+    const response = await callLLM(prompt);
     const editData: { edit_operations: EditOperation[] } = JSON.parse(response);
 
     for (const op of editData.edit_operations) {
@@ -116,4 +109,4 @@ ${storyText}
 }
 
 export { DirectEdit };
-export type { LLMClient, EditOperation, EditResult, EditHistoryEntry };
+export type { EditOperation, EditResult, EditHistoryEntry };

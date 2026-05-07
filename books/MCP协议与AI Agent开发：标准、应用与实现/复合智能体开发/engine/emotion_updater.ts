@@ -1,12 +1,9 @@
 import { CharacterProfile } from '../actors/character_config';
+import { generateResponse as callLLM } from '../engine/generator';
 
 interface Memory {
   content: string;
   summary: string;
-}
-
-interface LLMClient {
-  generate(prompt: string): string;
 }
 
 interface EmotionResult {
@@ -24,18 +21,12 @@ function processMemories(memories: Memory[]): string {
 }
 
 class EmotionUpdate {
-  private llm: LLMClient;
-
-  constructor(llm: LLMClient) {
-    this.llm = llm;
-  }
-
-  forward(
+  async forward(
     name: string,
     profile: CharacterProfile,
     memories: Memory[],
     currentThoughts: string,
-  ): EmotionResult {
+  ): Promise<EmotionResult> {
     const memoryStr = processMemories(memories);
 
     const prompt = `
@@ -55,11 +46,11 @@ ${currentThoughts}
 - emotion_intensity: 情绪强度（0.0到1.0之间的浮点数）
 `;
 
-    const response = this.llm.generate(prompt);
+    const response = await callLLM(prompt);
     const result: EmotionResult = JSON.parse(response);
     return result;
   }
 }
 
 export { EmotionUpdate, processMemories };
-export type { Memory, LLMClient, EmotionResult };
+export type { Memory, EmotionResult };

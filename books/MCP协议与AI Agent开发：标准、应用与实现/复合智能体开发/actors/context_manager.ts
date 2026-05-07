@@ -1,5 +1,7 @@
 import { CHARACTER_CONFIGS, CharacterProfile } from './character_config';
 import { generateResponse as callLLM } from '../engine/generator';
+import { buildCharacterPrompt } from '../prompts/character_prompt_templates';
+import { emotionToneHint } from '../prompts/emotion_map';
 
 interface ContextMessage {
   role: 'system' | 'user' | 'assistant';
@@ -29,23 +31,26 @@ class CharacterContextManager {
 
   buildPrompt(phase: string): string {
     const context = this.history.slice(-3).join('\n');
-    return `
-当前剧情阶段：${phase}
-角色名称：${this.name}
-角色背景：${this.profile.getBackground()}
-性格特点：${this.profile.getPersonality()}
-说话风格：${this.profile.getSpeakingStyle()}
-当前情绪：${this.profile.getEmotion()}
-
-上下文摘要：
-${context}
-
-请以${this.name}的身份，根据当前情境做出回应。`;
+    const toneHint = emotionToneHint(this.profile.getEmotion());
+    const prompt = buildCharacterPrompt(
+      this.name,
+      this.profile.getBackground(),
+      this.profile.getPersonality(),
+      this.profile.getSpeakingStyle(),
+      this.profile.getEmotion(),
+      phase,
+      context,
+    );
+    return `${prompt}\n语气风格提示：${toneHint}`;
   }
 
   async generateResponse(prompt: string): Promise<string> {
     const response = await callLLM(prompt);
     return response;
+  }
+
+  getProfile(): CharacterProfile {
+    return this.profile;
   }
 
   updateContext(response: string): void {

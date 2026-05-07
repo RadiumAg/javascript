@@ -1,20 +1,12 @@
-interface LLMClient {
-  generate(prompt: string): string;
-}
+import { generateResponse as callLLM } from '../engine/generator';
 
 class ResponseCoordinator {
-  private llm: LLMClient;
-
-  constructor(llm: LLMClient) {
-    this.llm = llm;
-  }
-
-  coordinateResponses(
+  async coordinateResponses(
     storyContext: string,
     characterResponses: Record<string, string>,
-  ): string {
+  ): Promise<string> {
     const prompt = this.buildCoordinatorPrompt(storyContext, characterResponses);
-    return this.llm.generate(prompt);
+    return await callLLM(prompt);
   }
 
   private buildCoordinatorPrompt(
@@ -35,4 +27,3 @@ class ResponseCoordinator {
 }
 
 export { ResponseCoordinator };
-export type { LLMClient };
