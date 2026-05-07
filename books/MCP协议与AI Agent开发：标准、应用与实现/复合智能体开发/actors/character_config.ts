@@ -26,6 +26,10 @@ class CharacterProfile {
   getEmotion(): string {
     return this.emotion;
   }
+
+  setEmotion(emotion: string): void {
+    this.emotion = emotion;
+  }
 }
 
 const CHARACTER_CONFIGS: Record<string, CharacterProfile> = {
