@@ -1,4 +1,5 @@
 import { generateResponse as callLLM } from '../engine/generator';
+import { extractJSON } from '../utils/json';
 
 interface EditOperation {
   type: 'character_replace' | 'event_insert' | 'scene_modify';
@@ -21,11 +22,6 @@ interface EditHistoryEntry {
   original_text: string;
   edit_operations: EditOperation[];
   result: string;
-}
-
-function extractJSON(text: string): string {
-  const match = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
-  return match ? match[1].trim() : text.trim();
 }
 
 class DirectEdit {

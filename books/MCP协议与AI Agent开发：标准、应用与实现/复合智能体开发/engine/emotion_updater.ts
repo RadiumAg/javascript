@@ -1,5 +1,6 @@
 import { CharacterProfile } from '../actors/character_config';
 import { generateResponse as callLLM } from '../engine/generator';
+import { extractJSON } from '../utils/json';
 
 interface Memory {
   content: string;
@@ -18,11 +19,6 @@ function processMemories(memories: Memory[]): string {
   return memories
     .map((memory, index) => `${index + 1}. ${memory.summary}`)
     .join('\n');
-}
-
-function extractJSON(text: string): string {
-  const match = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
-  return match ? match[1].trim() : text.trim();
 }
 
 class EmotionUpdate {
