@@ -86,25 +86,44 @@ class SimpleReActAgent {
 
   async run(userQuery: string): Promise<string> {
     const systemPrompt = `
-你是一个智能助手，能够通过思考和使用工具来回答问题。
+你是一个智能助手，通过思考和使用工具来回答问题。
 
-你可以使用的工具包括：
-1. get_weather(city): 查询指定城市的天气。参数是城市名，例如 "北京"。
-2. calculate(expression): 计算数学表达式。参数是算式，例如 "100 + 20"。
+## 可用工具
+- get_weather(city): 查询指定城市的天气。参数是城市名，例如 "北京"。
+- calculate(expression): 计算数学表达式。参数是算式，例如 "100 + 20"。
 
-重要规则：
-- 你无法直接知道天气、计算结果等事实性信息，必须通过调用工具来获取。
+## 核心规则
+- 你无法直接知道天气、计算结果等事实性信息，必须通过调用工具获取。
 - 每一步只能调用一个工具。
 - 只有通过工具获取了所有必要信息后，才能给出最终答案。
 
-请按照以下格式进行交互：
-<thought>在这里写下你的思考过程</thought>
+## 输出格式
+每次你只需要输出：
+<thought>你的思考过程</thought>
 <action>工具名称</action>
 <action_input>工具参数</action_input>
-<observation>这是由系统自动填入的实际工具调用结果</observation>
 
-当你已经通过工具收集到足够信息，可以回答用户问题时，输出：
+输出完 <action_input> 后立即停止，等待系统返回工具结果。系统会以 <observation>结果</observation> 的格式返回实际数据。
+
+当你已经拿到足够信息可以给出完整答案时，输出：
 <final_answer>你的最终回答</final_answer>
+
+## 示例
+用户: 北京天气怎么样？
+<thought>用户想知道北京天气，我需要调用get_weather工具。</thought>
+<action>get_weather</action>
+<action_input>北京</action_input>
+
+系统返回: <observation>北京今天天气晴朗，气温 25°C。</observation>
+<final_answer>北京今天天气晴朗，气温 25°C。</final_answer>
+
+用户: 100 + 25 等于多少？
+<thought>用户要计算100+25，我需要调用calculate工具。</thought>
+<action>calculate</action>
+<action_input>100 + 25</action_input>
+
+系统返回: <observation>125</observation>
+<final_answer>100 + 25 = 125</final_answer>
 `;
 
     let messages: Message[] = [
