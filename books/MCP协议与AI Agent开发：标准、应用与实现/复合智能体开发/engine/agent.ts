@@ -1,5 +1,4 @@
 import { generateResponse as callLLM } from './generator';
-import { extractJSON } from '../utils/json';
 
 interface Tool {
   name: string;
@@ -12,6 +11,33 @@ interface AgentDecision {
   thought: string;
   action: string;
   params: Record<string, string>;
+}
+
+function parseXMLDecision(text: string): AgentDecision {
+  const stripFences = text
+    .replace(/```(?:xml)?\s*\n?/g, '')
+    .replace(/```/g, '');
+
+  const thoughtMatch = stripFences.match(/<thought>([\s\S]*?)<\/thought>/);
+  const actionMatch = stripFences.match(/<action>([\s\S]*?)<\/action>/);
+
+  const thought = thoughtMatch ? thoughtMatch[1].trim() : '';
+  const actionStr = actionMatch ? actionMatch[1].trim() : '';
+
+  // 解析 "toolname(key1="val1", key2="val2")" 或 "toolname()"
+  const nameMatch = actionStr.match(/^(\w+)/);
+  const action = nameMatch ? nameMatch[1] : actionStr;
+
+  const params: Record<string, string> = {};
+  const argsMatch = actionStr.match(/\(([\s\S]*)\)/);
+  if (argsMatch && argsMatch[1].trim()) {
+    const argPairs = argsMatch[1].matchAll(/(\w+)\s*=\s*"([^"]*)"/g);
+    for (const pair of argPairs) {
+      params[pair[1]] = pair[2];
+    }
+  }
+
+  return { thought, action, params };
 }
 
 class StoryAgent {
@@ -42,27 +68,27 @@ ${toolList}
 当前系统状态：
 ${state}
 
-请根据当前状态推理并决定下一步行动。以JSON格式返回（不要包含markdown代码块标记）：
-{
-  "thought": "你的推理过程：为什么选择这个行动，期望达到什么效果",
-  "action": "工具名称",
-  "params": { "参数名": "参数值" }
-}
+请根据当前状态推理并决定下一步行动。用以下XML格式输出：
+
+<thought>你的推理过程：为什么选择这个行动，期望达到什么效果</thought>
+<action>工具名(参数名="参数值")</action>
+
+示例：
+<thought>相遇阶段刚开始，艾琳还没有发言，应该先让她说话</thought>
+<action>character_speak(character="艾琳")</action>
 
 关键规则：
 - 每个剧情阶段先让所有角色依次发言，再更新情绪、检测触发、协调推进
 - 「协调」后判断是否应该推进阶段或结束
-- 当剧情充分发展后使用 finish 结束
-- 每次只选择一个行动
-- params 值不加引号，如 "params": { "character": "艾琳" }`;
+- 当剧情充分发展后使用 finish(summary="结局概述") 结束
+- 每次只输出一组 thought 和 action
+- 无参数的工具写为 toolname()，如 update_emotions()`;
   }
 
   private async decide(state: string): Promise<AgentDecision> {
     const prompt = this.buildDecisionPrompt(state);
     const response = await callLLM(prompt);
-    const json = extractJSON(response);
-    const decision: AgentDecision = JSON.parse(json);
-    return decision;
+    return parseXMLDecision(response);
   }
 
   async run(getState: () => string): Promise<void> {
