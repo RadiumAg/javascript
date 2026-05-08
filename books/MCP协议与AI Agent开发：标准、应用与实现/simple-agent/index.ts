@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import dotenv from 'dotenv';
+dotenv.config();
 
 interface ToolDescription {
   name: string;
@@ -24,9 +26,10 @@ class SimpleReActAgent {
   private client: OpenAI;
   private tools: Record<string, Function>;
 
-  constructor(apiKey: string) {
+  constructor() {
     this.client = new OpenAI({
-      apiKey,
+      apiKey: process.env.apiKey,
+      baseURL: process.env.baseURL,
       // 如果你想用其他兼容 OpenAI 的模型，可以修改 base URL
       // baseURL: 'https://api.deepseek.com/v1',
     });
@@ -42,11 +45,11 @@ class SimpleReActAgent {
     // 模拟查询天气的工具
     // 实际应用中这里会调用真实的天气 API
     const weatherMap: Record<string, string> = {
-      '北京': '今天天气晴朗，气温 25°C。',
-      '上海': '今天多云转阴，气温 22°C。',
-      '广州': '今天雷阵雨，气温 28°C。',
-      '深圳': '今天晴天，气温 30°C。',
-      '杭州': '今天小雨，气温 20°C。',
+      北京: '今天天气晴朗，气温 25°C。',
+      上海: '今天多云转阴，气温 22°C。',
+      广州: '今天雷阵雨，气温 28°C。',
+      深圳: '今天晴天，气温 30°C。',
+      杭州: '今天小雨，气温 20°C。',
     };
     return `${city}${weatherMap[city] || '的天气未知。'}`;
   }
@@ -89,16 +92,19 @@ class SimpleReActAgent {
 1. get_weather(city): 查询指定城市的天气。参数是城市名，例如 "北京"。
 2. calculate(expression): 计算数学表达式。参数是算式，例如 "100 + 20"。
 
+重要规则：
+- 你无法直接知道天气、计算结果等事实性信息，必须通过调用工具来获取。
+- 每一步只能调用一个工具。
+- 只有通过工具获取了所有必要信息后，才能给出最终答案。
+
 请按照以下格式进行交互：
 <thought>在这里写下你的思考过程</thought>
 <action>工具名称</action>
 <action_input>工具参数</action_input>
 <observation>这是由系统自动填入的实际工具调用结果</observation>
 
-如果你已经知道最终答案，可以直接输出：
+当你已经通过工具收集到足够信息，可以回答用户问题时，输出：
 <final_answer>你的最终回答</final_answer>
-
-注意：请严格按照上述格式输出，不要随意偏离。
 `;
 
     let messages: Message[] = [
@@ -112,7 +118,7 @@ class SimpleReActAgent {
     for (let i = 0; i < 5; i++) {
       try {
         const response = await this.client.chat.completions.create({
-          model: 'gpt-3.5-turbo', // 或者 'gpt-4', 'deepseek-chat' 等
+          model: 'mimo-v2.5-pro', // 或者 'gpt-4', 'deepseek-chat' 等
           messages: messages as any, // 类型适配
           temperature: 0,
         });
@@ -122,12 +128,19 @@ class SimpleReActAgent {
 
         // 检查是否已完成
         if (content.includes('<final_answer>')) {
-          const match = content.match(/<final_answer>([\s\S]*?)<\/final_answer>/i);
+          const match = content.match(
+            /<final_answer>([\s\S]*?)<\/final_answer>/i,
+          );
           if (match) {
             return match[1].trim();
           }
           // 如果格式不完全匹配，尝试从文本中提取
-          return content.split('<final_answer>')[1]?.split('</final_answer>')[0]?.trim() || '无法解析最终答案';
+          return (
+            content
+              .split('<final_answer>')[1]
+              ?.split('</final_answer>')[0]
+              ?.trim() || '无法解析最终答案'
+          );
         }
 
         // 解析工具调用
@@ -143,10 +156,16 @@ class SimpleReActAgent {
 
             // 将 AI 的思考和工具的观察结果都加入对话历史
             messages.push({ role: 'assistant', content });
-            messages.push({ role: 'user', content: `<observation>${result}</observation>` });
+            messages.push({
+              role: 'user',
+              content: `<observation>${result}</observation>`,
+            });
           } else {
             console.log(`⚠️ 未知工具: ${name}`);
-            messages.push({ role: 'user', content: `<observation>未知工具 "${name}"</observation>` });
+            messages.push({
+              role: 'user',
+              content: `<observation>未知工具 "${name}"</observation>`,
+            });
           }
         } else {
           // 如果没有找到工具调用，继续下一次循环或结束
@@ -166,11 +185,11 @@ class SimpleReActAgent {
 // --- 示例使用 ---
 async function main() {
   // 替换为你的 API Key
-  const agent = new SimpleReActAgent('YOUR_API_KEY_HERE');
+  const agent = new SimpleReActAgent();
 
   // 测试查询
-  const query = "帮我算一下 100 加上 25 等于多少，然后告诉我北京天气怎么样？";
-  // const query = "上海今天的天气如何？"; 
+  const query = '帮我算一下 100 加上 25 等于多少，然后告诉我北京天气怎么样？';
+  // const query = "上海今天的天气如何？";
   // const query = "计算 (50 * 2) + 10 的结果";
 
   try {
@@ -181,9 +200,6 @@ async function main() {
   }
 }
 
-// 只在直接运行此文件时执行主函数
-if (require.main === module) {
-  main();
-}
+main();
 
 export default SimpleReActAgent;
