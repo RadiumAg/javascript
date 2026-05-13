@@ -16,7 +16,7 @@ Thought: [你的思考过程和下一步计划]
 Action: [你要执行的具体步骤]
 
 Action的格式必须是一下之一：
-1. 调用工具：functionName(arg_name="arg_value")
+1. 调用工具：functionName("arg_value1", "arg_value2")
 2. 结束任务：Finish[最终答案]
 
 # 重要提示：
@@ -29,7 +29,7 @@ Action的格式必须是一下之一：
 };
 
 async function getWeather(city: string) {
-  const url = `https://wtrr.in/${city}?format=j1`;
+  const url = `https://wttr.in/${city}?format=j1`;
 
   try {
     const response = await fetch(url, {
@@ -158,15 +158,14 @@ async function run() {
 
     const actionStr = llmOutput?.match(/Action:([\s\S]*)/)?.[1]?.trim() || '';
     if (actionStr.startsWith('Finish')) {
-      const finalAnswer = actionStr.match(/Finish\[(.*)\]/)?.[1];
+      const finalAnswer = actionStr.match(/Finish\[(.*)\]/m)?.[1];
       console.log(`任务完成，最终答案：${finalAnswer}`);
       break;
     }
 
     const toolName = actionStr.match(/(\w+)\(/)?.[1];
-    const argsStr = actionStr.match(/\((.*)\)/)?.[1] || '';
-    const paramRegex = /(\w+)="([^"]*)"/g;
-    let paramMatch = paramRegex.exec(argsStr);
+    const argsStr = actionStr.match(/\("(.*)"\)/)?.[1] || '';
+    let paramMatch = argsStr.split(',').map((arg) => arg.trim());
 
     let observation = '';
     if (Reflect.has(availableTools, toolName)) {
