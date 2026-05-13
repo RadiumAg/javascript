@@ -113,7 +113,7 @@ const availableTools = {
 async function run() {
   // 2.初始化
   const userPrompt =
-    '你好，请帮我查询一下今天北京的天气，然后根据天气推荐一个合适的旅游景点';
+    '你好，请帮我查询一下今天杭州的天气，然后根据天气推荐一个合适的旅游景点';
   const promptHistory = [
     AGENT_SYSTEM_PROMPT,
     {
@@ -165,7 +165,9 @@ async function run() {
 
     const toolName = actionStr.match(/(\w+)\(/)?.[1];
     const argsStr = actionStr.match(/\("(.*)"\)/)?.[1] || '';
-    let paramMatch = argsStr.split(',').map((arg) => arg.trim());
+    let paramMatch = argsStr
+      .split(',')
+      .map((arg) => arg.trim().replace('"', ''));
 
     let observation = '';
     if (Reflect.has(availableTools, toolName)) {
