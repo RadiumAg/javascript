@@ -1,12 +1,15 @@
+import dotEnv from 'dotenv';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/index';
 
-const client = new OpenAI({
-  apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
-  baseURL: process.env['OPENAI_BASE_URL'],
-});
+dotEnv.config();
 
 export const callLLM = async (messages: Array<ChatCompletionMessageParam>) => {
+  const client = new OpenAI({
+    apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
+    baseURL: process.env['OPENAI_BASE_URL'],
+  });
+
   try {
     const response = await client.chat.completions.create({
       model: 'mimo-v2.5-pro',

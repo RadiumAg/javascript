@@ -1,8 +1,5 @@
-import dotEnv from 'dotenv';
 import { callLLM } from './llm';
 import { ChatCompletionMessageParam } from 'openai/resources/index';
-
-dotEnv.config();
 
 const AGENT_SYSTEM_PROMPT: ChatCompletionMessageParam = {
   role: 'system',
@@ -44,8 +41,6 @@ async function getWeather(city: string) {
     const weatherDesc = currentCondition['weatherDesc'][0]['value'];
     const tempC = currentCondition['temp_C'];
     return `${city}当前天气：${weatherDesc}，气温${tempC}摄氏度`;
-
-    return ``;
   } catch (e) {
     if (e instanceof Error) {
       return `错误：查询天气错误时遇到网络问题 - ${e.message}`;
@@ -175,7 +170,7 @@ async function run() {
 
     let observation = '';
     if (Reflect.has(availableTools, toolName)) {
-      observation = availableTools[toolName](...paramMatch);
+      observation = await availableTools[toolName](...paramMatch);
     } else {
       observation = `错误：为定义的工具${toolName}`;
     }
