@@ -22,7 +22,7 @@ const registerTool = (
 };
 
 const getTool = (name: string) => {
-  toolList.get(name)?.func;
+  return toolList.get(name)?.func;
 };
 
 const getAvailableTools = () => {
