@@ -144,4 +144,4 @@ async function run(question: string) {
   return null;
 }
 
-run('搜一下特朗普访华');
+run('搜一下特朗普访华谈论了啥');
