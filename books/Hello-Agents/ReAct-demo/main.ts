@@ -1,9 +1,12 @@
 import dotEnv from 'dotenv';
-import { getAvailableTools, getTool } from './tool-executor';
+import { getAvailableTools, getTool, registerTool } from './tool-executor';
 import { callLLM } from './llm';
 import { ChatCompletionMessageParam } from 'openai/resources/index';
+import { search } from './tools';
 
 dotEnv.config();
+
+registerTool('search', '搜索工具', search);
 
 const REACT_PROMPT_TEMPLATE = `
 请注意，你是一个有能力调用外部工具的智能助手。
@@ -25,7 +28,7 @@ const history: string[] = [];
 const maxAge = 5;
 
 function format(str: string, ...args: any[]) {
-  return str.replace(/{}/g, () => args.shift());
+  return str.replace(/\{.*\}/g, () => args.shift());
 }
 
 String.prototype.format = format;
@@ -79,6 +82,7 @@ async function run(question: string) {
     const prompt = REACT_PROMPT_TEMPLATE.format(
       REACT_PROMPT_TEMPLATE,
       tools,
+      question,
       historyStr,
     );
 

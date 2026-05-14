@@ -1,6 +1,6 @@
 import { getJson } from 'serpapi';
 
-async function search(query: string) {
+export async function search(query: string) {
   // 一个基于SerpApi的实战网页搜索引擎工具
   // 它会智能的解析搜索引擎，优先返回直接答案或知识图谱信息
   console.log(`🔍 正在执行 [SerpApi] 网页搜索: ${query}`);
