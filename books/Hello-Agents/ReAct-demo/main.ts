@@ -15,6 +15,7 @@ const REACT_PROMPT_TEMPLATE = `
 
 请严格按照一下格式进行回应：
 Thought: 你的思考过程，用于分析问题、拆解任务和规划下一步行动
+Action: 你决定采取的行动，必须是以下格式之一:
 - tool_name[tool_input]:调用一个可用工具。
 - Finish[最终答案]:当你认为已经获得最终答案时。
 - 当你收集到足够的信息，能够回答用户的最终问题时，你必须在Action:字段后使用 Finish[最终答案] 来输出最终答案。
@@ -128,7 +129,7 @@ async function run(question: string) {
     if (typeof toolFunction !== 'function') {
       observation = `错误：未找到名为${toolName}的工具`;
     } else {
-      observation = toolFunction(toolInput); // 调用工具
+      observation = await toolFunction(toolInput); // 调用工具
     }
 
     console.log(`👀 观察: ${observation}`);
