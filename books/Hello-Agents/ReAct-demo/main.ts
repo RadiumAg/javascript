@@ -10,3 +10,8 @@ function format(this: String, ...args: any[]) {
 
 String.prototype.format = format;
 dotEnv.config();
+
+class PlanAndSolveAgent {
+  private Plan:
+  constructor {}
+}
