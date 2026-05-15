@@ -29,7 +29,7 @@ class Executor {
    * @param question
    * @param plan
    */
-  async execute(question: string[], plan: any[]) {
+  async execute(question: string, plan: any[]) {
     let history = ``; // 用于存储历史步骤和结果的字符串;
 
     console.log('\n --- 正在执行计划 ---');
