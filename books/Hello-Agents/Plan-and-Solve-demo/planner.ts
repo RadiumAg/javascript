@@ -36,6 +36,7 @@ class Planner {
         .trim();
       if (planStr) {
         const plan = JSON.parse(planStr);
+        return plan;
       } else {
         return [];
       }
