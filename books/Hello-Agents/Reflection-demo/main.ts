@@ -1,6 +1,4 @@
 import dotEnv from 'dotenv';
-import { callLLM } from './llm';
-import { ChatCompletionMessageParam } from 'openai/resources/index';
 import { Planner } from './planner';
 import { Executor } from './executor';
 
