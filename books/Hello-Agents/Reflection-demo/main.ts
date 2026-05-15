@@ -88,8 +88,35 @@ class ReflectionAgent {
       // b. 检查是否需要停止
       if (feedback.includes('无需改进')) {
         console.log('\n✅ 反思认为代码已无需改进，任务完成。');
+        break;
       }
       this.memory.addRecord('reflection', feedback);
+
+      // c. 优化
+      const refinePrompt = REFINE_PROMPT_TEMPLATE.format(
+        task,
+        lastCode,
+        feedback,
+      );
+
+      const refinedCode = await callLLM([
+        { role: 'user', content: refinePrompt },
+      ]);
+
+      if (refinedCode == null) {
+        continue;
+      }
+
+      this.memory.addRecord('execution', refinedCode);
     }
+
+    const finalCode = this.memory.getLastExecution();
+    console.log(
+      `\n--- 任务完成 ---\n最终生成的代码:\n\`\`\`python\n${finalCode}\n\`\`\``,
+    );
   }
 }
+
+new ReflectionAgent().run(
+  '任务： 编写一个Python函数，找出1到n之间所有的素数 (prime numbers)。',
+);
