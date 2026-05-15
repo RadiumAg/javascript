@@ -63,3 +63,5 @@ class Executor {
     return finalAnswer;
   }
 }
+
+export { Executor };
