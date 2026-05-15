@@ -19,7 +19,31 @@ class Memory {
     console.log(`📝 记忆已更新，新增一条 '${recordType}' 记录。`);
   }
 
-  getTrajectory(str: string) {}
+  /**
+   * 将所有记忆记录格式转化为一个连贯的字符串文本，用于构件提示词
+   * @param str
+   */
+  getTrajectory(str: string) {
+    const trajectoryParts = [];
+
+    for (const record of this.records) {
+      if (record?.type === 'execution') {
+        trajectoryParts.push(`--- 上一轮尝试（代码）--- \n ${record?.content}`);
+      }
+
+      if (record?.type === 'reflection') {
+        trajectoryParts.push(`--- 评审员反馈--- \n ${record?.content}`);
+      }
+    }
+
+    return trajectoryParts.join('\n\n');
+  }
+
+  /**
+   * 获取最近一次的执行结果
+   * 如果不存在，则返回None
+   */
+  getLastExecution() {}
 }
 
 export { Memory };
