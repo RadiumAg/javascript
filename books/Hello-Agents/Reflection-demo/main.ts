@@ -1,6 +1,6 @@
 import dotEnv from 'dotenv';
-import { Planner } from './planner';
-import { Executor } from './executor';
+import { Memory } from './memory';
+import { callLLM } from './llm';
 
 function format(this: String, ...args: any[]) {
   return this.replace(/\{.*\}/g, () => args.shift());
@@ -9,35 +9,87 @@ function format(this: String, ...args: any[]) {
 String.prototype.format = format;
 dotEnv.config();
 
-class PlanAndSolveAgent {
-  private planner = new Planner();
-  private executor = new Executor();
-  constructor() {}
+const INITIAL_PROMPT_TEMPLATE = `
+你是一位资深的Python程序员。请根据以下要求，编写一个Python函数。
+你的代码必须包含完整的函数签名、文档字符串，并遵循PEP 8编码规范。
 
-  /**
-   *
-   * 运行智能体的完整流程：线规划，后执行
-   *
-   */
-  async run(question: string) {
-    console.log(`\n--- 开始处理问题 ---\n问题: ${question}`);
+要求: {task}
 
-    // 1. 调用规划起生成计划
-    const plan = await this.planner.plan(question);
+请直接输出代码，不要包含任何额外的解释。
+`;
 
-    // 检查技术啊是否生成成功
-    if (plan == null) {
-      console.log('\n--- 任务终止 --- \n无法生成有效的行动计划。');
-      return;
+const REFLECT_PROMPT_TEMPLATE = `
+你是一位极其严格的代码评审专家和资深算法工程师，对代码的性能有极致的要求。
+你的任务是审查以下Python代码，并专注于找出其在<strong>算法效率</strong>上的主要瓶颈。
+
+# 原始任务:
+{task}
+
+# 待审查的代码:
+\`\`\`python
+{code}
+\`\`\`
+
+请分析该代码的时间复杂度，并思考是否存在一种<strong>算法上更优</strong>的解决方案来显著提升性能。
+如果存在，请清晰地指出当前算法的不足，并提出具体的、可行的改进算法建议（例如，使用筛法替代试除法）。
+如果代码在算法层面已经达到最优，才能回答“无需改进”。
+
+请直接输出你的反馈，不要包含任何额外的解释。
+`;
+
+const REFINE_PROMPT_TEMPLATE = `
+你是一位资深的Python程序员。你正在根据一位代码评审专家的反馈来优化你的代码。
+
+# 原始任务:
+{task}
+
+# 你上一轮尝试的代码:
+{last_code_attempt}
+评审员的反馈：
+{feedback}
+
+请根据评审员的反馈，生成一个优化后的新版本代码。
+你的代码必须包含完整的函数签名、文档字符串，并遵循PEP 8编码规范。
+请直接输出优化后的代码，不要包含任何额外的解释。
+`;
+
+class ReflectionAgent {
+  private memory = new Memory();
+  private maxIterations = 5;
+
+  async run(task: string) {
+    console.log('\n--- 开始处理任务');
+
+    // 1. 初始执行
+    console.log('\n --- 正在进行初始尝试');
+    const initialPrompt = INITIAL_PROMPT_TEMPLATE.format(task);
+    const initialCode = await callLLM([
+      { role: 'user', content: initialPrompt },
+    ]);
+
+    if (initialCode == null) return;
+
+    this.memory.addRecord('execution', initialCode);
+
+    for (let index = 0; index < this.maxIterations; index++) {
+      console.log(`\n--- 第 ${index + 1}/${this.maxIterations} 轮迭代 ---`);
+
+      // a. 反思
+      console.log('\n -> 正在进行反思...');
+      const lastCode = this.memory.getLastExecution();
+      const reflectPrompt = REFLECT_PROMPT_TEMPLATE.format(task, lastCode);
+      const feedback = await callLLM([
+        { role: 'user', content: reflectPrompt },
+      ]);
+      if (feedback == null) {
+        continue;
+      }
+
+      // b. 检查是否需要停止
+      if (feedback.includes('无需改进')) {
+        console.log('\n✅ 反思认为代码已无需改进，任务完成。');
+      }
+      this.memory.addRecord('reflection', feedback);
     }
-
-    // 2. 调用执行器执行计划
-    const finalAnswer = await this.executor.execute(question, plan);
-
-    console.log(`\n--- 任务完成 ---\n最终答案: ${finalAnswer}")`);
   }
 }
-
-new PlanAndSolveAgent().run(
-  '一个水果店周一卖出了15个苹果。周二卖出的苹果数量是周一的两倍。周三卖出的数量比周二少了5个。请问这三天总共卖出了多少个苹果？',
-);
