@@ -16,7 +16,7 @@ class Planner {
   constructor() {}
 
   async plan(question: string) {
-    const prompt = question.format(question);
+    const prompt = PLANNER_PROMPT_TEMPATE.format(question);
     const messages: ChatCompletionMessageParam[] = [
       { role: 'user', content: prompt },
     ];

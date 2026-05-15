@@ -34,10 +34,12 @@ class PlanAndSolveAgent {
     }
 
     // 2. 调用执行器执行计划
-    const finalAnswer = this.executor.execute(question, plan);
+    const finalAnswer = await this.executor.execute(question, plan);
 
     console.log(`\n--- 任务完成 ---\n最终答案: ${finalAnswer}")`);
   }
 }
 
-new PlanAndSolveAgent().run('');
+new PlanAndSolveAgent().run(
+  '一个水果店周一卖出了15个苹果。周二卖出的苹果数量是周一的两倍。周三卖出的数量比周二少了5个。请问这三天总共卖出了多少个苹果？',
+);
