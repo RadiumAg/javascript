@@ -117,6 +117,4 @@ class ReflectionAgent {
   }
 }
 
-new ReflectionAgent().run(
-  '任务： 编写一个Python函数，找出1到n之间所有的素数 (prime numbers)。',
-);
+new ReflectionAgent().run('任务： 编写一个js函数，实现一个简单的React');
