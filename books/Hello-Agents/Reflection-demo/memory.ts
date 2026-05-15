@@ -41,9 +41,19 @@ class Memory {
 
   /**
    * 获取最近一次的执行结果
-   * 如果不存在，则返回None
+   * 如果不存在，则返回null
    */
-  getLastExecution() {}
+  getLastExecution() {
+    const newRecords = [...this.records].reverse();
+
+    for (const record of newRecords) {
+      if (record?.type === 'execution') {
+        return record?.content;
+      }
+    }
+
+    return null;
+  }
 }
 
 export { Memory };
