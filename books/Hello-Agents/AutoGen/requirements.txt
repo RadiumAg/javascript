@@ -1,0 +1,13 @@
+# AutoGen - Multi-Agent Conversation Framework
+autogen-agentchat>=0.4.0
+autogen-ext[openai]>=0.4.0
+
+# OpenAI API (required by AutoGen for LLM calls)
+openai>=1.0.0
+
+# Optional: for running examples with local models
+# litellm>=1.0.0
+
+# Development tools
+ipykernel>=6.0.0
+jupyter>=1.0.0
