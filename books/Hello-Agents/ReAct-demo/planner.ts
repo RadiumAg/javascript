@@ -24,5 +24,16 @@ class Planner {
     console.log('--- 正在生成计划 ---');
 
     const responseText = await callLLM(messages);
+
+    console.log(`✅ 计划已生成:\n ${responseText}`);
+
+    // 解析LLM输出的列表字符串
+
+    try {
+      const planStr = responseText
+        ?.split('```python')[1]
+        .split('```')[0]
+        .trim();
+    } catch {}
   }
 }
