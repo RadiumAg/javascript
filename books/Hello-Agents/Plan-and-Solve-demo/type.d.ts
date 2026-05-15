@@ -1,3 +1,3 @@
 interface String {
-  format: (str: string, ...args: any[]) => string;
+  format: (this: string, ...args: any[]) => string;
 }
