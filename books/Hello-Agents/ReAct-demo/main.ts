@@ -15,4 +15,13 @@ class PlanAndSolveAgent {
   private planner = new Planner();
   private executor = new Executor();
   constructor() {}
+
+  /**
+   *
+   * 运行智能体的完整流程：线规划，后执行
+   *
+   */
+  run(question: string) {}
 }
+
+new PlanAndSolveAgent().run('');
