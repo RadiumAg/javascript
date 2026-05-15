@@ -34,6 +34,16 @@ class Planner {
         ?.split('```python')[1]
         .split('```')[0]
         .trim();
-    } catch {}
+      if (planStr) {
+        const plan = JSON.parse(planStr);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(`❌ 解析计划时出错: ${e}`);
+      }
+      return [];
+    }
   }
 }
