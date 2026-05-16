@@ -1,6 +1,6 @@
 from autogen_agentchat.agents import AssistantAgent
 
-from src.llm import model_client
+from llm import model_client
 
 def create_code_reviewer(model_client):
     """创建代码审查员智能体"""

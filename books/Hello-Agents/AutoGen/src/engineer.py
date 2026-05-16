@@ -1,5 +1,5 @@
 from autogen_agentchat.agents import AssistantAgent
-from src.llm import model_client
+from llm import model_client
 
 def create_engineer(model_client):
     """创建软件工程师智能体"""

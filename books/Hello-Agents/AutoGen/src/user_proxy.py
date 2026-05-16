@@ -12,3 +12,7 @@ def create_user_proxy():
 
 完成测试后请回复 TERMINATE。""",
     )
+
+user_proxy = create_user_proxy()
+
+__all__ = ["user_proxy"]

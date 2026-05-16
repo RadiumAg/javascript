@@ -16,3 +16,5 @@ team_chat = RoundRobinGroupChat(
     termination_condition=TextMentionTermination("TERMINATE"),
     max_turns=20,
 )
+
+__all__ = ['team_chat']
