@@ -7,8 +7,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <div id="root1"></div>
+
     <script type="module">
       import { render } from './index.js';
+
+      const vnode = {
+        tag: 'div',
+        props: {
+          onClick: () => alert('hello'),
+        },
+      };
 
       const obj = {
         tag: 'div',

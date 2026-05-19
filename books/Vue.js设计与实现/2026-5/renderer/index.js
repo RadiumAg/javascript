@@ -1,0 +1,1 @@
+function renderer(vnode, container) {}
