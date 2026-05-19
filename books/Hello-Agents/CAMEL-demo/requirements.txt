@@ -1,3 +1,3 @@
-# 仅安装核心包；如需完整工具链可改为 camel-ai[all]>=0.2.0
+CAMEL-demo/requirements.txt# 仅安装核心包；如需完整工具链可改为 camel-ai[all]>=0.2.0
 camel-ai>=0.2.0
 python-dotenv>=1.0.0
