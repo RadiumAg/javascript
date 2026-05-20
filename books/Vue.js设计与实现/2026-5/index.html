@@ -20,18 +20,19 @@
 
       // render(obj, document.querySelector('#root'));
 
-      const vnode = {
-        tag: 'div',
-        props: {
-          onClick: () => alert('hello'),
-        },
-        children: 'aaa',
-      };
+      // const vnode = {
+      //   tag: 'div',
+      //   props: {
+      //     onClick: () => alert('hello'),
+      //   },
+      //   children: 'aaa',
+      // };
 
       const vnodeFC = {
         tag: () => {
           return {
             tag: 'div',
+            children: 'vnodeFC',
             props: {
               onClick: () => alert('hello'),
             },
@@ -39,7 +40,7 @@
         },
       };
 
-      renderer(vnode, document.querySelector('#root1'));
+      renderer(vnodeFC, document.querySelector('#root1'));
     </script>
   </body>
 </html>

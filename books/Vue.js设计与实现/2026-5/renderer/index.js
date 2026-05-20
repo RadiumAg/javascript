@@ -1,6 +1,7 @@
 function renderer(vnode, container) {
+  console.log(vnode, container);
   // 处理 children
-  if (typeof vnode.children === 'string') {
+  if (typeof vnode.tag === 'string') {
     // 说明 vnode 描述的是组件
     mountElement(vnode, container);
   } else if (typeof vnode.tag === 'function') {
@@ -37,6 +38,11 @@ function mountElement(vnode, container) {
   container.appendChild(el);
 }
 
-function mountComponent() {}
+function mountComponent(vnode, container) {
+  // 调用组件函数，获取组件要渲染的内容（虚拟 DOM）
+  const subtree = vnode.tag();
+  // 递归地调用 renderer 渲染 subtree
+  renderer(subtree, container);
+}
 
 export { renderer };
