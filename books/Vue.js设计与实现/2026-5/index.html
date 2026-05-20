@@ -28,6 +28,17 @@
         children: 'aaa',
       };
 
+      const vnodeFC = {
+        tag: () => {
+          return {
+            tag: 'div',
+            props: {
+              onClick: () => alert('hello'),
+            },
+          };
+        },
+      };
+
       renderer(vnode, document.querySelector('#root1'));
     </script>
   </body>

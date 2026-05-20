@@ -1,4 +1,15 @@
 function renderer(vnode, container) {
+  // 处理 children
+  if (typeof vnode.children === 'string') {
+    // 说明 vnode 描述的是组件
+    mountElement(vnode, container);
+  } else if (typeof vnode.tag === 'function') {
+    // 说明 vnode 描述的是组件
+    mountComponent(vnode, container);
+  }
+}
+
+function mountElement(vnode, container) {
   // 使用 vnode.tag 作为标签名称创建 DOM 元素
   const el = document.createElement(vnode.tag);
   // 遍历 vnode.props ,将属性、时间添加到DOM元素
@@ -25,5 +36,7 @@ function renderer(vnode, container) {
   // 将元素添加到挂载点下
   container.appendChild(el);
 }
+
+function mountComponent() {}
 
 export { renderer };
