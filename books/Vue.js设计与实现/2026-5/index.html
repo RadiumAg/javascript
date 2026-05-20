@@ -11,20 +11,24 @@
 
     <script type="module">
       import { render } from './index.js';
+      import { renderer } from './renderer/index.js';
+
+      // const obj = {
+      //   tag: 'div',
+      //   children: [{ tag: 'span', children: 'hello world' }],
+      // };
+
+      // render(obj, document.querySelector('#root'));
 
       const vnode = {
         tag: 'div',
         props: {
           onClick: () => alert('hello'),
         },
+        children: 'aaa',
       };
 
-      const obj = {
-        tag: 'div',
-        children: [{ tag: 'span', children: 'hello world' }],
-      };
-
-      render(obj, document.querySelector('#root'));
+      renderer(vnode, document.querySelector('#root1'));
     </script>
   </body>
 </html>
