@@ -10,7 +10,7 @@ const obj = new Proxy(data, {
   // 拦截读取操作
   get(target, key) {
     // 将富足用函数 effect 添加到存储副作用函数的桶中
-    bucket.add(effect);
+    bucket.add(activeEffect);
     // 返回属性值
     return target[key];
   },
@@ -24,7 +24,6 @@ const obj = new Proxy(data, {
     return true;
   },
 });
-
 function effect(fn) {
   activeEffect = fn;
   fn();
