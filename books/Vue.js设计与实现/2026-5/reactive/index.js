@@ -1,8 +1,7 @@
-import { effect } from 'vue';
-
 // 存储服务作用函数的桶
 const bucket = new Set();
-
+// effec 函数用于注册副作用函数
+let activeEffect = null;
 // 原始数据
 const data = { text: 'hello world' };
 
@@ -26,8 +25,16 @@ const obj = new Proxy(data, {
   },
 });
 
+function effect(fn) {
+  activeEffect = fn;
+  fn();
+}
+
 effect(() => {
   console.log('effect run');
   document.body.innerText = obj.text;
 });
 
+setTimeout(() => {
+  obj.text = 'hello vue3';
+}, 1000);
