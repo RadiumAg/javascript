@@ -25,3 +25,9 @@ const obj = new Proxy(data, {
     return true;
   },
 });
+
+effect(() => {
+  console.log('effect run');
+  document.body.innerText = obj.text;
+});
+
