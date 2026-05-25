@@ -21,9 +21,10 @@ const obj = new Proxy(data, {
     if (!deps) {
       depsMap.get(key, (deps = new Set()));
     }
-    // 再根据 key
-    // 将富足用函数 effect 添加到存储副作用函数的桶中
-    bucket.add(activeEffect);
+
+    // 最后将当前激活的副作用函数添加到桶中
+    deps.add(activeEffect);
+
     // 返回属性值
     return target[key];
   },
@@ -31,12 +32,15 @@ const obj = new Proxy(data, {
   set(target, key, newVal) {
     // 设置属性值
     target[key] = newVal;
-    // 把副作用函数从桶里取出来并执行
-    bucket.forEach((fn) => fn());
-    // 返回 true 代表设置操作成功
-    return true;
+    // 根据 target 从桶中取得depsMap，它是key --> effects
+    const depsMap = bucket.get(target);
+    // 根据key取得所有副作用函数 effects
+    const effects = depsMap.get(key);
+    // 执行副作用函数
+    effects && effects.forEach((fn) => fn());
   },
 });
+
 function effect(fn) {
   activeEffect = fn;
   fn();
