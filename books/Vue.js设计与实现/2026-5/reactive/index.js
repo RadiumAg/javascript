@@ -3,6 +3,8 @@ const bucket = new WeakMap();
 window.bucket = bucket;
 // effect 函数用于注册副作用函数
 let activeEffect = null;
+// effect 栈
+const effectStack = [];
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
@@ -70,7 +72,10 @@ function effect(fn) {
   const effectFn = () => {
     cleanup(effectFn);
     activeEffect = effectFn;
+    effectStack.push(effectFn);
     fn();
+    effectStack.pop();
+    activeEffect = effectStack[effectStack.length - 1];
   };
   effectFn.deps = [];
   // 执行副作用函数
