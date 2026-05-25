@@ -1,9 +1,10 @@
 // 存储服务作用函数的桶
 const bucket = new WeakMap();
-// effec 函数用于注册副作用函数
+window.bucket = bucket;
+// effect 函数用于注册副作用函数
 let activeEffect = null;
 // 原始数据
-const data = { text: 'hello world' };
+const data = { ok: true, text: 'hello world' };
 
 // 对原始数据的代理
 const obj = new Proxy(data, {
@@ -18,7 +19,8 @@ const obj = new Proxy(data, {
   set(target, key, newVal) {
     trigger(target, key);
     // 执行副作用函数
-    effects && effects.forEach((fn) => fn());
+    target[key] = newVal;
+    return true;
   },
 });
 
@@ -34,34 +36,53 @@ function track(target, key) {
   let depsMap = bucket.get(target);
   if (!depsMap) {
     // 如果 deps 不存在，那么新建一个 Map 与target关联
-    bucket.set(target, new Map());
+    bucket.set(target, (depsMap = new Map()));
   }
   let deps = depsMap.get(key);
   if (!deps) {
-    depsMap.get(key, (deps = new Set()));
+    depsMap.set(key, (deps = new Set()));
   }
 
   // 最后将当前激活的副作用函数添加到桶中
   deps.add(activeEffect);
+  activeEffect.deps.push(deps);
 }
 
 function trigger(target, key) {
   const depMaps = bucket.get(target);
   if (!depMaps) return;
   const effects = depMaps.get(key);
-  effects && effects.forEach((fn) => fn());
+  const effectsToRun = new Set(effects);
+  effectsToRun && effectsToRun.forEach((effectFn) => effectFn());
+}
+
+function cleanup(effectFn) {
+  // 遍历 effectFn.deps 数组
+  for (let i = 0; i < effectFn.deps.length; i++) {
+    const deps = effectFn.deps[i];
+    deps.delete(effectFn);
+  }
+
+  effectFn.deps.length = 0;
 }
 
 function effect(fn) {
-  activeEffect = fn;
-  fn();
+  const effectFn = () => {
+    cleanup(effectFn);
+    activeEffect = effectFn;
+    fn();
+  };
+  effectFn.deps = [];
+  // 执行副作用函数
+  effectFn();
 }
 
 effect(() => {
   console.log('effect run');
-  document.body.innerText = obj.text;
+  document.body.innerText = obj.ok ? obj.text : 'not';
 });
 
 setTimeout(() => {
-  obj.text = 'hello vue3';
+  obj.ok = false;
+  obj.text = '1';
 }, 1000);
