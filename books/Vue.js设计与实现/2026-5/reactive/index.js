@@ -63,7 +63,11 @@ function trigger(target, key) {
     });
   effectsToRun &&
     effectsToRun.forEach((effectFn) => {
-      effectFn();
+      if (effectFn.options?.scheduler) {
+        effectFn.options.scheduler(effectFn);
+      } else {
+        effectFn(); // 新增
+      }
     });
 }
 
@@ -77,7 +81,7 @@ function cleanup(effectFn) {
   effectFn.deps.length = 0;
 }
 
-function effect(fn) {
+function effect(fn, options = {}) {
   const effectFn = () => {
     cleanup(effectFn);
     activeEffect = effectFn;
@@ -87,6 +91,7 @@ function effect(fn) {
     activeEffect = effectStack[effectStack.length - 1];
   };
   effectFn.deps = [];
+  effectFn.options = options;
   // 执行副作用函数
   effectFn();
 }
