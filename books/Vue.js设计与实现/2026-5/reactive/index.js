@@ -154,7 +154,7 @@ function traverse(value, seen = new Set()) {
   return value;
 }
 
-function watch(source, cb) {
+function watch(source, cb, options = {}) {
   let getter;
   if (typeof source === 'function') {
     getter = source;
@@ -163,15 +163,30 @@ function watch(source, cb) {
   }
   let oldValue;
   let newValue;
+
+  const job = () => {
+    newValue = effectFn();
+    cb(newValue, oldValue);
+    oldValue = newValue;
+  };
+
   const effectFn = effect(() => getter(), {
     lazy: true,
-    scheduler() {
-      newValue = effectFn();
-      cb(newValue, oldValue);
-      oldValue = newValue;
+    scheduler: () => {
+      if (options.flush === 'post') {
+        const p = Promise.resolve();
+        p.then(job);
+      } else {
+        job();
+      }
     },
   });
-  oldValue = effectFn();
+
+  if (options.immediate) {
+    job();
+  } else {
+    oldValue = effectFn();
+  }
 }
 
 obj.foo = 1;
@@ -189,6 +204,17 @@ watch(
   (newValue, oldValue) => {
     console.log('obj.foo的值改变了', newValue, oldValue);
   },
+);
+
+watch(
+  () => {
+    console.log(obj);
+    return obj.foo;
+  },
+  (newValue, oldValue) => {
+    console.log('obj.foo的值改变了', newValue, oldValue);
+  },
+  { immediate: true },
 );
 
 obj.foo = obj.foo + 1;
