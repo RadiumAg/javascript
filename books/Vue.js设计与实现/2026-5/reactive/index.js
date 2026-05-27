@@ -96,6 +96,33 @@ function effect(fn, options = {}) {
   effectFn();
 }
 
+const jobQueue = new Set();
+const p = Promise.resolve();
+let isFlushing = false;
+
+function flushJob() {
+  if (isFlushing) return;
+  isFlushing = true;
+  p.then(() => {
+    jobQueue.forEach((job) => job());
+  }).finally(() => {
+    isFlushing = false;
+  });
+}
+
+effect(
+  () => {
+    console.log('effect run');
+    obj.foo = obj.foo + 1;
+  },
+  {
+    scheduler(fn) {
+      jobQueue.add(fn);
+      flushJob();
+    },
+  },
+);
+
 // test
 // effect(() => {
 //   console.log('effect run');
@@ -127,7 +154,5 @@ function effect(fn, options = {}) {
 //   obj.foo = 1;
 // }, 1000);
 
-effect(() => {
-  console.log('effect run');
-  obj.foo = obj.foo + 1;
-});
+obj.foo++;
+obj.foo++;
