@@ -132,7 +132,10 @@ function computed(getter) {
   const effectFn = effect(getter, {
     lazy: true,
     scheduler() {
-      dirty = true;
+      if (!dirty) {
+        dirty = true;
+        trigger(obj, 'value');
+      }
     },
   });
   let dirty = true;
@@ -144,6 +147,7 @@ function computed(getter) {
         value = effectFn();
         dirty = false;
       }
+      track(obj, 'value');
       return value;
     },
   };
