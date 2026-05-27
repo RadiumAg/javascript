@@ -86,14 +86,18 @@ function effect(fn, options = {}) {
     cleanup(effectFn);
     activeEffect = effectFn;
     effectStack.push(effectFn);
-    fn();
+    const res = fn();
     effectStack.pop();
     activeEffect = effectStack[effectStack.length - 1];
+    return res;
   };
   effectFn.deps = [];
   effectFn.options = options;
   // 执行副作用函数
-  effectFn();
+  if (!options.lazy) {
+    effectFn();
+  }
+  return effectFn;
 }
 
 const jobQueue = new Set();
@@ -120,8 +124,32 @@ effect(
       jobQueue.add(fn);
       flushJob();
     },
+    lazy: true,
   },
 );
+
+function computed(getter) {
+  const effectFn = effect(getter, {
+    lazy: true,
+    scheduler() {
+      dirty = true;
+    },
+  });
+  let dirty = true;
+  let value;
+
+  const obj = {
+    get value() {
+      if (dirty) {
+        value = effectFn();
+        dirty = false;
+      }
+      return value;
+    },
+  };
+
+  return obj;
+}
 
 // test
 // effect(() => {
