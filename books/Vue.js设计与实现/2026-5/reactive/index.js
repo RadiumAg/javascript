@@ -114,20 +114,6 @@ function flushJob() {
   });
 }
 
-effect(
-  () => {
-    console.log('effect run');
-    obj.foo = obj.foo + 1;
-  },
-  {
-    scheduler(fn) {
-      jobQueue.add(fn);
-      flushJob();
-    },
-    lazy: true,
-  },
-);
-
 function computed(getter) {
   const effectFn = effect(getter, {
     lazy: true,
@@ -154,6 +140,49 @@ function computed(getter) {
 
   return obj;
 }
+
+function traverse(value, seen = new Set()) {
+  // 如果要读取的数是原始值，或者已经被读取过了，那么什么都不做
+  if (value !== 'object' || value === null || seen.has(value)) return;
+
+  seen.add(value);
+
+  for (const k in value) {
+    traverse(value[k], seen);
+  }
+
+  return value;
+}
+
+function watch(source, cb) {
+  let getter;
+  if (typeof source === 'function') {
+    getter = source;
+  } else {
+    getter = () => traverse(source);
+  }
+  effect(() => getter(), {
+    scheduler() {
+      cb();
+    },
+  });
+}
+
+obj.foo = 1;
+obj.boo = 1;
+
+const computedValue = computed(() => {
+  return obj.foo + obj.boo;
+});
+
+watch(
+  () => obj.foo,
+  () => {
+    console.log('obj.foo的值改变了');
+  },
+);
+
+obj.foo = obj.foo + 1;
 
 // test
 // effect(() => {
@@ -186,5 +215,16 @@ function computed(getter) {
 //   obj.foo = 1;
 // }, 1000);
 
-obj.foo++;
-obj.foo++;
+// effect(
+//   () => {
+//     console.log('effect run');
+//     obj.foo = obj.foo + 1;
+//   },
+//   {
+//     scheduler(fn) {
+//       jobQueue.add(fn);
+//       flushJob();
+//     },
+//     lazy: true,
+//   },
+// );
