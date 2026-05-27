@@ -19,9 +19,9 @@ const obj = new Proxy(data, {
   },
   // 拦截设置操作
   set(target, key, newVal) {
-    trigger(target, key);
-    // 执行副作用函数
     target[key] = newVal;
+    // 执行副作用函数
+    trigger(target, key);
     return true;
   },
 });
@@ -161,11 +161,17 @@ function watch(source, cb) {
   } else {
     getter = () => traverse(source);
   }
-  effect(() => getter(), {
+  let oldValue;
+  let newValue;
+  const effectFn = effect(() => getter(), {
+    lazy: true,
     scheduler() {
-      cb();
+      newValue = effectFn();
+      cb(newValue, oldValue);
+      oldValue = newValue;
     },
   });
+  oldValue = effectFn();
 }
 
 obj.foo = 1;
@@ -176,13 +182,17 @@ const computedValue = computed(() => {
 });
 
 watch(
-  () => obj.foo,
   () => {
-    console.log('obj.foo的值改变了');
+    console.log(obj);
+    return obj.foo;
+  },
+  (newValue, oldValue) => {
+    console.log('obj.foo的值改变了', newValue, oldValue);
   },
 );
 
 obj.foo = obj.foo + 1;
+// obj.foo = obj.foo + 1;
 
 // test
 // effect(() => {
