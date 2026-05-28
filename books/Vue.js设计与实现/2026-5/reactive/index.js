@@ -10,6 +10,7 @@ const INTERATE_KEY = Symbol();
 const TriggerType = {
   SET: 'SET',
   ADD: 'ADD',
+  DELETE: 'DELETE',
 };
 // 原始数据
 const data = { ok: true, text: 'hello world' };
@@ -43,6 +44,14 @@ const obj = new Proxy(data, {
   ownKeys(target) {
     track(target, INTERATE_KEY);
     return Reflect.ownKeys(target);
+  },
+  deleteProperty(target, key) {
+    const hadKey = Object.prototype.hasOwnProperty.call(target, key);
+    const res = Reflect.deleteProperty(target, key);
+    if (res && hadKey) {
+      trigger(target, key, TriggerType.DELETE);
+    }
+    return res;
   },
 });
 
@@ -92,7 +101,7 @@ function trigger(target, key, type) {
       }
     });
 
-  if (type === TriggerType.ADD) {
+  if (type === TriggerType.ADD || type === TriggerType.DELETE) {
     // 拿到in操作符的副作用
     const iterateEffects = depMaps.get(INTERATE_KEY);
     iterateEffects &&
