@@ -5,6 +5,12 @@ window.bucket = bucket;
 let activeEffect = null;
 // effect 栈
 const effectStack = [];
+// for in key
+const INTERATE_KEY = Symbol();
+const TriggerType = {
+  SET: 'SET',
+  ADD: 'ADD',
+};
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
@@ -18,11 +24,25 @@ const obj = new Proxy(data, {
     return target[key];
   },
   // 拦截设置操作
-  set(target, key, newVal) {
-    target[key] = newVal;
+  set(target, key, newVal, receiver) {
+    const type = Object.prototype.hasOwnProperty.call(target, key)
+      ? TriggerType.SET
+      : TriggerType.ADD;
+
+    const res = Reflect.set(target, key, newVal, receiver);
+
     // 执行副作用函数
-    trigger(target, key);
-    return true;
+    trigger(target, key, type);
+
+    return res;
+  },
+  has(target, key) {
+    track(target, key);
+    return Reflect.has(target, key);
+  },
+  ownKeys(target) {
+    track(target, INTERATE_KEY);
+    return Reflect.ownKeys(target);
   },
 });
 
@@ -50,17 +70,19 @@ function track(target, key) {
   activeEffect.deps.push(deps);
 }
 
-function trigger(target, key) {
+function trigger(target, key, type) {
   const depMaps = bucket.get(target);
   if (!depMaps) return;
   const effects = depMaps.get(key);
   const effectsToRun = new Set();
+
   effects &&
     effects.forEach((effectFn) => {
       if (effectFn !== activeEffect) {
         effectsToRun.add(effectFn);
       }
     });
+
   effectsToRun &&
     effectsToRun.forEach((effectFn) => {
       if (effectFn.options?.scheduler) {
@@ -69,6 +91,17 @@ function trigger(target, key) {
         effectFn(); // 新增
       }
     });
+
+  if (type === TriggerType.ADD) {
+    // 拿到in操作符的副作用
+    const iterateEffects = depMaps.get(INTERATE_KEY);
+    iterateEffects &&
+      iterateEffects.forEach((effectFn) => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
 }
 
 function cleanup(effectFn) {
@@ -197,35 +230,35 @@ function watch(source, cb, options = {}) {
   }
 }
 
-obj.foo = 1;
-obj.boo = 1;
+// obj.foo = 1;
+// obj.boo = 1;
 
-const computedValue = computed(() => {
-  return obj.foo + obj.boo;
-});
+// const computedValue = computed(() => {
+//   return obj.foo + obj.boo;
+// });
 
-watch(
-  () => {
-    console.log(obj);
-    return obj.foo;
-  },
-  (newValue, oldValue) => {
-    console.log('obj.foo的值改变了', newValue, oldValue);
-  },
-);
+// watch(
+//   () => {
+//     console.log(obj);
+//     return obj.foo;
+//   },
+//   (newValue, oldValue) => {
+//     console.log('obj.foo的值改变了', newValue, oldValue);
+//   },
+// );
 
-watch(
-  () => {
-    console.log(obj);
-    return obj.foo;
-  },
-  (newValue, oldValue) => {
-    console.log('obj.foo的值改变了', newValue, oldValue);
-  },
-  { immediate: true },
-);
+// watch(
+//   () => {
+//     console.log(obj);
+//     return obj.foo;
+//   },
+//   (newValue, oldValue) => {
+//     console.log('obj.foo的值改变了', newValue, oldValue);
+//   },
+//   { immediate: true },
+// );
 
-obj.foo = obj.foo + 1;
+// obj.foo = obj.foo + 1;
 // obj.foo = obj.foo + 1;
 
 // test
@@ -272,3 +305,11 @@ obj.foo = obj.foo + 1;
 //     lazy: true,
 //   },
 // );
+
+effect(() => {
+  for (const key in obj) {
+    console.log(key);
+  }
+});
+
+obj.aaa = 2;
