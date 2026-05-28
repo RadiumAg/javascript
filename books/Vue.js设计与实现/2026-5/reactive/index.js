@@ -15,48 +15,49 @@ const TriggerType = {
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
-// 对原始数据的代理
-const obj = new Proxy(data, {
-  // 拦截读取操作
-  get(target, key) {
-    // 没有 activeEffect，直接 return
-    track(target, key);
-    // 返回属性值
-    return target[key];
-  },
-  // 拦截设置操作
-  set(target, key, newVal, receiver) {
-    const oldVal = target[key];
-    const type = Object.prototype.hasOwnProperty.call(target, key)
-      ? TriggerType.SET
-      : TriggerType.ADD;
+function reactive(obj) {
+  return new Proxy(data, {
+    // 拦截读取操作
+    get(target, key) {
+      // 没有 activeEffect，直接 return
+      track(target, key);
+      // 返回属性值
+      return target[key];
+    },
+    // 拦截设置操作
+    set(target, key, newVal, receiver) {
+      const oldVal = target[key];
+      const type = Object.prototype.hasOwnProperty.call(target, key)
+        ? TriggerType.SET
+        : TriggerType.ADD;
 
-    const res = Reflect.set(target, key, newVal, receiver);
+      const res = Reflect.set(target, key, newVal, receiver);
 
-    if (oldVal !== newVal) {
-      // 执行副作用函数
-      trigger(target, key, type);
-    }
+      if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
+        // 执行副作用函数
+        trigger(target, key, type);
+      }
 
-    return res;
-  },
-  has(target, key) {
-    track(target, key);
-    return Reflect.has(target, key);
-  },
-  ownKeys(target) {
-    track(target, INTERATE_KEY);
-    return Reflect.ownKeys(target);
-  },
-  deleteProperty(target, key) {
-    const hadKey = Object.prototype.hasOwnProperty.call(target, key);
-    const res = Reflect.deleteProperty(target, key);
-    if (res && hadKey) {
-      trigger(target, key, TriggerType.DELETE);
-    }
-    return res;
-  },
-});
+      return res;
+    },
+    has(target, key) {
+      track(target, key);
+      return Reflect.has(target, key);
+    },
+    ownKeys(target) {
+      track(target, INTERATE_KEY);
+      return Reflect.ownKeys(target);
+    },
+    deleteProperty(target, key) {
+      const hadKey = Object.prototype.hasOwnProperty.call(target, key);
+      const res = Reflect.deleteProperty(target, key);
+      if (res && hadKey) {
+        trigger(target, key, TriggerType.DELETE);
+      }
+      return res;
+    },
+  });
+}
 
 /**
  * 追踪
@@ -317,6 +318,8 @@ function watch(source, cb, options = {}) {
 //     lazy: true,
 //   },
 // );
+// 对原始数据的代理
+const obj = reactive(data);
 
 effect(() => {
   for (const key in obj) {
