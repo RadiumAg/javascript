@@ -26,14 +26,17 @@ const obj = new Proxy(data, {
   },
   // 拦截设置操作
   set(target, key, newVal, receiver) {
+    const oldVal = target[key];
     const type = Object.prototype.hasOwnProperty.call(target, key)
       ? TriggerType.SET
       : TriggerType.ADD;
 
     const res = Reflect.set(target, key, newVal, receiver);
 
-    // 执行副作用函数
-    trigger(target, key, type);
+    if (oldVal !== newVal) {
+      // 执行副作用函数
+      trigger(target, key, type);
+    }
 
     return res;
   },
