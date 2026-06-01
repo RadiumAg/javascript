@@ -16,16 +16,16 @@ const TriggerType = {
 const data = { ok: true, text: 'hello world' };
 
 function reactive(obj) {
-  return new Proxy(data, {
+  return new Proxy(obj, {
     // 拦截读取操作
-    get(target, key) {
+    get(target, key, receiver) {
       if (key === 'raw') {
         return target;
       }
       // 没有 activeEffect，直接 return
       track(target, key);
       // 返回属性值
-      return target[key];
+      return Reflect.get(target, key, receiver);
     },
     // 拦截设置操作
     set(target, key, newVal, receiver) {
@@ -36,9 +36,11 @@ function reactive(obj) {
 
       const res = Reflect.set(target, key, newVal, receiver);
 
-      if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
-        // 执行副作用函数
-        trigger(target, key, type);
+      if (target === receiver.raw) {
+        if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
+          // 执行副作用函数
+          trigger(target, key, type);
+        }
       }
 
       return res;
@@ -246,88 +248,107 @@ function watch(source, cb, options = {}) {
   }
 }
 
-// obj.foo = 1;
-// obj.boo = 1;
+() => {
+  obj.foo = 1;
+  obj.boo = 1;
 
-// const computedValue = computed(() => {
-//   return obj.foo + obj.boo;
-// });
+  const computedValue = computed(() => {
+    return obj.foo + obj.boo;
+  });
 
-// watch(
-//   () => {
-//     console.log(obj);
-//     return obj.foo;
-//   },
-//   (newValue, oldValue) => {
-//     console.log('obj.foo的值改变了', newValue, oldValue);
-//   },
-// );
+  watch(
+    () => {
+      console.log(obj);
+      return obj.foo;
+    },
+    (newValue, oldValue) => {
+      console.log('obj.foo的值改变了', newValue, oldValue);
+    },
+  );
 
-// watch(
-//   () => {
-//     console.log(obj);
-//     return obj.foo;
-//   },
-//   (newValue, oldValue) => {
-//     console.log('obj.foo的值改变了', newValue, oldValue);
-//   },
-//   { immediate: true },
-// );
+  watch(
+    () => {
+      console.log(obj);
+      return obj.foo;
+    },
+    (newValue, oldValue) => {
+      console.log('obj.foo的值改变了', newValue, oldValue);
+    },
+    { immediate: true },
+  );
 
-// obj.foo = obj.foo + 1;
-// obj.foo = obj.foo + 1;
+  obj.foo = obj.foo + 1;
+  obj.foo = obj.foo + 1;
 
-// test
-// effect(() => {
-//   console.log('effect run');
-//   document.body.innerText = obj.ok ? obj.text : 'not';
-// });
+  effect(() => {
+    console.log('effect run');
+    document.body.innerText = obj.ok ? obj.text : 'not';
+  });
 
-// setTimeout(() => {
-//   obj.ok = false;
-//   obj.text = '1';
-// }, 1000);
+  setTimeout(() => {
+    obj.ok = false;
+    obj.text = '1';
+  }, 1000);
 
-// 全局变量
-// let temp1, temp2;
+  全局变量;
+  let temp1, temp2;
 
-// // effectFn1 嵌套了 effectFn2
-// effect(function effectFn1() {
-//   console.log('effectFn1 执行');
+  // effectFn1 嵌套了 effectFn2
+  effect(function effectFn1() {
+    console.log('effectFn1 执行');
 
-//   effect(function effectFn2() {
-//     console.log('effectFn2 执行');
-//     // 在 effectFn2 中读取 obj.bar 属性
-//     temp2 = obj.bar;
-//   });
-//   // 在 effectFn1 中读取 obj.foo 属性
-//   temp1 = obj.foo;
-// });
+    effect(function effectFn2() {
+      console.log('effectFn2 执行');
+      // 在 effectFn2 中读取 obj.bar 属性
+      temp2 = obj.bar;
+    });
+    // 在 effectFn1 中读取 obj.foo 属性
+    temp1 = obj.foo;
+  });
 
-// setTimeout(() => {
-//   obj.foo = 1;
-// }, 1000);
+  setTimeout(() => {
+    obj.foo = 1;
+  }, 1000);
 
-// effect(
-//   () => {
-//     console.log('effect run');
-//     obj.foo = obj.foo + 1;
-//   },
-//   {
-//     scheduler(fn) {
-//       jobQueue.add(fn);
-//       flushJob();
-//     },
-//     lazy: true,
-//   },
-// );
-// 对原始数据的代理
-const obj = reactive(data);
+  effect(
+    () => {
+      console.log('effect run');
+      obj.foo = obj.foo + 1;
+    },
+    {
+      scheduler(fn) {
+        jobQueue.add(fn);
+        flushJob();
+      },
+      lazy: true,
+    },
+  );
+};
 
-effect(() => {
-  for (const key in obj) {
-    console.log(key);
-  }
-});
+() => {
+  // 对原始数据的代理
+  const obj = reactive(data);
 
-obj.aaa = 2;
+  effect(() => {
+    for (const key in obj) {
+      console.log(key);
+    }
+  });
+
+  obj.aaa = 2;
+};
+
+(() => {
+  const obj = {};
+  const proto = { bar: 1 };
+  const child = reactive(obj);
+  const parent = reactive(proto);
+  // 使用 parent 作为 child 的原型
+  Object.setPrototypeOf(child, parent);
+
+  effect(() => {
+    console.log(child.bar); // 1
+  });
+  // 修改 child.bar 的值
+  child.bar = 2; // 会导致副作用函数重新执行两次
+})();
