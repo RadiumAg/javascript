@@ -32,7 +32,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       }
 
       if (typeof res === 'object' && res !== null) {
-        return reactive(res);
+        return isReadonly ? readonly(res) : reactive(res);
       }
       // 返回属性值
       return res;
