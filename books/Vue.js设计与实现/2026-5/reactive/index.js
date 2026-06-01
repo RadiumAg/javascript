@@ -15,7 +15,7 @@ const TriggerType = {
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
-function reactive(obj) {
+function createReactive(obj, isShallow = false) {
   return new Proxy(obj, {
     // 拦截读取操作
     get(target, key, receiver) {
@@ -23,9 +23,18 @@ function reactive(obj) {
         return target;
       }
       // 没有 activeEffect，直接 return
+      const res = Reflect.get(target, key, receiver);
       track(target, key);
+
+      if (!isShallow) {
+        return res;
+      }
+
+      if (typeof res === 'object' && res !== null) {
+        return reactive(res);
+      }
       // 返回属性值
-      return Reflect.get(target, key, receiver);
+      return res;
     },
     // 拦截设置操作
     set(target, key, newVal, receiver) {
@@ -62,6 +71,14 @@ function reactive(obj) {
       return res;
     },
   });
+}
+
+function reactive(obj) {
+  createReactive(obj);
+}
+
+function shallowReactive(obj) {
+  return createReactive(obj, true);
 }
 
 /**
