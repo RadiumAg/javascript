@@ -82,6 +82,10 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
   });
 }
 
+function shallowReadonly(obj) {
+  return createReactive(obj, true, true);
+}
+
 function readonly(obj) {
   return createReactive(obj, true);
 }
