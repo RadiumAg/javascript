@@ -19,6 +19,9 @@ function reactive(obj) {
   return new Proxy(data, {
     // 拦截读取操作
     get(target, key) {
+      if (key === 'raw') {
+        return target;
+      }
       // 没有 activeEffect，直接 return
       track(target, key);
       // 返回属性值
