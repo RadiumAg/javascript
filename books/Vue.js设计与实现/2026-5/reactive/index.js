@@ -15,10 +15,14 @@ const TriggerType = {
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
-function createReactive(obj, isShallow = false) {
+function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     // 拦截读取操作
     get(target, key, receiver) {
+      if (isReadonly) {
+        console.warn(`属性${key}是只读的`);
+        return true;
+      }
       if (key === 'raw') {
         return target;
       }
@@ -63,6 +67,10 @@ function createReactive(obj, isShallow = false) {
       return Reflect.ownKeys(target);
     },
     deleteProperty(target, key) {
+      if (isReadonly) {
+        console.warn(`属性${key}是只读的`);
+        return true;
+      }
       const hadKey = Object.prototype.hasOwnProperty.call(target, key);
       const res = Reflect.deleteProperty(target, key);
       if (res && hadKey) {
@@ -71,6 +79,10 @@ function createReactive(obj, isShallow = false) {
       return res;
     },
   });
+}
+
+function readonly(obj) {
+  return createReactive(obj, true);
 }
 
 function reactive(obj) {
