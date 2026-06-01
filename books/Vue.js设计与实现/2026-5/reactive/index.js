@@ -139,14 +139,15 @@ function trigger(target, key, type) {
       }
     });
 
-  effectsToRun &&
-    effectsToRun.forEach((effectFn) => {
-      if (effectFn.options?.scheduler) {
-        effectFn.options.scheduler(effectFn);
-      } else {
-        effectFn(); // 新增
-      }
-    });
+  if (type === TriggerType.ADD && Array.isArray(target)) {
+    const lengthEffects = depMaps.get('length');
+    lengthEffects &&
+      lengthEffects.forEach((effectFn) => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn);
+        }
+      });
+  }
 
   if (type === TriggerType.ADD || type === TriggerType.DELETE) {
     // 拿到in操作符的副作用
@@ -158,6 +159,15 @@ function trigger(target, key, type) {
         }
       });
   }
+
+  effectsToRun &&
+    effectsToRun.forEach((effectFn) => {
+      if (effectFn.options?.scheduler) {
+        effectFn.options.scheduler(effectFn);
+      } else {
+        effectFn(); // 新增
+      }
+    });
 }
 
 function cleanup(effectFn) {
