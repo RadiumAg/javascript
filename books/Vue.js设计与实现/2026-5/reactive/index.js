@@ -19,17 +19,14 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     // 拦截读取操作
     get(target, key, receiver) {
-      if (isReadonly) {
-        console.warn(`属性${key}是只读的`);
-        return true;
-      }
       if (key === 'raw') {
         return target;
       }
       // 没有 activeEffect，直接 return
       const res = Reflect.get(target, key, receiver);
-      track(target, key);
-
+      if (!isReadonly) {
+        track(target, key);
+      }
       if (!isShallow) {
         return res;
       }
@@ -42,6 +39,10 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
     },
     // 拦截设置操作
     set(target, key, newVal, receiver) {
+      if (isReadonly) {
+        console.warn(`属性${key}是只读的`);
+        return true;
+      }
       const oldVal = target[key];
       const type = Object.prototype.hasOwnProperty.call(target, key)
         ? TriggerType.SET
