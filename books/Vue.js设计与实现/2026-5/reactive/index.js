@@ -44,16 +44,20 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return true;
       }
       const oldVal = target[key];
-      const type = Object.prototype.hasOwnProperty.call(target, key)
-        ? TriggerType.SET
-        : TriggerType.ADD;
+      const triggerType = Array.isArray(target)
+        ? Number(key) < target.length
+          ? TriggerType.SET
+          : TriggerType.ADD
+        : Object.prototype.hasOwnProperty.call(target, key)
+          ? TriggerType.SET
+          : TriggerType.ADD;
 
       const res = Reflect.set(target, key, newVal, receiver);
 
       if (target === receiver.raw) {
         if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
           // 执行副作用函数
-          trigger(target, key, type);
+          trigger(target, key, triggerType);
         }
       }
 
