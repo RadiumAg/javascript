@@ -24,7 +24,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       }
       // 没有 activeEffect，直接 return
       const res = Reflect.get(target, key, receiver);
-      if (!isReadonly) {
+      if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
       }
       if (!isShallow) {
@@ -68,7 +68,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       return Reflect.has(target, key);
     },
     ownKeys(target) {
-      track(target, INTERATE_KEY);
+      track(target, Array.isArray(target) ? 'length' : INTERATE_KEY);
       return Reflect.ownKeys(target);
     },
     deleteProperty(target, key) {
@@ -338,7 +338,7 @@ function watch(source, cb, options = {}) {
     obj.text = '1';
   }, 1000);
 
-  全局变量;
+  // 全局变量;
   let temp1, temp2;
 
   // effectFn1 嵌套了 effectFn2
@@ -386,7 +386,7 @@ function watch(source, cb, options = {}) {
   obj.aaa = 2;
 };
 
-(() => {
+() => {
   const obj = {};
   const proto = { bar: 1 };
   const child = reactive(obj);
@@ -399,4 +399,14 @@ function watch(source, cb, options = {}) {
   });
   // 修改 child.bar 的值
   child.bar = 2; // 会导致副作用函数重新执行两次
+};
+
+(() => {
+  const arr = reactive(['foo']);
+
+  effect(() => {
+    for (const key in arr) {
+      console.log(key);
+    }
+  });
 })();
