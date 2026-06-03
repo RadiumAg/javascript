@@ -22,6 +22,15 @@ const arrayInstrumentAtions = {
     return res;
   },
 };
+['includes', 'indexof', 'lastIndexOf'].forEach((method) => {
+  let res = originMeghod.apply(this, args);
+
+  if (res === false || res === -1) {
+    res = originMeghod.apply(this.raw, args);
+  }
+
+  return res;
+});
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
