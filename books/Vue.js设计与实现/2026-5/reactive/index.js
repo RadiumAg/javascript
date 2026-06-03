@@ -12,6 +12,16 @@ const TriggerType = {
   ADD: 'ADD',
   DELETE: 'DELETE',
 };
+const originMeghod = Array.prototype.includes;
+const arrayInstrumentAtions = {
+  includes: function (...args) {
+    let res = originMeghod.apply(this, args);
+    if (res === false) {
+      res = originMeghod.apply(this.raw, args);
+    }
+    return res;
+  },
+};
 // 原始数据
 const data = { ok: true, text: 'hello world' };
 
@@ -22,9 +32,11 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       if (key === 'raw') {
         return target;
       }
-      debugger;
       // 没有 activeEffect，直接 return
       const res = Reflect.get(target, key, receiver);
+      if (Array.isArray(target) && arrayInstrumentAtions.hasOwnProperty(key)) {
+        return Reflect.get(arrayInstrumentAtions, key, receiver);
+      }
       if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
       }
