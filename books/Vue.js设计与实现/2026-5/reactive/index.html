@@ -135,12 +135,25 @@
         arr[0] = 3;
       };
 
-      (() => {
+      () => {
         const obj = {};
         const arr = reactive([obj]);
 
         console.log(arr.includes(arr[0]));
         console.log(arr[0]);
+      };
+
+      (() => {
+        const arr = reactive([]);
+        // 第一个副作用函数
+        effect(() => {
+          arr.push(1);
+        });
+
+        // 第二个副作用函数
+        effect(() => {
+          arr.push(1);
+        });
       })();
     </script>
   </body>

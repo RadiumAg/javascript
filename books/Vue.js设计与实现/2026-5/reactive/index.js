@@ -12,9 +12,10 @@ const TriggerType = {
   ADD: 'ADD',
   DELETE: 'DELETE',
 };
-const originMeghod = Array.prototype.includes;
+const originMeghod = Array.prototype;
 const arrayInstrumentAtions = {
   includes: function (...args) {
+    const originMeghod = originMeghod.includes;
     let res = originMeghod.apply(this, args);
     if (res === false) {
       res = originMeghod.apply(this.raw, args);
@@ -23,13 +24,15 @@ const arrayInstrumentAtions = {
   },
 };
 ['includes', 'indexof', 'lastIndexOf'].forEach((method) => {
-  let res = originMeghod.apply(this, args);
+  arrayInstrumentAtions[method] = function (...args) {
+    let res = originMeghod.apply(this, args);
 
-  if (res === false || res === -1) {
-    res = originMeghod.apply(this.raw, args);
-  }
+    if (res === false || res === -1) {
+      res = originMeghod.apply(this.raw, args);
+    }
 
-  return res;
+    return res;
+  };
 });
 // 原始数据
 const data = { ok: true, text: 'hello world' };
