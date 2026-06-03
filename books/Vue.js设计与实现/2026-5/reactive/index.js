@@ -12,19 +12,11 @@ const TriggerType = {
   ADD: 'ADD',
   DELETE: 'DELETE',
 };
-const originMeghod = Array.prototype;
-const arrayInstrumentAtions = {
-  includes: function (...args) {
-    const originMeghod = originMeghod.includes;
-    let res = originMeghod.apply(this, args);
-    if (res === false) {
-      res = originMeghod.apply(this.raw, args);
-    }
-    return res;
-  },
-};
+const arrayInstrumentAtions = {};
+const originMeghodPrototype = Array.prototype;
 ['includes', 'indexof', 'lastIndexOf'].forEach((method) => {
   arrayInstrumentAtions[method] = function (...args) {
+    const originMeghod = originMeghodPrototype[method];
     let res = originMeghod.apply(this, args);
 
     if (res === false || res === -1) {
