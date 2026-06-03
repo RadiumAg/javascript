@@ -13,16 +13,25 @@ const TriggerType = {
   DELETE: 'DELETE',
 };
 const arrayInstrumentAtions = {};
+let shouldTrack = true;
 const originMeghodPrototype = Array.prototype;
 ['includes', 'indexof', 'lastIndexOf'].forEach((method) => {
+  const originMeghod = originMeghodPrototype[method];
   arrayInstrumentAtions[method] = function (...args) {
-    const originMeghod = originMeghodPrototype[method];
     let res = originMeghod.apply(this, args);
-
     if (res === false || res === -1) {
       res = originMeghod.apply(this.raw, args);
     }
+    return res;
+  };
+});
 
+['push', 'pop', 'shift', 'unshift', 'splice'].forEach((method) => {
+  const originMeghod = originMeghodPrototype[method];
+  arrayInstrumentAtions[method] = function (...args) {
+    shouldTrack = false;
+    let res = originMeghod.apply(this, args);
+    shouldTrack = true;
     return res;
   };
 });
@@ -132,7 +141,7 @@ function shallowReactive(obj) {
  * @return {*}
  */
 function track(target, key) {
-  if (!activeEffect) return target[key];
+  if (!activeEffect || !shouldTrack) return target[key];
   // 根据 target 从桶中取得 depsMap，depsMap 是 key 到副作用函数集合的映射
   let depsMap = bucket.get(target);
   if (!depsMap) {
