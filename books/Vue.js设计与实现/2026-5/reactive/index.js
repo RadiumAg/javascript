@@ -35,26 +35,66 @@ const originMeghodPrototype = Array.prototype;
     return res;
   };
 });
-// 原始数据
-const data = { ok: true, text: 'hello world' };
+
+const mutableInstrumentations = {
+  add(key) {
+    const target = this.raw;
+    const hadKey = target.has(key);
+    const res = target.add(key);
+    if (!hadKey) {
+      trigger(target, key, TriggerType.ADD);
+    }
+    return res;
+  },
+  delete(key) {
+    const target = this.raw;
+    const hadKey = target.has(key);
+    const res = target.delete(key);
+    if (hadKey) {
+      trigger(target, key, TriggerType.DELETE);
+    }
+    return res;
+  },
+};
 
 function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     // 拦截读取操作
     get(target, key, receiver) {
-      debugger;
       if (key === 'raw') {
         return target;
       }
-      if (key === 'size') {
-        return Reflect.get(target, key, target);
-      }
-      // 没有 activeEffect，直接 return
-      const res = Reflect.get(target, key, receiver);
 
+      if (target instanceof Set) {
+        const res = Reflect.get(target, key, target);
+
+        if (key === 'size') {
+          track(target, INTERATE_KEY);
+          return Reflect.get(target, key, target);
+        }
+
+        if (mutableInstrumentations.hasOwnProperty(key)) {
+          return mutableInstrumentations[key];
+        } else if (typeof res === 'function') {
+          return res.bind(target);
+        }
+      }
+
+      if (target instanceof Map) {
+        const res = Reflect.get(target, key, target);
+        if (typeof res === 'function') {
+          return res.bind(target);
+        }
+      }
+
+      // 处理Array
       if (Array.isArray(target) && arrayInstrumentAtions.hasOwnProperty(key)) {
         return Reflect.get(arrayInstrumentAtions, key, receiver);
       }
+
+      // 没有 activeEffect，直接 return
+      const res = Reflect.get(target, key, receiver);
+
       if (!isReadonly && typeof key !== 'symbol') {
         track(target, key);
       }
@@ -65,9 +105,6 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return isReadonly ? readonly(res) : reactive(res);
       }
 
-      if (typeof res === 'function') {
-        return res.bind(target);
-      }
       // 返回属性值
       return res;
     },

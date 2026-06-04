@@ -159,14 +159,23 @@
       };
 
       (() => {
-        const proxy = reactive(new Map([['key', 1]]));
+        const proxy = reactive(new Map([['key', 'Map Key']]));
 
         effect(() => {
-          console.log(proxy.get('key'));
+          console.log('Map Key', proxy.get('key'));
         });
 
         proxy.set('key', 2);
-        proxy.delete('key');
+      })();
+
+      (() => {
+        const proxy = reactive(new Set(['key', 1]));
+
+        effect(() => {
+          console.log(proxy.size);
+        });
+
+        proxy.add('11231231');
       })();
     </script>
   </body>
