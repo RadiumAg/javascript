@@ -163,12 +163,14 @@
 
         effect(() => {
           console.log('Map Key', proxy.get('key'));
+          console.log('Map Key', proxy.get('key1'));
         });
 
         proxy.set('key', 2);
+        proxy.set('key1', 2);
       })();
 
-      (() => {
+      () => {
         const proxy = reactive(new Set(['key', 1]));
 
         effect(() => {
@@ -176,7 +178,7 @@
         });
 
         proxy.add('11231231');
-      })();
+      };
     </script>
   </body>
 </html>

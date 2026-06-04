@@ -37,6 +37,31 @@ const originMeghodPrototype = Array.prototype;
 });
 
 const mutableInstrumentations = {
+  get(key) {
+    const target = this.raw;
+    const had = target.has(key);
+    track(target, key);
+
+    if (had) {
+      const res = target.get(key);
+      return typeof res === 'object' ? reactive(res) : res;
+    }
+  },
+  set(key, value) {
+    const target = this.raw;
+    const had = target.has(key);
+    const oldValue = target.get(key);
+    target.set(key, value);
+
+    if (!had) {
+      trigger(target, key, TriggerType.ADD);
+    } else if (
+      oldValue !== value ||
+      (oldValue === oldValue && value === value)
+    ) {
+      trigger(target, key, TriggerType.SET);
+    }
+  },
   add(key) {
     const target = this.raw;
     const hadKey = target.has(key);
