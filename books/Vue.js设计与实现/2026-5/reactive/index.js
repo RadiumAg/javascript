@@ -42,11 +42,16 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
   return new Proxy(obj, {
     // 拦截读取操作
     get(target, key, receiver) {
+      debugger;
       if (key === 'raw') {
         return target;
       }
+      if (key === 'size') {
+        return Reflect.get(target, key, target);
+      }
       // 没有 activeEffect，直接 return
       const res = Reflect.get(target, key, receiver);
+
       if (Array.isArray(target) && arrayInstrumentAtions.hasOwnProperty(key)) {
         return Reflect.get(arrayInstrumentAtions, key, receiver);
       }
@@ -58,6 +63,10 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       }
       if (typeof res === 'object' && res !== null) {
         return isReadonly ? readonly(res) : reactive(res);
+      }
+
+      if (typeof res === 'function') {
+        return res.bind(target);
       }
       // 返回属性值
       return res;
