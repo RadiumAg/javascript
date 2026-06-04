@@ -65,7 +65,7 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         return target;
       }
 
-      if (target instanceof Set) {
+      if (target instanceof Set || target instanceof Map) {
         const res = Reflect.get(target, key, target);
 
         if (key === 'size') {
@@ -76,13 +76,6 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
         if (mutableInstrumentations.hasOwnProperty(key)) {
           return mutableInstrumentations[key];
         } else if (typeof res === 'function') {
-          return res.bind(target);
-        }
-      }
-
-      if (target instanceof Map) {
-        const res = Reflect.get(target, key, target);
-        if (typeof res === 'function') {
           return res.bind(target);
         }
       }
