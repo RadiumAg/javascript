@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "esno",
+      "name": "tsx",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "node",
-      "args": ["./node_modules/esno/esno.js", "${file}"],
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
+      "args": ["${file}"],
       "console": "integratedTerminal"
     },
     {
