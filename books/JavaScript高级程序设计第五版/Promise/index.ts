@@ -22,6 +22,6 @@
 
 (() => {
   const resolve = Promise.resolve();
-  console.log(resolve === Promise.resolve(resolve));
-  console.log(resolve === Promise.reject(resolve));
+  console.log(resolve === Promise.resolve(resolve)); // true
+  console.log(resolve === Promise.reject(resolve)); // false
 })();
