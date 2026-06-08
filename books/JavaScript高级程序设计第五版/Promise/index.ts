@@ -1,5 +1,5 @@
 // thenable
-(() => {
+() => {
   const thenable = {
     then: (resolve, reject) => {
       setTimeout(() => {
@@ -18,4 +18,10 @@
       console.log(reason);
     },
   );
+};
+
+(() => {
+  const resolve = Promise.resolve();
+  console.log(resolve === Promise.resolve(resolve));
+  console.log(resolve === Promise.reject(resolve));
 })();
