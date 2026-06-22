@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
+import readline from 'readline';
 
 // 配置
 const CONFIG = {
   url: 'https://bm.ruankao.org.cn/query/score/result',
-  cookie: process.env.COOKIE,
   emailTo: process.env.EMAIL_TO,
   // QQ邮箱SMTP配置
   smtp: {
@@ -19,11 +19,42 @@ const CONFIG = {
   },
 };
 
+let cookie = '';
+
 // 已通知记录，避免重复发送
 let lastNotifiedData = null;
 
 // 创建邮件传输器
 const transporter = nodemailer.createTransport(CONFIG.smtp);
+
+const LOGIN_EXPIRED_MSG = '查询次数过多，您已被退出登录！';
+
+// 从命令行读取 Cookie
+function promptCookie(msg) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    rl.question(msg, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
+
+// 更新 Cookie
+function setCookie(newCookie) {
+  cookie = newCookie;
+  console.log('✅ Cookie 已设置！\n');
+}
+
+// 判断响应是否为登录失效
+function isLoginExpired(result) {
+  if (!result) return false;
+  const str = JSON.stringify(result);
+  return str.includes('退出登录') || str.includes(LOGIN_EXPIRED_MSG);
+}
 
 // 查询成绩
 async function checkScore() {
@@ -35,7 +66,7 @@ async function checkScore() {
       method: 'post',
       body: formData,
       headers: {
-        Cookie: CONFIG.cookie,
+        Cookie: cookie,
         'User-Agent':
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
       },
@@ -43,6 +74,19 @@ async function checkScore() {
 
     const result = await response.json();
     console.log('返回数据:', JSON.stringify(result, null, 2));
+
+    // 检测是否被退出登录
+    if (isLoginExpired(result)) {
+      console.log('🔴 Cookie 已失效！');
+      let newCookie = '';
+      while (!newCookie) {
+        newCookie = await promptCookie('请重新输入 Cookie: ');
+      }
+      setCookie(newCookie);
+      console.log('正在用新 Cookie 重新查询...');
+      await checkScore();
+      return;
+    }
 
     // 检查data是否有数据
     if (
@@ -93,6 +137,19 @@ ${JSON.stringify(data, null, 2)}
   }
 }
 
+// 启动时输入 Cookie
+async function promptInitialCookie() {
+  console.log('请从浏览器复制 Cookie 粘贴到这里:');
+  while (!cookie) {
+    const input = await promptCookie('Cookie: ');
+    if (input) {
+      setCookie(input);
+    } else {
+      console.log('Cookie 不能为空，请重新输入');
+    }
+  }
+}
+
 // 主函数
 async function main() {
   console.log('========================================');
@@ -101,10 +158,13 @@ async function main() {
   console.log('  有结果将邮件通知:', CONFIG.emailTo);
   console.log('========================================\n');
 
+  // 启动时输入 Cookie
+  await promptInitialCookie();
+
   // 立即执行一次
   await checkScore();
 
-  // 每3分钟执行一次
+  // 每30分钟执行一次
   cron.schedule('*/30 * * * *', checkScore);
 }
 
