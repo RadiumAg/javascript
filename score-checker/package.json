@@ -1,0 +1,14 @@
+{
+  "name": "score-checker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "软考成绩查询监控脚本",
+  "scripts": {
+    "start": "node checker.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.8"
+  }
+}
