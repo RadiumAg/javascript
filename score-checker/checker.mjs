@@ -97,7 +97,7 @@ ${JSON.stringify(data, null, 2)}
 async function main() {
   console.log('========================================');
   console.log('  软考成绩查询监控已启动');
-  console.log('  每10分钟自动查询一次');
+  console.log('  每30分钟自动查询一次');
   console.log('  有结果将邮件通知:', CONFIG.emailTo);
   console.log('========================================\n');
 
@@ -105,7 +105,7 @@ async function main() {
   await checkScore();
 
   // 每3分钟执行一次
-  cron.schedule('*/10 * * * *', checkScore);
+  cron.schedule('*/30 * * * *', checkScore);
 }
 
 main();
