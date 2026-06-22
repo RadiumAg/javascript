@@ -2,6 +2,12 @@ import 'dotenv/config';
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
 import readline from 'readline';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const COOKIE_FILE = path.join(__dirname, '.cookie');
 
 // 配置
 const CONFIG = {
@@ -43,9 +49,20 @@ function promptCookie(msg) {
   });
 }
 
-// 更新 Cookie
+// 从文件读取上次保存的 Cookie
+function loadSavedCookie() {
+  try {
+    if (fs.existsSync(COOKIE_FILE)) {
+      return fs.readFileSync(COOKIE_FILE, 'utf-8').trim();
+    }
+  } catch {}
+  return '';
+}
+
+// 更新 Cookie 并保存到文件
 function setCookie(newCookie) {
   cookie = newCookie;
+  fs.writeFileSync(COOKIE_FILE, newCookie, 'utf-8');
   console.log('✅ Cookie 已设置！\n');
 }
 
@@ -139,13 +156,30 @@ ${JSON.stringify(data, null, 2)}
 
 // 启动时输入 Cookie
 async function promptInitialCookie() {
-  console.log('请从浏览器复制 Cookie 粘贴到这里:');
-  while (!cookie) {
-    const input = await promptCookie('Cookie: ');
-    if (input) {
-      setCookie(input);
-    } else {
-      console.log('Cookie 不能为空，请重新输入');
+  const saved = loadSavedCookie();
+  if (saved) {
+    const masked =
+      saved.length > 40 ? saved.slice(0, 20) + '...' + saved.slice(-10) : saved;
+    console.log(`检测到上次保存的 Cookie: ${masked}`);
+    console.log('直接回车使用上次的 Cookie，或输入新的 Cookie:');
+    while (!cookie) {
+      const input = await promptCookie('Cookie: ');
+      if (input === '') {
+        setCookie(saved);
+        console.log('✅ 使用上次保存的 Cookie！\n');
+      } else {
+        setCookie(input);
+      }
+    }
+  } else {
+    console.log('请从浏览器复制 Cookie 粘贴到这里:');
+    while (!cookie) {
+      const input = await promptCookie('Cookie: ');
+      if (input) {
+        setCookie(input);
+      } else {
+        console.log('Cookie 不能为空，请重新输入');
+      }
     }
   }
 }
