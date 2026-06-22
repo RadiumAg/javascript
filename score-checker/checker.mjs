@@ -186,9 +186,10 @@ async function promptInitialCookie() {
 
 // 主函数
 async function main() {
+  const duringTime = process.env.DURING_TIME;
   console.log('========================================');
   console.log('  软考成绩查询监控已启动');
-  console.log('  每30分钟自动查询一次');
+  console.log(`  每${duringTime}分钟自动查询一次`);
   console.log('  有结果将邮件通知:', CONFIG.emailTo);
   console.log('========================================\n');
 
@@ -199,7 +200,7 @@ async function main() {
   await checkScore();
 
   // 每30分钟执行一次
-  cron.schedule('*/30 * * * *', checkScore);
+  cron.schedule(`*/${duringTime} * * * *`, checkScore);
 }
 
 main();
