@@ -308,6 +308,30 @@ function dispatchSetState<State>(
 ) {
   const lane = requestUpdateLanes();
   const update = createUpdate(action, lane);
+
+  // eagerState 优化：在调度之前提前计算新状态
+  // 条件：update 阶段（current !== null）且无其他待处理的更新（fiber.lanes === NoLane）
+  // 如果新状态与当前状态相同（Object.is），则跳过整个更新流程
+  const current = fiber.alternate;
+  if (current !== null && fiber.lanes === NoLane) {
+    // 遍历 hook 链表，找到与当前 updateQueue 匹配的 hook
+    // 因为一个 FC 可能有多个 useState，需要精确找到对应的 hook
+    let hook: Hook | null = current.memoizedState;
+    while (hook !== null) {
+      if (hook.updateQueue === updateQueue) {
+        const currentState = hook.memoizedState;
+        const eagerState =
+          action instanceof Function ? action(currentState) : action;
+        if (Object.is(eagerState, currentState)) {
+          // 新状态与当前状态相同，无需更新
+          return;
+        }
+        break;
+      }
+      hook = hook.next;
+    }
+  }
+
   enqueueUpdate(updateQueue, update);
   scheduleUpdateOnFiber(fiber, lane);
 }

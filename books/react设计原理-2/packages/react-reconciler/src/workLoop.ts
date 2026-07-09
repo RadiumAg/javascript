@@ -24,7 +24,9 @@ import {
 import { HostRoot } from './workTags';
 import {
   Lane,
+  Lanes,
   NoLane,
+  NoLanes,
   SyncLane,
   getHighestPriorityLane,
   lanesToSchedulePriority,
@@ -52,7 +54,7 @@ function prepareFreshStack(root: FiberRootNode, lane: Lane) {
 
 export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
   // 调度功能
-  const root = markUpdateFromFiberToRoot(fiber);
+  const root = markUpdateLaneFromFiberToRoot(fiber, lane);
   markRootUpdated(root, lane);
   ensureRootIsSchedule(root);
 }
@@ -169,10 +171,19 @@ function performConcurrentWorkOnRoot(
   }
 }
 
-function markUpdateFromFiberToRoot(fiber: FiberNode) {
+/**
+ * 将本次更新的 lane 记录到 fiber 自身以及所有祖先的 childLanes 中，
+ * 同时返回 FiberRootNode
+ */
+function markUpdateLaneFromFiberToRoot(fiber: FiberNode, lane: Lane) {
+  // 更新触发更新的 fiber 自身的 lanes
+  fiber.lanes = mergeLanes(fiber.lanes, lane);
+
   let node = fiber;
   let parent = node.return;
   while (parent !== null) {
+    // 给所有祖先的 childLanes 标记（子孙有更新的记录）
+    parent.childLanes = mergeLanes(parent.childLanes, lane);
     node = parent;
     parent = node.return;
   }

@@ -8,7 +8,7 @@ import {
   WorkTag,
 } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
-import { Lane, Lanes, NoLane } from './fiberLanes';
+import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes';
 import { Effect } from './fiberHooks';
 
 export interface PendingPassiveEffects {
@@ -52,6 +52,11 @@ export class FiberNode {
   updateQueue: unknown;
   deletions: FiberNode[] | null;
 
+  // 该 fiber 自身待处理的更新优先级
+  lanes: Lanes;
+  // 子孙节点待处理的更新优先级（向上冒泡汇总）
+  childLanes: Lanes;
+
   constructor(tag: WorkTag, pendingPorps: Props, key: Key) {
     this.tag = tag;
     this.key = key ?? null;
@@ -77,6 +82,10 @@ export class FiberNode {
     this.flags = NoFlags;
     this.subtreeFlags = NoFlags;
     this.deletions = null;
+
+    // lanes
+    this.lanes = NoLanes;
+    this.childLanes = NoLanes;
   }
 }
 
@@ -136,6 +145,8 @@ export const createWorkInProgress = (
   wip.memoizedProps = current.memoizedProps;
   wip.memoizedState = current.memoizedState;
   wip.ref = current.ref;
+  wip.lanes = current.lanes;
+  wip.childLanes = current.childLanes;
 
   return wip;
 };
