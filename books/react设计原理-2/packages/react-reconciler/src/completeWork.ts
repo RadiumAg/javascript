@@ -4,6 +4,7 @@ import {
   createInstance,
   createTextInstance,
 } from 'hostConfig';
+import { Props } from '../../shared/ReactTypes';
 import { updateFiberProps } from '../../react-dom/src/SyntheticEvent';
 import { FiberNode } from './fiber';
 import {
@@ -14,6 +15,53 @@ import {
   HostText,
 } from './workTags';
 import { NoFlags, Ref, Update } from './fiberFlags';
+
+/**
+ * Diff 新旧 props，返回 updatePayload
+ * updatePayload 格式: [propKey1, propValue1, propKey2, propValue2, ...]
+ * 如果无差异返回 null
+ */
+function diffProperties(
+  oldProps: Props | null,
+  newProps: Props,
+): any[] | null {
+  const updatePayload: any[] = [];
+
+  // 检查被删除或变化的属性
+  for (const propKey in oldProps) {
+    if (
+      propKey === 'children' ||
+      !Object.prototype.hasOwnProperty.call(oldProps, propKey)
+    ) {
+      continue;
+    }
+    if (
+      !Object.prototype.hasOwnProperty.call(newProps, propKey) ||
+      !Object.is(oldProps[propKey], newProps[propKey])
+    ) {
+      updatePayload.push(propKey, null);
+    }
+  }
+
+  // 检查新增或变化的属性
+  for (const propKey in newProps) {
+    if (
+      propKey === 'children' ||
+      !Object.prototype.hasOwnProperty.call(newProps, propKey)
+    ) {
+      continue;
+    }
+    const nextValue = newProps[propKey];
+    if (
+      !Object.prototype.hasOwnProperty.call(oldProps ?? {}, propKey) ||
+      !Object.is(oldProps?.[propKey], nextValue)
+    ) {
+      updatePayload.push(propKey, nextValue);
+    }
+  }
+
+  return updatePayload.length > 0 ? updatePayload : null;
+}
 
 function markUpdate(fiber: FiberNode) {
   fiber.flags |= Update; 
@@ -39,6 +87,12 @@ export const completeWork = (workInProgress: FiberNode) => {
       if (current !== null && workInProgress.stateNode) {
         // update
         updateFiberProps(workInProgress.stateNode, newProps);
+        const oldProps = current.memoizedProps;
+        const updatePayload = diffProperties(oldProps, newProps);
+        if (updatePayload !== null) {
+          workInProgress.updateQueue = updatePayload;
+          markUpdate(workInProgress);
+        }
         // 标记Ref
         if (current.ref !== workInProgress.ref) {
           markRef(workInProgress);

@@ -1,5 +1,5 @@
 import { FiberNode } from '../../react-reconciler/src/fiber';
-import { HostText } from '../../react-reconciler/src/workTags';
+import { HostText, HostComponent } from '../../react-reconciler/src/workTags';
 import { DOMElement, updateFiberProps } from './SyntheticEvent';
 
 export type Container = Element;
@@ -31,6 +31,15 @@ export function commitUpdate(fiber: FiberNode) {
       const text = fiber.memoizedProps.content;
       return commitTextUpdate(fiber.stateNode, text);
     }
+    case HostComponent: {
+      const updatePayload = fiber.updateQueue as any[] | null;
+      if (updatePayload !== null) {
+        applyUpdatePayload(fiber.stateNode as Instance, updatePayload);
+        // 清空 updateQueue
+        fiber.updateQueue = null;
+      }
+      return;
+    }
 
     default:
       if (__DEV__) {
@@ -38,6 +47,41 @@ export function commitUpdate(fiber: FiberNode) {
       }
 
       break;
+  }
+}
+
+/**
+ * 将 updatePayload 应用到 DOM 元素上
+ * updatePayload 格式: [propKey1, propValue1, propKey2, propValue2, ...]
+ */
+function applyUpdatePayload(
+  dom: Instance,
+  updatePayload: any[],
+) {
+  for (let i = 0; i < updatePayload.length; i += 2) {
+    const propKey = updatePayload[i];
+    const propValue = updatePayload[i + 1];
+
+    if (propKey === 'style') {
+      // style 特殊处理
+      if (typeof propValue === 'string') {
+        (dom as HTMLElement).style.cssText = propValue;
+      } else if (propValue === null) {
+        (dom as HTMLElement).style.cssText = '';
+      } else if (typeof propValue === 'object') {
+        for (const styleName in propValue) {
+          if (Object.prototype.hasOwnProperty.call(propValue, styleName)) {
+            (dom as HTMLElement).style[styleName as any] = propValue[styleName];
+          }
+        }
+      }
+    } else if (propValue === null || propValue === false) {
+      dom.removeAttribute(propKey);
+    } else if (propValue === true) {
+      dom.setAttribute(propKey, '');
+    } else {
+      dom.setAttribute(propKey, String(propValue));
+    }
   }
 }
 
