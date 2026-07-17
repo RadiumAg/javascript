@@ -118,6 +118,14 @@ export class FiberRootNode {
   }
 }
 
+/**
+ * 创建新的workInProgress Fiber，把alternate指向旧Fiber,
+ * 旧Fiber的alternate指向新Fiber
+ *
+ * @param current
+ * @param pendingProps
+ * @returns
+ */
 export const createWorkInProgress = (
   current: FiberNode,
   pendingProps: Props,
