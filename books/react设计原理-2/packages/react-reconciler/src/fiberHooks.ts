@@ -1,6 +1,6 @@
 import internals from '../../shared/internals';
 import { Dispatch, Dispatcher } from '../../react/src/currentDispatcher';
-import { Action } from '../../shared/ReactTypes';
+import { Action, ReactContext } from '../../shared/ReactTypes';
 import { FiberNode } from './fiber';
 import {
   Update,
@@ -14,6 +14,7 @@ import { scheduleUpdateOnFiber } from './workLoop';
 import { Lane, NoLane, requestUpdateLanes } from './fiberLanes';
 import { Flags, PassiveEffect } from './fiberFlags';
 import { HookHasEffect, Passive } from './hookEffectTags';
+import { readContext } from './fiberContext';
 
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
@@ -85,6 +86,7 @@ const HooksDispatcherOnMount: Dispatcher = {
   useRef: mountRef,
   useCallback: mountCallback,
   useMemo: mountMemo,
+  useContext: readContextHook,
 };
 
 const HooksDispatcherOnUpdate: Dispatcher = {
@@ -94,7 +96,17 @@ const HooksDispatcherOnUpdate: Dispatcher = {
   useRef: updateRef,
   useCallback: updateCallback,
   useMemo: updateMemo,
+  useContext: readContextHook,
 };
+
+/**
+ * useContext 的实现（mount / update 共用）：直接读取 context 当前值
+ * 不占用 hook 链表，仅通过 readContext 记录依赖
+ */
+function readContextHook<T>(context: ReactContext<T>): T {
+  const consumer = currentlyRenderingFiber;
+  return readContext(consumer, context);
+}
 
 function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
   const hook = updateWorkInProgressHook();

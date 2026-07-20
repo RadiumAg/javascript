@@ -1,37 +1,36 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, createContext, useContext } from 'react';
 import ReactDOM from 'react-dom';
 
-// ① memo 包裹、且不接收任何 props 的组件
-//    父组件无论怎么更新，它都应该命中 bailout，不会打印 render
-const ExpensiveCpn: any = memo(function ExpensiveCpn() {
-  console.log('%cExpensiveCpn render', 'color:red');
-  return <p>ExpensiveCpn（若无 render 日志说明 memo 生效）</p>;
+// createContext 创建 context；cast any 规避 demo 的 JSX 类型限制
+const CountContext: any = createContext(0);
+
+// 关键：中间层用 memo 包裹、且不接收 props。
+// 正常情况下 count 变化时 Middle 会 bailout（不 render）。
+// 但 Consumer 消费了 context，propagateContextChange 应让更新“穿透”memo 到达 Consumer。
+const Middle: any = memo(function Middle() {
+  console.log('%cMiddle render', 'color:orange');
+  return <Consumer />;
 });
 
-// ② memo 包裹、接收 num prop 的组件
-//    只有 num 变化时才会重新渲染（浅比较生效）
-const NumShow: any = memo(function NumShow({ num }: { num: number }) {
-  console.log('%cNumShow render, num =' + num, 'color:blue');
-  return <p>num = {num}</p>;
-});
+const Consumer = () => {
+  const count = useContext(CountContext) as number;
+  console.log('%cConsumer render, count=' + count, 'color:purple');
+  return <p>Consumer 读到的 count = {count}</p>;
+};
 
 const App = () => {
-  const [num, setNum] = useState(0);
   const [count, setCount] = useState(0);
 
-  console.log('%cApp render, num=' + num + ' count=' + count, 'color:green');
+  console.log('%cApp render, count=' + count, 'color:green');
 
   return (
     <div>
-      <div onClick={() => setNum((n: number) => n + 1)}>
-        【点我】num + 1（NumShow 会重渲染，ExpensiveCpn 不会）
-      </div>
       <div onClick={() => setCount((c: number) => c + 1)}>
-        【点我】count + 1（NumShow、ExpensiveCpn 都不会重渲染）
+        【点我】count + 1（Consumer 应更新，Middle 不应 render）
       </div>
-      <p>App count = {count}</p>
-      <NumShow num={num} />
-      <ExpensiveCpn />
+      <CountContext.Provider value={count}>
+        <Middle />
+      </CountContext.Provider>
     </div>
   );
 };

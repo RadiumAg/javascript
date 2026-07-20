@@ -1,7 +1,14 @@
-import { Key, Props, ReactElement, Ref } from '../../shared/ReactTypes';
+import {
+  Key,
+  Props,
+  ReactContext,
+  ReactElement,
+  Ref,
+} from '../../shared/ReactTypes';
 import { Container } from 'hostConfig';
 import { CallbackNode } from 'scheduler';
 import {
+  ContextProvider,
   Fragment,
   FunctionComponent,
   HostComponent,
@@ -11,11 +18,25 @@ import {
 import { Flags, NoFlags } from './fiberFlags';
 import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes';
 import { Effect } from './fiberHooks';
-import { REACT_MEMO_TYPE } from '../../shared/ReactSymbols';
+import {
+  REACT_MEMO_TYPE,
+  REACT_PROVIDER_TYPE,
+} from '../../shared/ReactSymbols';
 
 export interface PendingPassiveEffects {
   unmount: Effect[];
   update: Effect[];
+}
+
+// useContext 依赖项：记录一个 fiber 消费了哪些 context
+export interface ContextItem<T> {
+  context: ReactContext<T>;
+  memoizedState: T;
+  next: ContextItem<T> | null;
+}
+
+export interface FiberDependencies {
+  firstContext: ContextItem<any> | null;
 }
 
 export class FiberNode {
@@ -59,6 +80,9 @@ export class FiberNode {
   // 子孙节点待处理的更新优先级（向上冒泡汇总）
   childLanes: Lanes;
 
+  // useContext 消费的 context 依赖链表
+  dependencies: FiberDependencies | null;
+
   constructor(tag: WorkTag, pendingPorps: Props, key: Key) {
     this.tag = tag;
     this.key = key ?? null;
@@ -88,6 +112,9 @@ export class FiberNode {
     // lanes
     this.lanes = NoLanes;
     this.childLanes = NoLanes;
+
+    // context 依赖
+    this.dependencies = null;
   }
 }
 
@@ -157,6 +184,7 @@ export const createWorkInProgress = (
   wip.ref = current.ref;
   wip.lanes = current.lanes;
   wip.childLanes = current.childLanes;
+  wip.dependencies = current.dependencies;
 
   return wip;
 };
@@ -174,6 +202,13 @@ export function createFiberFromElement(element: ReactElement): FiberNode {
 
   if (typeof type === 'string') {
     fiberTag = HostComponent;
+  } else if (
+    typeof type === 'object' &&
+    type !== null &&
+    type.$$typeof === REACT_PROVIDER_TYPE
+  ) {
+    // Context.Provider
+    fiberTag = ContextProvider;
   } else if (
     typeof type === 'object' &&
     type !== null &&

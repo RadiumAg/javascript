@@ -13,9 +13,11 @@ import {
   HostComponent,
   HostRoot,
   HostText,
+  ContextProvider,
 } from './workTags';
 import { NoFlags, Ref, Update } from './fiberFlags';
 import { NoLanes, mergeLanes } from './fiberLanes';
+import { popProvider } from './fiberContext';
 
 /**
  * Diff 新旧 props，返回 updatePayload
@@ -128,6 +130,12 @@ export const completeWork = (workInProgress: FiberNode) => {
     case HostRoot:
     case Fragment:
     case FunctionComponent:
+      bubbleProperties(workInProgress);
+      return null;
+
+    case ContextProvider:
+      // 离开 Provider：恢复 context 值栈
+      popProvider(workInProgress.type._context);
       bubbleProperties(workInProgress);
       return null;
 
