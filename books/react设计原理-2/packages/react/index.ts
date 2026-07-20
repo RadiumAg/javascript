@@ -20,9 +20,14 @@ export const useTransition: Dispatcher['useTransition'] = () => {
   return dispatcher.useTransition();
 };
 
-export const userRef: Dispatcher['useRef'] = initialValue => {
+export const userRef: Dispatcher['useRef'] = (initialValue) => {
   const dispatcher = resolveDispatcher();
   return dispatcher.useRef(initialValue);
+};
+
+export const useCallback: Dispatcher['useCallback'] = (callback, deps) => {
+  const dispatcher = resolveDispatcher();
+  return dispatcher.useCallback(callback, deps);
 };
 
 // 内部共享层

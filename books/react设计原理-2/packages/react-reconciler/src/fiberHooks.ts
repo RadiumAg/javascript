@@ -80,6 +80,7 @@ const HooksDispatcherOnMount: Dispatcher = {
   useEffect: mountEffect,
   useTransition: mountTransition,
   useRef: mountRef,
+  useCallback: mountCallback,
 };
 
 const HooksDispatcherOnUpdate: Dispatcher = {
@@ -87,6 +88,7 @@ const HooksDispatcherOnUpdate: Dispatcher = {
   useEffect: updateEffect,
   useTransition: updateTransition,
   useRef: updateRef,
+  useCallback: updateCallback,
 };
 
 function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
@@ -144,6 +146,37 @@ function mountRef<T>(initialValue: T) {
 function updateRef() {
   const hook = updateWorkInProgressHook();
   return hook.memoizedState;
+}
+
+/**
+ * mount 时：直接缓存 [callback, deps]，返回 callback
+ */
+function mountCallback<T>(callback: T, deps: EffectDeps | void) {
+  const hook = mountWorkInProgressHook();
+  const nextDeps = deps === undefined ? null : deps;
+  hook.memoizedState = [callback, nextDeps];
+  return callback;
+}
+
+/**
+ * update 时：浅比较 deps
+ * - deps 相同 → 返回缓存的 callback（引用不变）
+ * - deps 不同 → 缓存并返回新的 callback
+ */
+function updateCallback<T>(callback: T, deps: EffectDeps | void) {
+  const hook = updateWorkInProgressHook();
+  const nextDeps = deps === undefined ? null : deps;
+  const prevState = hook.memoizedState;
+
+  if (nextDeps !== null) {
+    const prevDeps = prevState[1];
+    if (areHookInputsEqual(nextDeps, prevDeps)) {
+      return prevState[0];
+    }
+  }
+
+  hook.memoizedState = [callback, nextDeps];
+  return callback;
 }
 
 function mountEffect(create: EffectCallback | void, deps: EffectDeps | void) {
