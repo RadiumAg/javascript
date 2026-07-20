@@ -30,6 +30,11 @@ export const useCallback: Dispatcher['useCallback'] = (callback, deps) => {
   return dispatcher.useCallback(callback, deps);
 };
 
+export const useMemo: Dispatcher['useMemo'] = (nextCreate, deps) => {
+  const dispatcher = resolveDispatcher();
+  return dispatcher.useMemo(nextCreate, deps);
+};
+
 // 内部共享层
 export const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
   currentDispatcher,
