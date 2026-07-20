@@ -13,6 +13,7 @@ import {
   FunctionComponent,
   HostComponent,
   MemoComponent,
+  SuspenseComponent,
   WorkTag,
 } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
@@ -21,6 +22,7 @@ import { Effect } from './fiberHooks';
 import {
   REACT_MEMO_TYPE,
   REACT_PROVIDER_TYPE,
+  REACT_SUSPENSE_TYPE,
 } from '../../shared/ReactSymbols';
 
 export interface PendingPassiveEffects {
@@ -129,6 +131,9 @@ export class FiberRootNode {
   callbackNode: CallbackNode | null;
   callbackPriority: Lane;
 
+  // Suspense：缓存 thenable 已绑定的 ping 监听，避免重复绑定
+  pingCache: WeakMap<any, Set<Lane>> | null;
+
   constructor(container: Container, hostRootFiber: FiberNode) {
     this.container = container;
     this.current = hostRootFiber;
@@ -144,6 +149,8 @@ export class FiberRootNode {
       unmount: [],
       update: [],
     };
+
+    this.pingCache = null;
   }
 }
 
@@ -202,6 +209,9 @@ export function createFiberFromElement(element: ReactElement): FiberNode {
 
   if (typeof type === 'string') {
     fiberTag = HostComponent;
+  } else if (type === REACT_SUSPENSE_TYPE) {
+    // <Suspense>
+    fiberTag = SuspenseComponent;
   } else if (
     typeof type === 'object' &&
     type !== null &&

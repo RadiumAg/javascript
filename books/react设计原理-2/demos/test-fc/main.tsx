@@ -1,36 +1,36 @@
-import React, { useState, memo, createContext, useContext } from 'react';
+import React, { Suspense, use } from 'react';
 import ReactDOM from 'react-dom';
 
-// createContext 创建 context；cast any 规避 demo 的 JSX 类型限制
-const CountContext: any = createContext(0);
+// Suspense 是个 symbol，TS 不能直接当 JSX 标签，cast any 规避 demo 类型限制
+const SuspenseBoundary: any = Suspense;
 
-// 关键：中间层用 memo 包裹、且不接收 props。
-// 正常情况下 count 变化时 Middle 会 bailout（不 render）。
-// 但 Consumer 消费了 context，propagateContextChange 应让更新“穿透”memo 到达 Consumer。
-const Middle: any = memo(function Middle() {
-  console.log('%cMiddle render', 'color:orange');
-  return <Consumer />;
-});
+// 缓存 Promise —— 关键：必须是稳定引用，否则每次渲染都 new 一个 → 永远挂起
+let cachedPromise: Promise<string> | null = null;
+function fetchData(): Promise<string> {
+  if (cachedPromise === null) {
+    console.log('%c发起异步请求...', 'color:orange');
+    cachedPromise = new Promise((resolve) => {
+      setTimeout(() => resolve('异步数据加载完成 ✅'), 2000);
+    });
+  }
+  return cachedPromise;
+}
 
-const Consumer = () => {
-  const count = useContext(CountContext) as number;
-  console.log('%cConsumer render, count=' + count, 'color:purple');
-  return <p>Consumer 读到的 count = {count}</p>;
+const Content = () => {
+  console.log('%cContent 尝试渲染', 'color:blue');
+  // use 读取 Promise：pending 时抛出挂起，resolve 后返回数据
+  const data = use(fetchData()) as string;
+  console.log('%cContent 拿到数据: ' + data, 'color:green');
+  return <p>{data}</p>;
 };
 
 const App = () => {
-  const [count, setCount] = useState(0);
-
-  console.log('%cApp render, count=' + count, 'color:green');
-
   return (
     <div>
-      <div onClick={() => setCount((c: number) => c + 1)}>
-        【点我】count + 1（Consumer 应更新，Middle 不应 render）
-      </div>
-      <CountContext.Provider value={count}>
-        <Middle />
-      </CountContext.Provider>
+      <p>Suspense Demo（约 2 秒后加载完成）</p>
+      <SuspenseBoundary fallback={<p>⏳ Loading...</p>}>
+        <Content />
+      </SuspenseBoundary>
     </div>
   );
 };

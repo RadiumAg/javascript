@@ -9,11 +9,12 @@ import {
   HostText,
   MemoComponent,
   ContextProvider,
+  SuspenseComponent,
 } from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
 import { Lane, NoLanes, isSubsetOfLanes } from './fiberLanes';
-import { Ref } from './fiberFlags';
+import { DidCapture, NoFlags, Ref } from './fiberFlags';
 import {
   prepareToReadContext,
   propagateContextChange,
@@ -36,9 +37,9 @@ export const beginWork = (wip: FiberNode, renderLane: Lane) => {
     if (oldProps === newProps && current.type === wip.type) {
       // 四要素之 state：自身没有待处理的更新
       if (!checkScheduledUpdateOrContext(current, renderLane)) {
-        // ContextProvider 需要 push/pop 值栈配对，不能在此提前 bailout，
-        // 交给 updateContextProvider（内部 push 后再决定是否 bailout）
-        if (wip.tag !== ContextProvider) {
+        // ContextProvider / SuspenseComponent 需要特殊处理（push/pop、fallback 切换），
+        // 不能在此提前 bailout
+        if (wip.tag !== ContextProvider && wip.tag !== SuspenseComponent) {
           // 命中 bailout，尝试跳过
           return bailoutOnAlreadyFinishedWork(wip, renderLane);
         }
@@ -67,6 +68,8 @@ export const beginWork = (wip: FiberNode, renderLane: Lane) => {
       return updateMemoComponent(wip, renderLane);
     case ContextProvider:
       return updateContextProvider(wip, renderLane);
+    case SuspenseComponent:
+      return updateSuspenseComponent(wip);
     default:
       if (__DEV__) {
         console.warn('beginWork未实现的类型');
@@ -94,6 +97,29 @@ function checkScheduledUpdateOrContext(
  */
 function updateFragment(wip: FiberNode) {
   const nextChildren = wip.pendingProps;
+  reconcileChildren(wip, nextChildren);
+  return wip.child;
+}
+
+/**
+ * 更新 SuspenseComponent（基础版：primary / fallback 二选一）
+ * - 正常渲染 children（primary）
+ * - 若被 unwind 标记 DidCapture（子树挂起），改渲染 fallback
+ */
+function updateSuspenseComponent(wip: FiberNode) {
+  const nextProps = wip.pendingProps;
+  const nextPrimaryChildren = nextProps.children;
+  const nextFallbackChildren = nextProps.fallback;
+
+  const showFallback = (wip.flags & DidCapture) !== NoFlags;
+  if (showFallback) {
+    // 消费 DidCapture 标记
+    wip.flags &= ~DidCapture;
+  }
+
+  const nextChildren = showFallback
+    ? nextFallbackChildren
+    : nextPrimaryChildren;
   reconcileChildren(wip, nextChildren);
   return wip.child;
 }

@@ -15,6 +15,7 @@ import {
   HostText,
   ContextProvider,
   MemoComponent,
+  SuspenseComponent,
 } from './workTags';
 import { NoFlags, Ref, Update } from './fiberFlags';
 import { NoLanes, mergeLanes } from './fiberLanes';
@@ -132,6 +133,7 @@ export const completeWork = (workInProgress: FiberNode) => {
     case Fragment:
     case FunctionComponent:
     case MemoComponent:
+    case SuspenseComponent:
       bubbleProperties(workInProgress);
       return null;
 

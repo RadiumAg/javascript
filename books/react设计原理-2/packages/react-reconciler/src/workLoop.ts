@@ -14,14 +14,20 @@ import {
   commitMutationEffect,
 } from './commitWork';
 import { completeWork } from './completeWork';
-import { MutationMask, NoFlags, PassiveMask } from './fiberFlags';
+import {
+  MutationMask,
+  NoFlags,
+  PassiveMask,
+  ShouldCapture,
+  DidCapture,
+} from './fiberFlags';
 import {
   FiberNode,
   FiberRootNode,
   PendingPassiveEffects,
   createWorkInProgress,
 } from './fiber';
-import { HostRoot } from './workTags';
+import { HostRoot, SuspenseComponent } from './workTags';
 import {
   Lane,
   Lanes,
@@ -35,6 +41,7 @@ import {
 } from './fiberLanes';
 import { flushSyncCallbacks, scheduleSyncCallback } from './syncTaskQueue';
 import { HookHasEffect, Passive } from './hookEffectTags';
+import { SuspenseException, getSuspenseThenable } from './thenable';
 
 let workInProgress: FiberNode | null = null;
 let wipRootRenderLane: Lane = NoLane;
@@ -254,8 +261,8 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
       shouldTimeSlice ? workLoopConcurrent() : workLoopSync();
       break;
     } catch (e) {
-      if (__DEV__) console.warn('workLoo发生错误', e);
-      workInProgress = null;
+      if (__DEV__) console.warn('workLoop发生错误', e);
+      handleThrow(root, e, lane);
     }
   } while (true);
 
@@ -271,6 +278,123 @@ function renderRoot(root: FiberRootNode, lane: Lane, shouldTimeSlice: boolean) {
 
   // TODO 报错
   return RootCompleted;
+}
+
+/**
+ * 捕获 render 阶段抛出的值（Suspense）
+ */
+function handleThrow(root: FiberRootNode, thrownValue: any, lane: Lane) {
+  // use 挂起时抛的是哨兵，取回真正的 thenable
+  if (thrownValue === SuspenseException) {
+    thrownValue = getSuspenseThenable();
+  }
+  throwException(root, thrownValue, lane);
+  unwindUnitOfWork(workInProgress);
+}
+
+/**
+ * 处理抛出的 thenable：标记最近 Suspense 边界 + 绑定 ping 监听
+ */
+function throwException(root: FiberRootNode, value: any, lane: Lane) {
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    typeof value.then === 'function'
+  ) {
+    const wakeable = value;
+    const suspenseBoundary = getNearestSuspenseBoundary(workInProgress);
+    if (suspenseBoundary !== null) {
+      suspenseBoundary.flags |= ShouldCapture;
+    }
+    attachPingListener(root, wakeable, lane, suspenseBoundary);
+  }
+}
+
+/**
+ * 从当前 fiber 沿 return 向上找最近的 Suspense 边界
+ */
+function getNearestSuspenseBoundary(from: FiberNode | null): FiberNode | null {
+  let node = from;
+  while (node !== null) {
+    if (node.tag === SuspenseComponent) {
+      return node;
+    }
+    node = node.return;
+  }
+  return null;
+}
+
+/**
+ * 绑定 thenable 的 ping：resolve 后重新调度更新，触发再次渲染
+ */
+function attachPingListener(
+  root: FiberRootNode,
+  wakeable: any,
+  lane: Lane,
+  suspenseBoundary: FiberNode | null,
+) {
+  let pingCache = root.pingCache;
+  let threadIDs: Set<Lane> | undefined;
+
+  if (pingCache === null) {
+    threadIDs = new Set<Lane>();
+    pingCache = root.pingCache = new WeakMap();
+    pingCache.set(wakeable, threadIDs);
+  } else {
+    threadIDs = pingCache.get(wakeable);
+    if (threadIDs === undefined) {
+      threadIDs = new Set<Lane>();
+      pingCache.set(wakeable, threadIDs);
+    }
+  }
+
+  if (!threadIDs.has(lane)) {
+    threadIDs.add(lane);
+    const ping = () => {
+      if (root.pingCache !== null) {
+        root.pingCache.delete(wakeable);
+      }
+      // 关键：从 Suspense 边界向上标记 lanes/childLanes，
+      // 保证重试渲染能穿过中间组件的 bailout 到达挂起的组件
+      if (suspenseBoundary !== null) {
+        markUpdateLaneFromFiberToRoot(suspenseBoundary, lane);
+      }
+      // Promise resolve 后重新调度，触发一次新渲染（尝试 primary）
+      markRootUpdated(root, lane);
+      ensureRootIsSchedule(root);
+    };
+    wakeable.then(ping, ping);
+  }
+}
+
+/**
+ * 从抛出的 fiber 向上 unwind，直到找到带 ShouldCapture 的 Suspense 边界，
+ * 将其转成 DidCapture 并作为新的 workInProgress 重新渲染（渲染 fallback）
+ */
+function unwindUnitOfWork(unitOfWork: FiberNode | null) {
+  let incompleteWork = unitOfWork;
+  while (incompleteWork !== null) {
+    const next = unwindWork(incompleteWork);
+    if (next !== null) {
+      workInProgress = next;
+      return;
+    }
+    incompleteWork = incompleteWork.return;
+  }
+  // 一直到根都没有 Suspense 边界，无法处理
+  workInProgress = null;
+}
+
+function unwindWork(wip: FiberNode): FiberNode | null {
+  const flags = wip.flags;
+  if (wip.tag === SuspenseComponent) {
+    if ((flags & ShouldCapture) !== NoFlags) {
+      // ShouldCapture → DidCapture，返回该 Suspense 重新 beginWork
+      wip.flags = (flags & ~ShouldCapture) | DidCapture;
+      return wip;
+    }
+  }
+  return null;
 }
 
 /**

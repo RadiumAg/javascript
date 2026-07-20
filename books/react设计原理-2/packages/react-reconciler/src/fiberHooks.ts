@@ -1,6 +1,11 @@
 import internals from '../../shared/internals';
 import { Dispatch, Dispatcher } from '../../react/src/currentDispatcher';
-import { Action, ReactContext } from '../../shared/ReactTypes';
+import {
+  Action,
+  ReactContext,
+  Thenable,
+  Usable,
+} from '../../shared/ReactTypes';
 import { FiberNode } from './fiber';
 import {
   Update,
@@ -15,6 +20,8 @@ import { Lane, NoLane, requestUpdateLanes } from './fiberLanes';
 import { Flags, PassiveEffect } from './fiberFlags';
 import { HookHasEffect, Passive } from './hookEffectTags';
 import { readContext } from './fiberContext';
+import { trackUsedThenable } from './thenable';
+import { REACT_CONTEXT_TYPE } from '../../shared/ReactSymbols';
 
 let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
@@ -87,6 +94,7 @@ const HooksDispatcherOnMount: Dispatcher = {
   useCallback: mountCallback,
   useMemo: mountMemo,
   useContext: readContextHook,
+  use,
 };
 
 const HooksDispatcherOnUpdate: Dispatcher = {
@@ -97,7 +105,27 @@ const HooksDispatcherOnUpdate: Dispatcher = {
   useCallback: updateCallback,
   useMemo: updateMemo,
   useContext: readContextHook,
+  use,
 };
+
+/**
+ * use：读取 thenable（配合 Suspense）或 context
+ * 与普通 hook 不同，use 不占用 hook 链表，可以条件调用
+ */
+function use<T>(usable: Usable<T>): T {
+  if (usable !== null && typeof usable === 'object') {
+    if (typeof (usable as Thenable<T>).then === 'function') {
+      // thenable：交给 Suspense 机制追踪状态
+      const thenable = usable as Thenable<T>;
+      return trackUsedThenable(thenable);
+    } else if ((usable as ReactContext<T>).$$typeof === REACT_CONTEXT_TYPE) {
+      // context
+      const context = usable as ReactContext<T>;
+      return readContext(currentlyRenderingFiber, context);
+    }
+  }
+  throw new Error('不支持的 use 参数：' + String(usable));
+}
 
 /**
  * useContext 的实现（mount / update 共用）：直接读取 context 当前值

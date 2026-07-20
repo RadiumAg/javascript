@@ -8,6 +8,7 @@ import {
   REACT_MEMO_TYPE,
   REACT_CONTEXT_TYPE,
   REACT_PROVIDER_TYPE,
+  REACT_SUSPENSE_TYPE,
 } from '../shared/ReactSymbols';
 import { ReactContext } from '../shared/ReactTypes';
 
@@ -45,6 +46,14 @@ export const useContext: Dispatcher['useContext'] = (context) => {
   const dispatcher = resolveDispatcher();
   return dispatcher.useContext(context);
 };
+
+export const use: Dispatcher['use'] = (usable) => {
+  const dispatcher = resolveDispatcher();
+  return dispatcher.use(usable);
+};
+
+// Suspense 组件：<Suspense fallback={...}>children</Suspense>
+export const Suspense = REACT_SUSPENSE_TYPE;
 
 /**
  * createContext：创建一个 context 对象，并挂载其 Provider
