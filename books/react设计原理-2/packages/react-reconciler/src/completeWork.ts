@@ -10,21 +10,19 @@ import { FiberNode } from './fiber';
 import {
   Fragment,
   FunctionComponent,
-  HostComponent, 
+  HostComponent,
   HostRoot,
   HostText,
 } from './workTags';
 import { NoFlags, Ref, Update } from './fiberFlags';
+import { NoLanes, mergeLanes } from './fiberLanes';
 
 /**
  * Diff 新旧 props，返回 updatePayload
  * updatePayload 格式: [propKey1, propValue1, propKey2, propValue2, ...]
  * 如果无差异返回 null
  */
-function diffProperties(
-  oldProps: Props | null,
-  newProps: Props,
-): any[] | null {
+function diffProperties(oldProps: Props | null, newProps: Props): any[] | null {
   const updatePayload: any[] = [];
 
   // 检查被删除或变化的属性
@@ -64,7 +62,7 @@ function diffProperties(
 }
 
 function markUpdate(fiber: FiberNode) {
-  fiber.flags |= Update; 
+  fiber.flags |= Update;
 }
 
 function markRef(fiber: FiberNode) {
@@ -177,13 +175,22 @@ function appendAllChildren(parent: Container, workInProgress: FiberNode) {
 function bubbleProperties(workInProgress: FiberNode) {
   let subtreeFlags = NoFlags;
   let child = workInProgress.child;
+  let newChildLanes = NoLanes;
 
   while (child !== null) {
     subtreeFlags |= child.subtreeFlags;
     subtreeFlags |= child.flags;
 
+    // 收集子节点的 lanes 与 childLanes，重新冒泡到父节点的 childLanes
+    // 这样 childLanes 每次 completeWork 都会重算，能自动清除已处理的更新
+    newChildLanes = mergeLanes(
+      newChildLanes,
+      mergeLanes(child.lanes, child.childLanes),
+    );
+
     child.return = workInProgress;
     child = child.sibling;
   }
   workInProgress.subtreeFlags |= subtreeFlags;
+  workInProgress.childLanes = newChildLanes;
 }

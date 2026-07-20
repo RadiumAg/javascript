@@ -5,11 +5,13 @@ import {
   Fragment,
   FunctionComponent,
   HostComponent,
+  MemoComponent,
   WorkTag,
 } from './workTags';
 import { Flags, NoFlags } from './fiberFlags';
 import { Lane, Lanes, NoLane, NoLanes } from './fiberLanes';
 import { Effect } from './fiberHooks';
+import { REACT_MEMO_TYPE } from '../../shared/ReactSymbols';
 
 export interface PendingPassiveEffects {
   unmount: Effect[];
@@ -172,6 +174,13 @@ export function createFiberFromElement(element: ReactElement): FiberNode {
 
   if (typeof type === 'string') {
     fiberTag = HostComponent;
+  } else if (
+    typeof type === 'object' &&
+    type !== null &&
+    type.$$typeof === REACT_MEMO_TYPE
+  ) {
+    // React.memo 包裹的组件
+    fiberTag = MemoComponent;
   } else if (typeof type !== 'function' && __DEV__) {
     console.warn('未定义的type类型', element);
   }

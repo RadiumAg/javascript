@@ -7,3 +7,7 @@ export const REACT_ELEMENT_TYPE = supportSymbol
 export const REACT_FRAGMENT_TYPE = supportSymbol
   ? Symbol.for('react.fragment')
   : 0x3acb;
+
+export const REACT_MEMO_TYPE = supportSymbol
+  ? Symbol.for('react.memo')
+  : 0xead3;

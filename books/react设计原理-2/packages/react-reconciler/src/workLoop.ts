@@ -176,14 +176,22 @@ function performConcurrentWorkOnRoot(
  * 同时返回 FiberRootNode
  */
 function markUpdateLaneFromFiberToRoot(fiber: FiberNode, lane: Lane) {
-  // 更新触发更新的 fiber 自身的 lanes
+  // 更新触发更新的 fiber 自身的 lanes（同时标记 alternate，兼容双缓存）
   fiber.lanes = mergeLanes(fiber.lanes, lane);
+  const alternate = fiber.alternate;
+  if (alternate !== null) {
+    alternate.lanes = mergeLanes(alternate.lanes, lane);
+  }
 
   let node = fiber;
   let parent = node.return;
   while (parent !== null) {
-    // 给所有祖先的 childLanes 标记（子孙有更新的记录）
+    // 给所有祖先的 childLanes 标记（子孙有更新的记录），同时标记 alternate
     parent.childLanes = mergeLanes(parent.childLanes, lane);
+    const parentAlternate = parent.alternate;
+    if (parentAlternate !== null) {
+      parentAlternate.childLanes = mergeLanes(parentAlternate.childLanes, lane);
+    }
     node = parent;
     parent = node.return;
   }

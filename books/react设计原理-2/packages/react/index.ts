@@ -4,6 +4,7 @@ import currentDispatcher, {
   resolveDispatcher,
 } from './src/currentDispatcher';
 import { jsx } from './src/jsx';
+import { REACT_MEMO_TYPE } from '../shared/ReactSymbols';
 
 export const useState: Dispatcher['useState'] = (initialState: any) => {
   const dispatcher = resolveDispatcher();
@@ -35,6 +36,22 @@ export const useMemo: Dispatcher['useMemo'] = (nextCreate, deps) => {
   return dispatcher.useMemo(nextCreate, deps);
 };
 
+/**
+ * React.memo：包裹一个组件，返回一个特殊的 memo 对象作为 element.type
+ * @param type    被包裹的组件
+ * @param compare 可选的自定义 props 比较函数，不传则默认浅比较
+ */
+export function memo(
+  type: any,
+  compare?: (oldProps: any, newProps: any) => boolean,
+) {
+  return {
+    $$typeof: REACT_MEMO_TYPE,
+    type,
+    compare: compare === undefined ? null : compare,
+  };
+}
+
 // 内部共享层
 export const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
   currentDispatcher,
@@ -44,4 +61,5 @@ export const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
 export default {
   version: '0.0.0',
   createElement: jsx,
+  memo,
 };

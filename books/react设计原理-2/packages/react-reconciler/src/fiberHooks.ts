@@ -46,7 +46,11 @@ type EffectCallback = () => void;
 
 type EffectDeps = any[] | null;
 
-export function renderWithHooks(wip: FiberNode, lane: Lane) {
+export function renderWithHooks(
+  wip: FiberNode,
+  Component: FiberNode['type'],
+  lane: Lane,
+) {
   currentlyRenderingFiber = wip;
   wip.memoizedState = null;
   renderLane = lane;
@@ -63,7 +67,6 @@ export function renderWithHooks(wip: FiberNode, lane: Lane) {
   }
 
   // 赋值操作
-  const Component = wip.type;
   const props = wip.pendingProps;
   const children = Component(props);
 

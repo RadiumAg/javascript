@@ -7,10 +7,11 @@ import {
   HostComponent,
   HostRoot,
   HostText,
+  MemoComponent,
 } from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
-import { Lane, Lanes, NoLane, NoLanes, isSubsetOfLanes } from './fiberLanes';
+import { Lane, NoLanes, isSubsetOfLanes } from './fiberLanes';
 import { Ref } from './fiberFlags';
 
 /**
@@ -19,10 +20,25 @@ import { Ref } from './fiberFlags';
  * @returns
  */
 export const beginWork = (wip: FiberNode, renderLane: Lane) => {
-  // 清除 lanes：本 fiber 的更新已在本次 render 中被处理
-  // 如果还有未处理的子节点更新，会在 bailout 逻辑中保留 childLanes
+  // bailout 策略：在进入具体更新逻辑前，先判断能否复用 current
+  const current = wip.alternate;
+  if (current !== null) {
+    const oldProps = current.memoizedProps;
+    const newProps = wip.pendingProps;
+
+    // 四要素之 props、type：只要 props 引用变化或 type 变化，就无法 bailout
+    if (oldProps === newProps && current.type === wip.type) {
+      // 四要素之 state：自身没有待处理的更新
+      if (!checkScheduledUpdateOrContext(current, renderLane)) {
+        // 命中 bailout，尝试跳过
+        return bailoutOnAlreadyFinishedWork(wip, renderLane);
+      }
+    }
+  }
+
+  // 未命中 bailout：清除自身 lanes（本次 render 会处理它）
+  // 注意：childLanes 不在此清除，completeWork 的 bubbleProperties 会重新计算
   wip.lanes = NoLanes;
-  wip.childLanes = NoLanes;
 
   // 比较，返回子fiberNode
   switch (wip.tag) {
@@ -34,9 +50,11 @@ export const beginWork = (wip: FiberNode, renderLane: Lane) => {
     case HostText:
       return null;
     case FunctionComponent:
-      return updateFunctionComponent(wip, renderLane);
+      return updateFunctionComponent(wip, wip.type, renderLane);
     case Fragment:
       return updateFragment(wip);
+    case MemoComponent:
+      return updateMemoComponent(wip, renderLane);
     default:
       if (__DEV__) {
         console.warn('beginWork未实现的类型');
@@ -44,6 +62,18 @@ export const beginWork = (wip: FiberNode, renderLane: Lane) => {
       return null;
   }
 };
+
+/**
+ * 检查 current 上是否有本次 renderLane 优先级的待处理更新
+ * （读 current.lanes 而非 wip.lanes，因为 wip.lanes 即将在下方被清零）
+ */
+function checkScheduledUpdateOrContext(
+  current: FiberNode,
+  renderLane: Lane,
+): boolean {
+  const updateLanes = current.lanes;
+  return isSubsetOfLanes(updateLanes, renderLane);
+}
 
 /**
  * 更新Fragment
@@ -56,25 +86,75 @@ function updateFragment(wip: FiberNode) {
   return wip.child;
 }
 
-function updateFunctionComponent(wip: FiberNode, renderLane: Lane) {
-  // bailout 检查
-  // 条件：1. 自身无待处理更新  2. props 引用未变化
-  const current = wip.alternate;
-  const pendingProps = wip.pendingProps;
-  const memoizedProps = current?.memoizedProps;
-
-  if (
-    !isSubsetOfLanes(renderLane, wip.lanes) &&
-    current !== null &&
-    memoizedProps === pendingProps
-  ) {
-    // 满足 bailout 条件，跳过该组件的渲染
-    return bailoutOnAlreadyFinishedWork(wip, renderLane);
-  }
-
-  const nextChildren = renderWithHooks(wip, renderLane);
+function updateFunctionComponent(
+  wip: FiberNode,
+  Component: FiberNode['type'],
+  renderLane: Lane,
+) {
+  const nextChildren = renderWithHooks(wip, Component, renderLane);
   reconcileChildren(wip, nextChildren);
   return wip.child;
+}
+
+/**
+ * 更新 MemoComponent（React.memo 包裹的组件）
+ * 与 FunctionComponent 的区别：对 props 做浅比较（而非引用比较）
+ * 父组件重渲染时，memo 组件的 element 每次都是新的（props 引用变了），
+ * 所以顶部 bailout 会 miss，进入这里通过浅比较再次尝试 bailout
+ */
+function updateMemoComponent(wip: FiberNode, renderLane: Lane) {
+  const current = wip.alternate;
+  const nextProps = wip.pendingProps;
+  // wip.type 是 memo 对象 { $$typeof, type, compare }
+  const Component = wip.type.type;
+  const compare = wip.type.compare || shallowEqual;
+
+  if (current !== null) {
+    const prevProps = current.memoizedProps;
+    // props 浅比较 + ref 未变化
+    if (compare(prevProps, nextProps) && current.ref === wip.ref) {
+      // 复用旧 props
+      wip.pendingProps = prevProps;
+      // 自身没有待处理的更新 → bailout
+      if (!checkScheduledUpdateOrContext(current, renderLane)) {
+        // 恢复 wip.lanes（顶部已清零），保留可能存在的低优先级 lane
+        wip.lanes = current.lanes;
+        return bailoutOnAlreadyFinishedWork(wip, renderLane);
+      }
+    }
+  }
+  return updateFunctionComponent(wip, Component, renderLane);
+}
+
+/**
+ * props 浅比较：memo 默认的比较策略
+ */
+function shallowEqual(a: any, b: any): boolean {
+  if (Object.is(a, b)) {
+    return true;
+  }
+  if (
+    typeof a !== 'object' ||
+    a === null ||
+    typeof b !== 'object' ||
+    b === null
+  ) {
+    return false;
+  }
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+  for (const key of keysA) {
+    if (
+      !Object.prototype.hasOwnProperty.call(b, key) ||
+      !Object.is(a[key], b[key])
+    ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -88,7 +168,7 @@ function bailoutOnAlreadyFinishedWork(
   renderLane: Lane,
 ): FiberNode | null {
   // 子孙节点也没有待处理的更新 → 整棵子树跳过
-  if (!isSubsetOfLanes(renderLane, wip.childLanes)) {
+  if (!isSubsetOfLanes(wip.childLanes, renderLane)) {
     if (__DEV__) {
       console.log('bailout 跳过组件:', wip.type?.name || wip.type);
     }
