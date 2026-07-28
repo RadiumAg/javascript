@@ -20,47 +20,42 @@
   }
 };
 
-// 组合
+// 组合：部分在整体内部创建，同生共死
 () => {
+  class Heart {
+    beat() {}
+  }
   class Dog {
-    private tinyDog = [new Dog(), new Dog()];
+    private heart = new Heart();
   }
 };
 
-// 聚合
+// 聚合：部分从外部传入，可独立存在
 () => {
-  class Dog {
-    private tinyDog = [];
+  class Dog {}
 
-    constructor(dog?: Dog) {
-      this.tinyDog.push(dog);
-    }
-  }
-
-  const tinyDog = new Dog();
-  new Dog(tinyDog);
-};
-
-// 关联
-() => {
-  class Dog {
-    private tinyDog: Dog | undefined;
-    run() {}
-
-    constructor(dog?: Dog) {
-      this.tinyDog = dog;
-      this.tinyDog?.run();
+  class DogPark {
+    private dogs: Dog[] = [];
+    add(dog: Dog) {
+      this.dogs.push(dog);
     }
   }
 };
 
-// 依赖
+// 关联：从外部传入，存为成员变量
 () => {
-  class Dog {
-    run() {}
+  class Dog {}
+  class Person {
+    constructor(private pet: Dog) {}
+  }
+};
 
-    constructor() {
-      new Dog().run();
+// 依赖：临时使用，不持有引用
+() => {
+  class Toy {}
+  class Dog2 {
+    play() {
+      const toy = new Toy();
     }
   }
 };
