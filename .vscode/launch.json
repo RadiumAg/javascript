@@ -9,14 +9,18 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
-      "args": ["${file}"],
+      "args": [
+        "${file}"
+      ],
       "console": "integratedTerminal"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "启动程序",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "runtimeExecutable": "node",
       "program": "${file}"
     },
@@ -30,16 +34,17 @@
       "name": "Debug Swift File",
       "type": "lldb",
       "request": "launch",
-      "program": "/usr/bin/xcrun",
-      "args": [
-        "swift",
-        "-swift-version",
-        "6",
-        "${file}"
+      // 先用 swiftc -g 编译出带调试符号的二进制，再调试它。
+      // 不能直接调试 swift 解释器：xcrun/swift 是 Apple 签名的系统二进制，
+      // SIP 禁止 debugserver 附加，会报 Not allowed to attach to process。
+      "initCommands": [
+        "platform shell mkdir -p '${workspaceFolder}/.build' && swiftc -g -Onone -swift-version 6 -o '${workspaceFolder}/.build/${fileBasenameNoExtension}' '${file}'"
       ],
-      "cwd": "${workspaceFolder}",
-      "stopOnEntry": false,
-      "env": {}
+      "program": "${workspaceFolder}/.build/${fileBasenameNoExtension}",
+      "args": [],
+      "cwd": "${fileDirname}",
+      "terminal": "integrated",
+      "stopOnEntry": false
     }
   ]
 }

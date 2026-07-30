@@ -1,5 +1,7 @@
-let constVariable = 0
-var changeVariable = 0
+func example1() {
+  let constVariable: Int = 0
+  var changeVariable: Int = 0
+  print(constVariable)
+}
 
-print(constVariable)
- 
+example1()

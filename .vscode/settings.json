@@ -16,6 +16,15 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
+  "[swift]": {
+    "editor.defaultFormatter": "vknabel.vscode-apple-swift-format",
+    "editor.formatOnSave": true
+  },
+  // swift-format 不在 PATH 上，只能通过 xcrun 从工具链里定位
+  "apple-swift-format.path": [
+    "/usr/bin/xcrun",
+    "swift-format"
+  ],
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "compile-hero.disable-compile-files-on-did-save-code": true,
   "i18next.i18nPaths": "/Users/agradium/Desktop/work/javascript/books/react通关秘籍/calendar-component/src/components/calendar/locale",
