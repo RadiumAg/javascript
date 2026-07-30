@@ -25,6 +25,21 @@
       "name": " http://localhost:5173/",
       "request": "launch",
       "url": " http://localhost:5173/"
+    },
+    {
+      "name": "Debug Swift File",
+      "type": "lldb",
+      "request": "launch",
+      "program": "/usr/bin/xcrun",
+      "args": [
+        "swift",
+        "-swift-version",
+        "6",
+        "${file}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "env": {}
     }
   ]
 }
