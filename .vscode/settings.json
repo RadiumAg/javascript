@@ -25,6 +25,8 @@
     "/usr/bin/xcrun",
     "swift-format"
   ],
+  // Package.swift 不在工作区根目录，必须开启子目录搜索，SourceKit-LSP 才能识别
+  "swift.searchSubfoldersForPackages": true,
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "compile-hero.disable-compile-files-on-did-save-code": true,
   "i18next.i18nPaths": "/Users/agradium/Desktop/work/javascript/books/react通关秘籍/calendar-component/src/components/calendar/locale",

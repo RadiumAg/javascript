@@ -4,4 +4,7 @@ func example1() {
   print(constVariable)
 }
 
-example1()
+func example2() {
+  var enviroment = "dev"
+  let maxiumNumberOfLoginAttemps: Int
+}

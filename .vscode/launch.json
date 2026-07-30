@@ -31,18 +31,19 @@
       "url": " http://localhost:5173/"
     },
     {
-      "name": "Debug Swift File",
+      "name": "Debug Swift (TSPL)",
       "type": "lldb",
       "request": "launch",
-      // 先用 swiftc -g 编译出带调试符号的二进制，再调试它。
-      // 不能直接调试 swift 解释器：xcrun/swift 是 Apple 签名的系统二进制，
+      // 用 swiftc 一次编译 Sources/TSPL 下所有文件（main.swift 为入口）。
+      // 没用 swift build：当前 CommandLineTools 的 SwiftPM manifest 已损坏。
+      // 也不能直接调试 swift 解释器：xcrun/swift 是 Apple 签名的系统二进制，
       // SIP 禁止 debugserver 附加，会报 Not allowed to attach to process。
       "initCommands": [
-        "platform shell mkdir -p '${workspaceFolder}/.build' && swiftc -g -Onone -swift-version 6 -o '${workspaceFolder}/.build/${fileBasenameNoExtension}' '${file}'"
+        "platform shell mkdir -p '${workspaceFolder}/.build' && swiftc -g -Onone -swift-version 6 -o '${workspaceFolder}/.build/TSPL' '${workspaceFolder}/books/The Swift Programming Language/Sources/TSPL/'*.swift"
       ],
-      "program": "${workspaceFolder}/.build/${fileBasenameNoExtension}",
+      "program": "${workspaceFolder}/.build/TSPL",
       "args": [],
-      "cwd": "${fileDirname}",
+      "cwd": "${workspaceFolder}/books/The Swift Programming Language",
       "terminal": "integrated",
       "stopOnEntry": false
     }
