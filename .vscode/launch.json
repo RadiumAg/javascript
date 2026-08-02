@@ -34,10 +34,6 @@
       "name": "Debug Swift (TSPL)",
       "type": "lldb",
       "request": "launch",
-      // 用 swiftc 一次编译 Sources/TSPL 下所有文件（main.swift 为入口）。
-      // 没用 swift build：当前 CommandLineTools 的 SwiftPM manifest 已损坏。
-      // 也不能直接调试 swift 解释器：xcrun/swift 是 Apple 签名的系统二进制，
-      // SIP 禁止 debugserver 附加，会报 Not allowed to attach to process。
       "initCommands": [
         "platform shell mkdir -p '${workspaceFolder}/.build' && swiftc -g -Onone -swift-version 6 -o '${workspaceFolder}/.build/TSPL' '${workspaceFolder}/books/The Swift Programming Language/Sources/TSPL/'*.swift"
       ],
@@ -46,6 +42,26 @@
       "cwd": "${workspaceFolder}/books/The Swift Programming Language",
       "terminal": "integrated",
       "stopOnEntry": false
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:javascript}/books/The Swift Programming Language",
+      "name": "Debug TSPL (books/The Swift Programming Language)",
+      "target": "TSPL",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug TSPL (books/The Swift Programming Language)"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:javascript}/books/The Swift Programming Language",
+      "name": "Release TSPL (books/The Swift Programming Language)",
+      "target": "TSPL",
+      "configuration": "release",
+      "preLaunchTask": "swift: Build Release TSPL (books/The Swift Programming Language)"
     }
   ]
 }
