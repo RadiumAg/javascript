@@ -33,6 +33,17 @@ func inheritanceExample() {
   print("Vechicle: \(someVehicle.description)")
 }
 
+// 尾随闭包
+func example3() {
+  func someFUnctionThatTakesAClousre(clousure: () -> Void) {
+
+  }
+
+  someFUnctionThatTakesAClousre {
+
+  }
+}
+
 // MARK: - 执行
 
 inheritanceExample()
