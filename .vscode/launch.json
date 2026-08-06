@@ -8,11 +8,19 @@
       "name": "tsx",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/tsx",
+      "runtimeArgs": [
+        "--import",
+        "tsx"
+      ],
       "args": [
         "${file}"
       ],
-      "console": "integratedTerminal"
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
     },
     {
       "type": "node",
