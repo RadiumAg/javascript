@@ -1,4 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"]
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["tsx"],
+      "enabled": false,
+      "description": "tsx 4.23+ CLI 改为父子进程架构，与 VS Code js-debug 同时附加双进程会死锁卡死，锁定 4.22.4，勿升级"
+    }
+  ]
 }

@@ -8,6 +8,8 @@
       "name": "tsx",
       "type": "node",
       "request": "launch",
+      // 注意：必须配合 tsx@4.22.4 使用。4.23+ 的 CLI 会派生子进程，
+      // 导致 VS Code 调试器附加双进程后死锁卡死（已在 renovate.json 中锁定禁止升级）
       "runtimeArgs": [
         "--import",
         "tsx"
