@@ -27,4 +27,19 @@
       });
     })();
   })();
+
+  // defineproperty
+  (() => {
+    const person = {};
+    Object.defineProperties(person, {
+      value: {
+        value: 1,
+      },
+      name: {
+        get() {
+          return1;
+        },
+      },
+    });
+  })();
 })();
