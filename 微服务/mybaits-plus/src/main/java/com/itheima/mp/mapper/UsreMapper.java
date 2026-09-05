@@ -1,4 +1,4 @@
-package com.itheima.mp.domain.po.mapper;
+package com.itheima.mp.mapper;
 
 public class UsreMapper {
 }
