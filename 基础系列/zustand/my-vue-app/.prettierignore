@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+
+# Lock files
+pnpm-lock.yaml
+bun.lock
+package-lock.json
+yarn.lock
+
+# Logs
+logs
+*.log
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+*.local
