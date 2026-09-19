@@ -45,9 +45,7 @@ class ConcreteMediator implements Mediator {
     this.component2.setMediator(this);
   }
 
-  notify(sender: object, event: string): void;
-  notify(sender: object, event: string): void;
-  notify(sender: unknown, event: unknown): void {
+  notify(sender: object, event: string) {
     if (event === 'A') {
       console.log('Mediator reacts on A and triggers following operations:');
       this.component2.doC();
