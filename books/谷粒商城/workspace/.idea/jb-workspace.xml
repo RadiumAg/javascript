@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="WorkspaceSettings">
-    <project name="gulimall-product" path="$PROJECT_DIR$/../gulimall-product" />
-    <project name="gulimall-coupon" path="$PROJECT_DIR$/../gulimall-coupon" />
-    <option name="workspace" value="true" />
-  </component>
-</project>
