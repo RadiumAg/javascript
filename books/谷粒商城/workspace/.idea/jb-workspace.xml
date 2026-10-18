@@ -3,9 +3,6 @@
   <component name="WorkspaceSettings">
     <project name="gulimall-product" path="$PROJECT_DIR$/../gulimall-product" />
     <project name="gulimall-coupon" path="$PROJECT_DIR$/../gulimall-coupon" />
-    <project name="gulimall-memeber" path="$PROJECT_DIR$/../gulimall-memeber" />
-    <project name="gulimall-order" path="$PROJECT_DIR$/../gulimall-order" />
-    <project name="gulimall-ware" path="$PROJECT_DIR$/../gulimall-ware" />
     <option name="workspace" value="true" />
   </component>
 </project>
