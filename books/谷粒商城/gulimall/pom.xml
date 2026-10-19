@@ -6,6 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>gulimall</artifactId>
+    <packaging>pom</packaging>
     <description>聚合服务</description>
     <version>1.0-SNAPSHOT</version>
 
@@ -15,6 +16,7 @@
         <module>gulimall-member</module>
         <module>gulimall-order</module>
         <module>gulimall-ware</module>
+        <module>gulimall-common</module>
     </modules>
 
     <properties>
