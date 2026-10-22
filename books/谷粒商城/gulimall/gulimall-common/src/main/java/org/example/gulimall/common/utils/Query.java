@@ -1,45 +1,45 @@
 package org.example.gulimall.common.utils;
 
-import java.util.LinkedHashMap;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import java.util.Map;
 
-public class Query extends LinkedHashMap<String, Object> {
+public class Query<T> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long DEFAULT_PAGE = 1;
+    private static final long DEFAULT_LIMIT = 10;
 
-    private static final int DEFAULT_PAGE = 1;
-    private static final int DEFAULT_LIMIT = 10;
+    public IPage<T> getPage(Map<String, Object> params) {
+        long curPage = parseLong(params.get("page"), DEFAULT_PAGE);
+        long limit = parseLong(params.get("limit"), DEFAULT_LIMIT);
 
-    public Query(Map<String, Object> params) {
-        super(params);
+        Page<T> page = new Page<>(curPage, limit);
 
-        int page = parseInt(params.get("page"), DEFAULT_PAGE);
-        int limit = parseInt(params.get("limit"), DEFAULT_LIMIT);
-
-        put("page", page);
-        put("limit", limit);
-        put("offset", (page - 1) * limit);
-
-        Object sidx = params.get("sidx");
-        Object order = params.get("order");
-        if (hasText(sidx) && hasText(order)) {
-            put("sidx", sidx);
-            put("order", order);
+        String sidx = str(params.get("sidx"));
+        String order = str(params.get("order"));
+        if (!sidx.isEmpty() && !order.isEmpty()) {
+            page.addOrder("asc".equalsIgnoreCase(order)
+                    ? OrderItem.asc(sidx)
+                    : OrderItem.desc(sidx));
         }
+        return page;
     }
 
-    private int parseInt(Object value, int defaultValue) {
-        if (!hasText(value)) {
+    private long parseLong(Object value, long defaultValue) {
+        String text = str(value);
+        if (text.isEmpty()) {
             return defaultValue;
         }
         try {
-            return Integer.parseInt(value.toString());
+            return Long.parseLong(text);
         } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
 
-    private boolean hasText(Object value) {
-        return value != null && !value.toString().isBlank();
+    private String str(Object value) {
+        return value == null ? "" : value.toString().trim();
     }
 }
