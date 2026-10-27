@@ -1,18 +1,13 @@
 spring:
-  application:
-    name: gulimall-product
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: "jdbc:mysql://localhost:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai"
-    username: root
-    password: "${MYSQL_ROOT_PASSWORD:root}"
+  config:
+    import: "nacos:gulimall-product.properties"
   cloud:
     nacos:
+      username: nacos
+      password: nacos
       discovery:
         server-addr: localhost:8848
-
-mybatis-plus:
-  mapper-locations: classpath*:/mapper/**/*.xml
-  global-config:
-    db-config:
-      id-type: auto
+      config:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP

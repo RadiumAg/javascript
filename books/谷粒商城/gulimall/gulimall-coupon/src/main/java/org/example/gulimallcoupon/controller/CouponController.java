@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import org.example.gulimall.common.utils.R;
  * @date 2026-10-25 19:40:19
  */
 @RestController
+@RefreshScope
 @RequestMapping("gulimallcoupon/coupon")
 public class CouponController {
     @Autowired
