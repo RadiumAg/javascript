@@ -2,8 +2,15 @@ import { Suspense, type ComponentType, type LazyExoticComponent } from 'react';
 import { Alert, Spin } from 'antd';
 import { resolveModule } from '@/modules/registry';
 
-export default function ModuleTabContent({ url, path }: { url: string; path: string }) {
-  const Comp: LazyExoticComponent<ComponentType<any>> | undefined = resolveModule(url);
+export default function ModuleTabContent({
+  url,
+  path,
+}: {
+  url: string;
+  path: string;
+}) {
+  const Comp: LazyExoticComponent<ComponentType<any>> | undefined =
+    resolveModule(url);
   if (!Comp) {
     return (
       <Alert
@@ -15,7 +22,13 @@ export default function ModuleTabContent({ url, path }: { url: string; path: str
     );
   }
   return (
-    <Suspense fallback={<div style={{ padding: 60, textAlign: 'center' }}><Spin /></div>}>
+    <Suspense
+      fallback={
+        <div style={{ padding: 60, textAlign: 'center' }}>
+          <Spin />
+        </div>
+      }
+    >
       <Comp />
     </Suspense>
   );

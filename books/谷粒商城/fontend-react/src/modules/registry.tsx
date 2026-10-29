@@ -11,10 +11,13 @@ const registry: Record<string, LazyExoticComponent<ComponentType<any>>> = {
   'sys/config': lazy(() => import('@/pages/sys/ConfigPage')),
   'sys/log': lazy(() => import('@/pages/sys/LogPage')),
   'job/schedule': lazy(() => import('@/pages/job/SchedulePage')),
-  'oss/oss': lazy(() => import('@/pages/oss/OssPage'))
+  'oss/oss': lazy(() => import('@/pages/oss/OssPage')),
+  'product/category': lazy(() => import('@/pages/product/Category')),
 };
 
-export function resolveModule(url: string): LazyExoticComponent<ComponentType<any>> | undefined {
+export function resolveModule(
+  url: string,
+): LazyExoticComponent<ComponentType<any>> | undefined {
   const key = url.replace(/^\//, '');
   return registry[key] ?? registry[key.replace('-', '/')];
 }

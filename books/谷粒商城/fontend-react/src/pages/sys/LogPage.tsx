@@ -12,7 +12,16 @@ export default function LogPage() {
   const overflow = (v?: string) =>
     v ? (
       <Tooltip title={v}>
-        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 240, display: 'inline-block', verticalAlign: 'bottom' }}>
+        <span
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: 240,
+            display: 'inline-block',
+            verticalAlign: 'bottom',
+          }}
+        >
           {v}
         </span>
       </Tooltip>
@@ -24,11 +33,23 @@ export default function LogPage() {
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '用户名', dataIndex: 'username', width: 120 },
     { title: '用户操作', dataIndex: 'operation', width: 120 },
-    { title: '请求方法', dataIndex: 'method', width: 160, ellipsis: true, render: overflow },
-    { title: '请求参数', dataIndex: 'params', width: 160, ellipsis: true, render: overflow },
+    {
+      title: '请求方法',
+      dataIndex: 'method',
+      width: 160,
+      ellipsis: true,
+      render: overflow,
+    },
+    {
+      title: '请求参数',
+      dataIndex: 'params',
+      width: 160,
+      ellipsis: true,
+      render: overflow,
+    },
     { title: '执行时长(毫秒)', dataIndex: 'time', width: 120 },
     { title: 'IP地址', dataIndex: 'ip', width: 140 },
-    { title: '创建时间', dataIndex: 'createDate', width: 180 }
+    { title: '创建时间', dataIndex: 'createDate', width: 180 },
   ];
 
   return (
@@ -43,7 +64,10 @@ export default function LogPage() {
             onPressEnter={() => pl.query({ key: key || undefined })}
             style={{ width: 240 }}
           />
-          <Button type="primary" onClick={() => pl.query({ key: key || undefined })}>
+          <Button
+            type="primary"
+            onClick={() => pl.query({ key: key || undefined })}
+          >
             查询
           </Button>
         </Space>

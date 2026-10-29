@@ -1,0 +1,27 @@
+# 8080 被 Nacos 控制台占用，8081-8085 留给 gulimall-* 微服务，8086 是 renren-fast 直连端口
+server:
+  port: 8087
+
+spring:
+  application:
+    name: gulimall-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+        # 服务端 nacos.core.auth.enabled=false，不配 username/password：
+        # 配了会触发 NacosClientAuthServiceImpl 去请求已被 3.x 删除的 v1 HTTP 登录接口
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: renren-fast
+              uri: lb://renren-fast
+              predicates:
+                - Path=/renren-fast/**
+              # renren-fast 的 context-path 本身就是 /renren-fast，因此不做 StripPrefix
+            - id: gulimall-product
+              uri: lb://gulimall-product
+              predicates:
+                - Path=/gulimall-product/**
