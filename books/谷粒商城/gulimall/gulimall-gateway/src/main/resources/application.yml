@@ -1,4 +1,5 @@
-# 8080 被 Nacos 控制台占用，8081-8085 留给 gulimall-* 微服务，8086 是 renren-fast 直连端口
+# 端口约定：8080 Nacos 控制台 / 8848 Nacos API / 9848 gRPC
+#            8081-8085 gulimall 五个微服务 / 8086 renren-fast 直连 / 8087 网关
 server:
   port: 8087
 
@@ -11,17 +12,40 @@ spring:
         server-addr: localhost:8848
         namespace: public
         # 服务端 nacos.core.auth.enabled=false，不配 username/password：
-        # 配了会触发 NacosClientAuthServiceImpl 去请求已被 3.x 删除的 v1 HTTP 登录接口
+        # 配了会触发 NacosClientAuthServiceImpl 去请求已被 Nacos 3.x 删除的 v1 HTTP 登录接口
     gateway:
       server:
         webmvc:
+          # 路由前缀策略：五个微服务的控制器前缀都是 renren-generator 生成的 gulimall<module>（无连字符），
+          # 且都没有 context-path，所以对外路径直接等于后端路径，不加 StripPrefix / RewritePath。
+          # renren-fast 有 context-path=/renren-fast，同理原样透传。
           routes:
             - id: renren-fast
               uri: lb://renren-fast
               predicates:
                 - Path=/renren-fast/**
-              # renren-fast 的 context-path 本身就是 /renren-fast，因此不做 StripPrefix
+
             - id: gulimall-product
               uri: lb://gulimall-product
               predicates:
-                - Path=/gulimall-product/**
+                - Path=/gulimallproduct/**
+
+            - id: gulimall-coupon
+              uri: lb://gulimall-coupon
+              predicates:
+                - Path=/gulimallcoupon/**
+
+            - id: gulimall-member
+              uri: lb://gulimall-member
+              predicates:
+                - Path=/gulimallmember/**
+
+            - id: gulimall-order
+              uri: lb://gulimall-order
+              predicates:
+                - Path=/gulimallorder/**
+
+            - id: gulimall-ware
+              uri: lb://gulimall-ware
+              predicates:
+                - Path=/gulimallware/**
