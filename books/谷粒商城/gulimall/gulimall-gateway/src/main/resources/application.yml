@@ -24,6 +24,10 @@ spring:
               uri: lb://renren-fast
               predicates:
                 - Path=/renren-fast/**
+              # 后端 CorsConfig 也会加一套 CORS 头，先剥掉后端的，只留网关这份
+              filters:
+                - RemoveResponseHeader=Access-Control-Allow-Origin
+                - RemoveResponseHeader=Access-Control-Allow-Credentials
 
             - id: gulimall-product
               uri: lb://gulimall-product
