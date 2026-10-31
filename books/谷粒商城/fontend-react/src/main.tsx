@@ -1,12 +1,10 @@
-// antd v5 在 React 19 下需要这个兼容补丁（message/notification/Modal 等静态方法走已移除的 render API）
-// 必须是第一条 import，早于任何 antd 组件加载
-import '@ant-design/v5-patch-for-react-19';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import App from '@/App';
+import { FeedbackBridge } from '@/api/feedback';
 import { useAuthStore } from '@/store/auth';
 import { setUnauthorizedHandler } from '@/api/http';
 import 'dayjs/locale/zh-cn';
@@ -25,9 +23,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       locale={zhCN}
       theme={{ token: { colorPrimary: '#1d8bd2' } }}
     >
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      {/* antd v6：message/notification/Modal.confirm 必须由 App 提供实例 */}
+      <AntdApp>
+        <FeedbackBridge />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AntdApp>
     </ConfigProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

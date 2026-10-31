@@ -1,4 +1,5 @@
-import { Modal, Form, Input, message } from 'antd';
+import { Modal, Form, Input } from 'antd';
+import { message } from '@/api/feedback';
 import { useNavigate } from 'react-router-dom';
 import { apiPost, assertOk } from '@/api/http';
 import { useAuthStore } from '@/store/auth';

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { confirm } from '@/api/feedback';
 import {
-  Avatar, Button, Dropdown, Layout, Menu, Modal, Space, Spin, Tabs, Tooltip
+  Avatar, Button, Dropdown, Layout, Menu, Space, Spin, Tabs, Tooltip
 } from 'antd';
 import type { MenuProps } from 'antd';
 import {
@@ -77,7 +78,7 @@ export default function MainLayout() {
   }, [menuList, moduleRoutes, iframeRoutes]);
 
   const doLogout = () => {
-    Modal.confirm({
+    confirm({
       title: '提示',
       content: '确定进行[退出]操作?',
       onOk: async () => {

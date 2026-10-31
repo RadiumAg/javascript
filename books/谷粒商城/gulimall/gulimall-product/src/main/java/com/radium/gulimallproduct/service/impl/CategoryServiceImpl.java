@@ -53,7 +53,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public void removeMenuByIds(List<Long> list) {
-
+        baseMapper.deleteBatchIds(list);
     }
 
     /// 递归查找所有菜单的子菜单

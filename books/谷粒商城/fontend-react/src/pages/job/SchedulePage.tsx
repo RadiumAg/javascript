@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  Alert, Button, Card, Col, Form, Input, message, Modal, Row, Space, Table, Tag, Tooltip
-} from 'antd';
+import { message, confirm } from '@/api/feedback';
+import { Alert, Button, Card, Col, Form, Input, Modal, Row, Space, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { apiGet, apiPost, assertOk } from '@/api/http';
 import type { PageData, R, ScheduleJob, ScheduleJobLog } from '@/types';
@@ -204,7 +203,7 @@ export default function SchedulePage() {
   const [logOpen, setLogOpen] = useState(false);
 
   const batch = (action: 'delete' | 'pause' | 'resume' | 'run', label: string, ids: number[]) => {
-    Modal.confirm({
+    confirm({
       title: '提示',
       content: `确定进行[id=${ids.join(',')}]进行[${label}]操作?`,
       onOk: async () => {

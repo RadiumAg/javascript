@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  Button, Card, Form, Input, InputNumber, message, Modal, Radio, Space, Table, Tag, Tooltip, TreeSelect
-} from 'antd';
+import { message, confirm } from '@/api/feedback';
+import { Button, Card, Form, Input, InputNumber, Modal, Radio, Space, Table, Tag, Tooltip, TreeSelect } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { apiGet, apiGetRaw, apiPost, assertOk } from '@/api/http';
 import type { MenuNode, R } from '@/types';
@@ -176,7 +175,7 @@ export default function MenuPage() {
   }, []);
 
   const doDelete = (row: MenuNode) => {
-    Modal.confirm({
+    confirm({
       title: '提示',
       content: `确定进行[单条删除]操作? id=${row.menuId}`,
       onOk: async () => {

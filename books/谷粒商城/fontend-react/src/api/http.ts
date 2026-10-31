@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { message } from 'antd';
+import { message } from '@/api/feedback';
 import type { PageData, R } from '@/types';
 
 /**

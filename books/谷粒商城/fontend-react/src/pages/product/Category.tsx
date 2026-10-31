@@ -1,9 +1,18 @@
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Card, Space, Table, Tag } from 'antd';
+import { FC, useMemo, useRef, useState } from 'react';
+import {
+  Alert,
+  Button,
+  Card,
+  notification,
+  Popconfirm,
+  Space,
+  Table,
+  Tag,
+} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { microGet } from '@/api/http';
+import { microGet, microPost } from '@/api/http';
 import type { R } from '@/types';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
 
 /** gulimall-product 的 /gulimallproduct/category/list/tree 返回嵌套树，字段与 CategoryEntity 对齐 */
@@ -22,7 +31,7 @@ const Category: FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const selectedRowKeys = useRef<React.Key[]>([]);
-
+  const [notificationApi, contextHolder] = notification.useNotification();
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     selectedRowKeys.current = newSelectedRowKeys;
   };
@@ -33,7 +42,34 @@ const Category: FC = () => {
 
   const handleAppendClick = useMemoizedFn(() => {});
 
-  const handleDeleteClick = useMemoizedFn((record: CategoryNode) => {});
+  const handleDeleteClick = useMemoizedFn((record: CategoryNode) => {
+    microPost('/gulimallproduct/category/delete', [record.catId], {
+      raw: true,
+    })
+      .then(() => {
+        notificationApi.success({ message: '删除成功' });
+        loadingData();
+      })
+      .catch((e) => {
+        if (e instanceof Error) notificationApi.error({ message: e.message });
+      });
+  });
+
+  const loadingData = useMemoizedFn(() => {
+    setLoading(true);
+    microGet<R & { data?: CategoryNode[] }>(
+      '/gulimallproduct/category/list/tree',
+    )
+      .then((res) => {
+        if (res.code !== 0) {
+          setError(res.msg || '请求失败');
+          return;
+        }
+        setRows(res.data ?? []);
+      })
+      .catch((e: unknown) => setError(String(e)))
+      .finally(() => setLoading(false));
+  });
 
   const columns: ColumnsType<CategoryNode> = useMemo(
     () => [
@@ -60,15 +96,17 @@ const Category: FC = () => {
                 </Button>
               )}
               {record.children && record.children?.length === 0 && (
-                <Button
-                  danger
-                  type="text"
-                  onClick={() => {
+                <Popconfirm
+                  title="警告·"
+                  description="确认删除么"
+                  onConfirm={() => {
                     handleDeleteClick(record);
                   }}
                 >
-                  删除
-                </Button>
+                  <Button danger type="text">
+                    删除
+                  </Button>
+                </Popconfirm>
               )}
             </Space>
           );
@@ -78,22 +116,9 @@ const Category: FC = () => {
     [],
   );
 
-  useEffect(() => {
-    setLoading(true);
-    // 经网关打微服务：/gw -> 网关 /gulimallproduct/**（依赖 vite 代理，见 vite.config.ts）
-    microGet<R & { data?: CategoryNode[] }>(
-      '/gulimallproduct/category/list/tree',
-    )
-      .then((res) => {
-        if (res.code !== 0) {
-          setError(res.msg || '请求失败');
-          return;
-        }
-        setRows(res.data ?? []);
-      })
-      .catch((e: unknown) => setError(String(e)))
-      .finally(() => setLoading(false));
-  }, []);
+  useMount(() => {
+    loadingData();
+  });
 
   return (
     <Card
@@ -122,6 +147,7 @@ const Category: FC = () => {
         rowSelection={rowSelection}
         pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
       />
+      {contextHolder}
     </Card>
   );
 };

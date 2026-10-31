@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, Input, message, Modal, Row, Space, Table } from 'antd';
+import { message, confirm } from '@/api/feedback';
+import { Button, Card, Col, Form, Input, Modal, Row, Space, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { apiGet, apiPost, assertOk } from '@/api/http';
 import type { R, SysConfig } from '@/types';
@@ -83,7 +84,7 @@ export default function ConfigPage() {
   const [modal, setModal] = useState<{ open: boolean; id?: number }>({ open: false });
 
   const doDelete = (ids: number[]) => {
-    Modal.confirm({
+    confirm({
       title: '提示',
       content: `确定进行[${ids.length === 1 ? '单条' : '批量'}删除]操作? id=${ids.join(',')}`,
       onOk: async () => {

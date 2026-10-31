@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, Input, message } from 'antd';
+import { message } from '@/api/feedback';
+import { Button, Form, Input } from 'antd';
 import { UserOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE, apiPost, setToken } from '@/api/http';
