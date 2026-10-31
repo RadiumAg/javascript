@@ -1,3 +1,6 @@
+// antd v5 在 React 19 下需要这个兼容补丁（message/notification/Modal 等静态方法走已移除的 render API）
+// 必须是第一条 import，早于任何 antd 组件加载
+import '@ant-design/v5-patch-for-react-19';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'node:path';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
+import { fileURLToPath } from 'node:url';
 
 // dev 时两条代理通道都指向网关（VITE_API_TARGET）：
 //   /proxyApi/* -> 网关 /renren-fast/**      renren-fast 后台（context-path 已包含在重写里）
@@ -10,9 +11,13 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const target = env.VITE_API_TARGET || 'http://localhost:8087';
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      // React Compiler：走官方 babel-plugin-react-compiler（React 19 运行时内置，无需 react-compiler-runtime polyfill）
+      babel({ presets: [reactCompilerPreset()] })
+    ],
     resolve: {
-      alias: { '@': path.resolve(__dirname, 'src') }
+      alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }
     },
     server: {
       port: 5173,
