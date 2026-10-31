@@ -11,7 +11,7 @@ import {
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth';
 import { useTabsStore } from '@/store/tabs';
-import { apiPost } from '@/api/http';
+import { renrenApi } from '@/api';
 import type { MenuNode } from '@/types';
 import ModuleTabContent from '@/layout/ModuleTabContent';
 import PasswordModal from '@/layout/PasswordModal';
@@ -82,7 +82,7 @@ export default function MainLayout() {
       title: '提示',
       content: '确定进行[退出]操作?',
       onOk: async () => {
-        await apiPost('/sys/logout');
+        await renrenApi.logout();
         clearLogin();
         closeAll();
         navigate('/login', { replace: true });

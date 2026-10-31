@@ -3,7 +3,7 @@ import { message, confirm } from '@/api/feedback';
 import { Button, Card, Col, Form, Input, Modal, Radio, Row, Space, Table, Upload } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { InboxOutlined } from '@ant-design/icons';
-import { API_BASE, apiGet, apiPost, assertOk, getToken } from '@/api/http';
+import { assertOk, renrenApi } from '@/api';
 import type { CloudStorageConfig, R, SysOss } from '@/types';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
 
@@ -19,7 +19,7 @@ function OssConfigModal({ open, onClose }: { open: boolean; onClose: () => void 
   const type = Form.useWatch('type', form);
 
   const load = async () => {
-    const data = await apiGet<R & { config?: CloudStorageConfig }>('/sys/oss/config');
+    const data = await renrenApi.ossConfig();
     if (assertOk(data)) {
       // 原版：未配置过时 dataForm 直接置空对象
       form.setFieldsValue((data.config ?? {}) as Partial<CloudStorageConfig>);
@@ -31,7 +31,7 @@ function OssConfigModal({ open, onClose }: { open: boolean; onClose: () => void 
     setSaving(true);
     try {
       // 保存整个表单（含未展开的其它组字段），与 Vue 版一致
-      const data = await apiPost('/sys/oss/saveConfig', { ...form.getFieldsValue(true), ...values });
+      const data = await renrenApi.ossSaveConfig({ ...form.getFieldsValue(true), ...values });
       if (assertOk(data)) {
         message.success('操作成功');
         onClose();
@@ -121,7 +121,7 @@ function OssUploadModal({ open, onClose }: { open: boolean; onClose: () => void 
         name="file"
         multiple
         accept=".jpg,.jpeg,.png,.gif"
-        action={`${API_BASE}/sys/oss/upload?token=${encodeURIComponent(getToken())}`}
+        action={renrenApi.ossUploadUrl()}
         fileList={fileList}
         beforeUpload={(file) => {
           if (!acceptTypes.includes(file.type)) {
@@ -150,7 +150,7 @@ function OssUploadModal({ open, onClose }: { open: boolean; onClose: () => void 
 
 /** 对应 views/modules/oss/oss.vue（原版按钮无 isAuth，后端统一 sys:oss:all，SPEC D13） */
 export default function OssPage() {
-  const pl = usePageList<SysOss>('/sys/oss/list', {});
+  const pl = usePageList<SysOss>(renrenApi.ossList, {});
   const [selected, setSelected] = useState<number[]>([]);
   const [configOpen, setConfigOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -160,7 +160,7 @@ export default function OssPage() {
       title: '提示',
       content: `确定进行[${ids.length === 1 ? '单条' : '批量'}删除]操作? id=${ids.join(',')}`,
       onOk: async () => {
-        const data = await apiPost('/sys/oss/delete', ids, { raw: true });
+        const data = await renrenApi.ossDelete(ids);
         if (assertOk(data)) {
           message.success('操作成功');
           setSelected([]);

@@ -3,7 +3,8 @@ import { message } from '@/api/feedback';
 import { Button, Form, Input } from 'antd';
 import { UserOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE, apiPost, setToken } from '@/api/http';
+import { renrenApi } from '@/api';
+import { setToken } from '@/api/http';
 import { getUUID } from '@/utils';
 import { useAuthStore } from '@/store/auth';
 
@@ -19,7 +20,7 @@ export default function LoginPage() {
   const refreshCaptcha = () => {
     const u = getUUID();
     setUuid(u);
-    setCaptchaSrc(`${API_BASE}/captcha.jpg?uuid=${u}`);
+    setCaptchaSrc(renrenApi.captchaUrl(u));
   };
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function LoginPage() {
     const values = await form.validateFields();
     setSubmitting(true);
     try {
-      const data = await apiPost<{ code: number; msg?: string; token?: string }>('/sys/login', {
+      const data = await renrenApi.login({
         username: values.username,
         password: values.password,
         uuid,

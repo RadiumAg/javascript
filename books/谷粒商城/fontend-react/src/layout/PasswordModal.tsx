@@ -1,7 +1,7 @@
 import { Modal, Form, Input } from 'antd';
 import { message } from '@/api/feedback';
 import { useNavigate } from 'react-router-dom';
-import { apiPost, assertOk } from '@/api/http';
+import { assertOk, renrenApi } from '@/api';
 import { useAuthStore } from '@/store/auth';
 import { useTabsStore } from '@/store/tabs';
 
@@ -15,7 +15,7 @@ export default function PasswordModal({ open, onClose }: { open: boolean; onClos
 
   const submit = async () => {
     const values = await form.validateFields();
-    const data = await apiPost('/sys/user/password', {
+    const data = await renrenApi.changePassword({
       password: values.password,
       newPassword: values.newPassword
     });

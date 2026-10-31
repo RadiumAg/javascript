@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
-import { apiGet } from '@/api/http';
-import type { PageData, R } from '@/types';
+import type { PageRes } from '@/types';
 
 export interface PageResult<T> {
   list: T[];
   total: number;
 }
 
+/** 列表接口函数：renrenApi.userList 这类，入参是 {page, limit, ...过滤条件} */
+export type PageFetcher<T> = (params: Record<string, any>) => Promise<PageRes<T>>;
+
 /**
  * 列表页通用分页 hook（对应各 Vue 页面的 getDataList + dataForm.page/limit）
- * fetcher 接收 {page, limit, ...filter}，返回 page.list/totalCount
+ * 传接口函数而不是 URL，URL 和响应类型都由 api 层持有
  */
 export function usePageList<T = Record<string, any>>(
-  url: string,
+  fetcher: PageFetcher<T>,
   filter: Record<string, any> = {},
   opts: { immediate?: boolean; defaultLimit?: number } = {}
 ) {
@@ -26,7 +28,7 @@ export function usePageList<T = Record<string, any>>(
     async (p = page, l = limit, f = filter) => {
       setLoading(true);
       try {
-        const data = await apiGet<R & { page?: PageData<T> }>(url, { page: p, limit: l, ...f });
+        const data = await fetcher({ page: p, limit: l, ...f });
         if (data && data.code === 0 && data.page) {
           setList(data.page.list ?? []);
           setTotal(data.page.totalCount ?? 0);
@@ -38,13 +40,13 @@ export function usePageList<T = Record<string, any>>(
         setLoading(false);
       }
     },
-    [url, page, limit, filter]
+    [fetcher, page, limit, filter]
   );
 
   useEffect(() => {
     if (opts.immediate !== false) void fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url]);
+  }, [fetcher]);
 
   const query = (f = filter) => {
     setPage(1);

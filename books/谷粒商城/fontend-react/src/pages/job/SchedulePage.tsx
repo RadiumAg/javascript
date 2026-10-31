@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { message, confirm } from '@/api/feedback';
 import { Alert, Button, Card, Col, Form, Input, Modal, Row, Space, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { apiGet, apiPost, assertOk } from '@/api/http';
-import type { PageData, R, ScheduleJob, ScheduleJobLog } from '@/types';
+import { assertOk, renrenApi } from '@/api';
+import type { ScheduleJob, ScheduleJobLog } from '@/types';
 import { useAuthStore } from '@/store/auth';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
 
@@ -25,7 +25,7 @@ function JobModal({
     form.resetFields();
     setStatus(undefined);
     if (editId) {
-      void apiGet<R & { schedule?: ScheduleJob }>(`/sys/schedule/info/${editId}`).then((data) => {
+      void renrenApi.scheduleInfo(editId).then((data) => {
         if (assertOk(data) && data.schedule) {
           setStatus(data.schedule.status);
           form.setFieldsValue({
@@ -44,11 +44,12 @@ function JobModal({
     setSaving(true);
     try {
       // 对应 SPEC：create 不带 status（服务端强制 NORMAL）；update 携带原 status
-      const data = await apiPost('/sys/schedule/' + (isEdit ? 'update' : 'save'), {
+      const payload = {
         jobId: editId,
         ...values,
         status: isEdit ? status : undefined
-      });
+      };
+      const data = isEdit ? await renrenApi.scheduleUpdate(payload) : await renrenApi.scheduleSave(payload);
       if (assertOk(data)) {
         message.success('操作成功');
         onClose();
@@ -97,7 +98,7 @@ function LogModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const doQuery = async (p = page, l = limit, jid = jobId) => {
     setLoading(true);
     try {
-      const data = await apiGet<R & { page?: PageData<ScheduleJobLog> }>('/sys/scheduleLog/list', {
+      const data = await renrenApi.scheduleLogList({
         page: p,
         limit: l,
         jobId: jid || undefined
@@ -123,7 +124,7 @@ function LogModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   const show = async (row: ScheduleJobLog) => {
     if (row.status === 0) return;
-    const data = await apiGet<R & { log?: ScheduleJobLog }>(`/sys/scheduleLog/info/${row.logId}`);
+    const data = await renrenApi.scheduleLogInfo(row.logId);
     Modal.error({ title: '错误信息', content: <pre style={{ whiteSpace: 'pre-wrap' }}>{data.log?.error}</pre> });
   };
 
@@ -197,7 +198,7 @@ function LogModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 export default function SchedulePage() {
   const isAuth = useAuthStore((s) => s.isAuth);
   const [beanName, setBeanName] = useState('');
-  const pl = usePageList<ScheduleJob>('/sys/schedule/list', { beanName: beanName || undefined });
+  const pl = usePageList<ScheduleJob>(renrenApi.scheduleList, { beanName: beanName || undefined });
   const [selected, setSelected] = useState<number[]>([]);
   const [modal, setModal] = useState<{ open: boolean; id?: number }>({ open: false });
   const [logOpen, setLogOpen] = useState(false);
@@ -207,7 +208,7 @@ export default function SchedulePage() {
       title: '提示',
       content: `确定进行[id=${ids.join(',')}]进行[${label}]操作?`,
       onOk: async () => {
-        const data = await apiPost(`/sys/schedule/${action}`, ids, { raw: true });
+        const data = await renrenApi.scheduleAction(action, ids);
         if (assertOk(data)) {
           message.success('操作成功');
           if (action === 'delete') setSelected([]);

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { message, confirm } from '@/api/feedback';
 import { Button, Card, Col, Form, Input, Modal, Row, Space, Table, Tree } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { apiGet, apiGetRaw, apiPost, assertOk } from '@/api/http';
-import type { MenuNode, R, SysRole } from '@/types';
+import { assertOk, renrenApi } from '@/api';
+import type { MenuNode, SysRole } from '@/types';
 import { treeDataTranslate } from '@/utils';
 import { useAuthStore } from '@/store/auth';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
@@ -35,7 +35,7 @@ function RoleModal({
     form.resetFields();
     setCheck({ checked: [], halfChecked: [] });
     if (editId) {
-      void apiGet<R & { role?: SysRole }>(`/sys/role/info/${editId}`).then((data) => {
+      void renrenApi.roleInfo(editId).then((data) => {
         if (assertOk(data) && data.role) {
           form.setFieldsValue({ roleName: data.role.roleName, remark: data.role.remark });
           // 编辑回填：以哨兵为界，前半是选中项（Element setCheckedKeys 同款语义，父节点由 Tree 自动半选/全选）
@@ -52,13 +52,14 @@ function RoleModal({
     const values = await form.validateFields();
     setSaving(true);
     try {
-      const data = await apiPost('/sys/role/' + (isEdit ? 'update' : 'save'), {
+      const payload = {
         roleId: editId,
         roleName: values.roleName,
         remark: values.remark,
         // 原版编码：[...全选中, 哨兵, ...半选中父节点]，整份写入 sys_role_menu
         menuIdList: [...check.checked, SENTINEL, ...check.halfChecked]
-      });
+      };
+      const data = isEdit ? await renrenApi.roleUpdate(payload) : await renrenApi.roleSave(payload);
       if (assertOk(data)) {
         message.success('操作成功');
         onClose();
@@ -111,14 +112,14 @@ function RoleModal({
 export default function RolePage() {
   const isAuth = useAuthStore((s) => s.isAuth);
   const [roleName, setRoleName] = useState('');
-  const pl = usePageList<SysRole>('/sys/role/list', { roleName: roleName || undefined });
+  const pl = usePageList<SysRole>(renrenApi.roleList, { roleName: roleName || undefined });
   const [selected, setSelected] = useState<number[]>([]);
   const [modal, setModal] = useState<{ open: boolean; id?: number }>({ open: false });
   const [menuTree, setMenuTree] = useState<MenuNode[]>([]);
 
   // /sys/menu/list 返回裸数组（无 code 信封）——SPEC D3
   const openModal = (id?: number) => {
-    void apiGetRaw<MenuNode[]>('/sys/menu/list').then((arr) => {
+    void renrenApi.menuList().then((arr) => {
       setMenuTree(treeDataTranslate(arr ?? [], 'menuId'));
       setModal({ open: true, id });
     });
@@ -129,7 +130,7 @@ export default function RolePage() {
       title: '提示',
       content: `确定进行[${ids.length === 1 ? '单条' : '批量'}删除]操作? id=${ids.join(',')}`,
       onOk: async () => {
-        const data = await apiPost('/sys/role/delete', ids, { raw: true });
+        const data = await renrenApi.roleDelete(ids);
         if (assertOk(data)) {
           message.success('操作成功');
           setSelected([]);

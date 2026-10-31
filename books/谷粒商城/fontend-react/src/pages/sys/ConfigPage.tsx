@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { message, confirm } from '@/api/feedback';
 import { Button, Card, Col, Form, Input, Modal, Row, Space, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { apiGet, apiPost, assertOk } from '@/api/http';
-import type { R, SysConfig } from '@/types';
+import { assertOk, renrenApi } from '@/api';
+import type { SysConfig } from '@/types';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
 
 function ConfigModal({
@@ -22,7 +22,7 @@ function ConfigModal({
     if (!open) return;
     form.resetFields();
     if (editId) {
-      void apiGet<R & { config?: SysConfig }>(`/sys/config/info/${editId}`).then((data) => {
+      void renrenApi.configInfo(editId).then((data) => {
         if (assertOk(data) && data.config) {
           form.setFieldsValue({
             paramKey: data.config.paramKey,
@@ -38,10 +38,8 @@ function ConfigModal({
     const values = await form.validateFields();
     setSaving(true);
     try {
-      const data = await apiPost('/sys/config/' + (isEdit ? 'update' : 'save'), {
-        id: editId,
-        ...values
-      });
+      const payload = { id: editId, ...values };
+      const data = isEdit ? await renrenApi.configUpdate(payload) : await renrenApi.configSave(payload);
       if (assertOk(data)) {
         message.success('操作成功');
         onClose();
@@ -79,7 +77,7 @@ function ConfigModal({
 /** 对应 views/modules/sys/config.vue（原版按钮无 isAuth 控制，后端强制校验；这里对齐原版始终显示） */
 export default function ConfigPage() {
   const [paramKey, setParamKey] = useState('');
-  const pl = usePageList<SysConfig>('/sys/config/list', { paramKey: paramKey || undefined });
+  const pl = usePageList<SysConfig>(renrenApi.configList, { paramKey: paramKey || undefined });
   const [selected, setSelected] = useState<number[]>([]);
   const [modal, setModal] = useState<{ open: boolean; id?: number }>({ open: false });
 
@@ -88,7 +86,7 @@ export default function ConfigPage() {
       title: '提示',
       content: `确定进行[${ids.length === 1 ? '单条' : '批量'}删除]操作? id=${ids.join(',')}`,
       onOk: async () => {
-        const data = await apiPost('/sys/config/delete', ids, { raw: true });
+        const data = await renrenApi.configDelete(ids);
         if (assertOk(data)) {
           message.success('操作成功');
           setSelected([]);

@@ -10,21 +10,11 @@ import {
   Tag,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { microGet, microPost } from '@/api/http';
-import type { R } from '@/types';
+import { gulimallApi } from '@/api';
+import type { CategoryNode } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
-
-/** gulimall-product 的 /gulimallproduct/category/list/tree 返回嵌套树，字段与 CategoryEntity 对齐 */
-interface CategoryNode {
-  catId: number;
-  name: string;
-  parentCid: number;
-  catLevel: number;
-  showStatus: number;
-  productCount: number;
-  children?: CategoryNode[];
-}
+import { useCreateCategory } from './useCreateCategoryForm';
 
 const Category: FC = () => {
   const [rows, setRows] = useState<CategoryNode[]>([]);
@@ -32,43 +22,60 @@ const Category: FC = () => {
   const [error, setError] = useState('');
   const selectedRowKeys = useRef<React.Key[]>([]);
   const [notificationApi, contextHolder] = notification.useNotification();
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    selectedRowKeys.current = newSelectedRowKeys;
-  };
-
-  const rowSelection: TableRowSelection<CategoryNode> = {
-    onChange: onSelectChange,
-  };
-
-  const handleAppendClick = useMemoizedFn(() => {});
-
-  const handleDeleteClick = useMemoizedFn((record: CategoryNode) => {
-    microPost('/gulimallproduct/category/delete', [record.catId], {
-      raw: true,
-    })
-      .then(() => {
-        notificationApi.success({ message: '删除成功' });
-        loadingData();
-      })
-      .catch((e) => {
-        if (e instanceof Error) notificationApi.error({ message: e.message });
-      });
-  });
 
   const loadingData = useMemoizedFn(() => {
     setLoading(true);
-    microGet<R & { data?: CategoryNode[] }>(
-      '/gulimallproduct/category/list/tree',
-    )
+    gulimallApi
+      .categoryTree()
       .then((res) => {
         if (res.code !== 0) {
           setError(res.msg || '请求失败');
           return;
         }
+        setError('');
         setRows(res.data ?? []);
       })
       .catch((e: unknown) => setError(String(e)))
       .finally(() => setLoading(false));
+  });
+
+  const { formNode, onOpen: open } = useCreateCategory({
+    onOk: async (formValue, parent) => {
+      const res = await gulimallApi.categorySave({
+        name: formValue.category,
+        parentCid: parent?.catId ?? 0,
+        catLevel: (parent?.catLevel ?? 0) + 1,
+        showStatus: 1,
+      });
+      if (res.code !== 0) {
+        notificationApi.error({ title: res.msg || '新增失败' });
+        return false;
+      }
+      notificationApi.success({ title: '新增成功' });
+      loadingData();
+    },
+  });
+
+  const rowSelection: TableRowSelection<CategoryNode> = {
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      selectedRowKeys.current = newSelectedRowKeys;
+    },
+  };
+  const handleAppendClick = useMemoizedFn((record: CategoryNode) => {
+    open(record);
+  });
+  const handleDeleteClick = useMemoizedFn(async (record: CategoryNode) => {
+    try {
+      const res = await gulimallApi.categoryDelete([record.catId]);
+      if (res.code !== 0) {
+        notificationApi.error({ title: res.msg || '删除失败' });
+        return;
+      }
+      notificationApi.success({ title: '删除成功' });
+      loadingData();
+    } catch (e) {
+      if (e instanceof Error) notificationApi.error({ title: e.message });
+    }
   });
 
   const columns: ColumnsType<CategoryNode> = useMemo(
@@ -91,7 +98,7 @@ const Category: FC = () => {
           return (
             <Space>
               {record.catLevel <= 2 && (
-                <Button type="text" onClick={handleAppendClick}>
+                <Button type="text" onClick={() => handleAppendClick(record)}>
                   插入
                 </Button>
               )}
@@ -148,6 +155,7 @@ const Category: FC = () => {
         pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
       />
       {contextHolder}
+      {formNode}
     </Card>
   );
 };

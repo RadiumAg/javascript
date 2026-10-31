@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { message, confirm } from '@/api/feedback';
 import { Button, Card, Form, Input, InputNumber, Modal, Radio, Space, Table, Tag, Tooltip, TreeSelect } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { apiGet, apiGetRaw, apiPost, assertOk } from '@/api/http';
-import type { MenuNode, R } from '@/types';
+import { assertOk, renrenApi } from '@/api';
+import type { MenuNode } from '@/types';
 import { treeDataTranslate } from '@/utils';
 import { useAuthStore } from '@/store/auth';
 
@@ -37,12 +37,12 @@ function MenuModal({
     if (!open) return;
     form.resetFields();
     // /sys/menu/select：{code:0, menuList:[...]}（含合成根节点 menuId=0「一级菜单」），平铺数组再转树
-    void apiGet<R & { menuList?: MenuNode[] }>('/sys/menu/select').then((data) => {
+    void renrenApi.menuSelect().then((data) => {
       if (assertOk(data)) {
         const tree = treeDataTranslate(data.menuList ?? [], 'menuId');
         setParentTree(tree);
         if (editId) {
-          void apiGet<R & { menu?: MenuNode }>(`/sys/menu/info/${editId}`).then((d2) => {
+          void renrenApi.menuInfo(editId).then((d2) => {
             if (assertOk(d2) && d2.menu) {
               form.setFieldsValue({
                 type: d2.menu.type,
@@ -66,7 +66,7 @@ function MenuModal({
     const values = await form.validateFields();
     setSaving(true);
     try {
-      const data = await apiPost('/sys/menu/' + (isEdit ? 'update' : 'save'), {
+      const payload = {
         menuId: editId,
         type: values.type,
         name: values.name,
@@ -75,7 +75,8 @@ function MenuModal({
         perms: values.perms,
         orderNum: values.orderNum,
         icon: values.icon
-      });
+      };
+      const data = isEdit ? await renrenApi.menuUpdate(payload) : await renrenApi.menuSave(payload);
       if (assertOk(data)) {
         message.success('操作成功');
         onClose();
@@ -163,7 +164,7 @@ export default function MenuPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const arr = await apiGetRaw<MenuNode[]>('/sys/menu/list'); // 裸数组（SPEC D3），含 parentName
+      const arr = await renrenApi.menuList(); // 裸数组（SPEC D3），含 parentName
       setTree(treeDataTranslate(arr ?? [], 'menuId'));
     } finally {
       setLoading(false);
@@ -179,7 +180,7 @@ export default function MenuPage() {
       title: '提示',
       content: `确定进行[单条删除]操作? id=${row.menuId}`,
       onOk: async () => {
-        const data = await apiPost(`/sys/menu/delete/${row.menuId}`);
+        const data = await renrenApi.menuDelete(row.menuId);
         if (assertOk(data)) {
           message.success('操作成功');
           void load();

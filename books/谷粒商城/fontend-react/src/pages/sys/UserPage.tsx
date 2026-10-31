@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { message, confirm } from '@/api/feedback';
 import { Button, Card, Checkbox, Col, Form, Input, Modal, Radio, Row, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { apiGet, apiPost, assertOk } from '@/api/http';
-import type { R, SysRole, SysUser } from '@/types';
+import { assertOk, renrenApi } from '@/api';
+import type { SysRole, SysUser } from '@/types';
 import { isEmail, isMobile } from '@/utils';
 import { useAuthStore } from '@/store/auth';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
@@ -38,7 +38,7 @@ function UserModal({
     form.resetFields();
     setSalt('');
     if (editId) {
-      void apiGet<R & { user?: SysUser }>(`/sys/user/info/${editId}`).then((data) => {
+      void renrenApi.userInfo(editId).then((data) => {
         if (assertOk(data) && data.user) {
           setSalt(data.user.salt ?? '');
           form.setFieldsValue({
@@ -59,7 +59,7 @@ function UserModal({
     const values = await form.validateFields();
     setSaving(true);
     try {
-      const data = await apiPost('/sys/user/' + (isEdit ? 'update' : 'save'), {
+      const payload = {
         userId: editId,
         username: values.userName,
         password: values.password || undefined,
@@ -68,7 +68,8 @@ function UserModal({
         mobile: values.mobile,
         status: values.status,
         roleIdList: values.roleIdList
-      });
+      };
+      const data = isEdit ? await renrenApi.userUpdate(payload) : await renrenApi.userSave(payload);
       if (assertOk(data)) {
         message.success('操作成功');
         onClose();
@@ -166,15 +167,15 @@ function UserModal({
 export default function UserPage() {
   const isAuth = useAuthStore((s) => s.isAuth);
   const [username, setUsername] = useState('');
-  const pl = usePageList<SysUser>('/sys/user/list', { username: username || undefined });
+  const pl = usePageList<SysUser>(renrenApi.userList, { username: username || undefined });
   const [selected, setSelected] = useState<number[]>([]);
   const [modal, setModal] = useState<{ open: boolean; id?: number }>({ open: false });
   const [roles, setRoles] = useState<SysRole[]>([]);
 
   const openModal = (id?: number) => {
-    void apiGet<R & { list?: SysRole[] }>('/sys/role/select').then((data) => {
+    void renrenApi.roleSelect().then((data) => {
       if (assertOk(data)) {
-        setRoles((data.list as SysRole[]) ?? []);
+        setRoles(data.list ?? []);
         setModal({ open: true, id });
       }
     });
@@ -185,7 +186,7 @@ export default function UserPage() {
       title: '提示',
       content: `确定进行[${ids.length === 1 ? '单条' : '批量'}删除]操作? id=${ids.join(',')}`,
       onOk: async () => {
-        const data = await apiPost('/sys/user/delete', ids, { raw: true });
+        const data = await renrenApi.userDelete(ids);
         if (assertOk(data)) {
           message.success('操作成功');
           setSelected([]);

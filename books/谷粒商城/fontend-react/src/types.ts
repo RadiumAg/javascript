@@ -1,4 +1,4 @@
-/** renren-fast 后端实体/响应类型（对照 SPEC-renren-fast-vue.md） */
+/** 后端实体与接口响应类型（renren-fast 对照 SPEC-renren-fast-vue.md，gulimall 微服务对照各模块实体） */
 
 export interface R {
   code: number;
@@ -118,3 +118,53 @@ export interface CloudStorageConfig {
   qcloudBucketName?: string;
   qcloudRegion?: string;
 }
+
+/* ------------------------------------------------------------------ *
+ * gulimall 微服务（走网关 /gw，接口按模块前缀 /gulimallxxx）
+ * ------------------------------------------------------------------ */
+
+/** /gulimallproduct/category/list/tree 的嵌套节点，字段与 CategoryEntity 对齐 */
+export interface CategoryNode {
+  catId: number;
+  name: string;
+  parentCid: number;
+  catLevel: number;
+  showStatus: number; // 逻辑删除标记：0=已删除
+  productCount: number;
+  sort?: number;
+  icon?: string;
+  productUnit?: string;
+  children?: CategoryNode[];
+}
+
+/* ------------------------------------------------------------------ *
+ * 接口响应类型：统一是 R 信封 + 各自的数据字段，字段名以后端 R.put 为准
+ * ------------------------------------------------------------------ */
+
+/** 分页列表统一信封 {code:0, page:{totalCount, list, ...}} */
+export type PageRes<T> = R & { page?: PageData<T> };
+
+/** POST body：与后端实体同名，save 不带主键、update 必带 */
+export type UserPayload = Partial<SysUser>;
+export type RolePayload = Partial<SysRole>;
+export type MenuPayload = Partial<MenuNode>;
+export type ConfigPayload = Partial<SysConfig>;
+export type SchedulePayload = Partial<ScheduleJob>;
+export type CategoryPayload = Partial<CategoryNode>;
+
+export type LoginRes = R & { token?: string };
+/** /sys/user/info（当前登录人）与 /sys/user/info/{id}（详情）同用 user 字段 */
+export type UserInfoRes = R & { user?: SysUser };
+export type MenuNavRes = R & { menuList?: MenuNode[]; permissions?: string[] };
+/** /sys/menu/select 也是 menuList，但是平铺数组且含合成根节点 menuId=0 */
+export type MenuSelectRes = R & { menuList?: MenuNode[] };
+export type MenuInfoRes = R & { menu?: MenuNode };
+export type RoleInfoRes = R & { role?: SysRole };
+/** /sys/role/select 的字段名是 list，与 /sys/menu/select 的 menuList 不一致 */
+export type RoleSelectRes = R & { list?: SysRole[] };
+export type ConfigInfoRes = R & { config?: SysConfig };
+export type ScheduleInfoRes = R & { schedule?: ScheduleJob };
+export type ScheduleLogInfoRes = R & { log?: ScheduleJobLog };
+export type OssConfigRes = R & { config?: CloudStorageConfig };
+/** 微服务的 R 用 data 承载列表 */
+export type CategoryTreeRes = R & { data?: CategoryNode[] };

@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Button, Card, Col, Input, Row, Space, Table, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { renrenApi } from '@/api';
 import type { SysLog } from '@/types';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
 
 /** 对应 views/modules/sys/log.vue；搜索框提示“用户名／用户操作”，后端实际只按 username LIKE（SPEC D8） */
 export default function LogPage() {
   const [key, setKey] = useState('');
-  const pl = usePageList<SysLog>('/sys/log/list', { key: key || undefined });
+  const pl = usePageList<SysLog>(renrenApi.logList, { key: key || undefined });
 
   const overflow = (v?: string) =>
     v ? (

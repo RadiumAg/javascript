@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { apiGet, removeToken } from '@/api/http';
-import type { MenuNode, R } from '@/types';
+import { renrenApi } from '@/api';
+import { removeToken } from '@/api/http';
+import type { MenuNode } from '@/types';
 import { flattenNavMenus, menuUrlToPath } from '@/utils';
 import { isURL } from '@/utils';
 
@@ -41,7 +42,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   async loadUser() {
     if (get().user) return;
-    const data = await apiGet<R & { user?: { userId: number; username: string } }>('/sys/user/info');
+    const data = await renrenApi.current();
     if (data && data.code === 0 && data.user) {
       set({ user: { userId: data.user.userId, username: data.user.username } });
     }
@@ -51,7 +52,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   async loadNav() {
     if (get().navLoaded) return true;
     try {
-      const data = await apiGet<R & { menuList?: MenuNode[]; permissions?: string[] }>('/sys/menu/nav');
+      const data = await renrenApi.nav();
       if (data && data.code === 0) {
         const menuList = data.menuList ?? [];
         const permissions = data.permissions ?? [];
