@@ -15,6 +15,13 @@ import type { CategoryNode } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useCreateCategory } from './useCreateOrEditCategoryForm';
+import {
+  flattenCatIds,
+  findNodePath,
+  getListByPath,
+  isSameParent,
+  updateListByPath,
+} from './util';
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
@@ -34,6 +41,7 @@ import {
 const Category: FC = () => {
   const [rows, setRows] = useState<CategoryNode[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const selectedRowKeys = useRef<React.Key[]>([]);
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -117,19 +125,33 @@ const Category: FC = () => {
       if (e instanceof Error) notificationApi.error({ title: e.message });
     }
   });
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
-    if (active.id !== over?.id) {
-      setRows((prevState) => {
-        const activeIndex = prevState.findIndex(
-          (record) => record.catId === active?.id,
-        );
-        const overIndex = prevState.findIndex(
-          (record) => record.catId === over?.id,
-        );
-        return arrayMove(prevState, activeIndex, overIndex);
-      });
+  const onDragEnd = useMemoizedFn(async ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const activeLoc = findNodePath(rows, active.id);
+    const overLoc = findNodePath(rows, over.id);
+    if (
+      !activeLoc ||
+      !overLoc ||
+      !isSameParent(activeLoc.parentPath, overLoc.parentPath)
+    ) {
+      return;
     }
-  };
+    const parentList = getListByPath(rows, activeLoc.parentPath);
+    const newParent = arrayMove(parentList, activeLoc.index, overLoc.index);
+    setRows(updateListByPath(rows, activeLoc.parentPath, newParent));
+    setSaving(true);
+    try {
+      await gulimallApi.categorySortBatch(newParent);
+    } catch (e) {
+      notificationApi.error({
+        title: '排序保存失败',
+        description: e instanceof Error ? e.message : String(e),
+      });
+      loadingData();
+    } finally {
+      setSaving(false);
+    }
+  });
 
   const columns: ColumnsType<CategoryNode> = useMemo(
     () => [
@@ -210,14 +232,14 @@ const Category: FC = () => {
           onDragEnd={onDragEnd}
         >
           <SortableContext
-            items={rows.map((i) => i.catId)}
+            items={flattenCatIds(rows)}
             strategy={verticalListSortingStrategy}
           >
           <Table<CategoryNode>
             rowKey="catId"
             size="small"
             components={{ body: { row: Row } }}
-            loading={loading}
+            loading={loading || saving}
             columns={columns}
             dataSource={rows}
             rowSelection={rowSelection}
@@ -231,12 +253,12 @@ const Category: FC = () => {
   );
 };
 
-interface RowProps extends HTMLAttributes<HTMLTableRowElement> {
-  'data-row-key': string;
-}
+type RowProps = HTMLAttributes<HTMLTableRowElement> & {
+  'data-row-key'?: string | number;
+};
 
 const Row: React.FC<RowProps> = (props) => {
-  const { children, style, ...rest } = props;
+  const { children, style, 'data-row-key': rowKey, ...rest } = props;
   const {
     attributes,
     listeners,
@@ -244,7 +266,7 @@ const Row: React.FC<RowProps> = (props) => {
     transition,
     isDragging,
     setNodeRef,
-  } = useSortable({ id: props['data-row-key'] });
+  } = useSortable({ id: rowKey ?? '' });
 
   const mergedStyle: React.CSSProperties = {
     ...style,
@@ -258,6 +280,7 @@ const Row: React.FC<RowProps> = (props) => {
     <tr
       ref={setNodeRef}
       style={mergedStyle}
+      data-row-key={rowKey}
       {...attributes}
       {...listeners}
       {...rest}
