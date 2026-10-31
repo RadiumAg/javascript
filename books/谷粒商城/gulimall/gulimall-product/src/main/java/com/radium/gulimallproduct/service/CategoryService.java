@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimallproduct.entity.CategoryEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,5 +19,7 @@ public interface CategoryService extends IService<CategoryEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     Object listWithTree();
+
+    void removeMenuByIds(List<Long> list);
 }
 

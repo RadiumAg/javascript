@@ -33,7 +33,7 @@ const Category: FC = () => {
 
   const handleAppendClick = useMemoizedFn(() => {});
 
-  const handleDeleteClick = useMemoizedFn((record) => {});
+  const handleDeleteClick = useMemoizedFn((record: CategoryNode) => {});
 
   const columns: ColumnsType<CategoryNode> = useMemo(
     () => [
@@ -64,7 +64,7 @@ const Category: FC = () => {
                   danger
                   type="text"
                   onClick={() => {
-                    handleDeleteClick();
+                    handleDeleteClick(record);
                   }}
                 >
                   删除
