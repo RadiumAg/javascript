@@ -1,4 +1,4 @@
-import { FC, useMemo, useRef, useState } from 'react';
+import React, { FC, HTMLAttributes, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -15,6 +15,21 @@ import type { CategoryNode } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useCreateCategory } from './useCreateOrEditCategoryForm';
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 
 const Category: FC = () => {
   const [rows, setRows] = useState<CategoryNode[]>([]);
@@ -22,6 +37,12 @@ const Category: FC = () => {
   const [error, setError] = useState('');
   const selectedRowKeys = useRef<React.Key[]>([]);
   const [notificationApi, contextHolder] = notification.useNotification();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+  );
 
   const loadingData = useMemoizedFn(() => {
     setLoading(true);
@@ -96,6 +117,19 @@ const Category: FC = () => {
       if (e instanceof Error) notificationApi.error({ title: e.message });
     }
   });
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (active.id !== over?.id) {
+      setRows((prevState) => {
+        const activeIndex = prevState.findIndex(
+          (record) => record.catId === active?.id,
+        );
+        const overIndex = prevState.findIndex(
+          (record) => record.catId === over?.id,
+        );
+        return arrayMove(prevState, activeIndex, overIndex);
+      });
+    }
+  };
 
   const columns: ColumnsType<CategoryNode> = useMemo(
     () => [
@@ -115,30 +149,32 @@ const Category: FC = () => {
         title: '操作',
         render: (_, record) => {
           return (
-            <Space>
-              {record.catLevel <= 2 && (
-                <Button type="text" onClick={() => handleAppendClick(record)}>
-                  插入
-                </Button>
-              )}
-              {record.children && record.children?.length === 0 && (
-                <Popconfirm
-                  title="警告·"
-                  description="确认删除么"
-                  onConfirm={() => {
-                    handleDeleteClick(record);
-                  }}
-                >
-                  <Button danger type="text">
-                    删除
+            <span onPointerDown={(e) => e.stopPropagation()}>
+              <Space>
+                {record.catLevel <= 2 && (
+                  <Button type="text" onClick={() => handleAppendClick(record)}>
+                    插入
                   </Button>
-                </Popconfirm>
-              )}
+                )}
+                {record.children && record.children?.length === 0 && (
+                  <Popconfirm
+                    title="警告·"
+                    description="确认删除么"
+                    onConfirm={() => {
+                      handleDeleteClick(record);
+                    }}
+                  >
+                    <Button danger type="text">
+                      删除
+                    </Button>
+                  </Popconfirm>
+                )}
 
-              <Button type="text" onClick={() => handleEditClick(record)}>
-                修改
-              </Button>
-            </Space>
+                <Button type="text" onClick={() => handleEditClick(record)}>
+                  修改
+                </Button>
+              </Space>
+            </span>
           );
         },
       },
@@ -168,18 +204,66 @@ const Category: FC = () => {
           style={{ marginBottom: 12 }}
         />
       )}
-      <Table<CategoryNode>
-        rowKey="catId"
-        size="small"
-        loading={loading}
-        columns={columns}
-        dataSource={rows}
-        rowSelection={rowSelection}
-        pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
-      />
+        <DndContext
+          sensors={sensors}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={onDragEnd}
+        >
+          <SortableContext
+            items={rows.map((i) => i.catId)}
+            strategy={verticalListSortingStrategy}
+          >
+          <Table<CategoryNode>
+            rowKey="catId"
+            size="small"
+            components={{ body: { row: Row } }}
+            loading={loading}
+            columns={columns}
+            dataSource={rows}
+            rowSelection={rowSelection}
+            pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
+          />
+        </SortableContext>
+      </DndContext>
       {contextHolder}
       {formNode}
     </Card>
+  );
+};
+
+interface RowProps extends HTMLAttributes<HTMLTableRowElement> {
+  'data-row-key': string;
+}
+
+const Row: React.FC<RowProps> = (props) => {
+  const { children, style, ...rest } = props;
+  const {
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+    setNodeRef,
+  } = useSortable({ id: props['data-row-key'] });
+
+  const mergedStyle: React.CSSProperties = {
+    ...style,
+    transform: CSS.Translate.toString(transform),
+    transition,
+    cursor: isDragging ? 'grabbing' : 'grab',
+    ...(isDragging ? { position: 'relative', zIndex: 9999 } : {}),
+  };
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={mergedStyle}
+      {...attributes}
+      {...listeners}
+      {...rest}
+    >
+      {children}
+    </tr>
   );
 };
 
