@@ -15,8 +15,11 @@ export function getToken(): string {
   const m = document.cookie.match(/(?:^|;\s*)token=([^;]*)/);
   return m ? decodeURIComponent(m[1]) : '';
 }
+// 后端 token 是 12 小时滑动过期，cookie 要活得比它久，否则活跃会话会被 cookie 提前掐断
+const TOKEN_MAX_AGE = 60 * 60 * 24 * 30;
+
 export function setToken(token: string): void {
-  document.cookie = `token=${encodeURIComponent(token)}; path=/`;
+  document.cookie = `token=${encodeURIComponent(token)}; path=/; max-age=${TOKEN_MAX_AGE}`;
 }
 export function removeToken(): void {
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';

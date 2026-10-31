@@ -5,7 +5,8 @@
 import { microGet, microPost } from './http';
 import type { CategoryPayload, CategoryTreeRes, R } from '@/types';
 
-export const categoryTree = () => microGet<CategoryTreeRes>('/gulimallproduct/category/list/tree');
+export const categoryTree = () =>
+  microGet<CategoryTreeRes>('/gulimallproduct/category/list/tree');
 
 export const categorySave = (data: CategoryPayload) =>
   microPost<R>('/gulimallproduct/category/save', data);
