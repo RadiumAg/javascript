@@ -14,7 +14,7 @@ import { gulimallApi } from '@/api';
 import type { CategoryNode } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
-import { useCreateCategory } from './useCreateCategoryForm';
+import { useCreateCategory } from './useCreateOrEditCategoryForm';
 
 const Category: FC = () => {
   const [rows, setRows] = useState<CategoryNode[]>([]);
@@ -40,19 +40,35 @@ const Category: FC = () => {
   });
 
   const { formNode, onOpen: open } = useCreateCategory({
-    onOk: async (formValue, parent) => {
-      const res = await gulimallApi.categorySave({
-        name: formValue.category,
-        parentCid: parent?.catId ?? 0,
-        catLevel: (parent?.catLevel ?? 0) + 1,
-        showStatus: 1,
-      });
-      if (res.code !== 0) {
-        notificationApi.error({ title: res.msg || '新增失败' });
-        return false;
+    onOk: async ({ name }, { record, type }) => {
+      if (type === 'add') {
+        const res = await gulimallApi.categorySave({
+          name,
+          parentCid: record.catId,
+          catLevel: record.catLevel + 1,
+          showStatus: 1,
+        });
+        if (res.code !== 0) {
+          notificationApi.error({ title: res.msg || '新增失败' });
+          return false;
+        }
+        notificationApi.success({ title: '新增成功' });
+        loadingData();
       }
-      notificationApi.success({ title: '新增成功' });
-      loadingData();
+
+      if (type === 'edit') {
+        const res = await gulimallApi.categoryUpdate({
+          name,
+          catId: record.catId,
+          showStatus: 1,
+        });
+        if (res.code !== 0) {
+          notificationApi.error({ title: res.msg || '修改失败' });
+          return false;
+        }
+        notificationApi.success({ title: '修改成功' });
+        loadingData();
+      }
     },
   });
 
@@ -62,7 +78,10 @@ const Category: FC = () => {
     },
   };
   const handleAppendClick = useMemoizedFn((record: CategoryNode) => {
-    open(record);
+    open(record, 'add');
+  });
+  const handleEditClick = useMemoizedFn((record: CategoryNode) => {
+    open(record, 'edit');
   });
   const handleDeleteClick = useMemoizedFn(async (record: CategoryNode) => {
     try {
@@ -115,6 +134,10 @@ const Category: FC = () => {
                   </Button>
                 </Popconfirm>
               )}
+
+              <Button type="text" onClick={() => handleEditClick(record)}>
+                修改
+              </Button>
             </Space>
           );
         },
