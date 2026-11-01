@@ -2,7 +2,6 @@ import { FC, useState } from 'react';
 import {
   Button,
   Card,
-  Image,
   Input,
   Select,
   Space,
@@ -12,6 +11,7 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import { assertOk, gulimallApi } from '@/api';
 import { confirm, message } from '@/api/feedback';
+import { ImageUpload } from '@/components/ImageUpload';
 import type { Brand } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useCreateOrEditBrandForm } from './useCreateOrEditBrandForm';
@@ -66,8 +66,7 @@ const BrandPage: FC = () => {
       title: 'Logo',
       dataIndex: 'logo',
       width: 80,
-      render: (v?: string) =>
-        v ? <Image src={v} width={40} height={40} /> : '-',
+      render: (v?: string) => <ImageUpload value={v} />,
     },
     { title: '描述', dataIndex: 'descript', ellipsis: true },
     {

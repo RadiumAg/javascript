@@ -1,6 +1,7 @@
 import { useToggle } from 'ahooks';
 import { Form, Input, InputNumber, Modal, Radio } from 'antd';
 import { useRef } from 'react';
+import { ImageUpload } from '@/components/ImageUpload';
 import type { Brand } from '@/types';
 
 type Operation = 'edit' | 'add';
@@ -57,7 +58,7 @@ const useCreateOrEditBrandForm = (options: Options) => {
           <Input autoComplete="off" />
         </Form.Item>
         <Form.Item<FieldType> label="Logo" name="logo">
-          <Input autoComplete="off" placeholder="图片 URL" />
+          <ImageUpload />
         </Form.Item>
         <Form.Item<FieldType> label="描述" name="descript">
           <Input.TextArea rows={3} />
