@@ -147,6 +147,14 @@ export const ossList = (params: ListParams) => apiGet<PageRes<SysOss>>('/sys/oss
 /** 直传 Upload 组件的 action，token 只能放 query（组件不走 axios 拦截器） */
 export const ossUploadUrl = () => `${API_BASE}/sys/oss/upload?token=${encodeURIComponent(getToken())}`;
 
+/** 图片上传（后端未配 COS 时落本地磁盘，见 renren.upload/renren.cos 配置） */
+export const imageUploadUrl = () =>
+  `${API_BASE}/sys/upload/image?token=${encodeURIComponent(getToken())}`;
+
+/** 腾讯云 COS 直传签名（后端未配 COS 时返回 code!=0，前端回退到后端转发上传） */
+export const cosSignatureUrl = () =>
+  `${API_BASE}/sys/upload/cos-signature?token=${encodeURIComponent(getToken())}`;
+
 export const ossConfig = () => apiGet<OssConfigRes>('/sys/oss/config');
 
 export const ossSaveConfig = (data: CloudStorageConfig) => apiPost<R>('/sys/oss/saveConfig', data);

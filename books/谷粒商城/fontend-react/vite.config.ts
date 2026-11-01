@@ -27,6 +27,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/proxyApi/, '/renren-fast')
         },
+        // 本地图片回显 URL（/renren-fast/sys/upload/file/...）原样转发给网关
+        '/renren-fast': {
+          target,
+          changeOrigin: true
+        },
         '/gw': {
           target,
           changeOrigin: true,
