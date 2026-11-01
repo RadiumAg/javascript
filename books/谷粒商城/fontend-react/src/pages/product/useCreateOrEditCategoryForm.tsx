@@ -65,4 +65,4 @@ const useCreateOrEditCategoryForm = (options: Options) => {
   };
 };
 
-export { useCreateOrEditCategoryForm as useCreateCategory };
+export { useCreateOrEditCategoryForm };

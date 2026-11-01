@@ -14,7 +14,7 @@ import { gulimallApi } from '@/api';
 import type { CategoryNode } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
-import { useCreateCategory } from './useCreateOrEditCategoryForm';
+import { useCreateOrEditCategoryForm } from './useCreateOrEditCategoryForm';
 import {
   flattenCatIds,
   findNodePath,
@@ -68,7 +68,7 @@ const Category: FC = () => {
       .finally(() => setLoading(false));
   });
 
-  const { formNode, onOpen: open } = useCreateCategory({
+  const { formNode, onOpen: open } = useCreateOrEditCategoryForm({
     onOk: async ({ name }, { record, type }) => {
       if (type === 'add') {
         const res = await gulimallApi.categorySave({
