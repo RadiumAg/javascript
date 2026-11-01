@@ -34,3 +34,13 @@ export async function categorySortBatch(siblings: CategoryNode[]) {
     );
   await Promise.all(tasks);
 }
+
+/**
+ * 跨父移动：后端 @Transactional 里一次完成 parentCid/catLevel 级联/sort 重排 + 层级上限/循环校验。
+ * position 缺省追加末尾。业务失败返回 code=400，msg 是原因。
+ */
+export const categoryMove = (data: {
+  draggedCatId: number;
+  newParentCid: number;
+  position?: number;
+}) => microPost<R>('/gulimallproduct/category/move', data);

@@ -2,6 +2,7 @@ package com.radium.gulimallproduct.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.radium.gulimall.common.utils.PageUtils;
+import com.radium.gulimallproduct.dto.CategoryMoveDTO;
 import com.radium.gulimallproduct.entity.CategoryEntity;
 
 import java.util.List;
@@ -21,5 +22,10 @@ public interface CategoryService extends IService<CategoryEntity> {
     Object listWithTree();
 
     void removeMenuByIds(List<Long> list);
+
+    /**
+     * 跨父移动。返回 true = 完成；失败会抛 IllegalStateException，业务原因写在 message 里。
+     */
+    void move(CategoryMoveDTO dto);
 }
 

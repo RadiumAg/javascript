@@ -16,10 +16,17 @@ import { useMemoizedFn, useMount } from 'ahooks';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useCreateOrEditCategoryForm } from './useCreateOrEditCategoryForm';
 import {
-  flattenCatIds,
+  attachAsChild,
+  detachNode,
+  findNodeByPath,
   findNodePath,
+  flattenCatIds,
   getListByPath,
+  isDescendantPath,
   isSameParent,
+  pathOf,
+  shiftSubtreeLevels,
+  subtreeDepth,
   updateListByPath,
 } from './util';
 import { CSS } from '@dnd-kit/utilities';
@@ -130,22 +137,84 @@ const Category: FC = () => {
       if (!over || active.id === over.id) return;
       const activeLoc = findNodePath(rows, active.id);
       const overLoc = findNodePath(rows, over.id);
-      if (
-        !activeLoc ||
-        !overLoc ||
-        !isSameParent(activeLoc.parentPath, overLoc.parentPath)
-      ) {
+      if (!activeLoc || !overLoc) return;
+
+      const activePath = pathOf(activeLoc);
+      const overPath = pathOf(overLoc);
+      const activeNode = findNodeByPath(rows, activePath);
+      const overNode = findNodeByPath(rows, overPath);
+      if (!activeNode || !overNode) return;
+
+      // 同父：仅重排 siblings
+      if (isSameParent(activeLoc.parentPath, overLoc.parentPath)) {
+        const parentList = getListByPath(rows, activeLoc.parentPath);
+        const newParent = arrayMove(parentList, activeLoc.index, overLoc.index);
+        setRows(updateListByPath(rows, activeLoc.parentPath, newParent));
+        setSaving(true);
+        try {
+          await gulimallApi.categorySortBatch(newParent);
+        } catch (e) {
+          notificationApi.error({
+            title: '排序保存失败',
+            description: e instanceof Error ? e.message : String(e),
+          });
+          loadingData();
+        } finally {
+          setSaving(false);
+        }
         return;
       }
-      const parentList = getListByPath(rows, activeLoc.parentPath);
-      const newParent = arrayMove(parentList, activeLoc.index, overLoc.index);
-      setRows(updateListByPath(rows, activeLoc.parentPath, newParent));
+
+      // 跨父：前端先做同款校验，避免点了才吃 400
+      if (isDescendantPath(activePath, overPath)) {
+        notificationApi.warning({ title: '不能移动到自己的后代分类下' });
+        return;
+      }
+      const newLevel = overNode.catLevel + 1;
+      const maxDescendant = newLevel + subtreeDepth(activeNode) - 1;
+      if (maxDescendant > 3) {
+        notificationApi.warning({
+          title: `移动后子树最深层级 ${maxDescendant}，超过 3 级上限`,
+        });
+        return;
+      }
+
+      // 乐观更新：摘出 -> 平移 catLevel/parentCid -> 挂到 over.children 末尾
+      const [treeWithout, moved] = detachNode(rows, activePath);
+      const overLocAfter = findNodePath(treeWithout, over.id);
+      if (!overLocAfter) return;
+      const levelDelta = newLevel - moved.catLevel;
+      const movedNext = shiftSubtreeLevels(moved, levelDelta, overNode.catId);
+      let nextTree = attachAsChild(
+        treeWithout,
+        overLocAfter.parentPath,
+        movedNext,
+      );
+      // 双侧 sibling sort 与后端 move() 保持同步（0..n-1）
+      const newSiblings = getListByPath(nextTree, overLocAfter.parentPath).map(
+        (n, i) => ({ ...n, sort: i }),
+      );
+      nextTree = updateListByPath(
+        nextTree,
+        overLocAfter.parentPath,
+        newSiblings,
+      );
+      const srcSiblings = getListByPath(nextTree, activeLoc.parentPath).map(
+        (n, i) => ({ ...n, sort: i }),
+      );
+      nextTree = updateListByPath(nextTree, activeLoc.parentPath, srcSiblings);
+      setRows(nextTree);
+
       setSaving(true);
       try {
-        await gulimallApi.categorySortBatch(newParent);
+        const res = await gulimallApi.categoryMove({
+          draggedCatId: activeNode.catId,
+          newParentCid: overNode.catId,
+        });
+        if (res.code !== 0) throw new Error(res.msg || '移动失败');
       } catch (e) {
         notificationApi.error({
-          title: '排序保存失败',
+          title: '移动保存失败',
           description: e instanceof Error ? e.message : String(e),
         });
         loadingData();

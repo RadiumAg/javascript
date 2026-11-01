@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.radium.gulimallproduct.dto.CategoryMoveDTO;
 import com.radium.gulimallproduct.entity.CategoryEntity;
 import com.radium.gulimallproduct.service.CategoryService;
 import com.radium.gulimall.common.utils.PageUtils;
@@ -78,6 +79,20 @@ public class CategoryController {
         categoryService.removeByIds(Arrays.asList(catIds));
         categoryService.removeMenuByIds(Arrays.asList(catIds));
         return R.ok();
+    }
+
+    /**
+     * 跨父移动：把 draggedCatId 挂到 newParentCid 下，position 缺省追加末尾。
+     * Service 里做级联 catLevel 平移、两侧 sibling 重排、循环 & 层级上限校验。
+     */
+    @RequestMapping("/move")
+    public R move(@RequestBody CategoryMoveDTO dto) {
+        try {
+            categoryService.move(dto);
+            return R.ok();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return R.error(400, e.getMessage());
+        }
     }
 
 }
