@@ -1,13 +1,9 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   Button,
   Card,
-  Form,
   Image,
   Input,
-  InputNumber,
-  Modal,
-  Radio,
   Select,
   Space,
   Table,
@@ -18,113 +14,35 @@ import { assertOk, gulimallApi } from '@/api';
 import { confirm, message } from '@/api/feedback';
 import type { Brand } from '@/types';
 import { useMemoizedFn, useMount } from 'ahooks';
-import type { BrandPayload } from '@/api/gulimall';
+import { useCreateOrEditBrandForm } from './useCreateOrEditBrandForm';
 import { paginationProps, usePageList } from '@/hooks/usePageList';
 
 type Filter = { name?: string; showStatus?: number; firstLetter?: string };
-
-function BrandModal({
-  open,
-  record,
-  onClose,
-  onSuccess,
-}: {
-  open: boolean;
-  record?: Brand;
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
-  const [form] = Form.useForm<BrandPayload>();
-  const [saving, setSaving] = useState(false);
-  const isEdit = !!record;
-
-  useEffect(() => {
-    if (!open) return;
-    form.resetFields();
-    if (record) {
-      form.setFieldsValue(record);
-    } else {
-      form.setFieldsValue({ showStatus: 1, sort: 0 });
-    }
-  }, [open, record, form]);
-
-  const submit = async () => {
-    const values = await form.validateFields();
-    setSaving(true);
-    try {
-      const payload: BrandPayload = isEdit
-        ? { ...values, brandId: record!.brandId }
-        : values;
-      const res = isEdit
-        ? await gulimallApi.brandUpdate(payload)
-        : await gulimallApi.brandSave(payload);
-      if (assertOk(res)) {
-        message.success(isEdit ? '修改成功' : '新增成功');
-        onClose();
-        onSuccess();
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Modal
-      title={isEdit ? '修改品牌' : '新增品牌'}
-      open={open}
-      onCancel={onClose}
-      onOk={submit}
-      confirmLoading={saving}
-      destroyOnHidden
-    >
-      <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
-        <Form.Item
-          name="name"
-          label="品牌名"
-          rules={[{ required: true, message: '品牌名不能为空' }]}
-        >
-          <Input autoComplete="off" />
-        </Form.Item>
-        <Form.Item name="logo" label="Logo">
-          <Input autoComplete="off" placeholder="图片 URL" />
-        </Form.Item>
-        <Form.Item name="descript" label="描述">
-          <Input.TextArea rows={3} />
-        </Form.Item>
-        <Form.Item name="showStatus" label="显示状态">
-          <Radio.Group
-            options={[
-              { label: '显示', value: 1 },
-              { label: '隐藏', value: 0 },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item
-          name="firstLetter"
-          label="首字母"
-          rules={[
-            { pattern: /^[A-Za-z]$/, message: '单个大小写字母' },
-          ]}
-        >
-          <Input autoComplete="off" maxLength={1} />
-        </Form.Item>
-        <Form.Item name="sort" label="排序">
-          <InputNumber min={0} style={{ width: '100%' }} />
-        </Form.Item>
-      </Form>
-    </Modal>
-  );
-}
 
 const BrandPage: FC = () => {
   const [filter, setFilter] = useState<Filter>({});
   const pl = usePageList<Brand>(gulimallApi.brandList, filter);
   const [selected, setSelected] = useState<number[]>([]);
-  const [modal, setModal] = useState<{ open: boolean; record?: Brand }>({
-    open: false,
-  });
 
   useMount(() => void pl.refresh());
+
+  const { formNode, onOpen: open } = useCreateOrEditBrandForm({
+    onOk: async (values, { record, type }) => {
+      const res =
+        type === 'add'
+          ? await gulimallApi.brandSave(values)
+          : await gulimallApi.brandUpdate({
+              ...values,
+              brandId: record!.brandId,
+            });
+      if (res.code !== 0) {
+        message.error(res.msg || (type === 'add' ? '新增失败' : '修改失败'));
+        return false;
+      }
+      message.success(type === 'add' ? '新增成功' : '修改成功');
+      pl.refresh();
+    },
+  });
 
   const doDelete = useMemoizedFn((ids: number[]) => {
     confirm({
@@ -166,7 +84,7 @@ const BrandPage: FC = () => {
       width: 160,
       render: (_, row) => (
         <Space>
-          <Button size="small" onClick={() => setModal({ open: true, record: row })}>
+          <Button size="small" onClick={() => open(row, 'edit')}>
             修改
           </Button>
           <Button size="small" danger onClick={() => doDelete([row.brandId])}>
@@ -234,7 +152,7 @@ const BrandPage: FC = () => {
         >
           重置
         </Button>
-        <Button type="primary" ghost onClick={() => setModal({ open: true })}>
+        <Button type="primary" ghost onClick={() => open(undefined, 'add')}>
           新增
         </Button>
         <Button danger disabled={!selected.length} onClick={() => doDelete(selected)}>
@@ -253,12 +171,7 @@ const BrandPage: FC = () => {
           onChange: (keys) => setSelected(keys as number[]),
         }}
       />
-      <BrandModal
-        open={modal.open}
-        record={modal.record}
-        onClose={() => setModal({ open: false })}
-        onSuccess={pl.refresh}
-      />
+      {formNode}
     </Card>
   );
 };
