@@ -2,7 +2,7 @@
  * gulimall 微服务接口（基址 /gw -> 网关原样路径，按模块前缀 /gulimallxxx）。
  * 目前只接了 product 的商品分类 CRUD。
  */
-import { microGet, microPost } from './http';
+import { MICRO_BASE, microGet, microPost } from './http';
 import type {
   Brand,
   CategoryNode,
@@ -69,3 +69,13 @@ export const brandUpdate = (data: BrandPayload) =>
 /** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
 export const brandDelete = (brandIds: number[]) =>
   microPost<R>('/gulimallproduct/brand/delete', brandIds, { raw: true });
+
+/* ------------------- 文件上传（gulimall-third-part） ------------------- */
+// 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。
+// ImageUpload 组件用原生 fetch/XHR（不走 axios 拦截器），所以这里只拼 URL 字符串。
+
+/** 图片上传（后端未配 COS 时落本地磁盘，见 gulimall.upload / gulimall.cos 配置） */
+export const imageUploadUrl = () => `${MICRO_BASE}/gulimallthirdpart/upload/image`;
+
+/** 腾讯云 COS 直传签名（后端未配 COS 时返回 code!=0，前端回退到后端转发上传）；调用方自行拼 ?ext= */
+export const cosSignatureUrl = () => `${MICRO_BASE}/gulimallthirdpart/upload/cos-signature`;

@@ -27,6 +27,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/proxyApi/, '/renren-fast')
         },
+        // 本地图片回显 URL（第三方服务落磁盘时返回 /gulimallthirdpart/upload/file/...）原样转发给网关
+        '/gulimallthirdpart': {
+          target,
+          changeOrigin: true
+        },
         '/gw': {
           target,
           changeOrigin: true,

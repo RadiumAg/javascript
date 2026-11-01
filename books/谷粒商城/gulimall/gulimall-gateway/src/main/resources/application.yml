@@ -53,3 +53,8 @@ spring:
               uri: lb://gulimall-ware
               predicates:
                 - Path=/gulimallware/**
+
+            - id: gulimall-third-part
+              uri: lb://gulimall-third-part
+              predicates:
+                - Path=/gulimallthirdpart/**
