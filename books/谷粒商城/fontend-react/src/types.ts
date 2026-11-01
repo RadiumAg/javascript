@@ -137,6 +137,17 @@ export interface CategoryNode {
   children?: CategoryNode[];
 }
 
+/** /gulimallproduct/brand/list 分页行，字段与 BrandEntity 对齐 */
+export interface Brand {
+  brandId: number;
+  name: string;
+  logo?: string;
+  descript?: string;
+  showStatus: number; // 0=不显示 1=显示
+  firstLetter?: string;
+  sort?: number;
+}
+
 /* ------------------------------------------------------------------ *
  * 接口响应类型：统一是 R 信封 + 各自的数据字段，字段名以后端 R.put 为准
  * ------------------------------------------------------------------ */

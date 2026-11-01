@@ -18,12 +18,24 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<BrandEntity> wrapper = new QueryWrapper<>();
+        String name = str(params.get("name"));
+        if (!name.isEmpty()) wrapper.like("name", name);
+        String showStatus = str(params.get("showStatus"));
+        if (!showStatus.isEmpty()) wrapper.eq("show_status", showStatus);
+        String firstLetter = str(params.get("firstLetter"));
+        if (!firstLetter.isEmpty()) wrapper.eq("first_letter", firstLetter);
+
         IPage<BrandEntity> page = this.page(
                 new Query<BrandEntity>().getPage(params),
-                new QueryWrapper<BrandEntity>()
+                wrapper
         );
 
         return new PageUtils(page);
+    }
+
+    private static String str(Object v) {
+        return v == null ? "" : v.toString().trim();
     }
 
 }

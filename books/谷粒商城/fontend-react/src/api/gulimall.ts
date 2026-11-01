@@ -3,7 +3,18 @@
  * 目前只接了 product 的商品分类 CRUD。
  */
 import { microGet, microPost } from './http';
-import type { CategoryNode, CategoryPayload, CategoryTreeRes, R } from '@/types';
+import type {
+  Brand,
+  CategoryNode,
+  CategoryPayload,
+  CategoryTreeRes,
+  PageRes,
+  R,
+} from '@/types';
+import type { ListParams } from './renren';
+
+/** 与后端 BrandEntity 同名字段，save 不带主键、update 必带 */
+export type BrandPayload = Partial<Brand>;
 
 export const categoryTree = () =>
   microGet<CategoryTreeRes>('/gulimallproduct/category/list/tree');
@@ -44,3 +55,17 @@ export const categoryMove = (data: {
   newParentCid: number;
   position?: number;
 }) => microPost<R>('/gulimallproduct/category/move', data);
+
+/** /gulimallproduct/brand/list 分页：入参沿用 renren-generator 通用 {page, limit, ...过滤} */
+export const brandList = (params: ListParams) =>
+  microGet<PageRes<Brand>>('/gulimallproduct/brand/list', params);
+
+export const brandSave = (data: BrandPayload) =>
+  microPost<R>('/gulimallproduct/brand/save', data);
+
+export const brandUpdate = (data: BrandPayload) =>
+  microPost<R>('/gulimallproduct/brand/update', data);
+
+/** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
+export const brandDelete = (brandIds: number[]) =>
+  microPost<R>('/gulimallproduct/brand/delete', brandIds, { raw: true });

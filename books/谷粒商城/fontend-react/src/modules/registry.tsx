@@ -13,6 +13,7 @@ const registry: Record<string, LazyExoticComponent<ComponentType<any>>> = {
   'job/schedule': lazy(() => import('@/pages/job/SchedulePage')),
   'oss/oss': lazy(() => import('@/pages/oss/OssPage')),
   'product/category': lazy(() => import('@/pages/product/Category')),
+  'product/brand': lazy(() => import('@/pages/product/Brand')),
 };
 
 export function resolveModule(
