@@ -125,33 +125,35 @@ const Category: FC = () => {
       if (e instanceof Error) notificationApi.error({ title: e.message });
     }
   });
-  const onDragEnd = useMemoizedFn(async ({ active, over }: DragEndEvent) => {
-    if (!over || active.id === over.id) return;
-    const activeLoc = findNodePath(rows, active.id);
-    const overLoc = findNodePath(rows, over.id);
-    if (
-      !activeLoc ||
-      !overLoc ||
-      !isSameParent(activeLoc.parentPath, overLoc.parentPath)
-    ) {
-      return;
-    }
-    const parentList = getListByPath(rows, activeLoc.parentPath);
-    const newParent = arrayMove(parentList, activeLoc.index, overLoc.index);
-    setRows(updateListByPath(rows, activeLoc.parentPath, newParent));
-    setSaving(true);
-    try {
-      await gulimallApi.categorySortBatch(newParent);
-    } catch (e) {
-      notificationApi.error({
-        title: '排序保存失败',
-        description: e instanceof Error ? e.message : String(e),
-      });
-      loadingData();
-    } finally {
-      setSaving(false);
-    }
-  });
+  const handleDragEnd = useMemoizedFn(
+    async ({ active, over }: DragEndEvent) => {
+      if (!over || active.id === over.id) return;
+      const activeLoc = findNodePath(rows, active.id);
+      const overLoc = findNodePath(rows, over.id);
+      if (
+        !activeLoc ||
+        !overLoc ||
+        !isSameParent(activeLoc.parentPath, overLoc.parentPath)
+      ) {
+        return;
+      }
+      const parentList = getListByPath(rows, activeLoc.parentPath);
+      const newParent = arrayMove(parentList, activeLoc.index, overLoc.index);
+      setRows(updateListByPath(rows, activeLoc.parentPath, newParent));
+      setSaving(true);
+      try {
+        await gulimallApi.categorySortBatch(newParent);
+      } catch (e) {
+        notificationApi.error({
+          title: '排序保存失败',
+          description: e instanceof Error ? e.message : String(e),
+        });
+        loadingData();
+      } finally {
+        setSaving(false);
+      }
+    },
+  );
 
   const columns: ColumnsType<CategoryNode> = useMemo(
     () => [
@@ -226,15 +228,15 @@ const Category: FC = () => {
           style={{ marginBottom: 12 }}
         />
       )}
-        <DndContext
-          sensors={sensors}
-          modifiers={[restrictToVerticalAxis]}
-          onDragEnd={onDragEnd}
+      <DndContext
+        sensors={sensors}
+        modifiers={[restrictToVerticalAxis]}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={flattenCatIds(rows)}
+          strategy={verticalListSortingStrategy}
         >
-          <SortableContext
-            items={flattenCatIds(rows)}
-            strategy={verticalListSortingStrategy}
-          >
           <Table<CategoryNode>
             rowKey="catId"
             size="small"
