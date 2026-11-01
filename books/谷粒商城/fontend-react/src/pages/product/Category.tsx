@@ -3,6 +3,9 @@ import {
   Alert,
   Button,
   Card,
+  Flex,
+  message,
+  Modal,
   notification,
   Popconfirm,
   Space,
@@ -50,8 +53,9 @@ const Category: FC = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const selectedRowKeys = useRef<React.Key[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [notificationApi, contextHolder] = notification.useNotification();
+  const [modalApi, modalContextHolder] = Modal.useModal();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -110,7 +114,7 @@ const Category: FC = () => {
 
   const rowSelection: TableRowSelection<CategoryNode> = {
     onChange: (newSelectedRowKeys: React.Key[]) => {
-      selectedRowKeys.current = newSelectedRowKeys;
+      setSelectedRowKeys(newSelectedRowKeys);
     },
   };
   const handleAppendClick = useMemoizedFn((record: CategoryNode) => {
@@ -223,6 +227,26 @@ const Category: FC = () => {
       }
     },
   );
+  const handleBatchDelete = useMemoizedFn(() => {
+    modalApi.confirm({
+      content: '确认删除么',
+      onOk: () => {
+        return gulimallApi
+          .categoryDelete(selectedRowKeys as number[])
+          .then(() => {
+            notificationApi.success({ description: '删除成功' });
+            loadingData();
+          })
+          .catch((e) => {
+            notificationApi.error({
+              title: '移动保存失败',
+              description: e instanceof Error ? e.message : String(e),
+            });
+            loadingData();
+          });
+      },
+    });
+  });
 
   const columns: ColumnsType<CategoryNode> = useMemo(
     () => [
@@ -297,29 +321,42 @@ const Category: FC = () => {
           style={{ marginBottom: 12 }}
         />
       )}
-      <DndContext
-        sensors={sensors}
-        modifiers={[restrictToVerticalAxis]}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={flattenCatIds(rows)}
-          strategy={verticalListSortingStrategy}
+      <Space style={{ width: '100%' }} vertical>
+        <Flex>
+          <Button
+            disabled={selectedRowKeys.length == 0}
+            onClick={handleBatchDelete}
+            danger
+          >
+            批量删除
+          </Button>
+        </Flex>
+
+        <DndContext
+          sensors={sensors}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={handleDragEnd}
         >
-          <Table<CategoryNode>
-            rowKey="catId"
-            size="small"
-            components={{ body: { row: Row } }}
-            loading={loading || saving}
-            columns={columns}
-            dataSource={rows}
-            rowSelection={rowSelection}
-            pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
-          />
-        </SortableContext>
-      </DndContext>
+          <SortableContext
+            items={flattenCatIds(rows)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Table<CategoryNode>
+              rowKey="catId"
+              size="small"
+              components={{ body: { row: Row } }}
+              loading={loading || saving}
+              columns={columns}
+              dataSource={rows}
+              rowSelection={rowSelection}
+              pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
+            />
+          </SortableContext>
+        </DndContext>
+      </Space>
       {contextHolder}
       {formNode}
+      {modalContextHolder}
     </Card>
   );
 };
