@@ -1,0 +1,25 @@
+# 端口约定：8081-8085 gulimall 微服务 / 8086 renren-fast / 8087 网关 / 8088 第三方服务
+server:
+  port: 8088
+
+spring:
+  application:
+    name: gulimall-third-part
+  # 后端转发上传走 multipart，Boot 默认单文件 1MB 太小；放开到 5MB，与业务上限 gulimall.upload.max-size-mb 对齐
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  config:
+    import: "nacos:gulimall-third-part.properties"
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+      config:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
