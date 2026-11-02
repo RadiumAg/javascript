@@ -32,6 +32,11 @@ export default defineConfig(({ mode }) => {
           target,
           changeOrigin: true
         },
+        // 历史数据回显：早期图片 URL 形如 /renren-fast/sys/upload/file/...，同样原样转发
+        '/renren-fast': {
+          target,
+          changeOrigin: true
+        },
         '/gw': {
           target,
           changeOrigin: true,
