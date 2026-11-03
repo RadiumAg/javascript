@@ -5,11 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "tsx",
+      "name": "Debug .ts (tsx)",
       "type": "node",
       "request": "launch",
       // 注意：必须配合 tsx@4.22.4 使用。4.23+ 的 CLI 会派生子进程，
-      // 导致 VS Code 调试器附加双进程后死锁卡死（已在 renovate.json 中锁定禁止升级）
+      // 导致 VS Code 调试器附加双进程后死锁卡死（已在 renovate.json 中锁定禁止升级）。
+      // 只用于 .ts/.tsx：.js 会走 tsx 的 CJS 同步钩子，esbuild 同步转换的 worker
+      // 线程与 js-debug 互等死锁，.js 请用 "Debug .js (node)"
       "runtimeArgs": [
         "--import",
         "tsx"
@@ -27,7 +29,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "启动程序",
+      // 纯 node 直跑，用于 .js（含 ESM/CJS）。.ts/.tsx 请选 "Debug .ts (tsx)"
+      "name": "Debug .js (node)",
       "skipFiles": [
         "<node_internals>/**"
       ],

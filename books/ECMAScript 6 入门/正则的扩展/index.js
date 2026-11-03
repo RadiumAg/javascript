@@ -5,13 +5,13 @@
 };
 
 // u修饰符,ES6 添加了 u修饰符，含义为'Unicode模式'
-() => {
+(() => {
   // eslint-disable-next-line prettier/prettier, unicorn/prefer-string-starts-ends-with
-    /^\uD83D/u.test('\uD83D\uDC2A');
+  /^\uD83D/u.test('\uD83D\uDC2A');
 
   // eslint-disable-next-line prettier/prettier, unicorn/prefer-string-starts-ends-with
-    /^\uD83D/.test('\uD83D\uDC2A');
-};
+  /^\uD83D/.test('\uD83D\uDC2A');
+})();
 
 // u修饰符会影响 点字符
 () => {
@@ -208,7 +208,7 @@
 
 // Unicode 属性类
 () => {
-  const regexGreekSymbol = /p{ Script=Greek}/u;
+  const regexGreekSymbol = /\p{Script=Greek}/u;
   regexGreekSymbol.test('π'); // true
 };
 
