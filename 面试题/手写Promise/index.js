@@ -12,11 +12,15 @@ class MyPromise {
   onRejectedFnArray = []; // 为了可以 let a = Promise; a.then(); a.then()
 
   constructor(exector) {
-    exector?.(this.resolve.bind(this), this.reject.bind(this));
+    try {
+      exector?.(this.#resolve.bind(this), this.#reject.bind(this));
+    } catch (e) {
+      this.#reject(e);
+    }
   }
 
   static resolve(value) {
-    return new MyPromise(resolve => {
+    return new MyPromise((resolve) => {
       resolve(value);
     });
   }
@@ -27,107 +31,77 @@ class MyPromise {
     });
   }
 
-  resolvePromise(value) {
+  #resolvePromise(value) {
     let called = false;
 
-    if (value === this) { // 如果返回的是自己，则抛出错误
-      this.reject(
+    if (value === this) {
+      // 如果返回的是自己，则抛出错误
+      this.#reject(
         new TypeError(
-          'Circular reference detected: promise and x are the same object'
-        )
+          'Circular reference detected: promise and x are the same object',
+        ),
       );
 
       return false;
-    } else if (value instanceof MyPromise) { // 如果返回的是Promise，则最终状态由这个Promise决定
+    } else if (value instanceof MyPromise) {
+      // 如果返回的是Promise，则最终状态由这个Promise决定
+      value.then(
+        (x) => {
+          if (called) return;
+          called = true;
+          this.#resolve(x);
+        },
+        (y) => {
+          if (called) return;
+          called = true;
+          this.#reject(y);
+        },
+      );
+
+      return false;
+    } else if (
+      value &&
+      (typeof value === 'object' || typeof value === 'function')
+    ) {
+      // 对象与函数统一按 thenable 检查
+      let then;
       try {
-        value.then(
-          x => {
-            if (called) return;
-            called = true;
-            this.resolve(x);
-          },
-          y => {
-            if (called) return;
-            called = true;
-            this.reject(y);
-          }
-        );
-        return false;
+        then = Reflect.get(value, 'then');
       } catch (e) {
-        if (called) return;
-        this.reject(e);
-        return false;
-      }
-    } else if (value && typeof value === 'object') { // 如果返回的是thenable对象
-      try {
-        const thenable = Reflect.get(value, 'then');
-        if (typeof thenable === 'function') {
-          try {
-            thenable.call(
-              value,
-              x => {
-                if (called) return;
-                called = true;
-                this.resolve(x);
-              },
-              y => {
-                if (called) return;
-                called = true;
-                this.reject(y);
-              }
-            );
-            return false;
-          } catch (e) {
-            if (called) return;
-            this.reject(e);
-            return false;
-          }
-        }
-      } catch (e) {
-        if (called) return;
-        this.reject(e);
+        this.#reject(e);
         return false;
       }
-    } else if (value && typeof value === 'function') {
-      try {
-        if (Reflect.has(value, 'then')) {
-          return this.resolvePromise(Reflect.get(value, 'then'));
+
+      if (typeof then === 'function') {
+        try {
+          then.call(
+            value,
+            (x) => {
+              if (called) return;
+              called = true;
+              this.#resolve(x);
+            },
+            (y) => {
+              if (called) return;
+              called = true;
+              this.#reject(y);
+            },
+          );
+        } catch (e) {
+          if (called) return;
+          this.#reject(e);
         }
-        if (value) {
-          try {
-            value.call(
-              value,
-              x => {
-                if (called) return;
-                called = true;
-                this.resolve(x);
-              },
-              y => {
-                if (called) return;
-                called = true;
-                this.reject(y);
-              }
-            );
-            return false;
-          } catch (e) {
-            if (called) return;
-            this.reject(e);
-            return false;
-          }
-        }
-      } catch (e) {
-        if (called) return;
-        this.reject(e);
+
         return false;
       }
     }
 
-    return true;
+    return true; // then 不是函数或 value 为原始值，直接 fulfill
   }
 
-  resolve(value) {
+  #resolve(value) {
     if (this.state !== State.pending) return;
-    if (!this.resolvePromise(value)) return;
+    if (!this.#resolvePromise(value)) return;
 
     this.value = value;
     this.state = State.fulfilled;
@@ -137,7 +111,7 @@ class MyPromise {
     }
   }
 
-  reject(reason) {
+  #reject(reason) {
     if (this.state !== State.pending) return;
 
     this.reason = reason;
@@ -217,7 +191,7 @@ MyPromise.deferred = function () {
   return result;
 };
 
-process.on('uncaughtException', error => {
+process.on('uncaughtException', (error) => {
   // console.error('Unhandled error:', error);
 });
 
