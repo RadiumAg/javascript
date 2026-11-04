@@ -45,6 +45,6 @@
     "prettier": "^3.6.2",
     "promises-aplus-tests": "^2.1.2",
     "tsx": "4.22.4",
-    "typescript": "^5.1.6"
+    "typescript": "^7.0.2"
   }
 }

@@ -119,3 +119,5 @@ const reverseIterator = collection.getReverseIterator();
 while (reverseIterator.valid()) {
   console.log(reverseIterator.next());
 }
+
+export {};

@@ -27,6 +27,27 @@
       ]
     },
     {
+      "name": "Debug ES2025 (node24 tsx)",
+      "type": "node",
+      "request": "launch",
+      // ES2025 Iterator helper 等 API 需 Node 23+，nvm 默认是 20.19.4，
+      // 这里钉死 v24.14.1 绝对路径（裸 "node" 在 GUI 环境会找不到）
+      "runtimeExecutable": "/Users/zly/.nvm/versions/node/v24.14.1/bin/node",
+      "runtimeArgs": [
+        "--import",
+        "tsx"
+      ],
+      "args": [
+        "${file}"
+      ],
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ]
+    },
+    {
       "type": "node",
       "request": "launch",
       // 纯 node 直跑，用于 .js（含 ESM/CJS）。.ts/.tsx 请选 "Debug .ts (tsx)"
