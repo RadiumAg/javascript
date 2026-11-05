@@ -1,5 +1,6 @@
 package com.radium.gulimallproduct.exception;
 
+import com.radium.gulimall.common.exception.BizCodeEnume;
 import com.radium.gulimall.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,11 +31,11 @@ public class GulimallExceptionControllerAdvice {
             errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
 
-        return R.error(400, "数据校验出现问题").put("data", errorMap);
+        return R.error(BizCodeEnume.VALID_EXCEPTION.getCode(), BizCodeEnume.VALID_EXCEPTION.getMsg()).put("data", errorMap);
     }
 
     @ExceptionHandler(value = Throwable.class)
     public R handlerException(Throwable e) {
-
+        return R.error(BizCodeEnume.UNKNOW_EXCEPTION.getCode(), BizCodeEnume.UNKNOW_EXCEPTION.getMsg());
     }
 }
