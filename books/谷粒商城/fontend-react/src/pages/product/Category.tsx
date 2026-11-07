@@ -1,9 +1,10 @@
-import React, { FC, HTMLAttributes, useMemo, useState } from 'react';
+import React, { FC, HTMLAttributes, Key, useMemo, useState } from 'react';
 import {
   Alert,
   Button,
   Card,
   Flex,
+  Input,
   Modal,
   notification,
   Popconfirm,
@@ -20,6 +21,7 @@ import { useCreateOrEditCategoryForm } from './useCreateOrEditCategoryForm';
 import {
   attachAsChild,
   detachNode,
+  filterCategoryTree,
   findNodeByPath,
   findNodePath,
   flattenCatIds,
@@ -53,6 +55,8 @@ const Category: FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [search, setSearch] = useState('');
+  const [expandedRowKeys, setExpandedRowKeys] = useState<Key[]>([]);
   const [notificationApi, contextHolder] = notification.useNotification();
   const [modalApi, modalContextHolder] = Modal.useModal();
 
@@ -302,6 +306,9 @@ const Category: FC = () => {
     loadingData();
   });
 
+  const kw = search.trim();
+  const visibleRows = useMemo(() => filterCategoryTree(rows, kw), [rows, kw]);
+
   return (
     <Card
       size="small"
@@ -321,7 +328,7 @@ const Category: FC = () => {
         />
       )}
       <Space style={{ width: '100%' }} vertical>
-        <Flex>
+        <Flex gap={8} align="center">
           <Button
             disabled={selectedRowKeys.length == 0}
             onClick={handleBatchDelete}
@@ -329,25 +336,45 @@ const Category: FC = () => {
           >
             批量删除
           </Button>
+          <Input.Search
+            placeholder="搜索分类名"
+            allowClear
+            style={{ width: 240 }}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              // 隐藏掉的分类不能被批量删除顺手带走
+              setSelectedRowKeys([]);
+            }}
+          />
+          {kw && <Tag color="blue">拖拽排序已停用</Tag>}
         </Flex>
 
         <DndContext
-          sensors={sensors}
+          sensors={kw ? [] : sensors}
           modifiers={[restrictToVerticalAxis]}
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={flattenCatIds(rows)}
+            items={flattenCatIds(visibleRows)}
             strategy={verticalListSortingStrategy}
           >
             <Table<CategoryNode>
               rowKey="catId"
               size="small"
-              components={{ body: { row: Row } }}
+              // 过滤后的树里 sibling 下标不再等于真实 sort，拖拽会写坏排序
+              components={kw ? undefined : { body: { row: Row } }}
               loading={loading || saving}
               columns={columns}
-              dataSource={rows}
+              dataSource={visibleRows}
               rowSelection={rowSelection}
+              expandable={{
+                expandedRowKeys: kw
+                  ? flattenCatIds(visibleRows)
+                  : expandedRowKeys,
+                onExpandedRowsChange: (keys) =>
+                  setExpandedRowKeys(keys as Key[]),
+              }}
               pagination={{ pageSize: 10, showTotal: (t) => `共 ${t} 条` }}
             />
           </SortableContext>

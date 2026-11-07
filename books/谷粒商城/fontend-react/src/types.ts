@@ -148,6 +148,38 @@ export interface Brand {
   sort?: number;
 }
 
+/** /gulimallproduct/attrgroup/list 分页行，字段与 AttrGroupEntity 对齐 */
+export interface AttrGroup {
+  attrGroupId: number;
+  attrGroupName: string;
+  sort?: number;
+  descript?: string;
+  icon?: string;
+  catelogId: number;
+}
+
+/** /gulimallproduct/attr/list 分页行，字段与 AttrEntity 对齐 */
+export interface Attr {
+  attrId: number;
+  attrName: string;
+  searchType: number; // 0=不需要检索 1=需要
+  icon?: string;
+  /** 可选值列表：后端注释说逗号分隔，但种子数据用的是分号，展示时两种都切 */
+  valueSelect?: string;
+  attrType: number; // 0=销售属性 1=基本属性（规格参数）
+  enable: number; // 0=禁用 1=启用
+  catelogId: number;
+  showDesc: number; // 快速展示到介绍：0=否 1=是
+}
+
+/** 属性&分组关联；取消关联时后端只认 attrId + attrGroupId 这对组合 */
+export interface AttrGroupRelation {
+  id?: number;
+  attrId: number;
+  attrGroupId: number;
+  attrSort?: number;
+}
+
 /* ------------------------------------------------------------------ *
  * 接口响应类型：统一是 R 信封 + 各自的数据字段，字段名以后端 R.put 为准
  * ------------------------------------------------------------------ */
@@ -162,6 +194,7 @@ export type MenuPayload = Partial<MenuNode>;
 export type ConfigPayload = Partial<SysConfig>;
 export type SchedulePayload = Partial<ScheduleJob>;
 export type CategoryPayload = Partial<CategoryNode>;
+export type AttrGroupPayload = Partial<AttrGroup>;
 
 export type LoginRes = R & { token?: string };
 /** /sys/user/info（当前登录人）与 /sys/user/info/{id}（详情）同用 user 字段 */
@@ -179,3 +212,5 @@ export type ScheduleLogInfoRes = R & { log?: ScheduleJobLog };
 export type OssConfigRes = R & { config?: CloudStorageConfig };
 /** 微服务的 R 用 data 承载列表 */
 export type CategoryTreeRes = R & { data?: CategoryNode[] };
+/** 分组关联/未关联属性接口同样用 data 承载，但不分页 */
+export type AttrListRes = R & { data?: Attr[] };

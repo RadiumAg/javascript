@@ -1,15 +1,22 @@
 package com.radium.gulimallproduct.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.radium.gulimall.common.valid.AddGroup;
+import com.radium.gulimall.common.valid.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.radium.gulimallproduct.entity.AttrAttrgroupRelationEntity;
 import com.radium.gulimallproduct.entity.AttrGroupEntity;
 import com.radium.gulimallproduct.service.AttrGroupService;
 import com.radium.gulimall.common.utils.PageUtils;
@@ -31,7 +38,7 @@ public class AttrGroupController {
     private AttrGroupService attrGroupService;
 
     /**
-     * 列表
+     * 列表：catelogId 按分类过滤（0/缺省=不限），key 匹配组名或组id
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -55,7 +62,7 @@ public class AttrGroupController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody AttrGroupEntity attrGroup){
+    public R save(@Validated(AddGroup.class) @RequestBody AttrGroupEntity attrGroup){
 		attrGroupService.save(attrGroup);
 
         return R.ok();
@@ -65,7 +72,7 @@ public class AttrGroupController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody AttrGroupEntity attrGroup){
+    public R update(@Validated(UpdateGroup.class) @RequestBody AttrGroupEntity attrGroup){
 		attrGroupService.updateById(attrGroup);
 
         return R.ok();
@@ -76,8 +83,42 @@ public class AttrGroupController {
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] attrGroupIds){
-		attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
+		attrGroupService.removeAttrGroupByIds(Arrays.asList(attrGroupIds));
 
+        return R.ok();
+    }
+
+    /**
+     * 组内已关联的基本属性
+     */
+    @GetMapping("/attr/relation/{attrGroupId}")
+    public R relationAttrs(@PathVariable("attrGroupId") Long attrGroupId) {
+        return R.ok().put("data", attrGroupService.relationAttrs(attrGroupId));
+    }
+
+    /**
+     * 该分类下未关联任何分组的基本属性，供关联弹窗挑选
+     */
+    @GetMapping("/attr/norelation/{catelogId}")
+    public R noRelationAttrs(@PathVariable("catelogId") Long catelogId) {
+        return R.ok().put("data", attrGroupService.noRelationAttrs(catelogId));
+    }
+
+    /**
+     * 批量关联：body 是 [{attrId, attrGroupId, attrSort?}]
+     */
+    @PostMapping("/attr/relation")
+    public R saveRelation(@RequestBody List<AttrAttrgroupRelationEntity> relations) {
+        attrGroupService.saveRelations(relations);
+        return R.ok();
+    }
+
+    /**
+     * 批量取消关联：body 是 [{attrId, attrGroupId}]
+     */
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody List<AttrAttrgroupRelationEntity> relations) {
+        attrGroupService.deleteRelations(relations);
         return R.ok();
     }
 

@@ -11,7 +11,8 @@ type Options = {
     formValue: FieldType,
     ctx: { record?: Brand; type: Operation },
   ) => Promise<any> | any;
-};  ``
+};
+``;
 
 /** 表单只编辑业务字段；brandId 由 ctx.record 提供，不要塞进表单 store */
 type FieldType = Omit<Brand, 'brandId'>;

@@ -8,6 +8,22 @@ export function flattenCatIds(nodes: CategoryNode[]): (string | number)[] {
   ]);
 }
 
+/** 命中节点保留整棵子树；未命中但有后代命中的保留为路径节点 */
+export function filterCategoryTree(
+  nodes: CategoryNode[],
+  kw: string,
+): CategoryNode[] {
+  if (!kw) return nodes;
+  const lower = kw.toLowerCase();
+  const walk = (list: CategoryNode[]): CategoryNode[] =>
+    list.flatMap((n) => {
+      if (n.name.toLowerCase().includes(lower)) return [n];
+      const children = walk(n.children ?? []);
+      return children.length ? [{ ...n, children }] : [];
+    });
+  return walk(nodes);
+}
+
 export function findNodePath(
   nodes: CategoryNode[],
   id: Key,

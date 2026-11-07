@@ -1,9 +1,13 @@
 /**
  * gulimall 微服务接口（基址 /gw -> 网关原样路径，按模块前缀 /gulimallxxx）。
- * 目前只接了 product 的商品分类 CRUD。
+ * 覆盖 product 的分类/品牌/属性分组，以及 third-part 的文件上传。
  */
 import { MICRO_BASE, microGet, microPost } from './http';
 import type {
+  AttrGroup,
+  AttrGroupPayload,
+  AttrGroupRelation,
+  AttrListRes,
   Brand,
   CategoryNode,
   CategoryPayload,
@@ -69,6 +73,38 @@ export const brandUpdate = (data: BrandPayload) =>
 /** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
 export const brandDelete = (brandIds: number[]) =>
   microPost<R>('/gulimallproduct/brand/delete', brandIds, { raw: true });
+
+/* ------------------- 属性分组（gulimall-product） ------------------- */
+
+/** 过滤：catelogId（0/缺省=不限）、key（组名 like 或组id eq） */
+export const attrGroupList = (params: ListParams) =>
+  microGet<PageRes<AttrGroup>>('/gulimallproduct/attrgroup/list', params);
+
+export const attrGroupSave = (data: AttrGroupPayload) =>
+  microPost<R>('/gulimallproduct/attrgroup/save', data);
+
+export const attrGroupUpdate = (data: AttrGroupPayload) =>
+  microPost<R>('/gulimallproduct/attrgroup/update', data);
+
+/** 后端删分组时会连带清掉组内关联；空数组会拼出 IN () 报错，调用方自己保证非空 */
+export const attrGroupDelete = (attrGroupIds: number[]) =>
+  microPost<R>('/gulimallproduct/attrgroup/delete', attrGroupIds, { raw: true });
+
+/** 组内已关联的基本属性，按 attrSort 升序 */
+export const attrGroupRelationAttrs = (attrGroupId: number) =>
+  microGet<AttrListRes>(`/gulimallproduct/attrgroup/attr/relation/${attrGroupId}`);
+
+/** 该分类下还没进任何分组的基本属性，供关联弹窗挑选 */
+export const attrGroupNoRelationAttrs = (catelogId: number) =>
+  microGet<AttrListRes>(`/gulimallproduct/attrgroup/attr/norelation/${catelogId}`);
+
+/** body 是裸数组，必须 raw:true，否则 buildPayload 会把数组摊进对象 */
+export const attrGroupRelationSave = (relations: AttrGroupRelation[]) =>
+  microPost<R>('/gulimallproduct/attrgroup/attr/relation', relations, { raw: true });
+
+/** 取消关联只需 attrId + attrGroupId 这对组合 */
+export const attrGroupRelationDelete = (relations: AttrGroupRelation[]) =>
+  microPost<R>('/gulimallproduct/attrgroup/attr/relation/delete', relations, { raw: true });
 
 /* ------------------- 文件上传（gulimall-third-part） ------------------- */
 // 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。
