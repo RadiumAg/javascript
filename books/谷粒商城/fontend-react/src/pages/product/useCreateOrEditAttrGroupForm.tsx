@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useToggle } from 'ahooks';
-import { Form, Input, InputNumber, Modal } from 'antd';
+import { AutoComplete, Form, Input, InputNumber, Modal } from 'antd';
+import { gulimallApi } from '@/api';
 import { ImageUpload } from '@/components/ImageUpload';
 import type { AttrGroup } from '@/types';
 import { CategoryTreeSelect } from './CategoryTreeSelect';
@@ -23,8 +24,31 @@ const useCreateOrEditAttrGroupForm = (options: Options) => {
   const { onOk, defaultCatelogId } = options;
   const [open, toggle] = useToggle();
   const [form] = Form.useForm<FieldType>();
+  const [nameOptions, setNameOptions] = useState<{ value: string }[]>([]);
+  const [nameSearch, setNameSearch] = useState<string | null>(null);
   const operationRef = useRef<Operation>(undefined);
   const recordRef = useRef<AttrGroup>(undefined);
+
+  const shownNameOptions =
+    nameSearch === null
+      ? nameOptions
+      : nameOptions.filter((o) =>
+          o.value.toLowerCase().includes(nameSearch.toLowerCase()),
+        );
+
+  // 组名候选来自 pms_attr_group 已有记录；新名字仍可手输
+  const loadNameOptions = () => {
+    gulimallApi
+      .attrGroupList({ page: 1, limit: 500 })
+      .then((res) => {
+        if (res.code !== 0) return;
+        const names = [
+          ...new Set((res.page?.list ?? []).map((g) => g.attrGroupName)),
+        ];
+        setNameOptions(names.map((value) => ({ value })));
+      })
+      .catch(() => setNameOptions([]));
+  };
 
   const formNode = (
     <Modal
@@ -58,7 +82,14 @@ const useCreateOrEditAttrGroupForm = (options: Options) => {
           name="attrGroupName"
           rules={[{ required: true, message: '组名不能为空' }]}
         >
-          <Input autoComplete="off" />
+          <AutoComplete
+            options={shownNameOptions}
+            placeholder="选已有组名或输入新组名"
+            onSearch={setNameSearch}
+            onOpenChange={(o) => {
+              if (o) setNameSearch(null);
+            }}
+          />
         </Form.Item>
         <Form.Item<FieldType>
           label="所属分类"
@@ -86,6 +117,7 @@ const useCreateOrEditAttrGroupForm = (options: Options) => {
       recordRef.current = record;
       operationRef.current = type;
       form.resetFields();
+      loadNameOptions();
       if (type === 'edit' && record) {
         form.setFieldsValue(record);
       } else if (defaultCatelogId !== undefined) {
