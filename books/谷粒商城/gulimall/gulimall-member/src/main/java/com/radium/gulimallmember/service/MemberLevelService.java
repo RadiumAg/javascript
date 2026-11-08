@@ -16,5 +16,11 @@ import java.util.Map;
 public interface MemberLevelService extends IService<MemberLevelEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /** 新增等级；设为默认时把其它等级的默认位摘掉 */
+    void saveLevel(MemberLevelEntity level);
+
+    /** 修改等级；设为默认时把其它等级的默认位摘掉 */
+    void updateLevel(MemberLevelEntity level);
 }
 

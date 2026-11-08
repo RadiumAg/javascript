@@ -14,6 +14,8 @@ import type {
   CategoryNode,
   CategoryPayload,
   CategoryTreeRes,
+  MemberLevel,
+  MemberLevelPayload,
   PageRes,
   R,
   SpuSavePayload,
@@ -124,6 +126,21 @@ export const attrUpdate = (data: AttrPayload) =>
 /** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
 export const attrDelete = (attrIds: number[]) =>
   microPost<R>('/gulimallproduct/attr/delete', attrIds, { raw: true });
+
+/* ------------------- 会员等级（gulimall-member） ------------------- */
+
+export const memberLevelList = (params: ListParams) =>
+  microGet<PageRes<MemberLevel>>('/gulimallmember/memberlevel/list', params);
+
+export const memberLevelSave = (data: MemberLevelPayload) =>
+  microPost<R>('/gulimallmember/memberlevel/save', data);
+
+export const memberLevelUpdate = (data: MemberLevelPayload) =>
+  microPost<R>('/gulimallmember/memberlevel/update', data);
+
+/** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
+export const memberLevelDelete = (ids: number[]) =>
+  microPost<R>('/gulimallmember/memberlevel/delete', ids, { raw: true });
 
 /* ------------------- 发布商品（gulimall-product） ------------------- */
 

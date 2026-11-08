@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,8 @@ import com.radium.gulimallmember.entity.MemberLevelEntity;
 import com.radium.gulimallmember.service.MemberLevelService;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
+import com.radium.gulimall.common.valid.AddGroup;
+import com.radium.gulimall.common.valid.UpdateGroup;
 
 
 
@@ -55,8 +58,8 @@ public class MemberLevelController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody MemberLevelEntity memberLevel){
-		memberLevelService.save(memberLevel);
+    public R save(@Validated(AddGroup.class) @RequestBody MemberLevelEntity memberLevel){
+		memberLevelService.saveLevel(memberLevel);
 
         return R.ok();
     }
@@ -65,8 +68,8 @@ public class MemberLevelController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody MemberLevelEntity memberLevel){
-		memberLevelService.updateById(memberLevel);
+    public R update(@Validated(UpdateGroup.class) @RequestBody MemberLevelEntity memberLevel){
+		memberLevelService.updateLevel(memberLevel);
 
         return R.ok();
     }

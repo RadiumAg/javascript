@@ -198,6 +198,24 @@ export type CategoryPayload = Partial<CategoryNode>;
 export type AttrGroupPayload = Partial<AttrGroup>;
 export type AttrPayload = Partial<Attr>;
 
+/* ------------------------------ 会员等级 ------------------------------ */
+
+/** /gulimallmember/memberlevel/list 分页行，字段与 MemberLevelEntity 对齐 */
+export interface MemberLevel {
+  id: number;
+  name: string;
+  growthPoint: number;
+  defaultStatus: number; // 0=不是默认 1=默认
+  freeFreightPoint?: number;
+  commentGrowthPoint?: number;
+  priviledgeFreeFreight: number; // 0/1
+  priviledgeMemberPrice: number; // 0/1
+  priviledgeBirthday: number; // 0/1
+  note?: string;
+}
+
+export type MemberLevelPayload = Partial<MemberLevel>;
+
 /* ------------------------------ 发布商品 ------------------------------ */
 
 /** SKU 上的销售属性组合项，落 pms_sku_sale_attr_value */
