@@ -163,6 +163,7 @@ export interface Attr {
   attrId: number;
   attrName: string;
   searchType: number; // 0=不需要检索 1=需要
+  valueType: number; // 0=只能单个值 1=允许多个值
   icon?: string;
   /** 可选值列表：后端注释说逗号分隔，但种子数据用的是分号，展示时两种都切 */
   valueSelect?: string;
@@ -195,6 +196,7 @@ export type ConfigPayload = Partial<SysConfig>;
 export type SchedulePayload = Partial<ScheduleJob>;
 export type CategoryPayload = Partial<CategoryNode>;
 export type AttrGroupPayload = Partial<AttrGroup>;
+export type AttrPayload = Partial<Attr>;
 
 export type LoginRes = R & { token?: string };
 /** /sys/user/info（当前登录人）与 /sys/user/info/{id}（详情）同用 user 字段 */

@@ -15,6 +15,7 @@ const registry: Record<string, LazyExoticComponent<ComponentType<any>>> = {
   'product/category': lazy(() => import('@/pages/product/Category')),
   'product/brand': lazy(() => import('@/pages/product/Brand')),
   'product/attrgroup': lazy(() => import('@/pages/product/AttrGroup')),
+  'product/baseattr': lazy(() => import('@/pages/product/BaseAttr')),
 };
 
 export function resolveModule(

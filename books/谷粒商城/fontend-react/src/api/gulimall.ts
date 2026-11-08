@@ -4,10 +4,12 @@
  */
 import { MICRO_BASE, microGet, microPost } from './http';
 import type {
+  Attr,
   AttrGroup,
   AttrGroupPayload,
   AttrGroupRelation,
   AttrListRes,
+  AttrPayload,
   Brand,
   CategoryNode,
   CategoryPayload,
@@ -105,6 +107,22 @@ export const attrGroupRelationSave = (relations: AttrGroupRelation[]) =>
 /** 取消关联只需 attrId + attrGroupId 这对组合 */
 export const attrGroupRelationDelete = (relations: AttrGroupRelation[]) =>
   microPost<R>('/gulimallproduct/attrgroup/attr/relation/delete', relations, { raw: true });
+
+/* ------------------- 规格参数 / 销售属性（gulimall-product） ------------------- */
+
+/** 过滤：catelogId（0/缺省=不限）、attrType（1=基本属性 0=销售属性）、key（属性名 like 或属性id eq） */
+export const attrList = (params: ListParams) =>
+  microGet<PageRes<Attr>>('/gulimallproduct/attr/list', params);
+
+export const attrSave = (data: AttrPayload) =>
+  microPost<R>('/gulimallproduct/attr/save', data);
+
+export const attrUpdate = (data: AttrPayload) =>
+  microPost<R>('/gulimallproduct/attr/update', data);
+
+/** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
+export const attrDelete = (attrIds: number[]) =>
+  microPost<R>('/gulimallproduct/attr/delete', attrIds, { raw: true });
 
 /* ------------------- 文件上传（gulimall-third-part） ------------------- */
 // 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。

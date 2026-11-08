@@ -122,4 +122,12 @@ public class AttrGroupController {
         return R.ok();
     }
 
+    /**
+     * 该分类下所有分组连同组内属性，商详页规格参数块用
+     */
+    @GetMapping("/{catelogId}/withattrs")
+    public R attrGroupWithAttrs(@PathVariable("catelogId") Long catelogId) {
+        return R.ok().put("data", attrGroupService.getAttrGroupWithAttrs(catelogId));
+    }
+
 }

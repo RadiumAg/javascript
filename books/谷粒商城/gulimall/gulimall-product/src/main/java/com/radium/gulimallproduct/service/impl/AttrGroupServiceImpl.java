@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,6 +20,7 @@ import com.radium.gulimallproduct.entity.AttrEntity;
 import com.radium.gulimallproduct.entity.AttrGroupEntity;
 import com.radium.gulimallproduct.service.AttrAttrgroupRelationService;
 import com.radium.gulimallproduct.service.AttrGroupService;
+import com.radium.gulimallproduct.vo.AttrGroupRelationVo;
 
 
 @Service("attrGroupService")
@@ -90,6 +92,19 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         if (attrGroupIds == null || attrGroupIds.isEmpty()) return;
         this.removeByIds(attrGroupIds);
         relationService.remove(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", attrGroupIds));
+    }
+
+    @Override
+    public List<AttrGroupRelationVo> getAttrGroupWithAttrs(Long catelogId) {
+        List<AttrGroupEntity> groups = this.list(
+                new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId).orderByAsc("sort"));
+        return groups.stream().map(g -> {
+            AttrGroupRelationVo vo = new AttrGroupRelationVo();
+            vo.setAttrGroupId(g.getAttrGroupId());
+            vo.setAttrGroupName(g.getAttrGroupName());
+            vo.setAttrs(attrDao.selectRelationAttrs(g.getAttrGroupId()));
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     private static String str(Object v) {

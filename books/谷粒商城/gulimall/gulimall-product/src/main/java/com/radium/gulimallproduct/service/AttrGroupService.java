@@ -5,6 +5,7 @@ import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimallproduct.entity.AttrAttrgroupRelationEntity;
 import com.radium.gulimallproduct.entity.AttrEntity;
 import com.radium.gulimallproduct.entity.AttrGroupEntity;
+import com.radium.gulimallproduct.vo.AttrGroupRelationVo;
 
 import java.util.List;
 import java.util.Map;
@@ -33,4 +34,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     /** 删分组同时清掉组内关联，否则残留关联会把这些属性挡在"未分组"列表外 */
     void removeAttrGroupByIds(List<Long> attrGroupIds);
+
+    /** 该分类下所有分组 + 组内属性，商详页规格参数块的数据形状 */
+    List<AttrGroupRelationVo> getAttrGroupWithAttrs(Long catelogId);
 }

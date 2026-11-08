@@ -10,10 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.validation.annotation.Validated;
+
 import com.radium.gulimallproduct.entity.AttrEntity;
 import com.radium.gulimallproduct.service.AttrService;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
+import com.radium.gulimall.common.valid.AddGroup;
+import com.radium.gulimall.common.valid.UpdateGroup;
+import com.radium.gulimallproduct.vo.AttrVo;
 
 
 
@@ -46,17 +51,15 @@ public class AttrController {
      */
     @RequestMapping("/info/{attrId}")
     public R info(@PathVariable("attrId") Long attrId){
-		AttrEntity attr = attrService.getById(attrId);
-
-        return R.ok().put("attr", attr);
+		return R.ok().put("attr", attrService.getAttrInfo(attrId));
     }
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
+    public R save(@Validated(AddGroup.class) @RequestBody AttrVo attr){
+		attrService.saveAttr(attr);
 
         return R.ok();
     }
@@ -65,8 +68,8 @@ public class AttrController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody AttrEntity attr){
-		attrService.updateById(attr);
+    public R update(@Validated(UpdateGroup.class) @RequestBody AttrVo attr){
+		attrService.updateAttr(attr);
 
         return R.ok();
     }
