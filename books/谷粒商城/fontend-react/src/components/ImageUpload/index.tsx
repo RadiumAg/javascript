@@ -1,31 +1,32 @@
 import { useEffect, useState } from 'react';
-import { Image, Modal, Upload } from 'antd';
+import { Image, Modal, Space, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd/es/upload';
 import { cosSignatureUrl, imageUploadUrl } from '@/api/gulimall';
 import { message } from '@/api/feedback';
 
-type ImageUploadValue = string | undefined | null;
+type ImageUploadValue = string | string[] | undefined | null;
 
 export type ImageUploadProps = {
   value?: ImageUploadValue;
-  onChange?: (url: string) => void;
+  onChange?: (url: any) => void;
   disabled?: boolean;
   /** 最大文件大小，单位 MB，默认 2 */
   maxSize?: number;
   accept?: string;
+  /** 多图模式：value/onChange 走 string[] */
+  multiple?: boolean;
+  maxCount?: number;
 };
 
 function toFileList(value: ImageUploadValue): UploadFile[] {
-  if (!value) return [];
-  return [
-    {
-      uid: `img-${value}`,
-      name: value.slice(value.lastIndexOf('/') + 1) || 'image',
-      status: 'done',
-      url: value,
-    },
-  ];
+  const urls = Array.isArray(value) ? value : value ? [value] : [];
+  return urls.map((url) => ({
+    uid: `img-${url}`,
+    name: url.slice(url.lastIndexOf('/') + 1) || 'image',
+    status: 'done' as const,
+    url,
+  }));
 }
 
 export function ImageUpload({
@@ -34,6 +35,8 @@ export function ImageUpload({
   disabled,
   maxSize = 2,
   accept = 'image/*',
+  multiple = false,
+  maxCount = 1,
 }: ImageUploadProps) {
   const readonly = !onChange;
   const [fileList, setFileList] = useState<UploadFile[]>(() => toFileList(value));
@@ -47,17 +50,24 @@ export function ImageUpload({
   }, [value]);
 
   if (readonly) {
-    return value ? (
-      <Image
-        src={value}
-        width={40}
-        height={40}
-        style={{ objectFit: 'contain' }}
-      />
-    ) : (
-      <span>-</span>
+    const urls = Array.isArray(value) ? value : value ? [value] : [];
+    if (!urls.length) return <span>-</span>;
+    return (
+      <Space size={4} wrap>
+        {urls.map((u) => (
+          <Image key={u} src={u} width={40} height={40} style={{ objectFit: 'contain' }} />
+        ))}
+      </Space>
     );
   }
+
+  const emit = (list: UploadFile[]) => {
+    const urls = list
+      .filter((f) => f.status === 'done')
+      .map((f) => f.url || (f.response as { url?: string } | undefined)?.url)
+      .filter((u): u is string => !!u);
+    onChange?.(multiple ? urls : urls[urls.length - 1] ?? '');
+  };
 
   const handleChange: UploadProps['onChange'] = (info) => {
     setFileList(info.fileList);
@@ -66,7 +76,8 @@ export function ImageUpload({
     if (file.status === 'done') {
       const res = file.response as { code?: number; url?: string; msg?: string } | undefined;
       if (res?.code === 0 && res.url) {
-        onChange(res.url);
+        file.url = res.url;
+        emit(info.fileList);
       } else {
         message.error(res?.msg || '上传失败');
         setFileList(toFileList(value));
@@ -74,7 +85,7 @@ export function ImageUpload({
     } else if (file.status === 'error') {
       message.error(file.error?.message || '上传失败');
     } else if (file.status === 'removed') {
-      onChange('');
+      emit(info.fileList);
     }
   };
 
@@ -162,7 +173,8 @@ export function ImageUpload({
         listType="picture-card"
         accept={accept}
         fileList={fileList}
-        maxCount={1}
+        multiple={multiple}
+        maxCount={multiple ? maxCount : 1}
         disabled={disabled}
         showUploadList={{ showRemoveIcon: !disabled }}
         beforeUpload={beforeUpload}
@@ -170,7 +182,7 @@ export function ImageUpload({
         onChange={handleChange}
         onPreview={(file) => setPreview({ open: true, url: resolvePreviewUrl(file) })}
       >
-        {fileList.length >= 1 || disabled ? null : (
+        {fileList.length >= (multiple ? maxCount : 1) || disabled ? null : (
           <button type="button" style={{ border: 0, background: 'none' }}>
             <PlusOutlined />
             <div style={{ marginTop: 8 }}>上传</div>

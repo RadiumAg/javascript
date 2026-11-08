@@ -198,6 +198,46 @@ export type CategoryPayload = Partial<CategoryNode>;
 export type AttrGroupPayload = Partial<AttrGroup>;
 export type AttrPayload = Partial<Attr>;
 
+/* ------------------------------ 发布商品 ------------------------------ */
+
+/** SKU 上的销售属性组合项，落 pms_sku_sale_attr_value */
+export interface SkuSaleAttrPayload {
+  attrId: number;
+  attrName: string;
+  attrValue: string;
+}
+
+export interface SkuSavePayload {
+  skuName: string;
+  price?: number;
+  stock?: number;
+  skuTitle?: string;
+  skuSubtitle?: string;
+  enable: number; // 0=下架 1=上架
+  images: string[];
+  saleAttrValues: SkuSaleAttrPayload[];
+}
+
+/** SPU 级规格参数，落 pms_product_attr_value */
+export interface SpuAttrValuePayload {
+  attrId: number;
+  attrName: string;
+  value: string;
+}
+
+/** 发布商品提交体（教程 SpuSaveVo 的形状；后端 composite save 尚未实现，先定契约） */
+export interface SpuSavePayload {
+  spuName: string;
+  catalogId: number;
+  brandId: number;
+  weight?: number;
+  publishStatus: number; // 0=下架 1=上架
+  description?: string;
+  images: string[];
+  attrs: SpuAttrValuePayload[];
+  skus: SkuSavePayload[];
+}
+
 export type LoginRes = R & { token?: string };
 /** /sys/user/info（当前登录人）与 /sys/user/info/{id}（详情）同用 user 字段 */
 export type UserInfoRes = R & { user?: SysUser };

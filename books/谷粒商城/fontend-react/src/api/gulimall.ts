@@ -16,6 +16,7 @@ import type {
   CategoryTreeRes,
   PageRes,
   R,
+  SpuSavePayload,
 } from '@/types';
 import type { ListParams } from './renren';
 
@@ -123,6 +124,12 @@ export const attrUpdate = (data: AttrPayload) =>
 /** 后端是 @RequestBody Long[]，空数组会拼出 IN () 报错，调用方自己保证非空 */
 export const attrDelete = (attrIds: number[]) =>
   microPost<R>('/gulimallproduct/attr/delete', attrIds, { raw: true });
+
+/* ------------------- 发布商品（gulimall-product） ------------------- */
+
+/** 跨 7 张表的 composite save；后端尚未实现，调用会 404，前端先把契约定住 */
+export const spuSave = (data: SpuSavePayload) =>
+  microPost<R>('/gulimallproduct/spu/save', data);
 
 /* ------------------- 文件上传（gulimall-third-part） ------------------- */
 // 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。
