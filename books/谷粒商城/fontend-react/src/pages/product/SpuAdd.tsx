@@ -64,6 +64,7 @@ const SpuAddPage: FC = () => {
 
   const [saleChoice, setSaleChoice] = useState<Record<number, string[]>>({});
   const [specChoice, setSpecChoice] = useState<Record<number, string>>({});
+  const [specQuick, setSpecQuick] = useState<Record<number, boolean>>({});
   const [skus, setSkus] = useState<SkuRow[]>([]);
 
   const [spuImages, setSpuImages] = useState<string[]>([]);
@@ -166,7 +167,12 @@ const SpuAddPage: FC = () => {
       .filter(([, v]) => v)
       .map(([attrId, value]) => {
         const attr = specGroups.flatMap((g) => g.attrs).find((a) => String(a.attrId) === attrId);
-        return { attrId: Number(attrId), attrName: attr?.attrName ?? '', value };
+        return {
+          attrId: Number(attrId),
+          attrName: attr?.attrName ?? '',
+          value,
+          quickShow: (specQuick[Number(attrId)] ?? attr?.showDesc === 1) ? 1 : 0,
+        };
       }),
     skus: skus.map((s) => ({
       skuName: s.skuName,
@@ -390,6 +396,12 @@ const SpuAddPage: FC = () => {
                               onChange={(e) => setSpecChoice((s) => ({ ...s, [a.attrId]: e.target.value }))}
                             />
                           )}
+                          <Checkbox
+                            checked={specQuick[a.attrId] ?? a.showDesc === 1}
+                            onChange={(e) => setSpecQuick((s) => ({ ...s, [a.attrId]: e.target.checked }))}
+                          >
+                            快速展示
+                          </Checkbox>
                         </Flex>
                       );
                     })}

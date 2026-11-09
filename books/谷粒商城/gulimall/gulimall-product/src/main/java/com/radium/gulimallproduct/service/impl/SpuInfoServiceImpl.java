@@ -106,7 +106,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 value.setAttrName(attr.getAttrName());
                 value.setAttrValue(attr.getValue());
                 value.setAttrSort(i);
-                value.setQuickShow(0);
+                value.setQuickShow(attr.getQuickShow() == null ? 0 : attr.getQuickShow());
                 attrValues.add(value);
             }
             productAttrValueService.saveBatch(attrValues);

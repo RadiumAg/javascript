@@ -241,6 +241,7 @@ export interface SpuAttrValuePayload {
   attrId: number;
   attrName: string;
   value: string;
+  quickShow: number; // 0=否 1=快速展示在介绍上
 }
 
 /** 发布商品提交体，对应后端 SpuSaveVo */
