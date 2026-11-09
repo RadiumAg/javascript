@@ -243,7 +243,7 @@ export interface SpuAttrValuePayload {
   value: string;
 }
 
-/** 发布商品提交体（教程 SpuSaveVo 的形状；后端 composite save 尚未实现，先定契约） */
+/** 发布商品提交体，对应后端 SpuSaveVo */
 export interface SpuSavePayload {
   spuName: string;
   catalogId: number;

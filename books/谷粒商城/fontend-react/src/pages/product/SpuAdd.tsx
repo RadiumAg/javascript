@@ -20,7 +20,7 @@ import { useMemoizedFn, useMount } from 'ahooks';
 import { gulimallApi } from '@/api';
 import { message } from '@/api/feedback';
 import { ImageUpload } from '@/components/ImageUpload';
-import type { Attr, AttrGroup, Brand, SpuSavePayload } from '@/types';
+import type { Attr, AttrGroup, SpuSavePayload } from '@/types';
 import { CategoryTreeSelect } from './CategoryTreeSelect';
 
 type Combo = { attrId: number; attrName: string; value: string };
@@ -51,12 +51,12 @@ const comboKey = (combo: Combo[]) => combo.map((c) => `${c.attrId}:${c.value}`).
 
 /**
  * 发布商品四步向导：基本信息 -> 销售属性与规格 -> SKU 信息 -> 图片与描述。
- * 提交体是跨 7 张表的嵌套 VO，后端 composite save 未实现前保存会失败（预期）。
+ * 提交体是跨 7 张表的嵌套 VO，后端 /spuinfo/save 一次事务保存。
  */
 const SpuAddPage: FC = () => {
   const [step, setStep] = useState(0);
   const [basic, setBasic] = useState<Basic>({ spuName: '', publishStatus: 0 });
-  const [brands, setBrands] = useState<Brand[]>([]);
+  const [brands, setBrands] = useState<{ brandId: number; name: string }[]>([]);
 
   const [saleAttrs, setSaleAttrs] = useState<Attr[]>([]);
   const [specGroups, setSpecGroups] = useState<{ group: AttrGroup; attrs: Attr[] }[]>([]);
@@ -71,10 +71,21 @@ const SpuAddPage: FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  /** 优先取分类关联的品牌；该分类没挂品牌时退回全量，避免选不了 */
+  const loadBrands = useMemoizedFn(async (catelogId?: number) => {
+    if (catelogId) {
+      const res = await gulimallApi.categoryBrands(catelogId);
+      if (res.code === 0 && res.data?.length) {
+        setBrands(res.data.map((b) => ({ brandId: b.brandId, name: b.brandName })));
+        return;
+      }
+    }
+    const res = await gulimallApi.brandList({ page: 1, limit: 200 });
+    if (res.code === 0) setBrands((res.page?.list ?? []).map((b) => ({ brandId: b.brandId, name: b.name })));
+  });
+
   useMount(() => {
-    gulimallApi.brandList({ page: 1, limit: 200 }).then((res) => {
-      if (res.code === 0) setBrands(res.page?.list ?? []);
-    });
+    loadBrands();
   });
 
   /** 老后端不认 catelogId/attrType 过滤，这里拉全量再前端筛，新旧后端都能跑 */
@@ -188,8 +199,7 @@ const SpuAddPage: FC = () => {
       }
       message.success('发布成功');
     } catch (e) {
-      // 后端 composite save 还没写，404 是预期内的
-      message.error(`保存请求失败（后端 /spu/save 尚未实现）：${e instanceof Error ? e.message : e}`);
+      message.error(`保存请求失败：${e instanceof Error ? e.message : e}`);
     } finally {
       setSaving(false);
     }
@@ -293,7 +303,10 @@ const SpuAddPage: FC = () => {
             <CategoryTreeSelect
               style={{ flex: 1 }}
               value={basic.catelogId}
-              onChange={(v) => setBasic((b) => ({ ...b, catelogId: v }))}
+              onChange={(v) => {
+                setBasic((b) => ({ ...b, catelogId: v, brandId: undefined }));
+                loadBrands(v);
+              }}
             />
           </Flex>
           <Flex gap={8} align="center">

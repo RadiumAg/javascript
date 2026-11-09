@@ -27,8 +27,8 @@ public class CategoryBrandRelationController {
 
     @GetMapping("/brands/list")
     public R relationBrandsList(@RequestParam(value = "catId", required = true) Long catId) {
-        var vos = categoryBrandRelationService.getBrandsByCatId(catId);
-        vos.stream().map(item -> {
+        var brands = categoryBrandRelationService.getBrandsByCatId(catId);
+        var vos = brands.stream().map(item -> {
             var brandsVo = new BrandVo();
             brandsVo.setBrandId(item.getBrandId());
             brandsVo.setBrandName(item.getName());

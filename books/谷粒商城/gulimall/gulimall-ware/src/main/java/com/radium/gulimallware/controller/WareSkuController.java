@@ -1,6 +1,7 @@
 package com.radium.gulimallware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,16 @@ public class WareSkuController {
     @RequestMapping("/save")
     public R save(@RequestBody WareSkuEntity wareSku){
 		wareSkuService.save(wareSku);
+
+        return R.ok();
+    }
+
+    /**
+     * 批量保存库存：发布商品时由 gulimall-product 通过 Feign 调用
+     */
+    @RequestMapping("/saves")
+    public R saves(@RequestBody List<WareSkuEntity> wareSkus){
+		wareSkuService.saveBatch(wareSkus);
 
         return R.ok();
     }

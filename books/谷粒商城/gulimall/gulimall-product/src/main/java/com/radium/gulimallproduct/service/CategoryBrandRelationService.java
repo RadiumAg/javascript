@@ -2,8 +2,10 @@ package com.radium.gulimallproduct.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.radium.gulimall.common.utils.PageUtils;
+import com.radium.gulimallproduct.entity.BrandEntity;
 import com.radium.gulimallproduct.entity.CategoryBrandRelationEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +19,6 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
 
     PageUtils queryPage(Map<String, Object> params);
 
-    Object getBrandsByCatId(Long cartId);
+    List<BrandEntity> getBrandsByCatId(Long catId);
 }
 

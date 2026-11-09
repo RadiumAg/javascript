@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.radium.gulimallproduct.entity.SpuInfoEntity;
 import com.radium.gulimallproduct.service.SpuInfoService;
+import com.radium.gulimallproduct.vo.SpuSaveVo;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
+
+import javax.validation.Valid;
 
 
 
@@ -52,11 +55,11 @@ public class SpuInfoController {
     }
 
     /**
-     * 保存
+     * 发布商品：一次事务保存 spu/desc/images/规格参数/sku/sku图片/销售属性，并远程同步库存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody SpuInfoEntity spuInfo){
-		spuInfoService.save(spuInfo);
+    public R save(@Valid @RequestBody SpuSaveVo spuSaveVo){
+		spuInfoService.saveSpuInfo(spuSaveVo);
 
         return R.ok();
     }

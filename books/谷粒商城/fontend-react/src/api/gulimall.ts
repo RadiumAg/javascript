@@ -69,6 +69,13 @@ export const categoryMove = (data: {
 export const brandList = (params: ListParams) =>
   microGet<PageRes<Brand>>('/gulimallproduct/brand/list', params);
 
+/** 分类关联的品牌，返回 BrandVo[{brandId, brandName}]，发布商品选品牌用 */
+export const categoryBrands = (catId: number) =>
+  microGet<R & { data?: { brandId: number; brandName: string }[] }>(
+    '/gulimallproduct/categorybrandrelation/brands/list',
+    { catId },
+  );
+
 export const brandSave = (data: BrandPayload) =>
   microPost<R>('/gulimallproduct/brand/save', data);
 
@@ -144,9 +151,9 @@ export const memberLevelDelete = (ids: number[]) =>
 
 /* ------------------- 发布商品（gulimall-product） ------------------- */
 
-/** 跨 7 张表的 composite save；后端尚未实现，调用会 404，前端先把契约定住 */
+/** 发布商品：后端一次事务落 7 张表，并 Feign 同步库存到 gulimall-ware */
 export const spuSave = (data: SpuSavePayload) =>
-  microPost<R>('/gulimallproduct/spu/save', data);
+  microPost<R>('/gulimallproduct/spuinfo/save', data);
 
 /* ------------------- 文件上传（gulimall-third-part） ------------------- */
 // 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。
