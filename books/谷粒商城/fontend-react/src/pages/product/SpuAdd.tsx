@@ -61,8 +61,9 @@ const splitValues = (v?: string) => (v ? v.split(/[;,，；]/).filter(Boolean) :
 const comboKey = (combo: Combo[]) => combo.map((c) => `${c.attrId}:${c.value}`).join('|');
 
 /**
- * 发布商品四步向导：基本信息 -> 销售属性与规格 -> SKU 信息 -> 图片与描述。
- * 提交体是跨 7 张表的嵌套 VO，后端 /spuinfo/save 一次事务保存。
+ * 发布商品向导，步骤划分对齐课程原版 product-add.vue：
+ * 填写商品信息 -> 填写销售属性信息 -> 填写规格属性信息 -> 填写商品优惠信息 -> 填写商品图片及详情。
+ * 提交体是跨 7 张表的嵌套 VO，后端 /spuinfo/save 一次事务保存，积分/优惠 Feign 同步 coupon。
  */
 const SpuAddPage: FC = () => {
   const [step, setStep] = useState(0);
@@ -162,10 +163,11 @@ const SpuAddPage: FC = () => {
       }
       void loadStep2(basic.catelogId);
     }
+    // 规格参数 -> 优惠信息：进优惠步骤前保证 SKU 已生成、会员等级已拉到
     if (step === 2 && skus.length === 0) {
       regenSkus(saleChoice, skus, basic.spuName);
     }
-    if (step === 3 && !memberLevels.length) {
+    if (step === 2 && !memberLevels.length) {
       void gulimallApi.memberLevelSelect().then((res) => {
         if (res.code === 0) setMemberLevels(res.data ?? []);
       });
@@ -318,6 +320,91 @@ const SpuAddPage: FC = () => {
     [],
   );
 
+  /** 展开行：满减/阶梯/会员价，对齐原版页面 SKU 表格的优惠设置展开区 */
+  const renderSkuCoupon = (row: SkuRow) => (
+    <Flex vertical gap={8} style={{ padding: '4px 0' }}>
+      <Flex gap={12} align="center">
+        <Checkbox
+          checked={row.extra?.priceOn ?? false}
+          onChange={(e) => updateSkuExtra(row.key, { priceOn: e.target.checked })}
+        >
+          满减
+        </Checkbox>
+        <InputNumber
+          size="small"
+          min={0}
+          precision={2}
+          placeholder="满额"
+          disabled={!row.extra?.priceOn}
+          value={row.extra?.fullPrice}
+          onChange={(n) => updateSkuExtra(row.key, { fullPrice: n ?? undefined })}
+        />
+        <span>元，减</span>
+        <InputNumber
+          size="small"
+          min={0}
+          precision={2}
+          placeholder="减额"
+          disabled={!row.extra?.priceOn}
+          value={row.extra?.reducePrice}
+          onChange={(n) => updateSkuExtra(row.key, { reducePrice: n ?? undefined })}
+        />
+        <span>元</span>
+      </Flex>
+      <Flex gap={12} align="center">
+        <Checkbox
+          checked={row.extra?.countOn ?? false}
+          onChange={(e) => updateSkuExtra(row.key, { countOn: e.target.checked })}
+        >
+          阶梯
+        </Checkbox>
+        <InputNumber
+          size="small"
+          min={0}
+          precision={0}
+          placeholder="满件"
+          disabled={!row.extra?.countOn}
+          value={row.extra?.fullCount}
+          onChange={(n) => updateSkuExtra(row.key, { fullCount: n ?? undefined })}
+        />
+        <span>件，打</span>
+        <InputNumber
+          size="small"
+          min={0}
+          max={1}
+          step={0.05}
+          placeholder="折扣"
+          disabled={!row.extra?.countOn}
+          value={row.extra?.discount}
+          onChange={(n) => updateSkuExtra(row.key, { discount: n ?? undefined })}
+        />
+        <span>折（0-1，如 0.85）</span>
+      </Flex>
+      {memberLevels.length > 0 && (
+        <Flex gap={12} align="center" wrap>
+          <span>会员专享价</span>
+          {memberLevels.map((lv) => (
+            <Flex key={lv.id} gap={4} align="center">
+              <Typography.Text type="secondary">{lv.name}</Typography.Text>
+              <InputNumber
+                size="small"
+                min={0}
+                precision={2}
+                style={{ width: 100 }}
+                value={row.extra?.memberPrices?.[lv.id]}
+                onChange={(n) =>
+                  updateSkuExtra(row.key, {
+                    memberPrices: { ...row.extra?.memberPrices, [lv.id]: n ?? undefined },
+                  })
+                }
+              />
+            </Flex>
+          ))}
+        </Flex>
+      )}
+    </Flex>
+  );
+
   return (
     <Card size="small" style={{ margin: 12 }} title="发布商品">
       <Steps
@@ -325,11 +412,11 @@ const SpuAddPage: FC = () => {
         size="small"
         style={{ marginBottom: 20 }}
         items={[
-          { title: '基本信息' },
-          { title: '销售属性与规格' },
-          { title: 'SKU 信息' },
-          { title: '图片与描述' },
-          { title: '积分与优惠' },
+          { title: '填写商品信息' },
+          { title: '填写销售属性信息' },
+          { title: '填写规格属性信息' },
+          { title: '填写商品优惠信息' },
+          { title: '填写商品图片及详情' },
         ]}
       />
 
@@ -380,112 +467,78 @@ const SpuAddPage: FC = () => {
       )}
 
       {step === 1 && (
-        <Flex gap={12} align="flex-start">
-          <Card size="small" title="销售属性（勾选值生成 SKU 组合）" style={{ width: 380, flexShrink: 0 }} loading={step2Loading}>
-            {saleAttrs.length === 0 && !step2Loading && (
-              <Typography.Text type="secondary">该分类下没有销售属性（attr_type=0）</Typography.Text>
-            )}
-            <Flex vertical gap={12}>
-              {saleAttrs.map((a) => (
-                <div key={a.attrId}>
-                  <div style={{ marginBottom: 4 }}>{a.attrName}</div>
-                  <Checkbox.Group
-                    value={saleChoice[a.attrId] ?? []}
-                    onChange={(vals) => {
-                      const next = { ...saleChoice, [a.attrId]: vals as string[] };
-                      setSaleChoice(next);
-                      regenSkus(next, skus, basic.spuName);
-                    }}
-                    options={splitValues(a.valueSelect)}
-                  />
-                </div>
-              ))}
-            </Flex>
-          </Card>
-          <Card size="small" title="规格参数（SPU 级，落 product_attr_value）" style={{ flex: 1, minWidth: 0 }} loading={step2Loading}>
-            {specGroups.length === 0 && !step2Loading && (
-              <Typography.Text type="secondary">该分类下的分组还没关联基本属性</Typography.Text>
-            )}
-            <Flex vertical gap={12}>
-              {specGroups.map(({ group, attrs }) => (
-                <div key={group.attrGroupId}>
-                  <Tag color="blue">{group.attrGroupName}</Tag>
-                  <Flex vertical gap={8} style={{ marginTop: 8 }}>
-                    {attrs.map((a) => {
-                      const values = splitValues(a.valueSelect);
-                      return (
-                        <Flex key={a.attrId} gap={8} align="center">
-                          <span style={{ width: 120 }}>{a.attrName}</span>
-                          {values.length ? (
-                            <Select
-                              style={{ width: 240 }}
-                              allowClear
-                              value={specChoice[a.attrId]}
-                              onChange={(v) => setSpecChoice((s) => ({ ...s, [a.attrId]: v ?? '' }))}
-                              options={values.map((v) => ({ value: v, label: v }))}
-                            />
-                          ) : (
-                            <Input
-                              style={{ width: 240 }}
-                              value={specChoice[a.attrId] ?? ''}
-                              onChange={(e) => setSpecChoice((s) => ({ ...s, [a.attrId]: e.target.value }))}
-                            />
-                          )}
-                          <Checkbox
-                            checked={specQuick[a.attrId] ?? a.showDesc === 1}
-                            onChange={(e) => setSpecQuick((s) => ({ ...s, [a.attrId]: e.target.checked }))}
-                          >
-                            快速展示
-                          </Checkbox>
-                        </Flex>
-                      );
-                    })}
-                  </Flex>
-                </div>
-              ))}
-            </Flex>
-          </Card>
-        </Flex>
+        <Card size="small" title="销售属性（勾选值生成 SKU 组合）" style={{ maxWidth: 560 }} loading={step2Loading}>
+          {saleAttrs.length === 0 && !step2Loading && (
+            <Typography.Text type="secondary">该分类下没有销售属性（attr_type=0）</Typography.Text>
+          )}
+          <Flex vertical gap={12}>
+            {saleAttrs.map((a) => (
+              <div key={a.attrId}>
+                <div style={{ marginBottom: 4 }}>{a.attrName}</div>
+                <Checkbox.Group
+                  value={saleChoice[a.attrId] ?? []}
+                  onChange={(vals) => {
+                    const next = { ...saleChoice, [a.attrId]: vals as string[] };
+                    setSaleChoice(next);
+                    regenSkus(next, skus, basic.spuName);
+                  }}
+                  options={splitValues(a.valueSelect)}
+                />
+              </div>
+            ))}
+          </Flex>
+        </Card>
       )}
 
       {step === 2 && (
-        <>
-          <Space style={{ marginBottom: 12 }}>
-            <Tag color="blue">{skus.length} 个 SKU</Tag>
-            <Button size="small" onClick={() => regenSkus(saleChoice, skus, basic.spuName)}>
-              按销售属性重新生成
-            </Button>
-          </Space>
-          <Table<SkuRow>
-            rowKey="key"
-            size="small"
-            columns={skuColumns}
-            dataSource={skus}
-            pagination={false}
-            scroll={{ x: 1100 }}
-          />
-        </>
+        <Card size="small" title="规格参数（SPU 级，落 product_attr_value）" style={{ maxWidth: 720 }} loading={step2Loading}>
+          {specGroups.length === 0 && !step2Loading && (
+            <Typography.Text type="secondary">该分类下的分组还没关联基本属性</Typography.Text>
+          )}
+          <Flex vertical gap={12}>
+            {specGroups.map(({ group, attrs }) => (
+              <div key={group.attrGroupId}>
+                <Tag color="blue">{group.attrGroupName}</Tag>
+                <Flex vertical gap={8} style={{ marginTop: 8 }}>
+                  {attrs.map((a) => {
+                    const values = splitValues(a.valueSelect);
+                    return (
+                      <Flex key={a.attrId} gap={8} align="center">
+                        <span style={{ width: 120 }}>{a.attrName}</span>
+                        {values.length ? (
+                          <Select
+                            style={{ width: 240 }}
+                            allowClear
+                            value={specChoice[a.attrId]}
+                            onChange={(v) => setSpecChoice((s) => ({ ...s, [a.attrId]: v ?? '' }))}
+                            options={values.map((v) => ({ value: v, label: v }))}
+                          />
+                        ) : (
+                          <Input
+                            style={{ width: 240 }}
+                            value={specChoice[a.attrId] ?? ''}
+                            onChange={(e) => setSpecChoice((s) => ({ ...s, [a.attrId]: e.target.value }))}
+                          />
+                        )}
+                        <Checkbox
+                          checked={specQuick[a.attrId] ?? a.showDesc === 1}
+                          onChange={(e) => setSpecQuick((s) => ({ ...s, [a.attrId]: e.target.checked }))}
+                        >
+                          快速展示
+                        </Checkbox>
+                      </Flex>
+                    );
+                  })}
+                </Flex>
+              </div>
+            ))}
+          </Flex>
+        </Card>
       )}
 
       {step === 3 && (
-        <Flex vertical gap={16} style={{ maxWidth: 720 }}>
-          <div>
-            <div style={{ marginBottom: 8 }}>商品图片</div>
-            <ImageUpload multiple maxCount={5} value={spuImages} onChange={setSpuImages} />
-          </div>
-          <div>
-            <div style={{ marginBottom: 8 }}>商品描述</div>
-            <Input.TextArea rows={6} value={decript} onChange={(e) => setDecript(e.target.value)} />
-          </div>
-          <Space>
-            <Button onClick={() => setPreviewOpen(true)}>预览提交体</Button>
-          </Space>
-        </Flex>
-      )}
-
-      {step === 4 && (
-        <Flex vertical gap={16} style={{ maxWidth: 960 }}>
-          <Card size="small" title="积分设置（Feign 存 gulimall-coupon sms_spu_bounds）">
+        <Flex vertical gap={16}>
+          <Card size="small" title="积分设置（Feign 存 gulimall-coupon sms_spu_bounds）" style={{ maxWidth: 560 }}>
             <Flex gap={24} align="center">
               <Flex gap={8} align="center">
                 <span>购买所得积分</span>
@@ -508,95 +561,39 @@ const SpuAddPage: FC = () => {
             </Flex>
           </Card>
 
-          <Card size="small" title="SKU 优惠信息（满减/阶梯存 sms_sku_full_reduction、sms_sku_ladder，会员价存 sms_member_price）">
-            <Flex vertical gap={12}>
-              {skus.map((s) => (
-                <Card key={s.key} size="small" type="inner" title={s.skuName}>
-                  <Flex vertical gap={8}>
-                    <Flex gap={12} align="center">
-                      <Checkbox
-                        checked={s.extra?.priceOn ?? false}
-                        onChange={(e) => updateSkuExtra(s.key, { priceOn: e.target.checked })}
-                      >
-                        满减
-                      </Checkbox>
-                      <InputNumber
-                        size="small"
-                        min={0}
-                        precision={2}
-                        placeholder="满额"
-                        disabled={!s.extra?.priceOn}
-                        value={s.extra?.fullPrice}
-                        onChange={(n) => updateSkuExtra(s.key, { fullPrice: n ?? undefined })}
-                      />
-                      <span>元，减</span>
-                      <InputNumber
-                        size="small"
-                        min={0}
-                        precision={2}
-                        placeholder="减额"
-                        disabled={!s.extra?.priceOn}
-                        value={s.extra?.reducePrice}
-                        onChange={(n) => updateSkuExtra(s.key, { reducePrice: n ?? undefined })}
-                      />
-                      <span>元</span>
-                    </Flex>
-                    <Flex gap={12} align="center">
-                      <Checkbox
-                        checked={s.extra?.countOn ?? false}
-                        onChange={(e) => updateSkuExtra(s.key, { countOn: e.target.checked })}
-                      >
-                        阶梯
-                      </Checkbox>
-                      <InputNumber
-                        size="small"
-                        min={0}
-                        precision={0}
-                        placeholder="满件"
-                        disabled={!s.extra?.countOn}
-                        value={s.extra?.fullCount}
-                        onChange={(n) => updateSkuExtra(s.key, { fullCount: n ?? undefined })}
-                      />
-                      <span>件，打</span>
-                      <InputNumber
-                        size="small"
-                        min={0}
-                        max={1}
-                        step={0.05}
-                        placeholder="折扣"
-                        disabled={!s.extra?.countOn}
-                        value={s.extra?.discount}
-                        onChange={(n) => updateSkuExtra(s.key, { discount: n ?? undefined })}
-                      />
-                      <span>折（0-1，如 0.85）</span>
-                    </Flex>
-                    {memberLevels.length > 0 && (
-                      <Flex gap={12} align="center" wrap>
-                        <span>会员专享价</span>
-                        {memberLevels.map((lv) => (
-                          <Flex key={lv.id} gap={4} align="center">
-                            <Typography.Text type="secondary">{lv.name}</Typography.Text>
-                            <InputNumber
-                              size="small"
-                              min={0}
-                              precision={2}
-                              style={{ width: 100 }}
-                              value={s.extra?.memberPrices?.[lv.id]}
-                              onChange={(n) =>
-                                updateSkuExtra(s.key, {
-                                  memberPrices: { ...s.extra?.memberPrices, [lv.id]: n ?? undefined },
-                                })
-                              }
-                            />
-                          </Flex>
-                        ))}
-                      </Flex>
-                    )}
-                  </Flex>
-                </Card>
-              ))}
-            </Flex>
+          <Card size="small" title="SKU 优惠信息（展开行设置满减/阶梯/会员价）">
+            <Space style={{ marginBottom: 12 }}>
+              <Tag color="blue">{skus.length} 个 SKU</Tag>
+              <Button size="small" onClick={() => regenSkus(saleChoice, skus, basic.spuName)}>
+                按销售属性重新生成
+              </Button>
+            </Space>
+            <Table<SkuRow>
+              rowKey="key"
+              size="small"
+              columns={skuColumns}
+              dataSource={skus}
+              pagination={false}
+              scroll={{ x: 1100 }}
+              expandable={{ expandedRowRender: renderSkuCoupon }}
+            />
           </Card>
+        </Flex>
+      )}
+
+      {step === 4 && (
+        <Flex vertical gap={16} style={{ maxWidth: 720 }}>
+          <div>
+            <div style={{ marginBottom: 8 }}>商品图片</div>
+            <ImageUpload multiple maxCount={5} value={spuImages} onChange={setSpuImages} />
+          </div>
+          <div>
+            <div style={{ marginBottom: 8 }}>商品描述</div>
+            <Input.TextArea rows={6} value={decript} onChange={(e) => setDecript(e.target.value)} />
+          </div>
+          <Space>
+            <Button onClick={() => setPreviewOpen(true)}>预览提交体</Button>
+          </Space>
         </Flex>
       )}
 
