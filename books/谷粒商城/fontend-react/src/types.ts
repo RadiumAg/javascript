@@ -261,6 +261,19 @@ export interface SpuAttrValuePayload {
   quickShow: number; // 0=否 1=快速展示在介绍上
 }
 
+/** /gulimallproduct/spuinfo/list 分页行，字段与 SpuInfoEntity 对齐 */
+export interface SpuItem {
+  id: number;
+  spuName: string;
+  spuDescription?: string;
+  catalogId: number;
+  brandId: number;
+  weight?: number;
+  publishStatus: number; // 0=下架 1=上架
+  createTime?: string;
+  updateTime?: string;
+}
+
 /** 发布商品提交体，对应后端 SpuSaveVo */
 export interface SpuSavePayload {
   spuName: string;

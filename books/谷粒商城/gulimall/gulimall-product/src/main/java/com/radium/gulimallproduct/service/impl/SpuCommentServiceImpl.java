@@ -25,5 +25,4 @@ public class SpuCommentServiceImpl extends ServiceImpl<SpuCommentDao, SpuComment
 
         return new PageUtils(page);
     }
-
 }

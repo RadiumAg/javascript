@@ -16,6 +16,7 @@ const registry: Record<string, LazyExoticComponent<ComponentType<any>>> = {
   'product/brand': lazy(() => import('@/pages/product/Brand')),
   'product/attrgroup': lazy(() => import('@/pages/product/AttrGroup')),
   'product/baseattr': lazy(() => import('@/pages/product/BaseAttr')),
+  'product/spu': lazy(() => import('@/pages/product/Spu')),
   'product/spuadd': lazy(() => import('@/pages/product/SpuAdd')),
   'member/level': lazy(() => import('@/pages/member/MemberLevel')),
 };

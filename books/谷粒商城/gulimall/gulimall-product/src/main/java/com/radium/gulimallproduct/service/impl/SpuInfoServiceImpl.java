@@ -1,5 +1,7 @@
 package com.radium.gulimallproduct.service.impl;
 
+import com.alibaba.nacos.common.utils.StringUtils;
+import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.util.internal.StringUtil;
 import com.radium.gulimall.common.to.SkuReductionTo;
 import com.radium.gulimall.common.to.SpuBoundsTo;
 import com.radium.gulimallproduct.feign.CouponFeignService;
@@ -193,6 +195,39 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         } catch (Exception e) {
             log.warn("库存同步异常 spuId={}，gulimall-ware 可能未启动: {}", spuId, e.getMessage());
         }
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+        String key = params.get("key") == null ? "" : params.get("key").toString();
+        String status = params.get("status") == null ? "" : params.get("status").toString();
+        String brandId = params.get("brandId") == null ? "" : params.get("brandId").toString();
+        String catalogId = params.get("catalogId") == null ? "" : params.get("catalogId").toString();
+
+        if(!StringUtils.isEmpty(key)){
+             wrapper.and(w->{
+                     w.eq("id",key).or().like("spu_name",key);
+             });
+        }
+        if(!StringUtils.isEmpty(status)){
+            wrapper.eq("publish_status", status);
+        }
+        if(!StringUtils.isEmpty(brandId)){
+            wrapper.and(w ->{
+                w.eq("brand_id",brandId);
+            });
+
+        }
+        if(!StringUtils.isEmpty(catalogId)){
+            wrapper.and(w ->{
+                w.eq("catalog_id",catalogId);
+            });
+
+        }
+
+        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params),wrapper);
+        return new PageUtils(page);
     }
 
 }

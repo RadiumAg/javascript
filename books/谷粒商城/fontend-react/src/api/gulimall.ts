@@ -18,6 +18,7 @@ import type {
   MemberLevelPayload,
   PageRes,
   R,
+  SpuItem,
   SpuSavePayload,
 } from '@/types';
 import type { ListParams } from './renren';
@@ -158,6 +159,17 @@ export const memberLevelDelete = (ids: number[]) =>
 /** 发布商品：后端一次事务落 7 张表，并 Feign 同步库存到 gulimall-ware */
 export const spuSave = (data: SpuSavePayload) =>
   microPost<R>('/gulimallproduct/spuinfo/save', data);
+
+/** spu 管理列表：后端 queryPageByCondition 读 key/status/brandId/catalogId（都传，空串=不限） */
+export const spuList = (params: ListParams) =>
+  microGet<PageRes<SpuItem>>('/gulimallproduct/spuinfo/list', params);
+
+/** 只改 publishStatus 等字段的局部更新（updateById 忽略 null 字段） */
+export const spuUpdate = (data: Partial<SpuItem> & { id: number }) =>
+  microPost<R>('/gulimallproduct/spuinfo/update', data);
+
+export const spuDelete = (ids: number[]) =>
+  microPost<R>('/gulimallproduct/spuinfo/delete', ids, { raw: true });
 
 /* ------------------- 文件上传（gulimall-third-part） ------------------- */
 // 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。
