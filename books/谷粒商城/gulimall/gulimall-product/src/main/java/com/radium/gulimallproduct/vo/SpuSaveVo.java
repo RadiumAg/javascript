@@ -1,5 +1,6 @@
 package com.radium.gulimallproduct.vo;
 
+import com.radium.gulimall.common.to.MemberPrice;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -25,6 +26,7 @@ public class SpuSaveVo {
     private String description;
     private List<String> images;
     private List<Attrs> attrs;
+    private Bounds bounds;
     private List<Skus> skus;
 
     @Data
@@ -45,6 +47,14 @@ public class SpuSaveVo {
         private Integer enable;
         private List<String> images;
         private List<SaleAttrs> saleAttrValues;
+        // 满减/阶梯/会员价，Feign 发给 gulimall-coupon
+        private BigDecimal fullPrice;
+        private BigDecimal reducePrice;
+        private Integer priceStatus;
+        private Integer fullCount;
+        private BigDecimal discount;
+        private Integer countStatus;
+        private List<MemberPrice> memberPrice;
     }
 
     @Data

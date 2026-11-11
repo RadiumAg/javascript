@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.radium.gulimall.common.to.SkuReductionTo;
 import com.radium.gulimallcoupon.entity.SkuFullReductionEntity;
 import com.radium.gulimallcoupon.service.SkuFullReductionService;
 import com.radium.gulimall.common.utils.PageUtils;
@@ -78,6 +80,15 @@ public class SkuFullReductionController {
     public R delete(@RequestBody Long[] ids){
 		skuFullReductionService.removeByIds(Arrays.asList(ids));
 
+        return R.ok();
+    }
+
+    /**
+     * 发布商品时一次性保存满减/阶梯/会员价
+     */
+    @PostMapping("/saveInfo")
+    public R saveInfo(@RequestBody SkuReductionTo skuReductionTo){
+        skuFullReductionService.saveSkuReduction(skuReductionTo);
         return R.ok();
     }
 

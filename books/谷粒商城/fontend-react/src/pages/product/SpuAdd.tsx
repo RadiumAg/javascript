@@ -20,10 +20,20 @@ import { useMemoizedFn, useMount } from 'ahooks';
 import { gulimallApi } from '@/api';
 import { message } from '@/api/feedback';
 import { ImageUpload } from '@/components/ImageUpload';
-import type { Attr, AttrGroup, SpuSavePayload } from '@/types';
+import type { Attr, AttrGroup, MemberLevel, SpuSavePayload } from '@/types';
 import { CategoryTreeSelect } from './CategoryTreeSelect';
 
 type Combo = { attrId: number; attrName: string; value: string };
+
+type SkuExtra = {
+  priceOn?: boolean;
+  fullPrice?: number;
+  reducePrice?: number;
+  countOn?: boolean;
+  fullCount?: number;
+  discount?: number;
+  memberPrices?: Record<number, number | undefined>;
+};
 
 type SkuRow = {
   key: string;
@@ -35,6 +45,7 @@ type SkuRow = {
   skuSubtitle?: string;
   enable: number;
   images: string[];
+  extra?: SkuExtra;
 };
 
 type Basic = {
@@ -69,6 +80,8 @@ const SpuAddPage: FC = () => {
 
   const [spuImages, setSpuImages] = useState<string[]>([]);
   const [decript, setDecript] = useState('');
+  const [bounds, setBounds] = useState<{ buyBounds?: number; growBounds?: number }>({});
+  const [memberLevels, setMemberLevels] = useState<MemberLevel[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -152,7 +165,12 @@ const SpuAddPage: FC = () => {
     if (step === 2 && skus.length === 0) {
       regenSkus(saleChoice, skus, basic.spuName);
     }
-    setStep((s) => Math.min(s + 1, 3));
+    if (step === 3 && !memberLevels.length) {
+      void gulimallApi.memberLevelSelect().then((res) => {
+        if (res.code === 0) setMemberLevels(res.data ?? []);
+      });
+    }
+    setStep((s) => Math.min(s + 1, 4));
   });
 
   const buildPayload = useMemoizedFn((): SpuSavePayload => ({
@@ -174,6 +192,10 @@ const SpuAddPage: FC = () => {
           quickShow: (specQuick[Number(attrId)] ?? attr?.showDesc === 1) ? 1 : 0,
         };
       }),
+    bounds:
+      bounds.buyBounds != null || bounds.growBounds != null
+        ? { buyBounds: bounds.buyBounds ?? 0, growBounds: bounds.growBounds ?? 0 }
+        : undefined,
     skus: skus.map((s) => ({
       skuName: s.skuName,
       price: s.price,
@@ -187,6 +209,15 @@ const SpuAddPage: FC = () => {
         attrName: c.attrName,
         attrValue: c.value,
       })),
+      priceStatus: s.extra?.priceOn ? 1 : 0,
+      fullPrice: s.extra?.fullPrice,
+      reducePrice: s.extra?.reducePrice,
+      countStatus: s.extra?.countOn ? 1 : 0,
+      fullCount: s.extra?.fullCount,
+      discount: s.extra?.discount,
+      memberPrice: memberLevels
+        .filter((lv) => s.extra?.memberPrices?.[lv.id] != null)
+        .map((lv) => ({ id: lv.id, name: lv.name, price: s.extra?.memberPrices?.[lv.id] })),
     })),
   }));
 
@@ -213,6 +244,9 @@ const SpuAddPage: FC = () => {
 
   const updateSku = (key: string, patch: Partial<SkuRow>) =>
     setSkus((rows) => rows.map((r) => (r.key === key ? { ...r, ...patch } : r)));
+
+  const updateSkuExtra = (key: string, patch: SkuExtra) =>
+    setSkus((rows) => rows.map((r) => (r.key === key ? { ...r, extra: { ...r.extra, ...patch } } : r)));
 
   const skuColumns = useMemo(
     () => [
@@ -295,6 +329,7 @@ const SpuAddPage: FC = () => {
           { title: '销售属性与规格' },
           { title: 'SKU 信息' },
           { title: '图片与描述' },
+          { title: '积分与优惠' },
         ]}
       />
 
@@ -448,14 +483,131 @@ const SpuAddPage: FC = () => {
         </Flex>
       )}
 
+      {step === 4 && (
+        <Flex vertical gap={16} style={{ maxWidth: 960 }}>
+          <Card size="small" title="积分设置（Feign 存 gulimall-coupon sms_spu_bounds）">
+            <Flex gap={24} align="center">
+              <Flex gap={8} align="center">
+                <span>购买所得积分</span>
+                <InputNumber
+                  min={0}
+                  precision={0}
+                  value={bounds.buyBounds}
+                  onChange={(n) => setBounds((b) => ({ ...b, buyBounds: n ?? undefined }))}
+                />
+              </Flex>
+              <Flex gap={8} align="center">
+                <span>商品所得积分</span>
+                <InputNumber
+                  min={0}
+                  precision={0}
+                  value={bounds.growBounds}
+                  onChange={(n) => setBounds((b) => ({ ...b, growBounds: n ?? undefined }))}
+                />
+              </Flex>
+            </Flex>
+          </Card>
+
+          <Card size="small" title="SKU 优惠信息（满减/阶梯存 sms_sku_full_reduction、sms_sku_ladder，会员价存 sms_member_price）">
+            <Flex vertical gap={12}>
+              {skus.map((s) => (
+                <Card key={s.key} size="small" type="inner" title={s.skuName}>
+                  <Flex vertical gap={8}>
+                    <Flex gap={12} align="center">
+                      <Checkbox
+                        checked={s.extra?.priceOn ?? false}
+                        onChange={(e) => updateSkuExtra(s.key, { priceOn: e.target.checked })}
+                      >
+                        满减
+                      </Checkbox>
+                      <InputNumber
+                        size="small"
+                        min={0}
+                        precision={2}
+                        placeholder="满额"
+                        disabled={!s.extra?.priceOn}
+                        value={s.extra?.fullPrice}
+                        onChange={(n) => updateSkuExtra(s.key, { fullPrice: n ?? undefined })}
+                      />
+                      <span>元，减</span>
+                      <InputNumber
+                        size="small"
+                        min={0}
+                        precision={2}
+                        placeholder="减额"
+                        disabled={!s.extra?.priceOn}
+                        value={s.extra?.reducePrice}
+                        onChange={(n) => updateSkuExtra(s.key, { reducePrice: n ?? undefined })}
+                      />
+                      <span>元</span>
+                    </Flex>
+                    <Flex gap={12} align="center">
+                      <Checkbox
+                        checked={s.extra?.countOn ?? false}
+                        onChange={(e) => updateSkuExtra(s.key, { countOn: e.target.checked })}
+                      >
+                        阶梯
+                      </Checkbox>
+                      <InputNumber
+                        size="small"
+                        min={0}
+                        precision={0}
+                        placeholder="满件"
+                        disabled={!s.extra?.countOn}
+                        value={s.extra?.fullCount}
+                        onChange={(n) => updateSkuExtra(s.key, { fullCount: n ?? undefined })}
+                      />
+                      <span>件，打</span>
+                      <InputNumber
+                        size="small"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        placeholder="折扣"
+                        disabled={!s.extra?.countOn}
+                        value={s.extra?.discount}
+                        onChange={(n) => updateSkuExtra(s.key, { discount: n ?? undefined })}
+                      />
+                      <span>折（0-1，如 0.85）</span>
+                    </Flex>
+                    {memberLevels.length > 0 && (
+                      <Flex gap={12} align="center" wrap>
+                        <span>会员专享价</span>
+                        {memberLevels.map((lv) => (
+                          <Flex key={lv.id} gap={4} align="center">
+                            <Typography.Text type="secondary">{lv.name}</Typography.Text>
+                            <InputNumber
+                              size="small"
+                              min={0}
+                              precision={2}
+                              style={{ width: 100 }}
+                              value={s.extra?.memberPrices?.[lv.id]}
+                              onChange={(n) =>
+                                updateSkuExtra(s.key, {
+                                  memberPrices: { ...s.extra?.memberPrices, [lv.id]: n ?? undefined },
+                                })
+                              }
+                            />
+                          </Flex>
+                        ))}
+                      </Flex>
+                    )}
+                  </Flex>
+                </Card>
+              ))}
+            </Flex>
+          </Card>
+        </Flex>
+      )}
+
       <Flex gap={8} style={{ marginTop: 20 }}>
         {step > 0 && <Button onClick={() => setStep((s) => s - 1)}>上一步</Button>}
-        {step < 3 && (
+        {step < 4 && (
           <Button type="primary" onClick={gotoNext}>
             下一步
           </Button>
         )}
-        {step === 3 && (
+        {step === 4 && (
           <Button type="primary" loading={saving} onClick={handleSave}>
             保存
           </Button>

@@ -139,6 +139,10 @@ export const attrDelete = (attrIds: number[]) =>
 export const memberLevelList = (params: ListParams) =>
   microGet<PageRes<MemberLevel>>('/gulimallmember/memberlevel/list', params);
 
+/** 发布商品选会员等级用，全量返回在 data */
+export const memberLevelSelect = () =>
+  microGet<R & { data?: MemberLevel[] }>('/gulimallmember/memberlevel/select');
+
 export const memberLevelSave = (data: MemberLevelPayload) =>
   microPost<R>('/gulimallmember/memberlevel/save', data);
 

@@ -1,5 +1,8 @@
 package com.radium.gulimallproduct.service.impl;
 
+import com.radium.gulimall.common.to.SkuReductionTo;
+import com.radium.gulimall.common.to.SpuBoundsTo;
+import com.radium.gulimallproduct.feign.CouponFeignService;
 import com.radium.gulimallproduct.feign.WareFeignService;
 import com.radium.gulimallproduct.vo.SkuStockVo;
 import com.radium.gulimallproduct.vo.SpuSaveVo;
@@ -8,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +61,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private SkuSaleAttrValueService skuSaleAttrValueService;
     @Autowired
     private WareFeignService wareFeignService;
+    @Autowired
+    CouponFeignService couponFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -115,6 +121,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         if (CollectionUtils.isEmpty(vo.getSkus())) {
             return;
         }
+        if (vo.getBounds() != null) {
+            SpuBoundsTo spuBoundsTo = new SpuBoundsTo();
+            BeanUtils.copyProperties(vo.getBounds(), spuBoundsTo);
+            spuBoundsTo.setSpuId(spuId);
+            couponFeignService.saveSpuBounds(spuBoundsTo);
+        }
         List<SkuStockVo> stocks = new ArrayList<>();
         for (SpuSaveVo.Skus sku : vo.getSkus()) {
             SkuInfoEntity skuInfo = new SkuInfoEntity();
@@ -157,6 +169,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 skuSaleAttrValueService.saveBatch(saleAttrs);
             }
 
+            SkuReductionTo reductionTo = new SkuReductionTo();
+            BeanUtils.copyProperties(sku, reductionTo);
+            reductionTo.setSkuId(skuId);
+            if ((sku.getFullCount() != null && sku.getFullCount() > 0)
+                    || (sku.getFullPrice() != null && sku.getFullPrice().compareTo(BigDecimal.ZERO) > 0)) {
+                couponFeignService.saveSkuReduction(reductionTo);
+            }
+
             SkuStockVo stock = new SkuStockVo();
             stock.setSkuId(skuId);
             stock.setSkuName(sku.getSkuName());
@@ -164,7 +184,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             stock.setWareId(1L);
             stocks.add(stock);
         }
-
         // 库存落 wms 库是跨服务调用，失败不回滚商品本身，只记日志提示补偿
         try {
             R r = wareFeignService.saveSkuStock(stocks);

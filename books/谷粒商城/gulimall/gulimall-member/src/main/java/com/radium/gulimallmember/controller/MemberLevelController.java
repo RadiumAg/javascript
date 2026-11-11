@@ -1,6 +1,7 @@
 package com.radium.gulimallmember.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,15 @@ public class MemberLevelController {
 		memberLevelService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    /**
+     * 发布商品选会员等级用，全量返回
+     */
+    @RequestMapping("/select")
+    public R select(){
+        List<MemberLevelEntity> list = memberLevelService.list();
+        return R.ok().put("data", list);
     }
 
 }

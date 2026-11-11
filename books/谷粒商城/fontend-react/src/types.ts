@@ -234,6 +234,23 @@ export interface SkuSavePayload {
   enable: number; // 0=下架 1=上架
   images: string[];
   saleAttrValues: SkuSaleAttrPayload[];
+  /** 满减：满 fullPrice 减 reducePrice，priceStatus=1 生效，落 sms_sku_full_reduction */
+  fullPrice?: number;
+  reducePrice?: number;
+  priceStatus?: number;
+  /** 阶梯：满 fullCount 件打 discount 折，countStatus=1 生效，落 sms_sku_ladder */
+  fullCount?: number;
+  discount?: number;
+  countStatus?: number;
+  /** 各会员等级专享价，落 sms_member_price */
+  memberPrice?: SkuMemberPricePayload[];
+}
+
+/** SKU 会员价，对应后端 common.to.MemberPrice */
+export interface SkuMemberPricePayload {
+  id: number; // memberLevelId
+  name: string;
+  price?: number;
 }
 
 /** SPU 级规格参数，落 pms_product_attr_value */
@@ -254,7 +271,14 @@ export interface SpuSavePayload {
   description?: string;
   images: string[];
   attrs: SpuAttrValuePayload[];
+  /** 积分设置，Feign 同步 gulimall-coupon sms_spu_bounds */
+  bounds?: SpuBoundsPayload;
   skus: SkuSavePayload[];
+}
+
+export interface SpuBoundsPayload {
+  buyBounds: number;
+  growBounds: number;
 }
 
 export type LoginRes = R & { token?: string };
