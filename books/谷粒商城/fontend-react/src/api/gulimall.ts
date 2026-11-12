@@ -17,9 +17,15 @@ import type {
   MemberLevel,
   MemberLevelPayload,
   PageRes,
+  Purchase,
+  PurchaseDetail,
+  PurchaseDonePayload,
+  PurchaseMergePayload,
   R,
   SpuItem,
   SpuSavePayload,
+  WareInfo,
+  WareSku,
 } from '@/types';
 import type { ListParams } from './renren';
 
@@ -170,6 +176,77 @@ export const spuUpdate = (data: Partial<SpuItem> & { id: number }) =>
 
 export const spuDelete = (ids: number[]) =>
   microPost<R>('/gulimallproduct/spuinfo/delete', ids, { raw: true });
+
+/* ------------------- 库存系统（gulimall-ware） ------------------- */
+
+/** 仓库维护：key 匹配仓库名 like 或 id eq */
+export const wareInfoList = (params: ListParams) =>
+  microGet<PageRes<WareInfo>>('/gulimallware/wareinfo/list', params);
+
+export const wareInfoSave = (data: Partial<WareInfo>) =>
+  microPost<R>('/gulimallware/wareinfo/save', data);
+
+export const wareInfoUpdate = (data: Partial<WareInfo> & { id: number }) =>
+  microPost<R>('/gulimallware/wareinfo/update', data);
+
+export const wareInfoDelete = (ids: number[]) =>
+  microPost<R>('/gulimallware/wareinfo/delete', ids, { raw: true });
+
+/** 商品库存：按 skuId / wareId 精确过滤 */
+export const wareSkuList = (params: ListParams) =>
+  microGet<PageRes<WareSku>>('/gulimallware/waresku/list', params);
+
+/** skuName 留空时后端远程查商品服务补上 */
+export const wareSkuSave = (data: Partial<WareSku>) =>
+  microPost<R>('/gulimallware/waresku/save', data);
+
+export const wareSkuUpdate = (data: Partial<WareSku> & { id: number }) =>
+  microPost<R>('/gulimallware/waresku/update', data);
+
+export const wareSkuDelete = (ids: number[]) =>
+  microPost<R>('/gulimallware/waresku/delete', ids, { raw: true });
+
+/** 采购需求：key 匹配采购单id/skuId，另有 status、wareId、purchaseId 过滤 */
+export const purchaseDetailList = (params: ListParams) =>
+  microGet<PageRes<PurchaseDetail>>('/gulimallware/purchasedetail/list', params);
+
+export const purchaseDetailSave = (data: Partial<PurchaseDetail>) =>
+  microPost<R>('/gulimallware/purchasedetail/save', data);
+
+export const purchaseDetailUpdate = (data: Partial<PurchaseDetail> & { id: number }) =>
+  microPost<R>('/gulimallware/purchasedetail/update', data);
+
+export const purchaseDetailDelete = (ids: number[]) =>
+  microPost<R>('/gulimallware/purchasedetail/delete', ids, { raw: true });
+
+/** 采购单：key 匹配采购单id/采购人名，status 过滤状态 */
+export const purchaseList = (params: ListParams) =>
+  microGet<PageRes<Purchase>>('/gulimallware/purchase/list', params);
+
+/** 未领取（新建/已分配）的采购单，合并整单弹窗里选 */
+export const purchaseUnreceiveList = (params: ListParams) =>
+  microGet<PageRes<Purchase>>('/gulimallware/purchase/unreceive/list', params);
+
+export const purchaseSave = (data: Partial<Purchase>) =>
+  microPost<R>('/gulimallware/purchase/save', data);
+
+/** 分配采购人员也走这个接口：带 assigneeId/assigneeName/phone + status=1 */
+export const purchaseUpdate = (data: Partial<Purchase> & { id: number }) =>
+  microPost<R>('/gulimallware/purchase/update', data);
+
+export const purchaseDelete = (ids: number[]) =>
+  microPost<R>('/gulimallware/purchase/delete', ids, { raw: true });
+
+export const purchaseMerge = (data: PurchaseMergePayload) =>
+  microPost<R>('/gulimallware/purchase/merge', data);
+
+/** body 是裸数组 List<Long> */
+export const purchaseReceived = (ids: number[]) =>
+  microPost<R>('/gulimallware/purchase/received', ids, { raw: true });
+
+/** 完成采购：成功的需求入库，任一失败整单标记异常 */
+export const purchaseDone = (data: PurchaseDonePayload) =>
+  microPost<R>('/gulimallware/purchase/done', data);
 
 /* ------------------- 文件上传（gulimall-third-part） ------------------- */
 // 上传接口在第三方服务，走网关 /gw -> /gulimallthirdpart/upload/**；第三方服务无鉴权，不带 token。

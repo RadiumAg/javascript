@@ -11,6 +11,7 @@ import com.radium.gulimall.common.utils.Query;
 import com.radium.gulimallware.dao.WareInfoDao;
 import com.radium.gulimallware.entity.WareInfoEntity;
 import com.radium.gulimallware.service.WareInfoService;
+import org.springframework.util.StringUtils;
 
 
 @Service("wareInfoService")
@@ -18,11 +19,14 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<WareInfoEntity> page = this.page(
-                new Query<WareInfoEntity>().getPage(params),
-                new QueryWrapper<WareInfoEntity>()
-        );
+        String key = params.get("key") == null ? "" : params.get("key").toString();
 
+        QueryWrapper<WareInfoEntity> wrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(key)) {
+            wrapper.and(w -> w.eq("id", key).or().like("name", key));
+        }
+
+        IPage<WareInfoEntity> page = this.page(new Query<WareInfoEntity>().getPage(params), wrapper);
         return new PageUtils(page);
     }
 

@@ -1,6 +1,8 @@
 package com.radium.gulimallware.controller;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.radium.gulimallware.constant.PurchaseConstant.PurchaseStatus;
 import com.radium.gulimallware.entity.PurchaseEntity;
 import com.radium.gulimallware.service.PurchaseService;
+import com.radium.gulimallware.vo.MergeVo;
+import com.radium.gulimallware.vo.PurchaseDoneVo;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
 
+import javax.validation.Valid;
 
 
 /**
@@ -40,6 +46,15 @@ public class PurchaseController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * 未领取的采购单，合并整单时供选择
+     */
+    @RequestMapping("/unreceive/list")
+    public R unreceiveList(@RequestParam Map<String, Object> params){
+        PageUtils page = purchaseService.queryPageUnreceive(params);
+
+        return R.ok().put("page", page);
+    }
 
     /**
      * 信息
@@ -56,7 +71,43 @@ public class PurchaseController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseEntity purchase){
+        Date now = new Date();
+        purchase.setCreateTime(now);
+        purchase.setUpdateTime(now);
+        if (purchase.getStatus() == null) {
+            purchase.setStatus(PurchaseStatus.CREATED.getCode());
+        }
 		purchaseService.save(purchase);
+
+        return R.ok();
+    }
+
+    /**
+     * 合并采购需求到采购单
+     */
+    @RequestMapping("/merge")
+    public R merge(@Valid @RequestBody MergeVo mergeVo){
+        purchaseService.mergePurchase(mergeVo);
+
+        return R.ok();
+    }
+
+    /**
+     * 领取采购单
+     */
+    @RequestMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        purchaseService.received(ids);
+
+        return R.ok();
+    }
+
+    /**
+     * 完成采购并入库
+     */
+    @RequestMapping("/done")
+    public R done(@Valid @RequestBody PurchaseDoneVo doneVo){
+        purchaseService.done(doneVo);
 
         return R.ok();
     }
@@ -66,6 +117,7 @@ public class PurchaseController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody PurchaseEntity purchase){
+        purchase.setUpdateTime(new Date());
 		purchaseService.updateById(purchase);
 
         return R.ok();

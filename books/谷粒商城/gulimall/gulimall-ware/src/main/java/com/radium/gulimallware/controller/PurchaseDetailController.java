@@ -1,5 +1,6 @@
 package com.radium.gulimallware.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -10,15 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.radium.gulimallware.constant.PurchaseConstant.DetailStatus;
 import com.radium.gulimallware.entity.PurchaseDetailEntity;
 import com.radium.gulimallware.service.PurchaseDetailService;
+import com.radium.gulimallware.service.WareSkuService;
+import com.radium.gulimallware.to.SkuInfoTo;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
 
 
-
 /**
- * 
+ * 采购需求
  *
  * @author chenshun
  * @email sunlightcs@gmail.com
@@ -29,6 +32,8 @@ import com.radium.gulimall.common.utils.R;
 public class PurchaseDetailController {
     @Autowired
     private PurchaseDetailService purchaseDetailService;
+    @Autowired
+    private WareSkuService wareSkuService;
 
     /**
      * 列表
@@ -56,6 +61,10 @@ public class PurchaseDetailController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseDetailEntity purchaseDetail){
+        if (purchaseDetail.getStatus() == null) {
+            purchaseDetail.setStatus(DetailStatus.CREATED.getCode());
+        }
+        fillSkuPrice(purchaseDetail);
 		purchaseDetailService.save(purchaseDetail);
 
         return R.ok();
@@ -66,6 +75,7 @@ public class PurchaseDetailController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody PurchaseDetailEntity purchaseDetail){
+        fillSkuPrice(purchaseDetail);
 		purchaseDetailService.updateById(purchaseDetail);
 
         return R.ok();
@@ -79,6 +89,17 @@ public class PurchaseDetailController {
 		purchaseDetailService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    /** sku_price 存整行小计（数量×商品单价），单价远程查 gulimall-product */
+    private void fillSkuPrice(PurchaseDetailEntity detail) {
+        if (detail.getSkuId() == null || detail.getSkuNum() == null) {
+            return;
+        }
+        SkuInfoTo skuInfo = wareSkuService.getSkuInfo(detail.getSkuId());
+        if (skuInfo != null && skuInfo.getPrice() != null) {
+            detail.setSkuPrice(skuInfo.getPrice().multiply(BigDecimal.valueOf(detail.getSkuNum())));
+        }
     }
 
 }

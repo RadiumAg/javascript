@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.radium.gulimallware.entity.WareSkuEntity;
 import com.radium.gulimallware.service.WareSkuService;
+import com.radium.gulimallware.to.SkuInfoTo;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
+import org.springframework.util.StringUtils;
 
 
 
@@ -57,6 +59,18 @@ public class WareSkuController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody WareSkuEntity wareSku){
+        if (wareSku.getStock() == null) {
+            wareSku.setStock(0);
+        }
+        if (wareSku.getStockLocked() == null) {
+            wareSku.setStockLocked(0);
+        }
+        if (StringUtils.isEmpty(wareSku.getSkuName()) && wareSku.getSkuId() != null) {
+            SkuInfoTo skuInfo = wareSkuService.getSkuInfo(wareSku.getSkuId());
+            if (skuInfo != null) {
+                wareSku.setSkuName(skuInfo.getSkuName());
+            }
+        }
 		wareSkuService.save(wareSku);
 
         return R.ok();

@@ -19,6 +19,10 @@ const registry: Record<string, LazyExoticComponent<ComponentType<any>>> = {
   'product/spu': lazy(() => import('@/pages/product/Spu')),
   'product/spuadd': lazy(() => import('@/pages/product/SpuAdd')),
   'member/level': lazy(() => import('@/pages/member/MemberLevel')),
+  'ware/wareinfo': lazy(() => import('@/pages/ware/WareInfo')),
+  'ware/sku': lazy(() => import('@/pages/ware/WareSku')),
+  'ware/purchaseitem': lazy(() => import('@/pages/ware/PurchaseItem')),
+  'ware/purchase': lazy(() => import('@/pages/ware/Purchase')),
 };
 
 export function resolveModule(

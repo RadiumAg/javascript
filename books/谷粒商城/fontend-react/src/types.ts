@@ -294,6 +294,62 @@ export interface SpuBoundsPayload {
   growBounds: number;
 }
 
+/** 仓库信息，对应 wms_ware_info */
+export interface WareInfo {
+  id: number;
+  name: string;
+  address?: string;
+  areacode?: string;
+}
+
+/** 商品库存，对应 wms_ware_sku */
+export interface WareSku {
+  id: number;
+  skuId: number;
+  wareId: number;
+  stock: number;
+  skuName?: string;
+  stockLocked: number;
+}
+
+/** 采购单，对应 wms_purchase。status: 0新建 1已分配 2已领取 3已完成 4有异常 */
+export interface Purchase {
+  id: number;
+  assigneeId?: number;
+  assigneeName?: string;
+  phone?: string;
+  priority?: number;
+  status: number;
+  wareId?: number;
+  amount?: number;
+  createTime?: string;
+  updateTime?: string;
+}
+
+/** 采购需求，对应 wms_purchase_detail。status: 0新建 1已分配 2正在采购 3已完成 4采购失败 */
+export interface PurchaseDetail {
+  id: number;
+  purchaseId?: number;
+  skuId: number;
+  skuNum: number;
+  /** 整行小计（数量×商品单价），后端保存时算好 */
+  skuPrice?: number;
+  wareId: number;
+  status: number;
+}
+
+/** 合并整单：purchaseId 缺省表示新建采购单 */
+export interface PurchaseMergePayload {
+  purchaseId?: number;
+  items: number[];
+}
+
+/** 完成采购：items.status 3=成功入库 4=采购失败 */
+export interface PurchaseDonePayload {
+  id: number;
+  items: { itemId: number; status: number }[];
+}
+
 export type LoginRes = R & { token?: string };
 /** /sys/user/info（当前登录人）与 /sys/user/info/{id}（详情）同用 user 字段 */
 export type UserInfoRes = R & { user?: SysUser };
