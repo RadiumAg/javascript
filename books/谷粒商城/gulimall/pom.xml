@@ -26,6 +26,9 @@
         <spring-boot.version>2.7.18</spring-boot.version>
         <spring-cloud.version>2021.0.9</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.6.0</spring-cloud-alibaba.version>
+        <!-- 覆盖 Boot 2.7 默认的 7.17.x，与本机 ES 8.18.1 对齐 -->
+        <elasticsearch.version>8.18.1</elasticsearch.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -53,6 +56,22 @@
                 <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>co.elastic.clients</groupId>
+                <artifactId>elasticsearch-java</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <!-- import 型 BOM 不吃本 pom 的 property 覆盖，需显式声明才能压过 Boot 的 7.17.x -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${jakarta.json.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
