@@ -1,0 +1,13 @@
+spring:
+  config:
+    import: "nacos:gulimall-search.properties"
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
