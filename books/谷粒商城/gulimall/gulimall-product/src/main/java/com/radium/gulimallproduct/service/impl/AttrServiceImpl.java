@@ -120,4 +120,11 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return rel;
     }
 
+    @Override
+    public List<AttrEntity> selectSearchAttrs(List<Long> attrIds) {
+        // 空集合会让 XML 的 foreach 展开成 IN ()，MySQL 直接语法报错
+        if (attrIds == null || attrIds.isEmpty()) return new ArrayList<>();
+        return baseMapper.selectSearchAttrs(attrIds);
+    }
+
 }

@@ -6,6 +6,7 @@ import com.radium.gulimallproduct.entity.AttrEntity;
 import com.radium.gulimallproduct.vo.AttrRespVo;
 import com.radium.gulimallproduct.vo.AttrVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,5 +28,8 @@ public interface AttrService extends IService<AttrEntity> {
 
     /** 修改属性；提交 attrGroupId 时把关联改到新分组 */
     void updateAttr(AttrVo attr);
+
+    /** 上架时筛出 spu 基础属性里的检索属性，用于 ES 文档的可筛选标记 */
+    List<AttrEntity> selectSearchAttrs(List<Long> attrIds);
 }
 

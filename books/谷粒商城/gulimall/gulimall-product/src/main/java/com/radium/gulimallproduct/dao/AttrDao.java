@@ -22,4 +22,7 @@ public interface AttrDao extends BaseMapper<AttrEntity> {
 
     /** 某分类下尚未关联任何分组的基本属性（销售属性不分组，故排除） */
     List<AttrEntity> selectNoRelationAttrs(@Param("catelogId") Long catelogId);
+
+    /** 给定 attrId 中检索属性（search_type=1，可参与搜索页筛选）的部分 */
+    List<AttrEntity> selectSearchAttrs(@Param("attrIds") List<Long> attrIds);
 }

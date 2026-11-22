@@ -35,4 +35,15 @@
         ORDER BY a.attr_id ASC
     </select>
 
+    <select id="selectSearchAttrs" resultMap="attrMap">
+        SELECT a.*
+        FROM pms_attr a
+        WHERE a.search_type = 1
+          AND a.attr_id IN
+        <foreach collection="attrIds" item="attrId" open="(" separator="," close=")">
+            #{attrId}
+        </foreach>
+        ORDER BY a.attr_id ASC
+    </select>
+
 </mapper>

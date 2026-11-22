@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.radium.gulimallware.entity.WareSkuEntity;
 import com.radium.gulimallware.service.WareSkuService;
 import com.radium.gulimallware.to.SkuInfoTo;
+import com.radium.gulimallware.vo.SkuHasStockVo;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.R;
 import org.springframework.util.StringUtils;
@@ -32,6 +33,14 @@ import org.springframework.util.StringUtils;
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+
+
+    /** 商品服务上架时远程判断是否有货 */
+    @RequestMapping("/hasstock/{skuId}")
+    public R getSkusHasStocks(@PathVariable("skuId") Long skuId) {
+        SkuHasStockVo vo = wareSkuService.getSkusHasStock(skuId);
+        return R.ok().put("data", vo);
+    }
 
     /**
      * 列表

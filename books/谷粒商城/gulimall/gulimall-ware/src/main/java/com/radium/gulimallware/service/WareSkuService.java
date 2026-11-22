@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimallware.entity.WareSkuEntity;
 import com.radium.gulimallware.to.SkuInfoTo;
+import com.radium.gulimallware.vo.SkuHasStockVo;
 
 import java.util.Map;
 
@@ -23,4 +24,7 @@ public interface WareSkuService extends IService<WareSkuEntity> {
 
     /** 远程查商品 sku，查不到或商品服务不可用时返回 null */
     SkuInfoTo getSkuInfo(Long skuId);
+
+    /** 该 sku 是否有货：任一仓的可售库存（库存-锁定）> 0 */
+    SkuHasStockVo getSkusHasStock(Long skuId);
 }

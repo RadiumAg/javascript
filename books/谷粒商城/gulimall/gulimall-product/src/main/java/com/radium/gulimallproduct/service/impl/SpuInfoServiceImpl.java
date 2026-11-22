@@ -2,10 +2,13 @@ package com.radium.gulimallproduct.service.impl;
 
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.util.internal.StringUtil;
+import com.radium.gulimall.common.es.SkuEsModel;
 import com.radium.gulimall.common.to.SkuReductionTo;
 import com.radium.gulimall.common.to.SpuBoundsTo;
+import com.radium.gulimallproduct.entity.*;
 import com.radium.gulimallproduct.feign.CouponFeignService;
 import com.radium.gulimallproduct.feign.WareFeignService;
+import com.radium.gulimallproduct.service.*;
 import com.radium.gulimallproduct.vo.SkuStockVo;
 import com.radium.gulimallproduct.vo.SpuSaveVo;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -27,22 +27,7 @@ import org.springframework.util.CollectionUtils;
 import com.radium.gulimall.common.utils.PageUtils;
 import com.radium.gulimall.common.utils.Query;
 import com.radium.gulimall.common.utils.R;
-
 import com.radium.gulimallproduct.dao.SpuInfoDao;
-import com.radium.gulimallproduct.entity.ProductAttrValueEntity;
-import com.radium.gulimallproduct.entity.SkuImagesEntity;
-import com.radium.gulimallproduct.entity.SkuInfoEntity;
-import com.radium.gulimallproduct.entity.SkuSaleAttrValueEntity;
-import com.radium.gulimallproduct.entity.SpuImagesEntity;
-import com.radium.gulimallproduct.entity.SpuInfoDescEntity;
-import com.radium.gulimallproduct.entity.SpuInfoEntity;
-import com.radium.gulimallproduct.service.ProductAttrValueService;
-import com.radium.gulimallproduct.service.SkuImagesService;
-import com.radium.gulimallproduct.service.SkuInfoService;
-import com.radium.gulimallproduct.service.SkuSaleAttrValueService;
-import com.radium.gulimallproduct.service.SpuImagesService;
-import com.radium.gulimallproduct.service.SpuInfoDescService;
-import com.radium.gulimallproduct.service.SpuInfoService;
 
 
 @Slf4j
@@ -65,7 +50,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private WareFeignService wareFeignService;
     @Autowired
     CouponFeignService couponFeignService;
-
+    @Autowired
+    BrandService brandService;
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    AttrService attrService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
@@ -75,7 +65,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         return new PageUtils(page);
     }
-
     @Override
     @Transactional
     public void saveSpuInfo(SpuSaveVo vo) {
@@ -205,29 +194,71 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         String brandId = params.get("brandId") == null ? "" : params.get("brandId").toString();
         String catalogId = params.get("catalogId") == null ? "" : params.get("catalogId").toString();
 
-        if(!StringUtils.isEmpty(key)){
-             wrapper.and(w->{
-                     w.eq("id",key).or().like("spu_name",key);
-             });
+        if (!StringUtils.isEmpty(key)) {
+            wrapper.and(w -> {
+                w.eq("id", key).or().like("spu_name", key);
+            });
         }
-        if(!StringUtils.isEmpty(status)){
+        if (!StringUtils.isEmpty(status)) {
             wrapper.eq("publish_status", status);
         }
-        if(!StringUtils.isEmpty(brandId)){
-            wrapper.and(w ->{
-                w.eq("brand_id",brandId);
+        if (!StringUtils.isEmpty(brandId)) {
+            wrapper.and(w -> {
+                w.eq("brand_id", brandId);
             });
 
         }
-        if(!StringUtils.isEmpty(catalogId)){
-            wrapper.and(w ->{
-                w.eq("catalog_id",catalogId);
+        if (!StringUtils.isEmpty(catalogId)) {
+            wrapper.and(w -> {
+                w.eq("catalog_id", catalogId);
             });
 
         }
 
-        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params),wrapper);
+        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), wrapper);
         return new PageUtils(page);
     }
 
+    @Override
+    public void up(Long spuId) {
+        var upProducts = new ArrayList<>();
+        // 组装需要的数据
+        List<SkuInfoEntity> skus = skuInfoService.getSkuBySpuId(spuId);
+        List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrListforspu(spuId);
+        List<Long> attrIds = baseAttrs.stream().map(attr -> {
+            return attr.getAttrId();
+        });
+        List<Long> searchAttrIds =  attrService.selectSearchAttrs(attrIds).stream().map(attr->{
+            return attr.getAttrId();
+        });
+        List<SkuEsModel.Attrs> attrsList = new ArrayList<>();
+        Set<Long> attrIdSet = new HashSet<>(searchAttrIds);
+        baseAttrs.stream().filter(attr->{
+           return attrIdSet.contains(attr.getAttrId());
+        }).map(item->{
+            SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
+            BeanUtils.copyProperties(item, attrs);
+            return attrIds;
+        }).toList();
+
+        var upProducts = skus.stream().map(sku -> {
+            var esModel = new SkuEsModel();
+            BeanUtils.copyProperties(sku, esModel);
+            esModel.setSkuPrice(sku.getPrice());
+            esModel.setSkuImg(sku.getSkuDefaultImg());
+            // 1. 发送远程调用，库存系统查询是否有库存
+            // 2. 评分热度
+            esModel.setHotScore(0L);
+            // 3. 查询品牌和分类的名字信息
+            var brand =  brandService.getById(sku.getBrandId());
+            esModel.setBrandName(brand.getName());
+            esModel.setBrandImage(brand.getLogo());
+            var category = categoryService.getById(esModel.getCatalogId());
+            esModel.setCatalogName(category.getName());
+            // 设置检索属性
+            esModel.setAttrs(attrsList);
+            return esModel;
+        }).toList();
+        // 5. 将数据发送给es进行保存
+    }
 }

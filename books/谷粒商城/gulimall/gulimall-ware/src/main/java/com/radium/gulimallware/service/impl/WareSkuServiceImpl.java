@@ -15,6 +15,7 @@ import com.radium.gulimallware.entity.WareSkuEntity;
 import com.radium.gulimallware.feign.ProductFeignService;
 import com.radium.gulimallware.service.WareSkuService;
 import com.radium.gulimallware.to.SkuInfoTo;
+import com.radium.gulimallware.vo.SkuHasStockVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +82,17 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             log.warn("查询商品 skuId={} 失败：{}", skuId, e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public SkuHasStockVo getSkusHasStock(Long skuId) {
+        Long saleable = baseMapper.getSkuStock(skuId);
+
+        SkuHasStockVo vo = new SkuHasStockVo();
+        vo.setSkuId(skuId);
+        // 无记录时 SUM 返回 SQL NULL，映射成 Long null，直接和 0 比较会拆箱 NPE
+        vo.setHasStock(saleable != null && saleable > 0);
+        return vo;
     }
 
 }
