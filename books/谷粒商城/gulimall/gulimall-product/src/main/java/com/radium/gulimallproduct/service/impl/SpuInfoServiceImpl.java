@@ -7,6 +7,7 @@ import com.radium.gulimall.common.to.SkuReductionTo;
 import com.radium.gulimall.common.to.SpuBoundsTo;
 import com.radium.gulimallproduct.entity.*;
 import com.radium.gulimallproduct.feign.CouponFeignService;
+import com.radium.gulimallproduct.feign.SearchFeignService;
 import com.radium.gulimallproduct.feign.WareFeignService;
 import com.radium.gulimallproduct.service.*;
 import com.radium.gulimallproduct.vo.SkuHasStockVo;
@@ -58,6 +59,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     CategoryService categoryService;
     @Autowired
     AttrService attrService;
+    @Autowired
+    SearchFeignService searchFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -225,53 +228,89 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Override
     public void up(Long spuId) {
-        // 组装需要的数据
+        // 1. 查询该 SPU 下所有 SKU
         List<SkuInfoEntity> skus = skuInfoService.getSkuBySpuId(spuId);
-        List<Long> skuIdList = skus.stream().map(SkuInfoEntity::getSkuId).toList();
-        List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrListforspu(spuId);
-        List<Long> attrIds = baseAttrs.stream().map(attr -> {
-            return attr.getAttrId();
-        });
-        List<Long> searchAttrIds = attrService.selectSearchAttrs(attrIds).stream().map(attr -> {
-            return attr.getAttrId();
-        });
-        List<SkuEsModel.Attrs> attrsList = new ArrayList<>();
-        Set<Long> attrIdSet = new HashSet<>(searchAttrIds);
-        baseAttrs.stream().filter(attr -> {
-            return attrIdSet.contains(attr.getAttrId());
-        }).map(item -> {
-            SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
-            BeanUtils.copyProperties(item, attrs);
-            return attrIds;
-        }).toList();
 
-        var upProducts = skus.stream().map(sku -> {
-            var esModel = new SkuEsModel();
+        // 2. 组装检索属性：只保留 search_type=1 的基础属性
+        List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrListforspu(spuId);
+        List<Long> attrIds = baseAttrs.stream()
+                .map(ProductAttrValueEntity::getAttrId)
+                .toList();
+        Set<Long> searchAttrIdSet = attrService.selectSearchAttrs(attrIds).stream()
+                .map(AttrEntity::getAttrId)
+                .collect(Collectors.toSet());
+        List<SkuEsModel.Attrs> attrsList = baseAttrs.stream()
+                .filter(attr -> searchAttrIdSet.contains(attr.getAttrId()))
+                .map(attr -> {
+                    SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
+                    BeanUtils.copyProperties(attr, attrs);
+                    return attrs;
+                })
+                .toList();
+
+        // 3. 批量查库存是否有货（汇总成 map，避免每个 sku 各自拼异常分支）
+        Map<Long, Boolean> stockMap = queryHasStockMap(skus);
+
+        // 4. 组装每个 SKU 的 ES 文档
+        List<SkuEsModel> upProducts = skus.stream().map(sku -> {
+            SkuEsModel esModel = new SkuEsModel();
             BeanUtils.copyProperties(sku, esModel);
+            esModel.setSkuTitle(sku.getSkuName());
             esModel.setSkuPrice(sku.getPrice());
             esModel.setSkuImg(sku.getSkuDefaultImg());
-            Map<Long, Boolean> mapStock = null;
-            // 1. 发送远程调用，库存系统查询是否有库存
-            try {
-                R<List<SkuHasStockVo>> skusHasStocks = wareFeignService.getSkusHasStocks(sku.getSkuId());
-                mapStock = skusHasStocks.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
-            } catch (Exception e) {
-                log.error("库存服务查询异常:{}", e.getMessage());
-            }
-            Boolean hasStockData = mapStock == null || mapStock.get(sku.getSkuId());
-            esModel.setHasStock(hasStockData);
-            // 2. 评分热度
+            // 库存缺数据/查询失败一律视为无货，不把异常当成"有货"上架出去
+            esModel.setHasStock(Boolean.TRUE.equals(stockMap.get(sku.getSkuId())));
             esModel.setHotScore(0L);
-            // 3. 查询品牌和分类的名字信息
-            var brand = brandService.getById(sku.getBrandId());
-            esModel.setBrandName(brand.getName());
-            esModel.setBrandImage(brand.getLogo());
-            var category = categoryService.getById(esModel.getCatalogId());
-            esModel.setCatalogName(category.getName());
-            // 设置检索属性
+            BrandEntity brand = brandService.getById(sku.getBrandId());
+            if (brand != null) {
+                esModel.setBrandName(brand.getName());
+                esModel.setBrandImg(brand.getLogo());
+            }
+            CategoryEntity category = categoryService.getById(sku.getCatalogId());
+            if (category != null) {
+                esModel.setCatalogName(category.getName());
+            }
             esModel.setAttrs(attrsList);
             return esModel;
         }).toList();
-        // 5. 将数据发送给es进行保存
+
+        // 5. 推送 search 服务写入 ES
+        R r = searchFeignService.productStatusUp(upProducts);
+        if (r == null || !Integer.valueOf(0).equals(r.get("code"))) {
+            log.warn("商品上架推送 ES 失败 spuId={} resp={}", spuId, r);
+            return;
+        }
+
+        // 6. ES 写成功后再标记 SPU 已上架
+        SpuInfoEntity published = new SpuInfoEntity();
+        published.setId(spuId);
+        published.setPublishStatus(1);
+        published.setUpdateTime(new Date());
+        this.updateById(published);
+    }
+
+    /**
+     * 库存是否有货：ware 的 hasstock 接口按单个 skuId 返回 {skuId,hasStock}，这里逐个查并汇总。
+     * 注意 Feign 反序列化后 R 里的 data 是 LinkedHashMap，不能直接强转 SkuHasStockVo，按 map 取字段。
+     * 远程异常时该 sku 记 false，不污染上架数据。
+     */
+    private Map<Long, Boolean> queryHasStockMap(List<SkuInfoEntity> skus) {
+        Map<Long, Boolean> stockMap = new HashMap<>();
+        for (SkuInfoEntity sku : skus) {
+            try {
+                R r = wareFeignService.getSkusHasStocks(sku.getSkuId());
+                Object data = r == null ? null : r.getData();
+                boolean hasStock = false;
+                if (data instanceof Map) {
+                    Object hs = ((Map<?, ?>) data).get("hasStock");
+                    hasStock = Boolean.TRUE.equals(hs) || "true".equalsIgnoreCase(String.valueOf(hs));
+                }
+                stockMap.put(sku.getSkuId(), hasStock);
+            } catch (Exception e) {
+                log.error("库存服务查询异常 skuId={}：{}", sku.getSkuId(), e.getMessage());
+                stockMap.put(sku.getSkuId(), false);
+            }
+        }
+        return stockMap;
     }
 }

@@ -2,6 +2,7 @@ package com.radium.gulimallsearch.service;
 
 import com.radium.gulimall.common.es.SkuEsModel;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -10,9 +11,13 @@ import java.util.List;
 public interface ProductSaveService {
 
     /**
-     * 批量写入上架文档，_id 用 skuId，重复上架覆盖同一篇文档。
-     *
-     * @return 全部写入成功返回 true；有任何一条失败返回 false（失败的明细在日志里）
+     * 商品上架：批量写入 gulimall_sku，_id 用 skuId，重复上架覆盖同一篇文档。
+     * 有任何一条写入失败抛 IOException，明细在日志里。
+     */
+    void productStatusUp(List<SkuEsModel> products) throws IOException;
+
+    /**
+     * productStatusUp 的 boolean 适配器：全部成功返回 true，任何失败返回 false（明细在日志里）。
      */
     boolean saveBatch(List<SkuEsModel> products);
 }

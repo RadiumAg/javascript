@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/search")
@@ -23,6 +24,11 @@ public class ElasticSaveController {
         if (esModels == null || esModels.isEmpty()) {
             return R.error("上架数据为空，无需处理");
         }
-        return productSaveService.saveBatch(esModels) ? R.ok() : R.error("商品上架失败");
+        try {
+            productSaveService.productStatusUp(esModels);
+            return R.ok();
+        } catch (IOException e) {
+            return R.error("商品上架失败：" + e.getMessage());
+        }
     }
 }

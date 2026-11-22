@@ -39,19 +39,12 @@ public class ProductSaveServiceImpl implements ProductSaveService {
 
             BulkRequest.Builder builder = new BulkRequest.Builder();
             for (SkuEsModel product : products) {
-                builder.operations(op -> op.index(idx -> idx
-                        .index(INDEX)
-                        .id(String.valueOf(product.getSkuId()))
-                        .document(product)));
+                builder.operations(op -> op.index(idx -> idx.index(INDEX).id(String.valueOf(product.getSkuId())).document(product)));
             }
 
             BulkResponse resp = client.bulk(builder.build());
             if (resp.errors()) {
-                resp.items().stream()
-                        .filter(item -> item.error() != null)
-                        .limit(5)
-                        .forEach(item -> log.error("上架文档 skuId={} 写入失败：{}",
-                                item.id(), item.error().reason()));
+                resp.items().stream().filter(item -> item.error() != null).limit(5).forEach(item -> log.error("上架文档 skuId={} 写入失败：{}", item.id(), item.error().reason()));
                 long failed = resp.items().stream().filter(item -> item.error() != null).count();
                 log.error("批量上架 ES 写入失败 {} 条，共 {} 条", failed, products.size());
                 return false;
@@ -76,33 +69,28 @@ public class ProductSaveServiceImpl implements ProductSaveService {
             mappingReady = true;
             return;
         }
-        client.indices().create(c -> c.index(INDEX).mappings(m -> m
-                .properties("skuId", p -> p.long_(l -> l))
-                .properties("spuId", p -> p.long_(l -> l))
-                .properties("skuTitle", p -> p.text(t -> t
-                        .analyzer("ik_max_word")
-                        .searchAnalyzer("ik_smart")
-                        .fields("keyword", f -> f.keyword(k -> k.ignoreAbove(256)))))
-                .properties("skuPrice", p -> p.scaledFloat(s -> s.scalingFactor(100.0)))
-                .properties("skuImg", p -> p.keyword(k -> k.index(false)))
-                .properties("saleCount", p -> p.long_(l -> l))
-                .properties("hasStock", p -> p.boolean_(b -> b))
-                .properties("hotScore", p -> p.long_(l -> l))
-                .properties("brandId", p -> p.long_(l -> l))
-                .properties("brandName", p -> p.text(t -> t
-                        .analyzer("ik_max_word")
-                        .searchAnalyzer("ik_smart")
-                        .fields("keyword", f -> f.keyword(k -> k.ignoreAbove(256)))))
-                .properties("brandImg", p -> p.keyword(k -> k.index(false)))
-                .properties("catalogId", p -> p.long_(l -> l))
-                .properties("catalogName", p -> p.text(t -> t
-                        .analyzer("ik_max_word")
-                        .searchAnalyzer("ik_smart")))
-                .properties("attrs", p -> p.nested(n -> n
-                        .properties("attrId", q -> q.long_(l -> l))
-                        .properties("attrName", q -> q.keyword(k -> k))
-                        .properties("attrValue", q -> q.keyword(k -> k))))));
+        client.indices().create(c -> c.index(INDEX).mappings(m -> m.properties("skuId", p -> p.long_(l -> l)).properties("spuId", p -> p.long_(l -> l)).properties("skuTitle", p -> p.text(t -> t.analyzer("ik_max_word").searchAnalyzer("ik_smart").fields("keyword", f -> f.keyword(k -> k.ignoreAbove(256))))).properties("skuPrice", p -> p.scaledFloat(s -> s.scalingFactor(100.0))).properties("skuImg", p -> p.keyword(k -> k.index(false))).properties("saleCount", p -> p.long_(l -> l)).properties("hasStock", p -> p.boolean_(b -> b)).properties("hotScore", p -> p.long_(l -> l)).properties("brandId", p -> p.long_(l -> l)).properties("brandName", p -> p.text(t -> t.analyzer("ik_max_word").searchAnalyzer("ik_smart").fields("keyword", f -> f.keyword(k -> k.ignoreAbove(256))))).properties("brandImg", p -> p.keyword(k -> k.index(false))).properties("catalogId", p -> p.long_(l -> l)).properties("catalogName", p -> p.text(t -> t.analyzer("ik_max_word").searchAnalyzer("ik_smart"))).properties("attrs", p -> p.nested(n -> n.properties("attrId", q -> q.long_(l -> l)).properties("attrName", q -> q.keyword(k -> k)).properties("attrValue", q -> q.keyword(k -> k))))));
         mappingReady = true;
         log.info("索引 {} 已创建：attrs 为 nested，文本走 ik 分词", INDEX);
+    }
+
+    @Override
+    public void productStatusUp(List<SkuEsModel> skuEsModels) throws IOException {
+        if (skuEsModels == null || skuEsModels.isEmpty()) {
+            return;
+        }
+        ensureIndex();
+        // 逐条 model 建一条 index 操作，_id 用 skuId 让重复上架覆盖同一篇文档
+        BulkRequest.Builder bulkRequest = new BulkRequest.Builder();
+        for (SkuEsModel model : skuEsModels) {
+            bulkRequest.operations(op -> op.index(idx -> idx.index(INDEX).id(model.getSkuId().toString()).document(model)));
+        }
+        BulkResponse response = client.bulk(bulkRequest.build());
+        if (response.errors()) {
+            response.items().stream().filter(item -> item.error() != null).limit(5).forEach(item -> log.error("上架文档 skuId={} 写入失败：{}", item.id(), item.error().reason()));
+            long failed = response.items().stream().filter(item -> item.error() != null).count();
+            throw new IOException("商品上架 ES 写入失败 " + failed + " 条，共 " + skuEsModels.size() + " 条");
+        }
+        log.info("商品上架 ES 写入成功 {} 条 -> {}", skuEsModels.size(), INDEX);
     }
 }
