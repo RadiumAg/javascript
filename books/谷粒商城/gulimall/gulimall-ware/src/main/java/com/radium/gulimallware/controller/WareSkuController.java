@@ -37,9 +37,11 @@ public class WareSkuController {
 
     /** 商品服务上架时远程判断是否有货 */
     @RequestMapping("/hasstock/{skuId}")
-    public R getSkusHasStocks(@PathVariable("skuId") Long skuId) {
+    public R<SkuHasStockVo> getSkusHasStocks(@PathVariable("skuId") Long skuId) {
         SkuHasStockVo vo = wareSkuService.getSkusHasStock(skuId);
-        return R.ok().put("data", vo);
+        R<SkuHasStockVo> ok = R.ok();
+        ok.setData(vo);
+        return ok;
     }
 
     /**

@@ -9,6 +9,7 @@ import com.radium.gulimallproduct.entity.*;
 import com.radium.gulimallproduct.feign.CouponFeignService;
 import com.radium.gulimallproduct.feign.WareFeignService;
 import com.radium.gulimallproduct.service.*;
+import com.radium.gulimallproduct.vo.SkuHasStockVo;
 import com.radium.gulimallproduct.vo.SkuStockVo;
 import com.radium.gulimallproduct.vo.SpuSaveVo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -56,6 +58,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     CategoryService categoryService;
     @Autowired
     AttrService attrService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
@@ -65,6 +68,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         return new PageUtils(page);
     }
+
     @Override
     @Transactional
     public void saveSpuInfo(SpuSaveVo vo) {
@@ -221,21 +225,21 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Override
     public void up(Long spuId) {
-        var upProducts = new ArrayList<>();
         // 组装需要的数据
         List<SkuInfoEntity> skus = skuInfoService.getSkuBySpuId(spuId);
+        List<Long> skuIdList = skus.stream().map(SkuInfoEntity::getSkuId).toList();
         List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrListforspu(spuId);
         List<Long> attrIds = baseAttrs.stream().map(attr -> {
             return attr.getAttrId();
         });
-        List<Long> searchAttrIds =  attrService.selectSearchAttrs(attrIds).stream().map(attr->{
+        List<Long> searchAttrIds = attrService.selectSearchAttrs(attrIds).stream().map(attr -> {
             return attr.getAttrId();
         });
         List<SkuEsModel.Attrs> attrsList = new ArrayList<>();
         Set<Long> attrIdSet = new HashSet<>(searchAttrIds);
-        baseAttrs.stream().filter(attr->{
-           return attrIdSet.contains(attr.getAttrId());
-        }).map(item->{
+        baseAttrs.stream().filter(attr -> {
+            return attrIdSet.contains(attr.getAttrId());
+        }).map(item -> {
             SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
             BeanUtils.copyProperties(item, attrs);
             return attrIds;
@@ -246,11 +250,20 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             BeanUtils.copyProperties(sku, esModel);
             esModel.setSkuPrice(sku.getPrice());
             esModel.setSkuImg(sku.getSkuDefaultImg());
+            Map<Long, Boolean> mapStock = null;
             // 1. 发送远程调用，库存系统查询是否有库存
+            try {
+                R<List<SkuHasStockVo>> skusHasStocks = wareFeignService.getSkusHasStocks(sku.getSkuId());
+                mapStock = skusHasStocks.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
+            } catch (Exception e) {
+                log.error("库存服务查询异常:{}", e.getMessage());
+            }
+            Boolean hasStockData = mapStock == null || mapStock.get(sku.getSkuId());
+            esModel.setHasStock(hasStockData);
             // 2. 评分热度
             esModel.setHotScore(0L);
             // 3. 查询品牌和分类的名字信息
-            var brand =  brandService.getById(sku.getBrandId());
+            var brand = brandService.getById(sku.getBrandId());
             esModel.setBrandName(brand.getName());
             esModel.setBrandImage(brand.getLogo());
             var category = categoryService.getById(esModel.getCatalogId());
