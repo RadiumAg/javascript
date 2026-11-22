@@ -174,6 +174,13 @@ export const spuList = (params: ListParams) =>
 export const spuUpdate = (data: Partial<SpuItem> & { id: number }) =>
   microPost<R>('/gulimallproduct/spuinfo/update', data);
 
+/**
+ * 上架：走后端 up() 完整流程——组装该 SPU 的 SKU 文档推给搜索服务写 ES，成功后才置 publish_status=1。
+ * 依赖 gulimall-search（写 ES）与 gulimall-ware（查库存）在跑；只想改状态别用它，用 spuUpdate。
+ */
+export const spuUp = (spuId: number) =>
+  microPost<R>(`/gulimallproduct/spuinfo/up/${spuId}`);
+
 export const spuDelete = (ids: number[]) =>
   microPost<R>('/gulimallproduct/spuinfo/delete', ids, { raw: true });
 

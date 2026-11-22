@@ -75,6 +75,16 @@ public class SpuInfoController {
     }
 
     /**
+     * 上架：组装该 SPU 下所有 SKU 的 ES 文档推给搜索服务写入 ES，成功后置 publish_status=1。
+     * 只翻状态请走 /update；这里会走完整 up() 流程，需要 search/ware 服务在跑。
+     */
+    @RequestMapping("/up/{spuId}")
+    public R up(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return R.ok();
+    }
+
+    /**
      * 删除
      */
     @RequestMapping("/delete")

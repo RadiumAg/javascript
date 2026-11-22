@@ -45,9 +45,9 @@ const SpuPage: FC = () => {
   const productUp = useMemoizedFn((row: SpuItem) => {
     confirm({
       title: '提示',
-      content: `确定上架「${row.spuName}」?`,
+      content: `确定上架「${row.spuName}」?（将推送到搜索服务写入 ES，需 search/ware 服务在跑）`,
       onOk: async () => {
-        const res = await gulimallApi.spuUpdate({ id: row.id, publishStatus: 1 });
+        const res = await gulimallApi.spuUp(row.id);
         if (assertOk(res)) {
           message.success('上架成功');
           pl.refresh();
