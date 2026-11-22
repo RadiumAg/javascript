@@ -20,4 +20,10 @@ public interface ProductSaveService {
      * productStatusUp 的 boolean 适配器：全部成功返回 true，任何失败返回 false（明细在日志里）。
      */
     boolean saveBatch(List<SkuEsModel> products);
+
+    /**
+     * 商品下架：按 skuId 从 gulimall_sku 批量删除文档（_id 就是 skuId）。
+     * 索引不存在视为无可删，直接返回；有任何一条删除失败抛 IOException，明细在日志里。
+     */
+    void productStatusDown(List<Long> skuIds) throws IOException;
 }

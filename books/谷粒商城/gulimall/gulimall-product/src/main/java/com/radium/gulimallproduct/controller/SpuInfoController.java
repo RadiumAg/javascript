@@ -85,6 +85,16 @@ public class SpuInfoController {
     }
 
     /**
+     * 下架：取该 SPU 下所有 skuId 推给搜索服务删除 ES 文档，成功后置 publish_status=0。
+     * 需要 search 服务在跑。
+     */
+    @RequestMapping("/down/{spuId}")
+    public R down(@PathVariable("spuId") Long spuId){
+        spuInfoService.down(spuId);
+        return R.ok();
+    }
+
+    /**
      * 删除
      */
     @RequestMapping("/delete")

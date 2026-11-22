@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 /**
- * 商品服务调用搜索服务：把组装好的 SKU 文档推过去写入 ES（上架）。
+ * 商品服务调用搜索服务：上架把 SKU 文档推过去写 ES，下架按 skuId 删 ES 文档。
  */
 @FeignClient("gulimall-search")
 public interface SearchFeignService {
 
     @PostMapping("/search/product")
     R productStatusUp(@RequestBody List<SkuEsModel> esModels);
+
+    @PostMapping("/search/product/down")
+    R productStatusDown(@RequestBody List<Long> skuIds);
 }

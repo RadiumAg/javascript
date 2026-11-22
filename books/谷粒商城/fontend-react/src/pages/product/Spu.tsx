@@ -56,6 +56,20 @@ const SpuPage: FC = () => {
     });
   });
 
+  const productDown = useMemoizedFn((row: SpuItem) => {
+    confirm({
+      title: '提示',
+      content: `确定下架「${row.spuName}」?（会删除搜索服务的 ES 文档，需 search 服务在跑）`,
+      onOk: async () => {
+        const res = await gulimallApi.spuDown(row.id);
+        if (assertOk(res)) {
+          message.success('下架成功');
+          pl.refresh();
+        }
+      },
+    });
+  });
+
   const doDelete = useMemoizedFn((ids: number[]) => {
     confirm({
       title: '提示',
@@ -108,6 +122,11 @@ const SpuPage: FC = () => {
                 上架
               </Button>
             )}
+            {row.publishStatus === 1 && (
+              <Button size="small" type="link" onClick={() => productDown(row)}>
+                下架
+              </Button>
+            )}
             <Button size="small" type="link" danger onClick={() => doDelete([row.id])}>
               删除
             </Button>
@@ -115,7 +134,7 @@ const SpuPage: FC = () => {
         ),
       },
     ],
-    [names, productUp, doDelete],
+    [names, productUp, productDown, doDelete],
   );
 
   const search = (patch: Filter) => {

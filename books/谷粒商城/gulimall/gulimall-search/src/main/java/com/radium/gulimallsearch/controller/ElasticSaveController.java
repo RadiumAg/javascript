@@ -31,4 +31,19 @@ public class ElasticSaveController {
             return R.error("商品上架失败：" + e.getMessage());
         }
     }
+
+    /// 下架商品：按 skuId 删除 ES 文档
+    /// @return
+    @PostMapping("/product/down")
+    public R productStatusDown(@RequestBody List<Long> skuIds){
+        if (skuIds == null || skuIds.isEmpty()) {
+            return R.error("下架数据为空，无需处理");
+        }
+        try {
+            productSaveService.productStatusDown(skuIds);
+            return R.ok();
+        } catch (IOException e) {
+            return R.error("商品下架失败：" + e.getMessage());
+        }
+    }
 }

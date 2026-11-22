@@ -93,4 +93,32 @@ public class ProductSaveServiceImpl implements ProductSaveService {
         }
         log.info("商品上架 ES 写入成功 {} 条 -> {}", skuEsModels.size(), INDEX);
     }
+
+    @Override
+    public void productStatusDown(List<Long> skuIds) throws IOException {
+        if (skuIds == null || skuIds.isEmpty()) {
+            return;
+        }
+        // 索引都不存在 = 没东西可删，当作成功返回，避免对空索引 bulk delete 报 index_not_found
+        if (!client.indices().exists(e -> e.index(INDEX)).value()) {
+            log.info("索引 {} 不存在，下架无需删除 ES 文档", INDEX);
+            return;
+        }
+        // _id 就是 skuId，逐条建 delete 操作后统一 bulk
+        BulkRequest.Builder bulkRequest = new BulkRequest.Builder();
+        for (Long skuId : skuIds) {
+            bulkRequest.operations(op -> op.delete(del -> del.index(INDEX).id(String.valueOf(skuId))));
+        }
+        BulkResponse response = client.bulk(bulkRequest.build());
+        if (response.errors()) {
+            response.items().stream()
+                    .filter(item -> item.error() != null)
+                    .limit(5)
+                    .forEach(item -> log.error("下架文档 skuId={} 删除失败：{}",
+                            item.id(), item.error().reason()));
+            long failed = response.items().stream().filter(item -> item.error() != null).count();
+            throw new IOException("商品下架 ES 删除失败 " + failed + " 条，共 " + skuIds.size() + " 条");
+        }
+        log.info("商品下架 ES 删除完成 {} 条 -> {}", skuIds.size(), INDEX);
+    }
 }

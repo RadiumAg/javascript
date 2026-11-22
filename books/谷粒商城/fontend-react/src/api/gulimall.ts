@@ -181,6 +181,13 @@ export const spuUpdate = (data: Partial<SpuItem> & { id: number }) =>
 export const spuUp = (spuId: number) =>
   microPost<R>(`/gulimallproduct/spuinfo/up/${spuId}`);
 
+/**
+ * 下架：走后端 down() 完整流程——按 skuId 让搜索服务删掉 ES 文档，成功后才置 publish_status=0。
+ * 依赖 gulimall-search 在跑；下架后搜索不再返回该商品。
+ */
+export const spuDown = (spuId: number) =>
+  microPost<R>(`/gulimallproduct/spuinfo/down/${spuId}`);
+
 export const spuDelete = (ids: number[]) =>
   microPost<R>('/gulimallproduct/spuinfo/delete', ids, { raw: true });
 

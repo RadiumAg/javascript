@@ -313,4 +313,29 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }
         return stockMap;
     }
+
+    @Override
+    public void down(Long spuId) {
+        // 1. 取该 SPU 下所有 skuId（ES 文档 _id 即 skuId）
+        List<SkuInfoEntity> skus = skuInfoService.getSkuBySpuId(spuId);
+        List<Long> skuIds = skus.stream()
+                .map(SkuInfoEntity::getSkuId)
+                .toList();
+
+        // 2. 让 search 按 skuId 删除 ES 文档
+        if (!skuIds.isEmpty()) {
+            R r = searchFeignService.productStatusDown(skuIds);
+            if (r == null || !Integer.valueOf(0).equals(r.get("code"))) {
+                log.warn("商品下架删除 ES 失败 spuId={} resp={}", spuId, r);
+                return;
+            }
+        }
+
+        // 3. ES 删除成功后再置 SPU 下架
+        SpuInfoEntity unpublished = new SpuInfoEntity();
+        unpublished.setId(spuId);
+        unpublished.setPublishStatus(0);
+        unpublished.setUpdateTime(new Date());
+        this.updateById(unpublished);
+    }
 }
