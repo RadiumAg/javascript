@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>谷粒商城</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f5f5; color: #333; }
+        header { background: #e1251b; color: #fff; padding: 16px 32px; font-size: 22px; font-weight: bold; }
+        .wrap { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+        h2 { font-size: 16px; margin-bottom: 12px; }
+        ul.categorys { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        ul.categorys li { background: #fff; border-radius: 6px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        ul.categorys li img { width: 32px; height: 32px; object-fit: contain; display: block; margin-bottom: 8px; }
+        ul.categorys li span { font-size: 14px; }
+        .empty { color: #999; font-size: 14px; }
+    </style>
+</head>
+<body>
+<header>谷粒商城</header>
+<div class="wrap">
+    <h2>一级分类</h2>
+    <ul class="categorys">
+        <li th:each="category : ${categorys}">
+            <img th:if="${category.icon != null and !category.icon.isEmpty()}" th:src="${category.icon}" alt="">
+            <span th:text="${category.name}">分类名</span>
+        </li>
+    </ul>
+    <p class="empty" th:if="${#lists.isEmpty(categorys)}">暂无一级分类数据</p>
+</div>
+</body>
+</html>
