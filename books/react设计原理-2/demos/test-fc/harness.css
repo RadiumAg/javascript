@@ -1,0 +1,101 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 14px/1.6 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  color: #1f2328;
+  background: #fafafa;
+}
+
+#app {
+  display: flex;
+  min-height: 100vh;
+}
+
+#sidebar {
+  flex: 0 0 200px;
+  padding: 16px;
+  border-right: 1px solid #e5e5e5;
+  background: #fff;
+}
+
+#sidebar h1 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+}
+
+#case-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.case-btn {
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.case-btn:hover {
+  border-color: #b9b9b9;
+}
+
+.case-btn--active {
+  border-color: #7c3aed;
+  background: #f4eeff;
+  color: #5b21b6;
+}
+
+#toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+#toolbar button {
+  padding: 7px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+#stage-wrap {
+  flex: 1;
+  padding: 20px 24px;
+}
+
+#case-note {
+  margin: 0 0 16px;
+  padding: 8px 10px;
+  border-left: 3px solid #d8c9f7;
+  background: #fbf8ff;
+  color: #5b21b6;
+  font-size: 13px;
+}
+
+#case-note:empty {
+  display: none;
+}
+
+#stage {
+  padding: 16px;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  min-height: 160px;
+}
