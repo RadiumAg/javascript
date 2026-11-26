@@ -1,15 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite + React + TS</title>
+  <title>React 用例台</title>
+  <link rel="stylesheet" href="./harness.css" />
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="app">
+    <aside id="sidebar">
+      <h1>用例</h1>
+      <div id="case-list"></div>
+      <div id="toolbar">
+        <button id="rerun" type="button">↻ 重跑当前</button>
+        <button id="auto-play" type="button">▶ 自动播放</button>
+      </div>
+    </aside>
+    <main id="stage-wrap">
+      <p id="case-note"></p>
+      <div id="stage"></div>
+    </main>
+  </div>
   <script type="module" src="./main.tsx"></script>
 </body>
 
