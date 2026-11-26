@@ -18,7 +18,6 @@ const App = () => {
       <button
         type="button"
         onClick={() => {
-          debugger;
           setCount((c) => c + 1);
           setCount((c) => c + 2);
           setCount((c) => c + 3);
