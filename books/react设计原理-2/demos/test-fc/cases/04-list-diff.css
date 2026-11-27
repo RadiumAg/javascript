@@ -1,0 +1,61 @@
+/* 用例 04：列表 diff 沙盘
+   这份 mini-react 的 createInstance 在 mount 时不应用 props，
+   className / style 首轮不会生效，所以样式全部靠 #stage 下的元素选择器。 */
+
+#stage table {
+  border-collapse: collapse;
+  margin: 0 0 12px;
+}
+
+#stage th,
+#stage td {
+  padding: 4px 10px;
+  border: 1px solid #ececec;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  text-align: left;
+}
+
+#stage th {
+  background: #fafafa;
+}
+
+#stage pre {
+  margin: 0;
+  padding: 8px 10px;
+  background: #f7f7f8;
+  border-radius: 6px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+#stage ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#stage li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  margin-bottom: 6px;
+  border: 1px solid #ececec;
+  border-radius: 6px;
+}
+
+#stage li b:first-child {
+  width: 18px;
+}
+
+#stage li span {
+  width: 84px;
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+#stage h3 {
+  margin: 22px 0 8px;
+  font-size: 13px;
+}
