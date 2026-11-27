@@ -3,7 +3,7 @@ import './04-list-diff.css';
 
 export const title = '列表 diff 算法沙盘';
 export const note =
-  '复刻 childFibers.ts 的 reconcileChildrenArray：Map 索引 + lastPlacedIndex 游标，逐步看 keep/move/insert/delete 怎么定';
+  '复刻 childFibers.ts 的 reconcileChildrenArray：Map 索引 + lastPlacedIndex 游标。每个场景一个独立小组件，互不影响';
 
 export type DiffOp = 'keep' | 'move' | 'insert' | 'delete';
 
@@ -87,19 +87,6 @@ export function diffList(
   return { rows, domOps };
 }
 
-const SCENARIOS: { name: string; from: string[]; to: string[] }[] = [
-  { name: '反转 a,b,c→c,b,a', from: ['a', 'b', 'c'], to: ['c', 'b', 'a'] },
-  { name: '中间插 a,b→a,x,b', from: ['a', 'b'], to: ['a', 'x', 'b'] },
-  { name: '末尾加 a,b→a,b,c', from: ['a', 'b'], to: ['a', 'b', 'c'] },
-  { name: '删首项 a,b,c→b,c', from: ['a', 'b', 'c'], to: ['b', 'c'] },
-  { name: '末项提前 a,b,c→c,a,b', from: ['a', 'b', 'c'], to: ['c', 'a', 'b'] },
-  {
-    name: '前面插x a,b,c→x,a,b,c',
-    from: ['a', 'b', 'c'],
-    to: ['x', 'a', 'b', 'c'],
-  },
-];
-
 const OP_LABEL: Record<DiffOp, string> = {
   keep: '= 不动',
   move: '↑ 移动',
@@ -107,48 +94,12 @@ const OP_LABEL: Record<DiffOp, string> = {
   delete: '- 删除',
 };
 
-function Row({ id }: { id: string }) {
-  const [count, setCount] = useState(0);
-
-  return (
-    <li>
-      <b>{id}</b>
-      <span>计数 {count}</span>
-      <button type="button" onClick={() => setCount((c) => c + 1)}>
-        +1
-      </button>
-    </li>
-  );
-}
-
-const App = () => {
-  const [scenario, setScenario] = useState(0);
-  const [keyed, setKeyed] = useState(true);
-  const [order, setOrder] = useState(['a', 'b', 'c']);
-
-  const current = SCENARIOS[scenario];
-  const { rows, domOps } = diffList(current.from, current.to, keyed);
+function DiffTable({ rows, domOps }: { rows: DiffRow[]; domOps: string[] }) {
   const count = (op: DiffOp) => rows.filter((r) => r.op === op).length;
   const domOpCount = count('move') + count('insert') + count('delete');
 
   return (
     <div>
-      <p>
-        <button type="button" onClick={() => setKeyed((k) => !k)}>
-          key 策略：{keyed ? '稳定 key' : '下标当 key（没写 key）'}
-        </button>
-        {'　当前：'}
-        {current.from.join(',')} → {current.to.join(',')}
-      </p>
-
-      <p>
-        {SCENARIOS.map((s, i) => (
-          <button key={s.name} type="button" onClick={() => setScenario(i)}>
-            <b>{i === scenario ? `[${s.name}]` : s.name}</b>
-          </button>
-        ))}
-      </p>
-
       <table>
         <thead>
           <tr>
@@ -175,17 +126,71 @@ const App = () => {
           ))}
         </tbody>
       </table>
-
       <p>
         DOM 操作 <b>{domOpCount}</b> 次：移动 {count('move')} / 插入{' '}
         {count('insert')} / 删除 {count('delete')}，原地保留 {count('keep')} 个
       </p>
       <pre>{domOps.length ? domOps.join('\n') : '（无 DOM 操作）'}</pre>
+    </div>
+  );
+}
 
-      <h3>真实 diff 对照：每行有自己的计数，反转后看计数跟着谁走</h3>
+/** 单个算法场景：key 策略是它自己的 state，切换不会带动别的场景 */
+function DiffScenario({ from, to }: { from: string[]; to: string[] }) {
+  const [keyed, setKeyed] = useState(true);
+  const { rows, domOps } = diffList(from, to, keyed);
+
+  return (
+    <div>
+      <p>
+        <b>
+          {from.join(',')} → {to.join(',')}
+        </b>
+        <button type="button" onClick={() => setKeyed((k) => !k)}>
+          {keyed ? '稳定 key' : '下标当 key'}
+        </button>
+      </p>
+      <DiffTable rows={rows} domOps={domOps} />
+    </div>
+  );
+}
+
+const SCENARIOS: { from: string[]; to: string[] }[] = [
+  { from: ['a', 'b', 'c'], to: ['c', 'b', 'a'] },
+  { from: ['a', 'b'], to: ['a', 'x', 'b'] },
+  { from: ['a', 'b'], to: ['a', 'b', 'c'] },
+  { from: ['a', 'b', 'c'], to: ['b', 'c'] },
+  { from: ['a', 'b', 'c'], to: ['c', 'a', 'b'] },
+  { from: ['a', 'b', 'c'], to: ['x', 'a', 'b', 'c'] },
+];
+
+function Row({ id }: { id: string }) {
+  const [count, setCount] = useState(0);
+
+  return (
+    <li>
+      <b>{id}</b>
+      <span>计数 {count}</span>
+      <button type="button" onClick={() => setCount((c) => c + 1)}>
+        +1
+      </button>
+    </li>
+  );
+}
+
+/** 真实 diff 对照：反转 + 行内计数都只驱动这个组件自己 */
+function ReorderPlayground() {
+  const [keyed, setKeyed] = useState(true);
+  const [order, setOrder] = useState(['a', 'b', 'c']);
+
+  return (
+    <div>
       <p>
         <button type="button" onClick={() => setOrder((o) => [...o].reverse())}>
           反转列表（当前：{order.join(',')}）
+        </button>
+        <button type="button" onClick={() => setKeyed((k) => !k)}>
+          {keyed ? '稳定 key' : '下标当 key'}
         </button>
       </p>
       <ul>
@@ -199,6 +204,24 @@ const App = () => {
         下标当 key：上面的判定表会变成「全部不动」，计数留在原位 ——
         看起来零成本，实际内容串了行。
       </p>
+    </div>
+  );
+}
+
+const App = () => {
+  return (
+    <div>
+      <h3>算法沙盘（每个场景独立 state）</h3>
+      {SCENARIOS.map((s) => (
+        <DiffScenario
+          key={s.from.join() + s.to.join()}
+          from={s.from}
+          to={s.to}
+        />
+      ))}
+
+      <h3>真实 diff 对照</h3>
+      <ReorderPlayground />
     </div>
   );
 };
