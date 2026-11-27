@@ -197,12 +197,6 @@ function childReconciler(shouldTrackEffects: boolean) {
 
       const current = newFiber.alternate;
       if (current !== null) {
-        console.log(
-          'currentIndex',
-          current.index,
-          'lastPlacedIndex',
-          lastPlacedIndex,
-        );
         const oldIndex = current.index;
         if (oldIndex < lastPlacedIndex) {
           // 移动

@@ -287,6 +287,11 @@ function cloneChildFibers(wip: FiberNode) {
     newChild.sibling = newSibling;
     newChild = newSibling;
   }
+
+  // 链尾必须显式置空：createWorkInProgress 复用旧 WIP 时不会重置 sibling，
+  // 上一轮被 reconcileChildrenArray 重排过的话，这里残留的 sibling 会指回链中间，
+  // workLoop 就永远走不完（表现为子项 setState 后无限刷屏卡死）
+  newChild.sibling = null;
 }
 
 /**
