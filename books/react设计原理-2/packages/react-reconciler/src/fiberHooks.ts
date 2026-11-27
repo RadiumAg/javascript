@@ -154,13 +154,13 @@ function updateEffect(create: EffectCallback | void, deps: EffectDeps | void) {
         return;
       }
     }
-    // 浅比较后 不相等，将最新的create赋值
+    // 浅比较后 不相等，将最新的create赋值，并带上上一轮的destory供flush清理
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     currentlyRenderingFiber!.flags |= PassiveEffect;
     hook.memoizedState = pushEffect(
       Passive | HookHasEffect,
       create,
-      undefined,
+      destory,
       nextDeps,
     );
   }
